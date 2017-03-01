@@ -288,25 +288,27 @@ public class Utils {
      */
     public void buildMotifTreeFromDataTree(Trie trie, GeneralizedSuffixTree suffix_tree, int q){
         suffix_tree.computeCount();
-        OccurrenceNode suffix_tree_node = (OccurrenceNode)suffix_tree.getRoot();
+        OccurrenceNode data_tree_node = (OccurrenceNode)suffix_tree.getRoot();
         MotifNode trie_node = trie.getRoot();
         //add the nodes recursively
-        addMotifNode(trie, suffix_tree_node, trie_node, q);
+        addMotifNode(trie, data_tree_node, trie_node, q);
     }
 
-    private void addMotifNode(Trie trie, OccurrenceNode suffix_tree_src_node, MotifNode trie_src_node, int q){
-        HashMap<Integer, Edge> outgoing_edges = suffix_tree_src_node.getEdges();
+    private void addMotifNode(Trie trie, OccurrenceNode data_tree_src_node, MotifNode trie_src_node, int q){
+        HashMap<Integer, Edge> outgoing_edges = data_tree_src_node.getEdges();
         MotifNode trie_target_node;
         for (Edge edge : outgoing_edges.values()) {
-            OccurrenceNode suffix_tree_target_node = (OccurrenceNode) edge.getDest();
-            if (suffix_tree_target_node.getCount_by_keys() >= q) {
+            OccurrenceNode data_tree_target_node = (OccurrenceNode) edge.getDest();
+            if (data_tree_target_node.getCount_by_keys() >= q) {
                 WordArray edge_label = edge.getLabel();
                 String label = (edge_label.to_string(this));
                 trie_target_node = trie.put(edge_label, trie_src_node, false, this);
-                addMotifNode(trie, suffix_tree_target_node, trie_target_node, q);
+                addMotifNode(trie, data_tree_target_node, trie_target_node, q);
             }
         }
     }
+
+
 
     public void buildMotifsTreeFromFile(String input_motifs_file_name, Trie motif_tree) throws Exception {
         BufferedReader br = new BufferedReader(new FileReader(input_motifs_file_name));

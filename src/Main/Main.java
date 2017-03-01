@@ -35,7 +35,7 @@ public class Main {
     @Parameter(names={"--quorum2", "-q2"}, description = "approximate occurrences quorum")
     int quorum2 = 1;
     @Parameter(names={"--minlength", "-l"}, description = "minimal motif length")
-    int min_motif_length = 2;
+    int min_motif_length = 2 + max_error;
     @Parameter(names={"--keys", "-keys"}, description = "if true, count by sequence keys", arity = 1)
     boolean count_by_keys = true;
     @Parameter(names={"--datasetname", "-ds"}, description = "dataset name")
@@ -47,6 +47,8 @@ public class Main {
 
     @Parameter(names = "-debug", description = "Debug mode")
     private boolean debug = false;
+    @Parameter(names = "-mem", description = "Memory Saving Mode")
+    private boolean memory_saving_mode = false;
     @Parameter(names = "--help", help = true)
     private boolean help;
 
@@ -61,7 +63,7 @@ public class Main {
             System.out.println("-i [input file name]");
         }else {
             Utils utils = new Utils();
-            min_motif_length += max_error;
+
             try {
                 if (!debug) {//disable logging information printed to screen
                     LogManager.getLogManager().reset();
@@ -81,7 +83,7 @@ public class Main {
 
             MotifFinder mf = new MotifFinder();
             mf.findMotifs(max_error, max_wildcards, max_deletion, max_insertion, quorum1, quorum2, min_motif_length,
-                    count_by_keys, dataset_name, input_file_name, input_motifs_file_name, utils);
+                    count_by_keys, dataset_name, input_file_name, input_motifs_file_name, memory_saving_mode, utils);
 
             float estimatedTime = (float) (System.nanoTime() - startTime) / (float) Math.pow(10, 9);
             if (debug) {

@@ -10,13 +10,13 @@ import java.text.DecimalFormat;
 import java.util.*;
 
 /**
- * Created by ASUS on 6/19/2016.
+ * Finds motifs
  */
 public class MotifFinder {
 
     private HashMap<String, String> cog_fun_cat;
 
-    ArrayList<String> cog_words_ids;
+    private ArrayList<String> cog_words_ids;
 
     private boolean count_by_keys;
 
@@ -43,7 +43,7 @@ public class MotifFinder {
     public void findMotifs(int max_error, int max_motif_gap, int max_deletion, int max_insertion,
                                            int quorum1, int quorum2, int min_motif_length, boolean count_by_keys,
                                            String dataset_name, String input_file_name, String input_motifs_file_name,
-                                           Utils utils)
+                                           boolean memory_saving_mode, Utils utils)
                                            throws Exception {
 
         this.count_by_keys = count_by_keys;
@@ -84,7 +84,7 @@ public class MotifFinder {
 
         System.out.println("Extracting motifs");
         Sagot s = new Sagot(max_error, max_motif_gap, max_deletion, max_insertion, quorum1, quorum2, min_motif_length,
-                gap_char, wc_char, unknown_char, dataset_suffix_tree, motif_tree, count_by_keys,  utils);
+                gap_char, wc_char, unknown_char, dataset_suffix_tree, motif_tree, count_by_keys,  utils, memory_saving_mode);
         s.removeRedundantMotifs();
         ArrayList<Motif> motifs_nodes = s.getMotifs();
         System.out.println(motifs_nodes.size() + " motifs found");

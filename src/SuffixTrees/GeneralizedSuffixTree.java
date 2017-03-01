@@ -168,12 +168,6 @@ public class GeneralizedSuffixTree  implements Serializable{
      * @throws IllegalStateException if an invalid index is passed as input
      */
     public void put(WordArray str, int key, int word_index) throws IllegalStateException {
-        /*
-        if (key < last) {
-            throw new IllegalStateException("The input index must not be less than any of the previously inserted ones. Got " + key + ", expected at least " + last);
-        } else {
-            last = key;
-        }*/
 
         // reset activeLeaf
         activeLeaf = root;
@@ -185,21 +179,18 @@ public class GeneralizedSuffixTree  implements Serializable{
         // proceed with tree construction (closely related to procedure in
         // Ukkonen's paper)
         WordArray text = new WordArray(str.wordArray, 0, 0);
-        //int index = 0;
+
         // iterate over the string, one char at a time
         for (int i = 0; i < str.get_length(); i++) {
             // line 6
             text.add_to_end_index(1);
 
-
             // line 7: update the tree with the new transitions due to this new char
             WordArray rest = new WordArray(str.wordArray, i, str.get_end_index());
             WordArray text_copy = new WordArray(text.wordArray, text.get_start_index(), text.get_end_index());
 
-            //String rest_str = rest.to_string(bitset_to_cog, index_to_cog);
-            //String text_copy_str = text_copy.to_string(bitset_to_cog, index_to_cog);
 
-            Pair<SuffixNode, WordArray> active = update(s, text_copy, rest/*, key, index*/);
+            Pair<SuffixNode, WordArray> active = update(s, text_copy, rest);
             // line 8: make sure the active pair is canonical
             active = canonize(active.getFirst(), active.getSecond());
 
@@ -207,13 +198,6 @@ public class GeneralizedSuffixTree  implements Serializable{
             //check what canonize returns
             text = active.getSecond();
             s = active.getFirst();
-
-            //String text_str = text.to_string(bitset_to_cog, index_to_cog);
-            /*if (s.equals(root) && text.get_length() == 0){
-                index = i+1;
-            }*/
-
-            //System.out.println(text_str);
 
         }
 
@@ -243,14 +227,13 @@ public class GeneralizedSuffixTree  implements Serializable{
      * @param stringPart the string to search
      * @param t the following character
      * @param remainder the remainder of the string to add to the index
-     * @param key the key of the string added to the tree
-     * @param index the index of the string added to the tree
      * @return a pair containing
-     *                  true/false depending on whether (stringPart + t) is contained in the subtree starting in inputs
-     *                  the last node that can be reached by following the path denoted by stringPart starting from inputs
+     * true/false depending on whether (stringPart + t) is contained in the subtree starting in inputs
+     * the last node that can be reached by following the path denoted by stringPart starting from inputs
      *         
      */
-    private Pair<Boolean, SuffixNode> testAndSplit(final SuffixNode inputs, final WordArray stringPart, final int t, final WordArray remainder/*, final int key, int index*/) {
+    private Pair<Boolean, SuffixNode> testAndSplit(final SuffixNode inputs, final WordArray stringPart, final int t,
+                                                   final WordArray remainder) {
 
         //String stringPart_str = stringPart.to_string(bitset_to_cog, index_to_cog);
         //String remainder_str = remainder.to_string(bitset_to_cog, index_to_cog);
@@ -392,10 +375,8 @@ public class GeneralizedSuffixTree  implements Serializable{
          * @param inputNode the node to start from
          * @param stringPart the string to add to the tree
          * @param rest the rest of the string
-         * @param key the key of the string added to the tree
-         * @param index the index of the string added to the tree
          */
-        private Pair<SuffixNode, WordArray> update (SuffixNode inputNode, WordArray stringPart, WordArray rest/*,  int key, int index*/){
+        private Pair<SuffixNode, WordArray> update (SuffixNode inputNode, WordArray stringPart, WordArray rest){
             SuffixNode s = inputNode;
 
             WordArray tempstr = stringPart;
@@ -495,27 +476,6 @@ public class GeneralizedSuffixTree  implements Serializable{
         return ((OccurrenceNode)root).computeAndCacheCount();
     }
 
-    /**
-     * An utility object, used to store the data returned by the GeneralizedSuffixTree GeneralizedSuffixTree.searchWithCount method.
-     * It contains a collection of results and the total number of results present in the GST.
-     * @see GeneralizedSuffixTree#searchWithCount(java.lang.String, int) 
-     */
-    public static class ResultInfo {
-
-        /**
-         * The total number of results present in the database
-         */
-        public int totalResults;
-        /**
-         * The collection of (some) results present in the GST
-         */
-        public Collection<Integer> results;
-
-        public ResultInfo(Collection<Integer> results, int totalResults) {
-            this.totalResults = totalResults;
-            this.results = results;
-        }
-    }
 
     private WordArray copySeq(WordArray seq){
         return new WordArray(seq.wordArray, seq.get_start_index(), seq.get_end_index());
