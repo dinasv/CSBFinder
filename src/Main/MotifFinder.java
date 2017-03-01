@@ -70,10 +70,12 @@ public class MotifFinder {
 
         utils.read_and_build_cog_words_tree(input_file_name, dataset_suffix_tree);
 
-        Trie motif_tree;
+        Trie motif_tree = null;
         if (input_motifs_file_name == null) {
-            motif_tree = new Trie("enumeration");
-            utils.buildMotifTreeFromDataTree(motif_tree, dataset_suffix_tree, quorum1);
+            if (!memory_saving_mode){
+                motif_tree = new Trie("enumeration");
+                utils.buildMotifTreeFromDataTree(motif_tree, dataset_suffix_tree, quorum1);
+            }
         }else{
             motif_tree = new Trie("motif");
             String path = "input/"+ input_motifs_file_name + ".txt";
