@@ -22,8 +22,7 @@ public class Motif{
     private double[] motif_score;
 
     private int length;
-
-    //private ArrayList<Occurrence> motif_occs;
+    private ArrayList<Occurrence> motif_occs;
     private ArrayList<Integer> motif_seq_keys;
 
     private String motif_main_cat;
@@ -36,15 +35,16 @@ public class Motif{
     private ArrayList<HashMap<String, Integer>> motif_genus_count_in_dataset;
     private ArrayList<HashMap<String, Integer>> motif_class_count_in_dataset;
     private ArrayList<HashMap<String, Integer>> motif_phylum_count_in_dataset;
-    //private String[] dataset_major_genus;
+
     private int exact_occs_count;
 
-    public Motif(int motif_id, String motif, String[] motif_arr, int length, int number_of_datasets, String motif_main_cat, String motif_letter_cat, String motif_cat_letters){
+    public Motif(int motif_id, String motif, String[] motif_arr, int length, int number_of_datasets,
+                 String motif_main_cat, String motif_letter_cat, String motif_cat_letters){
         this.motif = motif;
         this.length = length;
         this.motif_id = motif_id;
         this.motif_arr = motif_arr;
-        //motif_occs = new ArrayList<>(number_of_datasets);
+        motif_occs = new ArrayList<>();
         motif_seq_keys = new ArrayList<>();
         motif_genus_count_in_dataset = new ArrayList<>();
         motif_class_count_in_dataset = new ArrayList<>();
@@ -66,12 +66,14 @@ public class Motif{
         //dataset_major_genus = new String[number_of_datasets];
     }
 
-    public Motif(int motif_id, String motif, String[] motif_arr, int length, HashSet<Integer> seq_keys, int exact_occs_count){
+    public Motif(int motif_id, String motif, String[] motif_arr, int length, HashSet<Integer> seq_keys,
+                 ArrayList<Occurrence> occs, int exact_occs_count){
         this.motif_id = motif_id;
         this.motif = motif;
         this.motif_arr = motif_arr;
         this.length = length;
         motif_seq_keys = new ArrayList<>(seq_keys);
+        this.motif_occs = occs;
         occ_count = seq_keys.size();
         this.exact_occs_count = exact_occs_count;
     }
@@ -104,11 +106,11 @@ public class Motif{
         motif_seq_keys.addAll(keys);
     }
 
-/*
-    public ArrayList<Occurrence> get_occs(int dataset_num){
-        return motif_occs.get(dataset_num);
+
+    public ArrayList<Occurrence> get_occs(){
+        return motif_occs;
     }
-*/
+
     public int getLength(){
         return length;
     }

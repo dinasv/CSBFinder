@@ -317,22 +317,24 @@ public class Utils {
 
             while (line != null) {
                 String[] line_arr = line.split("\t");
-                int motif_id = Integer.parseInt(line_arr[0]);
-                WordArray word = create_word_array(line_arr, 1, line_arr.length);
-                motif_tree.put(word, motif_id, null);
-
-                line = br.readLine();
+                if (line_arr.length > 1) {
+                    int motif_id = Integer.parseInt(line_arr[0].substring(6));
+                    WordArray word = create_word_array(line_arr, 1, line_arr.length);
+                    //motif_tree.put(word, motif_id, null);
+                    motif_tree.put(word, this, motif_id);
+                    line = br.readLine();
+                }
             }
 
         } catch (IOException e) {
         e.printStackTrace();
-    } finally {
-        try {
-            br.close();
-        } catch (IOException e) {
-            e.printStackTrace();
+        } finally {
+            try {
+                br.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
-    }
     }
 
     public void build_motifs_trie(ArrayList<MotifNode> found_motifs, Trie motif_tree) throws Exception {
@@ -597,21 +599,18 @@ public class Utils {
     }
 
     //TODO: change G and n
-    public double computeMotifPval(String[] motif_cogs, int max_insertions, int max_error, int max_deletions, int dataset_index, int motif_occs_keys_size, int motif_id){
+    public double computeMotifPval(String[] motif_cogs, int max_insertions, int max_error, int max_deletions,
+                                   int dataset_index, int motif_occs_keys_size, int motif_id){
         int genomes_count = datasets_size.get(dataset_index);
         int avg_genome_size = dataset_length_sum.get(dataset_index)/genomes_count;
-        //HashMap<String, Integer> cog_homolog_num  = dataset_cog_homolog_num.get(dataset_index);
-        //HashMap<String, HashSet<Integer>> cog_to_containing_genomes = Utils.cog_to_containing_genomes.get(dataset_index);
+
         HashSet<Integer> intersection_of_genomes_with_motif_cogs = new HashSet<Integer>(cog_to_containing_genomes.get(motif_cogs[0]));
         for (int i = 1; i < motif_cogs.length; i++) {
             intersection_of_genomes_with_motif_cogs.retainAll(cog_to_containing_genomes.get(motif_cogs[i]));
         }
 
-        //int min_cog_genomes_count = genomes_count;
-        int cog_genomes_count;
         int paralog_count_product_sum = 0;
         int paralog_count_product;
-        int counter = 1;
         for (int seq_key: intersection_of_genomes_with_motif_cogs) {
 
             HashMap<String, Integer> curr_seq_paralog_count = genome_to_cog_paralog_count.get(seq_key);
@@ -621,22 +620,12 @@ public class Utils {
                 paralog_count_product *= curr_cog_paralog_count;
             }
             paralog_count_product_sum += paralog_count_product;
-
-
-            counter++;
-            /*cog_genomes_count = cog_to_containing_genomes.get(cog).size();
-            if (cog_genomes_count < min_cog_genomes_count){
-                min_cog_genomes_count = cog_genomes_count;
-            }
-                if (cog_homolog_num.get(cog) == null) {
-                    paralog_count_product = 0;
-                } else {
-                    int paralog_num = cog_homolog_num.get(cog);
-                    paralog_count_product *= paralog_num;
-                }
-            }*/
         }
-        //System.out.println("Psi="+paralog_count_product);
+
+        int average_paralog_count = paralog_count_product_sum/intersection_of_genomes_with_motif_cogs.size();
+
+
+
         String error_type = "mismatch";
         if (max_insertions > 0){
             error_type = "insert";
@@ -645,11 +634,9 @@ public class Utils {
         }else if(max_deletions > 0){
             error_type = "deletion";
         }
-        int average_paralog_count = paralog_count_product_sum/intersection_of_genomes_with_motif_cogs.size();
-        //if (motif_id == 1785){
-            //System.out.println(average_paralog_count);
-        //}
-        //motif_occ_num = Math.min(motif_occ_num, min_cog_genomes_count);
-        return Formulas.pval_cross_genome(avg_genome_size/*min_genome_size*/, motif_cogs.length, max_insertions, average_paralog_count, genomes_count, motif_occs_keys_size, error_type, q_val);
+
+
+        return Formulas.pval_cross_genome(avg_genome_size/*min_genome_size*/, motif_cogs.length, max_insertions,
+                average_paralog_count, genomes_count, motif_occs_keys_size, error_type, q_val, motif_id);
     }
 }

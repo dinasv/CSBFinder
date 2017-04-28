@@ -63,8 +63,12 @@ public class Formulas {
      * @param error_type mismatch/insert/deletion
      * @return ranking score
      */
-    public static double pval_cross_genome(int n, int w, int k, int h, int G, int g, String error_type, double[] q_val){
+    public static double pval_cross_genome(int n, int w, int k, int h, int G, int g, String error_type, double[] q_val
+                                            , int motif_id){
         double result = 0;
+        if (motif_id == 3281){
+            System.out.println("sdf");
+        }
         double q = q_homologs(n, w, k, h, error_type, q_val);
 
         double a = g/(double)G;
@@ -72,11 +76,17 @@ public class Formulas {
             result = -G*Math.log(q);
         } else if (q < a && q > 0 && a < 1){
             result = G*H(a, q);
+            double res = -Math.log(binomialCDF(G, g, q));
+            if (motif_id == 3281){
+                System.out.println("sdf");
+            }
         }else{
             result = binomialCDF(G, g, q);
 
             result = -Math.log(result);
         }
+
+
 
         if ( (Double.isNaN(result)) || (result < 0) ){
             result = 0;

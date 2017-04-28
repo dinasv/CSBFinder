@@ -14,8 +14,6 @@ import java.util.*;
  */
 public class MotifFinder {
 
-    private HashMap<String, String> cog_fun_cat;
-
     private ArrayList<String> cog_words_ids;
 
     private boolean count_by_keys;
@@ -87,7 +85,9 @@ public class MotifFinder {
         System.out.println("Extracting motifs");
         Sagot s = new Sagot(max_error, max_motif_gap, max_deletion, max_insertion, quorum1, quorum2, min_motif_length,
                 gap_char, wc_char, unknown_char, dataset_suffix_tree, motif_tree, count_by_keys,  utils, memory_saving_mode);
-        s.removeRedundantMotifs();
+        if (input_motifs_file_name == null) {
+            s.removeRedundantMotifs();
+        }
         ArrayList<Motif> motifs_nodes = s.getMotifs();
         System.out.println(motifs_nodes.size() + " motifs found");
 
@@ -113,8 +113,8 @@ public class MotifFinder {
 
                 PrintWriter motifs_catalog_file = new PrintWriter("output/motif_catalog_" + dataset_name + parameters
                                                 + ".txt", "UTF-8");
-                PrintWriter motifs_seq_ids_file = new PrintWriter("output/seqIDs_" + dataset_name + parameters
-                                                + ".txt", "UTF-8");
+                PrintWriter motifs_seq_ids_file = new PrintWriter("output/motif_catalog_" + dataset_name + parameters
+                                                + "_occs.txt", "UTF-8");
 
                 printMotifs(motifs, motifs_catalog_file, motifs_seq_ids_file, max_insertion, max_error, max_deletion, utils);
 
@@ -222,8 +222,30 @@ public class MotifFinder {
             count += 1;
 
             motifs_seq_ids_file.print("motif_" + motif.getMotif_id() + "\t");
+            /*
             for (int seq_id : motif.get_occs_keys()){
                 motifs_seq_ids_file.print(seq_id + "\t");
+            }*/
+            HashMap<Integer, String> occ_seq_and_location = new HashMap<>();
+            for (Occurrence occ : motif.get_occs()){
+                OccurrenceNode occ_node = occ.getNodeOcc();
+                if (occ.getEdge() != null){
+                    Edge edge = occ.getEdge();
+                    occ_node = (OccurrenceNode) edge.getDest();
+                }
+                int occ_length = occ.getLength();
+                for (Map.Entry<Integer, ArrayList<String>> entry :  occ_node.getResults().entrySet()) {
+                    int seq_id = entry.getKey();
+                    String word_id = entry.getValue().get(0);
+                    word_id += "_l" + occ_length;
+                    occ_seq_and_location.put(seq_id, word_id);
+
+                }
+            }
+            for (Map.Entry<Integer, String> entry :  occ_seq_and_location.entrySet()) {
+                int seq = entry.getKey();
+                String word_id = entry.getValue();
+                motifs_seq_ids_file.print("seq" + seq + "_" + word_id + "\t");
             }
             motifs_seq_ids_file.print("\n");
 

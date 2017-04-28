@@ -361,6 +361,10 @@ public class Sagot {
             diff_occs_count = extended_motif_node.getOccsIndexCount();
         }
 
+        if (extended_motif_node.getMotifKey() == 1652){
+            System.out.println("motif " + extended_motif_node.getMotifKey() + " count: " + diff_occs_count);
+        }
+
         if (exact_occs_count >= q1 && diff_occs_count >= q2) {
             int ret;
             if (memory_saving_mode){
@@ -375,9 +379,13 @@ public class Sagot {
                 if (type.equals("motif")) {
                     if (extended_motif_node.getMotifKey()>0) {
                         Motif new_motif = new Motif(extended_motif_node.getMotifKey(), extended_motif,
-                                extended_motif.split("\\|"), extended_motif_length, extended_motif_node.getOccKeys(),
+                                extended_motif.split("\\|"), extended_motif_length,
+                                extended_motif_node.getOccKeys(), extended_motif_node.getOccs(),
                                 extended_motif_node.getExact_occs_conut());
                         motifs.put(extended_motif, new_motif);
+                        if (extended_motif_node.getMotifKey() == 1652){
+                            System.out.println("motif 1652 added");
+                        }
                     }
                 } else if (type.equals("enumeration")) {
                     if (alpha != wildcard_char) {
@@ -387,7 +395,8 @@ public class Sagot {
                             if (diff_occs_count > ret) {// diff_occ_count >= ret always
                                 Motif new_motif = new Motif(extended_motif_node.getMotifKey(), extended_motif,
                                         extended_motif.split("\\|"), extended_motif_length,
-                                        extended_motif_node.getOccKeys(), extended_motif_node.getExact_occs_conut());
+                                        extended_motif_node.getOccKeys(), extended_motif_node.getOccs(),
+                                        extended_motif_node.getExact_occs_conut());
                                 motifs.put(extended_motif, new_motif);
 
                                 if (motifs.size() % 1000 == 0){
