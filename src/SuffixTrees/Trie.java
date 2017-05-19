@@ -196,4 +196,8 @@ public class Trie {
             return second;
         }
     }
+
+    public String getType(){
+        return type;
+    }
 }

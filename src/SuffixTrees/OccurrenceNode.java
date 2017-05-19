@@ -137,38 +137,6 @@ public class OccurrenceNode extends SuffixNode {
         return indexes_counter;
     }
 
-    public static void multimapAddSet(HashMap<Integer, ArrayList<String>> multimap, HashMap<Integer, String> data){
-        for (Map.Entry<Integer, String> entry : data.entrySet()) {
-            int key = entry.getKey();
-            ArrayList<String> indexSet =  multimap.get(key);
-            if (indexSet == null) {
-                indexSet = new ArrayList<String>();
-                indexSet.add(entry.getValue());
-                multimap.put(key, indexSet);
-            }
-        }
-
-    }
-
-    public static void multimapAddAllData(HashMap<Integer, ArrayList<String>>  multimap_to, HashMap<Integer, ArrayList<String>>  multimap_from ){
-        int indexes_counter = 0;
-        for (Map.Entry<Integer, ArrayList<String>> entry : multimap_from.entrySet()) {
-            int key = entry.getKey();
-
-            ArrayList<String> indexSet =  multimap_to.get(key);
-            if (indexSet == null) {
-                indexSet = new ArrayList<String>();
-                multimap_to.put(key, indexSet);
-            }
-
-            ArrayList indexSetFrom = entry.getValue();
-
-            indexSet.addAll(indexSetFrom);
-            //indexes_counter += indexSetToAdd.size();
-        }
-        //return indexes_counter;
-    }
-
     /**
      * Returns the number of results that are stored on this node and on its
      * children.

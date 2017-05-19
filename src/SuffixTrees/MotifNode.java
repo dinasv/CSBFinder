@@ -1,9 +1,7 @@
 package SuffixTrees;
 
 import Main.Occurrence;
-import Main.Sagot;
 
-import java.math.BigDecimal;
 import java.util.*;
 
 /**
@@ -202,10 +200,6 @@ public class MotifNode implements Comparable<MotifNode> {
         return infix_count;
     }
 
-    public void increment_infix_count(int val){
-        infix_count += val;
-    }
-
     public int getSuffix_count(){
         return suffix_count;
     }
@@ -218,16 +212,8 @@ public class MotifNode implements Comparable<MotifNode> {
         prefix_count = val;
     }
 
-    public void increment_suffix_count(int val){
-        suffix_count += val;
-    }
-
     public int getOccsIndexCount(){
         return occsIndexCount;
-    }
-
-    public void setOccsIndexCount(int val){
-        occsIndexCount = val;
     }
 
     public void incrementOccsCount(int val){
@@ -306,7 +292,7 @@ public class MotifNode implements Comparable<MotifNode> {
         return exact_occs_conut;
     }
 
-    public void setExact_occs_conut(int exact_occs_conut) {
+    public void setExact_occs_count(int exact_occs_conut) {
         this.exact_occs_conut = exact_occs_conut;
     }
 }

@@ -7,12 +7,13 @@ import java.util.*;
 import Utils.*;
 
 /**
- * Extension of SPELLER algorithm described in "Spelling approximate repeated or common motifs using a suffix tree"
- * by M. Sagot, 1998
+ * Suffix Tree based algorithm for motif discovery
  * Search for approximate motifs appearing in at least q2 input sequences.
  * The motif must occur with no errors in q1 input sequences.
  */
-public class Sagot {
+public class OGMFinder {
+    public static long count_nodes_in_motif_tree;
+    public static long count_nodes_in_data_tree;
     private static int max_error;
     private static int max_motif_wildcard;
     private static int max_deletion;
@@ -35,10 +36,12 @@ public class Sagot {
 
     int total_chars_in_data;
     Utils utils;
+    Writer writer;
 
-    public Sagot(int max_error, int max_motif_wildcard, int max_deletion, int max_insertion, int quorum1, int quorum2,
-                 int min_motif_length, int gap_char, int wildcard_char, int unkown_cog_char,
-                 GeneralizedSuffixTree data_t, Trie motif_trie, boolean count_by_keys, Utils utils, boolean memory_saving_mode){
+    public OGMFinder(int max_error, int max_motif_wildcard, int max_deletion, int max_insertion, int quorum1, int quorum2,
+                     int min_motif_length, int gap_char, int wildcard_char, int unkown_cog_char,
+                     GeneralizedSuffixTree data_t, Trie motif_trie, boolean count_by_keys, Utils utils,
+                     boolean memory_saving_mode, Writer writer){
 
         motifs = new HashMap<>();
         this.max_error = max_error;
@@ -57,9 +60,13 @@ public class Sagot {
         this.utils = utils;
         last_motif_key = 0;
         this.memory_saving_mode = memory_saving_mode;
+        this.writer = writer;
+
+        count_nodes_in_motif_tree = 0;
+        count_nodes_in_data_tree = 0;
 
         MotifNode motif_tree_root;
-        if (memory_saving_mode){
+        if (motif_trie == null){
             motif_tree_root = new MotifNode("enumeration");
             motif_tree_root.setKey(++last_motif_key);
         }else {
@@ -80,9 +87,10 @@ public class Sagot {
         OccurrenceNode data_tree_root = (OccurrenceNode) data_tree.getRoot();
         //occurrence of empty string
         Occurrence empty_occ = new Occurrence(data_tree_root, null, -1, 0, 0);
+        count_nodes_in_data_tree ++;
 
         motif_node.addOcc(empty_occ, max_insertion);
-        if (memory_saving_mode){
+        if (motif_node.getType().equals("enumeration")){
             spellMotifsVirtually(motif_node, data_tree_root, -1, null, "", 0, 0);
         }else {
             spellMotifs(motif_node, "", 0, 0);
@@ -227,6 +235,7 @@ public class Sagot {
                 }
             }
         }
+        count_nodes_in_motif_tree ++;
 
         return max_num_of_diff_occ;
     }
@@ -267,8 +276,10 @@ public class Sagot {
                 if (data_tree_target_node.getCount_by_keys() >= q1) {
 
                     if (alpha == unkown_cog_char) {
-                        spellMotifsVirtually(motif_node, data_node, data_edge_index + 1, data_edge,
-                                motif, motif_length, motif_wildcard_count);
+                        if (q1 == 0 && !motif.startsWith("X")) {
+                            //spellMotifsVirtually(motif_node, data_node, data_edge_index + 1, data_edge,
+                            //motif, motif_length, motif_wildcard_count);
+                        }
                     } else {
 
                         target_node = new MotifNode("enumeration");
@@ -282,7 +293,6 @@ public class Sagot {
                         }
                     }
                 }
-
             }
         }else{//data_edge_index>=1 && data_edge_index < data_edge_label.get_length()
             data_edge_label = data_edge.getLabel();
@@ -292,8 +302,8 @@ public class Sagot {
 
             if (data_tree_target_node.getCount_by_keys() >= q1) {
                 if (alpha == unkown_cog_char) {
-                    spellMotifsVirtually(motif_node, data_node, data_edge_index + 1, data_edge,
-                            motif, motif_length, motif_wildcard_count);
+                    //spellMotifsVirtually(motif_node, data_node, data_edge_index + 1, data_edge,
+                            //motif, motif_length, motif_wildcard_count);
                 } else {
 
                     target_node = new MotifNode("enumeration");
@@ -308,6 +318,8 @@ public class Sagot {
                 }
             }
         }
+
+        count_nodes_in_motif_tree ++;
 
         return max_num_of_diff_occ;
     }
@@ -352,7 +364,7 @@ public class Sagot {
                 exact_occs_count = curr_exact_occs_count;
             }
         }
-        extended_motif_node.setExact_occs_conut(exact_occs_count);
+        extended_motif_node.setExact_occs_count(exact_occs_count);
 
         int diff_occs_count;
         if (count_by_keys){
@@ -361,13 +373,10 @@ public class Sagot {
             diff_occs_count = extended_motif_node.getOccsIndexCount();
         }
 
-        if (extended_motif_node.getMotifKey() == 1652){
-            System.out.println("motif " + extended_motif_node.getMotifKey() + " count: " + diff_occs_count);
-        }
-
         if (exact_occs_count >= q1 && diff_occs_count >= q2) {
+            String type = extended_motif_node.getType();
             int ret;
-            if (memory_saving_mode){
+            if (type.equals("enumeration")){
                 ret = spellMotifsVirtually(extended_motif_node, data_node, data_edge_index, data_edge,
                         extended_motif, extended_motif_length, motif_wildcard_count);
             }else {
@@ -375,16 +384,17 @@ public class Sagot {
             }
 
             if (extended_motif_length - motif_wildcard_count >= min_motif_length) {
-                String type = extended_motif_node.getType();
                 if (type.equals("motif")) {
                     if (extended_motif_node.getMotifKey()>0) {
                         Motif new_motif = new Motif(extended_motif_node.getMotifKey(), extended_motif,
                                 extended_motif.split("\\|"), extended_motif_length,
                                 extended_motif_node.getOccKeys(), extended_motif_node.getOccs(),
                                 extended_motif_node.getExact_occs_conut());
-                        motifs.put(extended_motif, new_motif);
-                        if (extended_motif_node.getMotifKey() == 1652){
-                            System.out.println("motif 1652 added");
+
+                        if (memory_saving_mode){
+                            writer.printMotif(new_motif, utils);
+                        }else {
+                            motifs.put(extended_motif, new_motif);
                         }
                     }
                 } else if (type.equals("enumeration")) {
@@ -397,11 +407,18 @@ public class Sagot {
                                         extended_motif.split("\\|"), extended_motif_length,
                                         extended_motif_node.getOccKeys(), extended_motif_node.getOccs(),
                                         extended_motif_node.getExact_occs_conut());
-                                motifs.put(extended_motif, new_motif);
 
-                                if (motifs.size() % 1000 == 0){
-                                    System.out.println("extracted " + motifs.size() + " so far");
+                                if (memory_saving_mode){
+                                    writer.printMotif(new_motif, utils);
+                                }else {
+                                    motifs.put(extended_motif, new_motif);
+
+                                    if (motifs.size() % 1000 == 0){
+                                        System.out.println("extracted " + motifs.size() + " so far");
+                                    }
                                 }
+
+
                             }
                         }
                     } else {
@@ -491,7 +508,6 @@ public class Sagot {
                     }
                 }
             }
-
         } else {//Edge is not null, the substring ends at the middle of the edge_occ, at index edge_index
             WordArray label = edge_occ.getLabel();
             //check the next char on the label, at edge_index+1
@@ -511,6 +527,7 @@ public class Sagot {
                 next_occ.add_insertion_index(occ.getLength());
                 next_occ.add_all_insertion_indexes(occ.get_insertion_indexes());
                 getExtendedOcc(extended_motif, next_occ, ch);
+                count_nodes_in_data_tree++;
             }
 
             //if the char is equal add anyway
@@ -584,12 +601,15 @@ public class Sagot {
                 next_edge_index = edge_index + 1;
             }
 
-
             if (make_insertion) {
-                String extended_occ_string = appendChar(occ.getSubstring(), next_ch);
-                Occurrence next_occ = new Occurrence(next_node, next_edge, next_edge_index, error, deletions, occ.get_insertion_indexes(), extended_occ_string, occ.getLength() + 1);
-                next_occ.add_insertion_index(occ.getLength());
-                getExtendedOcc(motif, next_occ, ch);
+                if (ch != next_ch) {
+                    String extended_occ_string = appendChar(occ.getSubstring(), next_ch);
+                    Occurrence next_occ = new Occurrence(next_node, next_edge, next_edge_index, error, deletions,
+                            occ.get_insertion_indexes(), extended_occ_string, occ.getLength() + 1);
+                    next_occ.add_insertion_index(occ.getLength());
+                    getExtendedOcc(motif, next_occ, ch);
+                    count_nodes_in_data_tree++;
+                }
             } else {
                 addOccToMotif(motif, occ, next_ch, next_node, next_edge, next_edge_index, curr_error, deletions);
             }
@@ -611,8 +631,11 @@ public class Sagot {
     private void addOccToMotif(MotifNode extended_motif, Occurrence occ, int next_ch, OccurrenceNode next_node,
                                Edge next_edge, int next_edge_index, int next_error, int next_deletions) {
         String extended_occ_string = appendChar(occ.getSubstring(), next_ch);
-        Occurrence next_occ = new Occurrence(next_node, next_edge, next_edge_index, next_error, next_deletions, occ.get_insertion_indexes(), extended_occ_string, occ.getLength()+1);
+        Occurrence next_occ = new Occurrence(next_node, next_edge, next_edge_index, next_error, next_deletions,
+                occ.get_insertion_indexes(), extended_occ_string, occ.getLength()+1);
         extended_motif.addOcc(next_occ, max_insertion);
+
+        count_nodes_in_data_tree++;
     }
 
 

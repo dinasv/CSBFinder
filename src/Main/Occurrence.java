@@ -27,8 +27,6 @@ public class Occurrence implements Comparable<Occurrence>{
     private int error;
     //number of deletions in the Occurrence (gap chars)
     private int deletions;
-    //number of deletions in the Occurrence
-    //private int insertions;
 
     private ArrayList<Integer> insertion_indexes;
 
