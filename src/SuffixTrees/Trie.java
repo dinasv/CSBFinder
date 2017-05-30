@@ -32,6 +32,14 @@ public class Trie {
         return root;
     }
 
+    public MotifNode put(WordArray str, Utils utils, int key){
+        MotifNode last_node = put(str, root, true, utils);
+        if (last_node != null && type.equals("motif")){
+            last_node.setKey(key);
+        }
+        return last_node;
+    }
+
     public MotifNode put(WordArray str, Utils utils){
         return put(str, root, true, utils);
     }
@@ -187,5 +195,9 @@ public class Trie {
         public B getSecond() {
             return second;
         }
+    }
+
+    public String getType(){
+        return type;
     }
 }

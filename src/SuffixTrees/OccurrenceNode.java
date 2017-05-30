@@ -3,14 +3,14 @@ package SuffixTrees;
 import java.util.*;
 
 /**
- * Created by ASUS on 7/20/2016.
+ * Created by Dina on 7/20/2016.
  */
 public class OccurrenceNode extends SuffixNode {
 
     /**
      * Save for every string key in data, the position of the suffix of that string that ends at this node
      */
-    HashMap<Integer, ArrayList<String>> data;
+    private HashMap<Integer, ArrayList<String>> data;
 
     /**
      * The total number of <em>different</em> results that are stored in this
@@ -65,7 +65,7 @@ public class OccurrenceNode extends SuffixNode {
 
     }
 
-    void addIndexToSuffix(OccurrenceNode node, int key, int word_index, int index){
+    private void addIndexToSuffix(OccurrenceNode node, int key, int word_index, int index){
         OccurrenceNode iter = node.getSuffix();
         if (iter != null) {
             while (iter.getSuffix() != null) {
@@ -118,20 +118,7 @@ public class OccurrenceNode extends SuffixNode {
         return results;
     }
 
-    public static void multimapAddSet(HashMap<Integer, ArrayList<String>> multimap, HashMap<Integer, String> data){
-        for (Map.Entry<Integer, String> entry : data.entrySet()) {
-            int key = entry.getKey();
-            ArrayList<String> indexSet =  multimap.get(key);
-            if (indexSet == null) {
-                indexSet = new ArrayList<String>();
-                indexSet.add(entry.getValue());
-                multimap.put(key, indexSet);
-            }
-        }
-
-    }
-
-    public static int multimapAddAll(HashMap<Integer, ArrayList<String>>  multimap_to, HashMap<Integer, ArrayList<String>>  multimap_from ){
+    private static int multimapAddAll(HashMap<Integer, ArrayList<String>>  multimap_to, HashMap<Integer, ArrayList<String>>  multimap_from ){
         int indexes_counter = 0;
         for (Map.Entry<Integer, ArrayList<String>> entry : multimap_from.entrySet()) {
             int key = entry.getKey();
@@ -150,25 +137,6 @@ public class OccurrenceNode extends SuffixNode {
         return indexes_counter;
     }
 
-    public static void multimapAddAllData(HashMap<Integer, ArrayList<String>>  multimap_to, HashMap<Integer, ArrayList<String>>  multimap_from ){
-        int indexes_counter = 0;
-        for (Map.Entry<Integer, ArrayList<String>> entry : multimap_from.entrySet()) {
-            int key = entry.getKey();
-
-            ArrayList<String> indexSet =  multimap_to.get(key);
-            if (indexSet == null) {
-                indexSet = new ArrayList<String>();
-                multimap_to.put(key, indexSet);
-            }
-
-            ArrayList indexSetFrom = entry.getValue();
-
-            indexSet.addAll(indexSetFrom);
-            //indexes_counter += indexSetToAdd.size();
-        }
-        //return indexes_counter;
-    }
-
     /**
      * Returns the number of results that are stored on this node and on its
      * children.
@@ -176,12 +144,11 @@ public class OccurrenceNode extends SuffixNode {
      *
      * @throws IllegalStateException when this method is called without having called
      * computeAndCacheCount first
-     * @todo this should raise an exception when the subtree is changed but count
      * wasn't updated
      */
     public int getCount_by_keys() throws IllegalStateException {
         if (-1 == count_by_keys) {
-            throw new IllegalStateException("getCount_by_keys() shouldn't be called without calling computeCount() first");
+            throw new IllegalStateException("getCount_by_keys() shouldn't be called without calling computeAndCacheCount() first");
         }
 
         return count_by_keys;
@@ -189,7 +156,7 @@ public class OccurrenceNode extends SuffixNode {
 
     public int getCount_by_indexes() throws IllegalStateException {
         if (-1 == count_by_keys) {
-            throw new IllegalStateException("getCount_by_keys() shouldn't be called without calling computeCount() first");
+            throw new IllegalStateException("getCount_by_keys() shouldn't be called without calling computeAndCacheCount() first");
         }
 
         return count_by_indexes;
