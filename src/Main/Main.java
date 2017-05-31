@@ -2,15 +2,12 @@ package Main;
 
 import SuffixTrees.GeneralizedSuffixTree;
 import SuffixTrees.Trie;
-import Utils.COG;
 import Utils.Utils;
-import Utils.Formulas;
 
 import java.io.*;
 import java.util.*;
 import java.util.logging.FileHandler;
 import java.util.logging.LogManager;
-import java.util.logging.Logger;
 import java.util.logging.SimpleFormatter;
 
 import com.beust.jcommander.JCommander;
@@ -30,14 +27,15 @@ public class Main {
     int max_insertion = 0;
     @Parameter(names={"--wildcard", "-wc"}, description = "maximal number of wildcards allowed")
     int max_wildcards = 0;
-    @Parameter(names={"--quorum1", "-q1"}, description = "exact occurrences quorum")
+    @Parameter(names={"--quorum1", "-q1"}, description = "exact instance quorum")
     int quorum1 = 1;
-    @Parameter(names={"--quorum2", "-q2"}, description = "approximate occurrences quorum")
+    @Parameter(names={"--quorum2", "-q2"}, description = "approximate instance quorum")
     int quorum2 = 1;
     @Parameter(names={"--minlength", "-l"}, description = "minimal motif length")
     int min_motif_length = 2;
-    @Parameter(names={"--keys", "-keys"}, description = "if true, count by sequence keys", arity = 1)
-    boolean count_by_keys = true;
+    @Parameter(names={"--boolean-count", "-bcount"}, description = "if true, count one instance per input string",
+            arity = 1)
+    boolean bool_count = true;
     @Parameter(names={"--datasetname", "-ds"}, description = "dataset name")
     String dataset_name = "dataset1";
     @Parameter(names={"--input", "-i"}, description = "input file name", required = true)
@@ -81,10 +79,9 @@ public class Main {
 
             long startTime = System.nanoTime();
             min_motif_length = 2 + max_error;
-            //System.out.println(min_motif_length);
-            MotifFinder mf = new MotifFinder();
-            mf.findMotifs(max_error, max_wildcards, max_deletion, max_insertion, quorum1, quorum2, min_motif_length,
-                    count_by_keys, dataset_name, input_file_name, input_motifs_file_name, memory_saving_mode, utils, debug);
+
+            findMotifs(max_error, max_wildcards, max_deletion, max_insertion, quorum1, quorum2, min_motif_length,
+                    bool_count, dataset_name, input_file_name, input_motifs_file_name, memory_saving_mode, utils, debug);
 
             float estimatedTime = (float) (System.nanoTime() - startTime) / (float) Math.pow(10, 9);
             if (debug) {
@@ -96,6 +93,122 @@ public class Main {
                 }
             }
 
+        }
+    }
+
+    /**
+     * Finds the motifs using OGMFinder and prints them
+     *
+     * @param max_error
+     * @param max_motif_gap
+     * @param max_deletion
+     * @param quorum1
+     * @param min_motif_length
+     * @return
+     * @throws Exception
+     */
+
+    public void findMotifs(int max_error, int max_motif_gap, int max_deletion, int max_insertion,
+                           int quorum1, int quorum2, int min_motif_length, boolean count_by_keys,
+                           String dataset_name, String input_file_name, String input_motifs_file_name,
+                           boolean memory_saving_mode, Utils utils, boolean debug)
+            throws Exception {
+
+        //wild card
+        int wc_char = 0;
+        utils.cog_to_index.put("*", wc_char);
+        utils.index_to_cog.add("*");
+
+        //gap
+        int gap_char = 1;
+        utils.cog_to_index.put("_", gap_char);
+        utils.index_to_cog.add("_");
+
+        //unkown cog
+        int unknown_char = 2;
+        utils.cog_to_index.put("X", unknown_char);
+        utils.index_to_cog.add("X");
+
+        long startTime = System.nanoTime();
+
+        GeneralizedSuffixTree dataset_suffix_tree = new GeneralizedSuffixTree();
+        utils.logger.info("Building Data tree");
+
+        utils.read_and_build_cog_words_tree(input_file_name, dataset_suffix_tree);
+
+        Trie motif_tree = null;
+        if (input_motifs_file_name == null) {
+            if (!memory_saving_mode) {
+                motif_tree = new Trie("enumeration");
+                utils.buildMotifTreeFromDataTree(motif_tree, dataset_suffix_tree, quorum1);
+            }
+        } else {
+            motif_tree = new Trie("motif");
+            String path = "input/" + input_motifs_file_name + ".txt";
+            utils.buildMotifsTreeFromFile(path, motif_tree);
+        }
+
+        utils.read_cog_info_table();
+
+        Writer writer = new Writer(max_error, max_motif_gap, max_deletion, max_insertion, quorum1, quorum2,
+                min_motif_length, dataset_name, debug);
+
+        System.out.println("Extracting motifs");
+
+        OGMFinder ogmFinder = new OGMFinder(max_error, max_motif_gap, max_deletion, max_insertion, quorum1, quorum2, min_motif_length,
+                gap_char, wc_char, unknown_char, dataset_suffix_tree, motif_tree, count_by_keys, utils,
+                memory_saving_mode, writer);
+
+        if (input_motifs_file_name == null) {
+            if (!debug && !memory_saving_mode) {
+                ogmFinder.removeRedundantMotifs();
+                System.out.println("Removing redundant motifs");
+            }
+        }
+
+        if (!debug) {
+            if (!memory_saving_mode) {
+                ArrayList<Motif> motifs_nodes = ogmFinder.getMotifs();
+
+                for (Motif motif : motifs_nodes) {
+                    writer.printMotif(motif, utils);
+                }
+            }
+
+            writer.closeFiles();
+        }
+
+        System.out.println(writer.getCountPrintedMotifs() + " motifs found");
+
+        float estimatedTime = (float) (System.nanoTime() - startTime) / (float) Math.pow(10, 9);
+        utils.logger.info("Took " + estimatedTime + " seconds");
+
+        System.out.println("Took " + estimatedTime + " seconds");
+
+        if (debug) {
+            try {
+                if (max_insertion > 0) {
+                    PrintWriter output = new PrintWriter(new FileOutputStream(new File("insertions.txt"), true));
+                    output.println("err=" + max_insertion + "\t" + "q=" + quorum2);
+                    output.println("Time" + "\t" + estimatedTime);
+                    output.println("T_M nodes" + "\t" + ogmFinder.count_nodes_in_motif_tree);
+                    output.println("T_D nodes" + "\t" + ogmFinder.count_nodes_in_data_tree);
+                    output.println("Motifs" + "\t" + writer.getCountPrintedMotifs());
+
+                    output.close();
+                }
+                if (max_error > 0) {
+                    PrintWriter output = new PrintWriter(new FileOutputStream(new File("substitutions.txt"), true));
+                    output.println("err=" + max_error + "\t" + "q=" + quorum2);
+                    output.println("Time" + "\t" + estimatedTime);
+                    output.println("T_M nodes" + "\t" + ogmFinder.count_nodes_in_motif_tree);
+                    output.println("T_D nodes" + "\t" + ogmFinder.count_nodes_in_data_tree);
+                    output.println("Motifs" + "\t" + writer.getCountPrintedMotifs());
+                    output.close();
+                }
+            } catch (IOException e) {
+                // do something
+            }
         }
     }
 

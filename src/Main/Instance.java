@@ -1,31 +1,31 @@
 package Main;
 
-import SuffixTrees.OccurrenceNode;
+import SuffixTrees.InstanceNode;
 import SuffixTrees.Edge;
 
 import java.util.ArrayList;
 
 /**
- * The motif occurence starts from the root and ends in tha concat of lables to node occ + the label on the edge
+ * The motif instance starts from the root and ends in tha concat of lables to node instanceNode + the label on the edge
  * that starts with ch and ends in edge_index
  */
-public class Occurrence implements Comparable<Occurrence>{
+public class Instance implements Comparable<Instance>{
     /**
-     * The motif occurence starts from the root and ends in node occ + edge label until edge_index
+     * The motif instance starts from the root and ends in node instanceNode + edge label until edge_index
      */
-    private OccurrenceNode occ;
+    private InstanceNode instanceNode;
     /**
-     * outgoing edge from occ
+     * outgoing edge from instanceNode
      */
     private Edge edge;
     /**
-     * The occurrence ends at edge_index (concat of strings from root to node occ + label[0:edge_index], edge_index
-     * included) if edge_index = -1 than it ends in the node occ
+     * The instance ends at edge_index (concat of strings from root to node instanceNode + label[0:edge_index], edge_index
+     * included) if edge_index = -1 than it ends in the node instanceNode
      */
     private int edge_index;
-    //The error between motif and the Occurrence
+    //The error between motif and the Instance
     private int error;
-    //number of deletions in the Occurrence (gap chars)
+    //number of deletions in the Instance (gap chars)
     private int deletions;
 
     private ArrayList<Integer> insertion_indexes;
@@ -33,8 +33,8 @@ public class Occurrence implements Comparable<Occurrence>{
     private String substring;
     private int length;
 
-    public Occurrence(OccurrenceNode occ, Edge e, int edge_index, int error, int deletions, ArrayList<Integer> insertion_indexes, String substring, int length){
-        this.occ = occ;
+    public Instance(InstanceNode instanceNode, Edge e, int edge_index, int error, int deletions, ArrayList<Integer> insertion_indexes, String substring, int length){
+        this.instanceNode = instanceNode;
         this.edge = e;
         this.edge_index = edge_index;
         this.error = error;
@@ -46,8 +46,8 @@ public class Occurrence implements Comparable<Occurrence>{
         this.insertion_indexes.addAll(insertion_indexes);
     }
 
-    public Occurrence(OccurrenceNode occ, Edge e, int edge_index, int error, int deletions){
-        this.occ = occ;
+    public Instance(InstanceNode instanceNode, Edge e, int edge_index, int error, int deletions){
+        this.instanceNode = instanceNode;
         this.edge = e;
         this.edge_index = edge_index;
         this.error = error;
@@ -57,8 +57,8 @@ public class Occurrence implements Comparable<Occurrence>{
         this.insertion_indexes = new ArrayList<>();
     }
 
-    public Occurrence(int deletions, String substring){
-        occ = null;
+    public Instance(int deletions, String substring){
+        instanceNode = null;
         edge = null;
         edge_index = -2;
         error = -1;
@@ -66,8 +66,8 @@ public class Occurrence implements Comparable<Occurrence>{
         this.substring = substring;
     }
 
-    public OccurrenceNode getNodeOcc(){
-        return occ;
+    public InstanceNode getNodeInstance(){
+        return instanceNode;
     }
 
     public int getError(){
@@ -102,25 +102,25 @@ public class Occurrence implements Comparable<Occurrence>{
     }
 
     @Override
-    public int compareTo(Occurrence o) {
-        OccurrenceNode occ_node_other = o.getNodeOcc();
+    public int compareTo(Instance o) {
+        InstanceNode instance_node_other = o.getNodeInstance();
         if (o.getEdge() != null) {
-            occ_node_other = (OccurrenceNode) o.getEdge().getDest();
+            instance_node_other = (InstanceNode) o.getEdge().getDest();
         }
 
-        OccurrenceNode occ_node_this = occ;
+        InstanceNode instance_node_this = instanceNode;
         if (edge != null) {
-            occ_node_this = (OccurrenceNode) edge.getDest();
+            instance_node_this = (InstanceNode) edge.getDest();
         }
 
-        return occ_node_other.getCount_by_keys() - occ_node_this.getCount_by_keys();
+        return instance_node_other.getCount_by_keys() - instance_node_this.getCount_by_keys();
     }
     @Override
     public boolean equals(Object other) {
         if (other == null) return false;
         if (other == this) return true;
-        if (!(other instanceof Occurrence)) return false;
-        return ((Occurrence) other).getNodeOcc().getCount_by_keys() == occ.getCount_by_keys();
+        if (!(other instanceof Instance)) return false;
+        return ((Instance) other).getNodeInstance().getCount_by_keys() == instanceNode.getCount_by_keys();
     }
 
     public int getInsertions() {

@@ -1,6 +1,6 @@
 package Utils;
 
-import COGAlphabet.WordArray;
+import Words.WordArray;
 import Main.MotifReader;
 import SuffixTrees.*;
 import org.apache.commons.lang3.StringUtils;
@@ -259,17 +259,17 @@ public class Utils {
      */
     public void buildMotifTreeFromDataTree(Trie trie, GeneralizedSuffixTree suffix_tree, int q){
         suffix_tree.computeCount();
-        OccurrenceNode data_tree_node = (OccurrenceNode)suffix_tree.getRoot();
+        InstanceNode data_tree_node = (InstanceNode)suffix_tree.getRoot();
         MotifNode trie_node = trie.getRoot();
         //add the nodes recursively
         addMotifNode(trie, data_tree_node, trie_node, q);
     }
 
-    private void addMotifNode(Trie trie, OccurrenceNode data_tree_src_node, MotifNode trie_src_node, int q){
+    private void addMotifNode(Trie trie, InstanceNode data_tree_src_node, MotifNode trie_src_node, int q){
         HashMap<Integer, Edge> outgoing_edges = data_tree_src_node.getEdges();
         MotifNode trie_target_node;
         for (Edge edge : outgoing_edges.values()) {
-            OccurrenceNode data_tree_target_node = (OccurrenceNode) edge.getDest();
+            InstanceNode data_tree_target_node = (InstanceNode) edge.getDest();
             if (data_tree_target_node.getCount_by_keys() >= q) {
                 WordArray edge_label = edge.getLabel();
                 String label = (edge_label.to_string(this));

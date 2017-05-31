@@ -1,13 +1,12 @@
-package COGAlphabet;
+package Words;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.Arrays;
 import Utils.*;
 
 /**
  * Created by Dina on 6/2/2016.
- * WordArray object represents a "word". The chars of the word are BitSet objects.
+ * WordArray object represents a "word". The chars of the word are integers.
  * It contains a pointer to wordArray (the "word"), and indexes that represent a substring of this "word"
  */
 public class WordArray implements Serializable{

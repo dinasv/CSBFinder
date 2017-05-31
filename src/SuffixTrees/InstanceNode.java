@@ -5,7 +5,7 @@ import java.util.*;
 /**
  * Created by Dina on 7/20/2016.
  */
-public class OccurrenceNode extends SuffixNode {
+public class InstanceNode extends SuffixNode {
 
     /**
      * Save for every string key in data, the position of the suffix of that string that ends at this node
@@ -35,12 +35,12 @@ public class OccurrenceNode extends SuffixNode {
     private HashMap<Integer, ArrayList<String>> results;
 
 
-    public OccurrenceNode(){
+    public InstanceNode(){
         results = new HashMap<Integer, ArrayList<String>>();
         data = new HashMap<Integer, ArrayList<String>>();
     }
 
-    public OccurrenceNode(OccurrenceNode other){
+    public InstanceNode(InstanceNode other){
         super(other);
 
         results = new HashMap<Integer, ArrayList<String>>();
@@ -65,8 +65,8 @@ public class OccurrenceNode extends SuffixNode {
 
     }
 
-    private void addIndexToSuffix(OccurrenceNode node, int key, int word_index, int index){
-        OccurrenceNode iter = node.getSuffix();
+    private void addIndexToSuffix(InstanceNode node, int key, int word_index, int index){
+        InstanceNode iter = node.getSuffix();
         if (iter != null) {
             while (iter.getSuffix() != null) {
                 index++;
@@ -108,7 +108,7 @@ public class OccurrenceNode extends SuffixNode {
         HashMap<Integer, Edge> edges = getEdges();
         for (Map.Entry<Integer, Edge> entry : edges.entrySet()) {
             Edge e = entry.getValue();
-            OccurrenceNode destNode = (OccurrenceNode)e.getDest();
+            InstanceNode destNode = (InstanceNode)e.getDest();
             HashMap<Integer, ArrayList<String>> dest_data_indexes = destNode.computeAndCacheCountRecursive();
 
             count_by_indexes += multimapAddAll(results, dest_data_indexes);
@@ -169,8 +169,8 @@ public class OccurrenceNode extends SuffixNode {
         return results;
     }
 
-    public OccurrenceNode getSuffix() {
-        return (OccurrenceNode)super.getSuffix();
+    public InstanceNode getSuffix() {
+        return (InstanceNode)super.getSuffix();
     }
 
 }

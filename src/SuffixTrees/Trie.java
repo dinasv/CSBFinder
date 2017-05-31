@@ -1,9 +1,6 @@
 package SuffixTrees;
-import COGAlphabet.WordArray;
-import Main.Motif;
+import Words.WordArray;
 import Utils.Utils;
-
-import java.util.ArrayList;
 
 /**
  * Represents a Trie of string - each edge has only 1 char

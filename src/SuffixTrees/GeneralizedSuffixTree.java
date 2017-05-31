@@ -1,9 +1,8 @@
 package SuffixTrees;
 
-import COGAlphabet.WordArray;
+import Words.WordArray;
 
 import java.io.Serializable;
-import java.util.*;
 
 /**
  * Based on https://github.com/abahgat/suffixtree code
@@ -61,7 +60,7 @@ public class GeneralizedSuffixTree  implements Serializable{
     //private ArrayList<String> index_to_cog;
 
     public GeneralizedSuffixTree() throws Exception {
-        root = new OccurrenceNode();
+        root = new InstanceNode();
 
         activeLeaf = root;
     }
@@ -208,7 +207,7 @@ public class GeneralizedSuffixTree  implements Serializable{
 
         //add recursively the key and indexes to the nodes corresponding to this string
 
-        ((OccurrenceNode)fullStringNode).addDataIndex(key, word_index, 0);
+        ((InstanceNode)fullStringNode).addDataIndex(key, word_index, 0);
 
 
     }
@@ -262,7 +261,7 @@ public class GeneralizedSuffixTree  implements Serializable{
                 assert (label.starts_with(str_copy) );
 
                 // build a new node
-                SuffixNode r = new OccurrenceNode();
+                SuffixNode r = new InstanceNode();
                 // build a new edge
                 Edge newedge = new Edge(str_copy, r);
 
@@ -296,7 +295,7 @@ public class GeneralizedSuffixTree  implements Serializable{
                     return new Pair<Boolean, SuffixNode>(true, s);
                 } else if (e.getLabel().starts_with(remainder)){
                     // need to split as above
-                    SuffixNode newNode = new OccurrenceNode();
+                    SuffixNode newNode = new InstanceNode();
                     //newNode.addRef(key);
                     if (fullStringNode == null){
                         fullStringNode = newNode;
@@ -407,7 +406,7 @@ public class GeneralizedSuffixTree  implements Serializable{
                     leaf = (SuffixNode)tempEdge.getDest();
                 } else {
                     // must build a new leaf
-                    leaf = new OccurrenceNode();
+                    leaf = new InstanceNode();
                     //leaf.addRef(key);
 
                     if (fullStringNode == null){
@@ -473,7 +472,7 @@ public class GeneralizedSuffixTree  implements Serializable{
 
 
     public int computeCount() {
-        return ((OccurrenceNode)root).computeAndCacheCount();
+        return ((InstanceNode)root).computeAndCacheCount();
     }
 
 

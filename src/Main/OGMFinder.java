@@ -1,6 +1,6 @@
 package Main;
 
-import COGAlphabet.WordArray;
+import Words.WordArray;
 import SuffixTrees.*;
 
 import java.util.*;
@@ -82,14 +82,14 @@ public class OGMFinder {
     private void findMotifs(MotifNode motif_node) {
 
         data_tree.computeCount();
-        total_chars_in_data = ((OccurrenceNode) data_tree.getRoot()).getCount_by_indexes();
+        total_chars_in_data = ((InstanceNode) data_tree.getRoot()).getCount_by_indexes();
 
-        OccurrenceNode data_tree_root = (OccurrenceNode) data_tree.getRoot();
+        InstanceNode data_tree_root = (InstanceNode) data_tree.getRoot();
         //occurrence of empty string
-        Occurrence empty_occ = new Occurrence(data_tree_root, null, -1, 0, 0);
+        Instance empty_instance = new Instance(data_tree_root, null, -1, 0, 0);
         count_nodes_in_data_tree ++;
 
-        motif_node.addOcc(empty_occ, max_insertion);
+        motif_node.addInstance(empty_instance, max_insertion);
         if (motif_node.getType().equals("enumeration")){
             spellMotifsVirtually(motif_node, data_tree_root, -1, null, "", 0, 0);
         }else {
@@ -112,11 +112,11 @@ public class OGMFinder {
     }
 
     /**
-     * Remove motifs that are suffixes of existing motifs, and has the same number of occurrences
+     * Remove motifs that are suffixes of existing motifs, and has the same number of instances
      * Makes sure that the motifs are left maximal
      * If a motif passes the quorum1, all its sub-motifs also pass the quorum1
-     * If a (sub-motif occs count = motif occs count) : the sub-motif is always a part of the larger motif
-     * Therefore it is sufficient to remove each motif suffix if it has the same occ count
+     * If a (sub-motif instance count = motif instance count) : the sub-motif is always a part of the larger motif
+     * Therefore it is sufficient to remove each motif suffix if it has the same instance count
      */
     public void removeRedundantMotifs() {
         ArrayList<String> motifs_to_remove = new ArrayList<String>();
@@ -129,8 +129,8 @@ public class OGMFinder {
             Motif suffix = motifs.get(suffix_str);
 
             if (suffix != null){
-                int motif_count = motif.getOccCount();
-                int suffix_count = suffix.getOccCount();
+                int motif_count = motif.get_instance_count();
+                int suffix_count = suffix.get_instance_count();
                 if (suffix_count == motif_count){
                     motifs_to_remove.add(suffix_str);
                 }
@@ -193,17 +193,17 @@ public class OGMFinder {
      */
     private int spellMotifs(MotifNode motif_node, String motif, int motif_length, int motif_wildcard_count) {
         if (motif_wildcard_count < max_motif_wildcard && motif_node.getType().equals("enumeration")) {
-            //add to motif_node an edge with "_", pointing to a new node that will save the occurrences
+            //add to motif_node an edge with "_", pointing to a new node that will save the instances
             addWildcardEdge(motif_node, true);
         }
 
-        ArrayList<Occurrence> Occs = motif_node.getOccs();
+        ArrayList<Instance> instances = motif_node.getInstances();
 
         HashMap<Integer, MotifNode> target_nodes = motif_node.getTarget_nodes();
 
-        //the maximal number of different occurrences, of one of the extended motifs
-        int max_num_of_diff_occ = -1;
-        int num_of_diff_occ = 0;
+        //the maximal number of different instances, of one of the extended motifs
+        int max_num_of_diff_instances = -1;
+        int num_of_diff_instance = 0;
 
         MotifNode target_node;
         for (Map.Entry<Integer, MotifNode> entry : target_nodes.entrySet()) {
@@ -213,11 +213,11 @@ public class OGMFinder {
 
             //go over edges that are not wild cards
             if (alpha!=wildcard_char) {
-                num_of_diff_occ = extendMotif(alpha, -1, null, null,
-                                    motif_wildcard_count, motif, target_node, motif_node, Occs, motif_length);
+                num_of_diff_instance = extendMotif(alpha, -1, null, null,
+                                    motif_wildcard_count, motif, target_node, motif_node, instances, motif_length);
 
-                if (num_of_diff_occ > max_num_of_diff_occ) {
-                    max_num_of_diff_occ = num_of_diff_occ;
+                if (num_of_diff_instance > max_num_of_diff_instances) {
+                    max_num_of_diff_instances = num_of_diff_instance;
                 }
                 //For memory saving, remove pointer to target node
                 motif_node.addTargetNode(alpha, null);
@@ -228,26 +228,26 @@ public class OGMFinder {
         if (motif_node.getType().equals("motif") || motif_wildcard_count < max_motif_wildcard) {
             target_node = motif_node.getTargetNode(wildcard_char);
             if (target_node != null) {
-                num_of_diff_occ = extendMotif(wildcard_char, -1, null, null,
-                            motif_wildcard_count + 1, motif, target_node, motif_node, Occs, motif_length);
-                if (num_of_diff_occ > max_num_of_diff_occ) {
-                    max_num_of_diff_occ = num_of_diff_occ;
+                num_of_diff_instance = extendMotif(wildcard_char, -1, null, null,
+                            motif_wildcard_count + 1, motif, target_node, motif_node, instances, motif_length);
+                if (num_of_diff_instance > max_num_of_diff_instances) {
+                    max_num_of_diff_instances = num_of_diff_instance;
                 }
             }
         }
         count_nodes_in_motif_tree ++;
 
-        return max_num_of_diff_occ;
+        return max_num_of_diff_instances;
     }
 
-    private int spellMotifsVirtually(MotifNode motif_node, OccurrenceNode data_node, int data_edge_index,
+    private int spellMotifsVirtually(MotifNode motif_node, InstanceNode data_node, int data_edge_index,
                                      Edge data_edge,
                                      String motif, int motif_length, int motif_wildcard_count) {
 
-        ArrayList<Occurrence> Occs = motif_node.getOccs();
-        //the maximal number of different occurrences, of one of the extended motifs
-        int max_num_of_diff_occ = -1;
-        int num_of_diff_occ = 0;
+        ArrayList<Instance> instances = motif_node.getInstances();
+        //the maximal number of different instances, of one of the extended motifs
+        int max_num_of_diff_instances = -1;
+        int num_of_diff_instances = 0;
 
         HashMap<Integer, Edge> data_node_edges = null;
 
@@ -255,7 +255,7 @@ public class OGMFinder {
         if (data_edge != null) {
             data_edge_label = data_edge.getLabel();
             if (data_edge_index >= data_edge_label.get_length()) {//we reached to the end of the edge
-                data_node = (OccurrenceNode) data_edge.getDest();
+                data_node = (InstanceNode) data_edge.getDest();
                 data_edge_index = -1;
                 data_edge = null;
             }
@@ -271,7 +271,7 @@ public class OGMFinder {
                 int alpha = entry.getKey();
                 String alpha_ch = utils.index_to_cog.get(alpha);
                 data_edge = entry.getValue();
-                OccurrenceNode data_tree_target_node = (OccurrenceNode) data_edge.getDest();
+                InstanceNode data_tree_target_node = (InstanceNode) data_edge.getDest();
 
                 if (data_tree_target_node.getCount_by_keys() >= q1) {
 
@@ -285,11 +285,11 @@ public class OGMFinder {
                         target_node = new MotifNode("enumeration");
                         target_node.setKey(++last_motif_key);
 
-                        num_of_diff_occ = extendMotif(alpha, data_edge_index + 1, data_node, data_edge,
-                                motif_wildcard_count, motif, target_node, motif_node, Occs, motif_length);
+                        num_of_diff_instances = extendMotif(alpha, data_edge_index + 1, data_node, data_edge,
+                                motif_wildcard_count, motif, target_node, motif_node, instances, motif_length);
 
-                        if (num_of_diff_occ > max_num_of_diff_occ) {
-                            max_num_of_diff_occ = num_of_diff_occ;
+                        if (num_of_diff_instances > max_num_of_diff_instances) {
+                            max_num_of_diff_instances = num_of_diff_instances;
                         }
                     }
                 }
@@ -298,7 +298,7 @@ public class OGMFinder {
             data_edge_label = data_edge.getLabel();
             int alpha = data_edge_label.get_index(data_edge_index);
 
-            OccurrenceNode data_tree_target_node = (OccurrenceNode) data_edge.getDest();
+            InstanceNode data_tree_target_node = (InstanceNode) data_edge.getDest();
 
             if (data_tree_target_node.getCount_by_keys() >= q1) {
                 if (alpha == unkown_cog_char) {
@@ -309,11 +309,11 @@ public class OGMFinder {
                     target_node = new MotifNode("enumeration");
                     target_node.setKey(++last_motif_key);
 
-                    num_of_diff_occ = extendMotif(alpha, data_edge_index + 1, data_node, data_edge,
-                            motif_wildcard_count, motif, target_node, motif_node, Occs, motif_length);
+                    num_of_diff_instances = extendMotif(alpha, data_edge_index + 1, data_node, data_edge,
+                            motif_wildcard_count, motif, target_node, motif_node, instances, motif_length);
 
-                    if (num_of_diff_occ > max_num_of_diff_occ) {
-                        max_num_of_diff_occ = num_of_diff_occ;
+                    if (num_of_diff_instances > max_num_of_diff_instances) {
+                        max_num_of_diff_instances = num_of_diff_instances;
                     }
                 }
             }
@@ -321,7 +321,7 @@ public class OGMFinder {
 
         count_nodes_in_motif_tree ++;
 
-        return max_num_of_diff_occ;
+        return max_num_of_diff_instances;
     }
 
 
@@ -333,15 +333,15 @@ public class OGMFinder {
      * @param motif_wildcard_count how many wildcard in the motif
      * @param motif                previous motif string, before adding alpha. i.e. COG1234|COG2000|
      * @param target_node          node the extended motif
-     * @param motif_node            node of motif
-     * @param Occ                  the occurrences of motif
+     * @param motif_node           node of motif
+     * @param Instances            the instances of motif
      * @param motif_length
-     * @return num of different occurrences of extended motif
+     * @return num of different instances of extended motif
      */
 
-    private int extendMotif(int alpha, int data_edge_index, OccurrenceNode data_node, Edge data_edge,
+    private int extendMotif(int alpha, int data_edge_index, InstanceNode data_node, Edge data_edge,
                             int motif_wildcard_count, String motif, MotifNode target_node,
-                            MotifNode motif_node, ArrayList<Occurrence> Occ, int motif_length) {
+                            MotifNode motif_node, ArrayList<Instance> Instances, int motif_length) {
 
         String extended_motif = appendChar(motif, alpha);
         MotifNode extended_motif_node = target_node;
@@ -356,24 +356,24 @@ public class OGMFinder {
         extended_motif_node.setSubstring(extended_motif);
         extended_motif_node.setSubstring_length(extended_motif_length);
 
-        int exact_occs_count = 0;
-        //go over all occurrences of the motif
-        for (Occurrence occ : Occ) {
-            int curr_exact_occs_count = getExtendedOcc(extended_motif_node, occ, alpha);
-            if (curr_exact_occs_count > 0){
-                exact_occs_count = curr_exact_occs_count;
+        int exact_instances_count = 0;
+        //go over all instances of the motif
+        for (Instance instance : Instances) {
+            int curr_exact_instance_count = getExtendedInstance(extended_motif_node, instance, alpha);
+            if (curr_exact_instance_count > 0){
+                exact_instances_count = curr_exact_instance_count;
             }
         }
-        extended_motif_node.setExact_occs_count(exact_occs_count);
+        extended_motif_node.setExact_instance_count(exact_instances_count);
 
-        int diff_occs_count;
+        int diff_instances_count;
         if (count_by_keys){
-            diff_occs_count = extended_motif_node.getOccKeysSize();
+            diff_instances_count = extended_motif_node.getInstanceKeysSize();
         }else {
-            diff_occs_count = extended_motif_node.getOccsIndexCount();
+            diff_instances_count = extended_motif_node.getInstanceIndexCount();
         }
 
-        if (exact_occs_count >= q1 && diff_occs_count >= q2) {
+        if (exact_instances_count >= q1 && diff_instances_count >= q2) {
             String type = extended_motif_node.getType();
             int ret;
             if (type.equals("enumeration")){
@@ -388,8 +388,8 @@ public class OGMFinder {
                     if (extended_motif_node.getMotifKey()>0) {
                         Motif new_motif = new Motif(extended_motif_node.getMotifKey(), extended_motif,
                                 extended_motif.split("\\|"), extended_motif_length,
-                                extended_motif_node.getOccKeys(), extended_motif_node.getOccs(),
-                                extended_motif_node.getExact_occs_conut());
+                                extended_motif_node.getInstanceKeys(), extended_motif_node.getInstances(),
+                                extended_motif_node.getExact_instance_count());
 
                         if (memory_saving_mode){
                             writer.printMotif(new_motif, utils);
@@ -401,12 +401,12 @@ public class OGMFinder {
                     if (alpha != wildcard_char) {
                         if (!(starts_with_wildcard(extended_motif))) {
                             //make sure that extended_motif is right maximal, if extended_motif has the same number of
-                            // occurrences as the longer motif, prefer the longer motif
-                            if (diff_occs_count > ret) {// diff_occ_count >= ret always
+                            // instances as the longer motif, prefer the longer motif
+                            if (diff_instances_count > ret) {// diff_instances_count >= ret always
                                 Motif new_motif = new Motif(extended_motif_node.getMotifKey(), extended_motif,
                                         extended_motif.split("\\|"), extended_motif_length,
-                                        extended_motif_node.getOccKeys(), extended_motif_node.getOccs(),
-                                        extended_motif_node.getExact_occs_conut());
+                                        extended_motif_node.getInstanceKeys(), extended_motif_node.getInstances(),
+                                        extended_motif_node.getExact_instance_count());
 
                                 if (memory_saving_mode){
                                     writer.printMotif(new_motif, utils);
@@ -423,178 +423,183 @@ public class OGMFinder {
                         }
                     } else {
                         if (ret <= 0) {
-                            diff_occs_count = -1;
+                            diff_instances_count = -1;
                         } else {
-                            diff_occs_count = ret;
+                            diff_instances_count = ret;
                         }
                     }
                 }
             }
         }
-        return diff_occs_count;
+        return diff_instances_count;
     }
 
     /**
-     * Extends occ, increments error depending on ch
+     * Extends instance, increments error depending on ch
      *
      * @param extended_motif extended motif node
-     * @param occ the current occurrence
-     * @param ch  the character  of the motif, need to check if the next char on the occurrence is equal
-     * @return list of all possible extended occurrences
+     * @param instance the current instance
+     * @param ch  the character  of the motif, need to check if the next char on the instance is equal
+     * @return list of all possible extended instances
      */
-    private int getExtendedOcc(MotifNode extended_motif, Occurrence occ, int ch) {
-        //values of current occurrence
-        OccurrenceNode node_occ = occ.getNodeOcc();
-        Edge edge_occ = occ.getEdge();
-        int edge_index = occ.getEdgeIndex();
-        int error = occ.getError();
-        int deletions = occ.getDeletions();
-        int insertions = occ.getInsertions();
+    private int getExtendedInstance(MotifNode extended_motif, Instance instance, int ch) {
+        //values of current instance
+        InstanceNode node_instance = instance.getNodeInstance();
+        Edge edge_instance = instance.getEdge();
+        int edge_index = instance.getEdgeIndex();
+        int error = instance.getError();
+        int deletions = instance.getDeletions();
+        int insertions = instance.getInsertions();
 
-        //values of the extended occurrence
+        //values of the extended instance
         int next_edge_index = edge_index;
-        Edge next_edge_occ = edge_occ;
-        OccurrenceNode next_node_occ = node_occ;
+        Edge next_edge_instance = edge_instance;
+        InstanceNode next_node_instance = node_instance;
 
-        int exact_occs_count = 0;
+        int exact_instance_count = 0;
 
-        //The substring ends at the current node_occ, edge_index = -1
-        if (edge_occ == null) {
-            //Go over all the edges from node_occ, see if the occurrence can be extended
-            HashMap<Integer, Edge> occ_edges = node_occ.getEdges();
+        //The substring ends at the current node_instance, edge_index = -1
+        if (edge_instance == null) {
+            //Go over all the edges from node_instance, see if the instance can be extended
+            HashMap<Integer, Edge> instance_edges = node_instance.getEdges();
 
-            //we can extend the occurrence using all outgoing edges, increment error if needed
+            //we can extend the instance using all outgoing edges, increment error if needed
             if (ch == wildcard_char) {
-                exact_occs_count = addAllOccEdges(false, occ, occ_edges, deletions, error, node_occ,
+                exact_instance_count = addAllInstanceEdges(false, instance, instance_edges, deletions, error, node_instance,
                         edge_index, ch, extended_motif);
-                //extend occ by deletions char
+                //extend instance by deletions char
                 if (deletions < max_deletion) {
-                    addOccToMotif(extended_motif, occ, gap_char, node_occ, edge_occ, edge_index, error, deletions + 1);
+                    addInstanceToMotif(extended_motif, instance, gap_char, node_instance, edge_instance, edge_index,
+                            error, deletions + 1);
                 }
             } else {
-                if (insertions < max_insertion && occ.getLength() > 0){
-                    addAllOccEdges(true, occ, occ_edges, deletions, error, node_occ, edge_index, ch, extended_motif);
+                if (insertions < max_insertion && instance.getLength() > 0){
+                    addAllInstanceEdges(true, instance, instance_edges, deletions, error, node_instance,
+                            edge_index, ch, extended_motif);
                 }
                 if (error < max_error) {
                     //go over all outgoing edges
-                    exact_occs_count = addAllOccEdges(false, occ, occ_edges, deletions, error, node_occ,
+                    exact_instance_count = addAllInstanceEdges(false, instance, instance_edges, deletions, error,
+                            node_instance,
                             edge_index, ch, extended_motif);
-                    //extend occ by deletions char
+                    //extend instance by deletions char
                     if (deletions < max_deletion) {
-                        addOccToMotif(extended_motif, occ, gap_char, node_occ, edge_occ, edge_index, error,
-                                deletions + 1);
+                        addInstanceToMotif(extended_motif, instance, gap_char, node_instance, edge_instance, edge_index,
+                                error, deletions + 1);
                     }
-                } else {//error = max error, only edge_occ starting with ch can be added, or deletions
+                } else {//error = max error, only edge_instance starting with ch can be added, or deletions
                     next_edge_index++;
-                    next_edge_occ = node_occ.getEdge(ch);
-                    next_node_occ = node_occ;
-                    //Exists an edge_occ starting with ch, add it to occurrences
-                    if (next_edge_occ != null) {
-                        exact_occs_count = ((OccurrenceNode)next_edge_occ.getDest()).getCount_by_keys();
-                        //The label contains only 1 char, go to next node_occ
-                        if (next_edge_occ.getLabel().get_length() == 1) {
-                            next_node_occ = (OccurrenceNode) next_edge_occ.getDest();
-                            next_edge_occ = null;
+                    next_edge_instance = node_instance.getEdge(ch);
+                    next_node_instance = node_instance;
+                    //Exists an edge_instance starting with ch, add it to instances
+                    if (next_edge_instance != null) {
+                        exact_instance_count = ((InstanceNode)next_edge_instance.getDest()).getCount_by_keys();
+                        //The label contains only 1 char, go to next node_instance
+                        if (next_edge_instance.getLabel().get_length() == 1) {
+                            next_node_instance = (InstanceNode) next_edge_instance.getDest();
+                            next_edge_instance = null;
                             next_edge_index = -1;
                         }
-                        addOccToMotif(extended_motif, occ, ch, next_node_occ, next_edge_occ, next_edge_index, error,
+                        addInstanceToMotif(extended_motif, instance, ch, next_node_instance, next_edge_instance, next_edge_index, error,
                                 deletions);
                     } else {
-                        //extend occ by deletions char
+                        //extend instance by deletions char
                         if (deletions < max_deletion) {
-                            addOccToMotif(extended_motif, occ, gap_char, node_occ, edge_occ, edge_index, error,
+                            addInstanceToMotif(extended_motif, instance, gap_char, node_instance, edge_instance, edge_index, error,
                                     deletions + 1);
                         }
                     }
                 }
             }
-        } else {//Edge is not null, the substring ends at the middle of the edge_occ, at index edge_index
-            WordArray label = edge_occ.getLabel();
+        } else {//Edge is not null, the substring ends at the middle of the edge_instance, at index edge_index
+            WordArray label = edge_instance.getLabel();
             //check the next char on the label, at edge_index+1
             next_edge_index++;
             int next_ch = label.get_index(next_edge_index);
 
-            //If we reached the end of the label by incrementing edge_index, get next node_occ
+            //If we reached the end of the label by incrementing edge_index, get next node_instance
             if (next_edge_index == label.get_length() - 1) {
-                next_node_occ = (OccurrenceNode) edge_occ.getDest();
-                next_edge_occ = null;
+                next_node_instance = (InstanceNode) edge_instance.getDest();
+                next_edge_instance = null;
                 next_edge_index = -1;
             }
 
-            if (insertions < max_insertion && occ.getLength() > 0){
-                String extended_occ_string = appendChar(occ.getSubstring(), next_ch);
-                Occurrence next_occ = new Occurrence(next_node_occ, next_edge_occ, next_edge_index, error, deletions, occ.get_insertion_indexes(), extended_occ_string, occ.getLength() + 1);
-                next_occ.add_insertion_index(occ.getLength());
-                next_occ.add_all_insertion_indexes(occ.get_insertion_indexes());
-                getExtendedOcc(extended_motif, next_occ, ch);
-                count_nodes_in_data_tree++;
+            if (insertions < max_insertion && instance.getLength() > 0){
+                if (next_ch != ch) {
+                    String extended_instance_string = appendChar(instance.getSubstring(), next_ch);
+                    Instance next_instance = new Instance(next_node_instance, next_edge_instance, next_edge_index, error, deletions, instance.get_insertion_indexes(), extended_instance_string, instance.getLength() + 1);
+                    next_instance.add_insertion_index(instance.getLength());
+                    next_instance.add_all_insertion_indexes(instance.get_insertion_indexes());
+                    getExtendedInstance(extended_motif, next_instance, ch);
+                    count_nodes_in_data_tree++;
+                }
             }
 
             //if the char is equal add anyway
             if (next_ch == ch) {
-                exact_occs_count = ((OccurrenceNode)edge_occ.getDest()).getCount_by_keys();
-                addOccToMotif(extended_motif, occ, next_ch, next_node_occ, next_edge_occ, next_edge_index, error,
+                exact_instance_count = ((InstanceNode)edge_instance.getDest()).getCount_by_keys();
+                addInstanceToMotif(extended_motif, instance, next_ch, next_node_instance, next_edge_instance, next_edge_index, error,
                         deletions);
             } else {
                 if (ch == wildcard_char) {
-                    addOccToMotif(extended_motif, occ, next_ch, next_node_occ, next_edge_occ, next_edge_index, error,
+                    addInstanceToMotif(extended_motif, instance, next_ch, next_node_instance, next_edge_instance, next_edge_index, error,
                             deletions);
                 } else {
                     if (error < max_error) {//check if the error is not maximal, to add not equal char
-                        addOccToMotif(extended_motif, occ, next_ch, next_node_occ, next_edge_occ, next_edge_index,
+                        addInstanceToMotif(extended_motif, instance, next_ch, next_node_instance, next_edge_instance, next_edge_index,
                                 error + 1, deletions);
                     }
-                    //extend occ by deletions char
+                    //extend instance by deletions char
                     if (deletions < max_deletion) {
-                        addOccToMotif(extended_motif, occ, gap_char, node_occ, edge_occ, edge_index, error, deletions + 1);
+                        addInstanceToMotif(extended_motif, instance, gap_char, node_instance, edge_instance, edge_index, error, deletions + 1);
                     }
                 }
             }
         }
         if (error > 0 || deletions > 0 || insertions > 0){
-            exact_occs_count = 0;
+            exact_instance_count = 0;
         }
-        return exact_occs_count;
+        return exact_instance_count;
     }
 
     /**
-     * Go over all outgoing edges of occurrence node
+     * Go over all outgoing edges of instance node
      *
-     * @param occ
-     * @param occ_edges  edge set of node_occ
+     * @param instance
+     * @param instance_edges  edge set of instance_node
      * @param deletions
      * @param error
-     * @param node_occ
+     * @param instance_node
      * @param edge_index
      * @param ch
      * @param motif
      */
-    private int addAllOccEdges(Boolean make_insertion, Occurrence occ, HashMap<Integer, Edge> occ_edges, int deletions,
-                               int error, OccurrenceNode node_occ, int edge_index, int ch, MotifNode motif) {
+    private int addAllInstanceEdges(Boolean make_insertion, Instance instance, HashMap<Integer, Edge> instance_edges, int deletions,
+                                    int error, InstanceNode instance_node, int edge_index, int ch, MotifNode motif) {
         int curr_error = error;
         int next_edge_index;
-        int exact_occs_count = 0;
+        int exact_instance_count = 0;
 
         //boolean exist_equal_char = false;
 
         //go over all outgoing edges
-        for (Map.Entry<Integer, Edge> entry : occ_edges.entrySet()) {
+        for (Map.Entry<Integer, Edge> entry : instance_edges.entrySet()) {
             int next_ch = entry.getKey();
             Edge next_edge = entry.getValue();
-            OccurrenceNode next_node = node_occ;
+            InstanceNode next_node = instance_node;
 
             if (ch == next_ch) {
                 curr_error = error;
-                exact_occs_count = ((OccurrenceNode)next_edge.getDest()).getCount_by_keys();
+                exact_instance_count = ((InstanceNode)next_edge.getDest()).getCount_by_keys();
             } else {
                 if (ch != wildcard_char) {//Substitution - the chars are different, increment error
                     curr_error = error + 1;
                 }
             }
 
-            //The label contains only 1 char, go to next node_occ
+            //The label contains only 1 char, go to next instance_node
             if (next_edge.getLabel().get_length() == 1) {
-                next_node = (OccurrenceNode) next_edge.getDest();
+                next_node = (InstanceNode) next_edge.getDest();
                 next_edge = null;
                 next_edge_index = -1;
             } else {//label contains more the 1 char, increment edge_index
@@ -603,23 +608,23 @@ public class OGMFinder {
 
             if (make_insertion) {
                 if (ch != next_ch) {
-                    String extended_occ_string = appendChar(occ.getSubstring(), next_ch);
-                    Occurrence next_occ = new Occurrence(next_node, next_edge, next_edge_index, error, deletions,
-                            occ.get_insertion_indexes(), extended_occ_string, occ.getLength() + 1);
-                    next_occ.add_insertion_index(occ.getLength());
-                    getExtendedOcc(motif, next_occ, ch);
+                    String extended_instance_string = appendChar(instance.getSubstring(), next_ch);
+                    Instance next_instance = new Instance(next_node, next_edge, next_edge_index, error, deletions,
+                            instance.get_insertion_indexes(), extended_instance_string, instance.getLength() + 1);
+                    next_instance.add_insertion_index(instance.getLength());
+                    getExtendedInstance(motif, next_instance, ch);
                     count_nodes_in_data_tree++;
                 }
             } else {
-                addOccToMotif(motif, occ, next_ch, next_node, next_edge, next_edge_index, curr_error, deletions);
+                addInstanceToMotif(motif, instance, next_ch, next_node, next_edge, next_edge_index, curr_error, deletions);
             }
         }
-        return exact_occs_count;
+        return exact_instance_count;
     }
 
     /**
      * @param extended_motif
-     * @param occ
+     * @param instance
      * @param next_ch
      * @param next_node
      * @param next_edge
@@ -628,12 +633,12 @@ public class OGMFinder {
      * @param next_deletions
      * @throws Exception
      */
-    private void addOccToMotif(MotifNode extended_motif, Occurrence occ, int next_ch, OccurrenceNode next_node,
-                               Edge next_edge, int next_edge_index, int next_error, int next_deletions) {
-        String extended_occ_string = appendChar(occ.getSubstring(), next_ch);
-        Occurrence next_occ = new Occurrence(next_node, next_edge, next_edge_index, next_error, next_deletions,
-                occ.get_insertion_indexes(), extended_occ_string, occ.getLength()+1);
-        extended_motif.addOcc(next_occ, max_insertion);
+    private void addInstanceToMotif(MotifNode extended_motif, Instance instance, int next_ch, InstanceNode next_node,
+                                    Edge next_edge, int next_edge_index, int next_error, int next_deletions) {
+        String extended_instance_string = appendChar(instance.getSubstring(), next_ch);
+        Instance next_instance = new Instance(next_node, next_edge, next_edge_index, next_error, next_deletions,
+                instance.get_insertion_indexes(), extended_instance_string, instance.getLength()+1);
+        extended_motif.addInstance(next_instance, max_insertion);
 
         count_nodes_in_data_tree++;
     }

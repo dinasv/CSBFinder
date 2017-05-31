@@ -1,7 +1,7 @@
 package Main;
 
 import SuffixTrees.Edge;
-import SuffixTrees.OccurrenceNode;
+import SuffixTrees.InstanceNode;
 import Utils.Utils;
 
 import java.io.File;
@@ -19,12 +19,18 @@ import Utils.COG;
 
 
 /**
- * Created by Boris on 19/05/2017.
+ * Created by Dina on 19/05/2017.
+ * Writes the output files:
+ *      catalog_file: OGMs catalog
+ *      motif_instances_file: The strings in which each OGM has an instance
  */
 public class Writer {
-    private DecimalFormat df;
+    //output files
     private PrintWriter catalog_file;
-    private PrintWriter catalog_occs_file;
+    private PrintWriter motif_instances_file;
+
+    private DecimalFormat df;
+
     private int max_error;
     private int max_deletion;
     private int max_insertion;
@@ -54,13 +60,14 @@ public class Writer {
                 "_ins" + max_insertion + "_q1_" + quorum1 + "_q2_" + quorum2 + "_l" + min_motif_length;
 
         String catalog_path = "output/motif_catalog_" + dataset_name + parameters;
-        String catalog_occs_path = catalog_path + "_occs";
+        String motif_instances_path = catalog_path + "_instances";
 
         catalog_file = createOutputFile(catalog_path);
-        catalog_occs_file = createOutputFile(catalog_occs_path);
+        motif_instances_file = createOutputFile(motif_instances_path);
 
         if (catalog_file != null) {
-            String header = "motif_id\tlength\tmain_category\tscore\toccurrences\toccs_ratio\texact_occs\tmotif_cogs\tmotif\n";
+            String header = "motif_id\tlength\tmain_category\tscore\tinstance_count\tinstance_ratio\texact_instance_count" +
+                    "\tmotif_cogs\tmotif\n";
             catalog_file.write(header);
         }
     }
@@ -71,7 +78,7 @@ public class Writer {
 
     public void closeFiles(){
         catalog_file.close();
-        catalog_occs_file.close();
+        motif_instances_file.close();
     }
 
     public void printMotif(Motif motif, Utils utils){
@@ -79,30 +86,30 @@ public class Writer {
 
         if (!debug) {
 
-            catalog_occs_file.print("motif_" + motif.getMotif_id() + "\t");
+            motif_instances_file.print("motif_" + motif.getMotif_id() + "\t");
 
-            HashMap<Integer, String> occ_seq_and_location = new HashMap<>();
-            for (Occurrence occ : motif.get_occs()) {
-                OccurrenceNode occ_node = occ.getNodeOcc();
-                if (occ.getEdge() != null) {
-                    Edge edge = occ.getEdge();
-                    occ_node = (OccurrenceNode) edge.getDest();
+            HashMap<Integer, String> instance_seq_and_location = new HashMap<>();
+            for (Instance instance : motif.get_instances()) {
+                InstanceNode instance_node = instance.getNodeInstance();
+                if (instance.getEdge() != null) {
+                    Edge edge = instance.getEdge();
+                    instance_node = (InstanceNode) edge.getDest();
                 }
-                int occ_length = occ.getLength();
-                for (Map.Entry<Integer, ArrayList<String>> entry : occ_node.getResults().entrySet()) {
+                int instance_length = instance.getLength();
+                for (Map.Entry<Integer, ArrayList<String>> entry : instance_node.getResults().entrySet()) {
                     int seq_id = entry.getKey();
                     String word_id = entry.getValue().get(0);
-                    word_id += "_l" + occ_length;
-                    occ_seq_and_location.put(seq_id, word_id);
+                    word_id += "_l" + instance_length;
+                    instance_seq_and_location.put(seq_id, word_id);
 
                 }
             }
-            for (Map.Entry<Integer, String> entry : occ_seq_and_location.entrySet()) {
+            for (Map.Entry<Integer, String> entry : instance_seq_and_location.entrySet()) {
                 int seq = entry.getKey();
                 String word_id = entry.getValue();
-                catalog_occs_file.print("seq" + seq + "_" + word_id + "\t");
+                motif_instances_file.print("seq" + seq + "_" + word_id + "\t");
             }
-            catalog_occs_file.print("\n");
+            motif_instances_file.print("\n");
 
             String[] motif_arr = motif.getMotif_arr();
             String[] ret = getMotifMainCat(motif_arr, utils);
@@ -113,12 +120,12 @@ public class Writer {
                     motifMainCat + "\t";
 
             double motif_pval = utils.computeMotifPval(motif_arr, max_insertion, max_error, max_deletion, 0,
-                    motif.getOccCount(), motif.getMotif_id());
+                    motif.get_instance_count(), motif.getMotif_id());
 
             motifs_catalog_line += df.format(motif_pval) + "\t"
-                    + motif.getOccCount() + "\t="
-                    + motif.getOccCount() + "/" + utils.datasets_size.get(0) + "\t"
-                    + motif.getExact_occs_count() + "\t";
+                    + motif.get_instance_count() + "\t="
+                    + motif.get_instance_count() + "/" + utils.datasets_size.get(0) + "\t"
+                    + motif.get_exact_instance_count() + "\t";
 
             motifs_catalog_line += "=\"" + motif_str + "\"";
 
@@ -183,8 +190,8 @@ public class Writer {
             max_category = "WTF";
         }
         String[] ret = {motif_str, max_category};
+
         return ret;
-        //return motif_str + "#" + max_category;
     }
 
     private String getCogDesc(String cog, Utils utils) {

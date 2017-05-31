@@ -1,6 +1,6 @@
 package SuffixTrees;
 
-import COGAlphabet.WordArray;
+import Words.WordArray;
 
 import java.io.Serializable;
 
