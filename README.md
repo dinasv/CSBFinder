@@ -15,7 +15,7 @@ OGMFinder can be executed on any operation system using JAVA.
 ### Running OGMFinder
 In the terminal (linux) or cmd (windows) type:
 ``` 
-java -jar OGMFinder.jar -i [-ins] [-q1] [-q2] [-l] [-ds] 
+java -jar OGMFinder.jar -i [-ins] [-q1] [-q2] [-l] [-bcount] [-ds] [-m] [-mem]
 ```
 
 ### Arguments
