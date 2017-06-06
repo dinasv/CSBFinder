@@ -42,6 +42,11 @@ public class Main {
     String input_file_name = "";
     @Parameter(names={"--motifs", "-m"}, description = "input motifs file name")
     String input_motifs_file_name = null;
+    @Parameter(names={"--cog-info"}, description = "cog info file name")
+    String cog_info_file_name = null;
+
+    @Parameter(names={"--threshold", "-t"}, description = "threshold for family clustering")
+    double threshold = 0.8;
 
     @Parameter(names = "-debug", description = "Debug mode")
     private boolean debug = false;
@@ -81,7 +86,10 @@ public class Main {
             min_motif_length = 2 + max_error;
 
             findMotifs(max_error, max_wildcards, max_deletion, max_insertion, quorum1, quorum2, min_motif_length,
-                    bool_count, dataset_name, input_file_name, input_motifs_file_name, memory_saving_mode, utils, debug);
+                    bool_count, dataset_name, input_file_name, input_motifs_file_name, memory_saving_mode, utils,
+                    debug, cog_info_file_name, threshold);
+
+
 
             float estimatedTime = (float) (System.nanoTime() - startTime) / (float) Math.pow(10, 9);
             if (debug) {
@@ -111,7 +119,8 @@ public class Main {
     public void findMotifs(int max_error, int max_motif_gap, int max_deletion, int max_insertion,
                            int quorum1, int quorum2, int min_motif_length, boolean count_by_keys,
                            String dataset_name, String input_file_name, String input_motifs_file_name,
-                           boolean memory_saving_mode, Utils utils, boolean debug)
+                           boolean memory_saving_mode, Utils utils, boolean debug,
+                           String cog_info_file_name, double threshold)
             throws Exception {
 
         //wild card
@@ -148,10 +157,13 @@ public class Main {
             utils.buildMotifsTreeFromFile(path, motif_tree);
         }
 
-        utils.read_cog_info_table();
+        String parameters = "_err" + max_error + "_wc" + max_motif_gap + "_del" + max_deletion +
+                "_ins" + max_insertion + "_q1_" + quorum1 + "_q2_" + quorum2 + "_l" + min_motif_length;
 
-        Writer writer = new Writer(max_error, max_motif_gap, max_deletion, max_insertion, quorum1, quorum2,
-                min_motif_length, dataset_name, debug);
+        String catalog_path = "output/motif_catalog_" + dataset_name + parameters;
+        String motif_instances_path = catalog_path + "_instances";
+
+        Writer writer = new Writer(max_error, max_deletion, max_insertion, debug, catalog_path, motif_instances_path);
 
         System.out.println("Extracting motifs");
 
@@ -177,6 +189,21 @@ public class Main {
 
             writer.closeFiles();
         }
+
+        String[] command = new String[4];
+        if (cog_info_file_name != null){
+            command = new String[6];
+            command[4] = "-f";
+            command[5] = "input/" + cog_info_file_name;
+        }
+
+        command[0] = "GreedyFamCluster.exe";
+        command[1] = catalog_path;
+        command[2] = "-t";
+        command[3] = Double.toString(threshold);
+
+        Process p = Runtime.getRuntime().exec(command);
+        p.waitFor();
 
         System.out.println(writer.getCountPrintedMotifs() + " motifs found");
 

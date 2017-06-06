@@ -64,7 +64,7 @@ public class Utils {
 
     public HashSet<String> bacs_with_plasmid;
 
-    public HashMap<String, COG> cog_info;
+    //public HashMap<String, COG> cog_info;
 
     //memoization of computed q_val - it is the same for each motif length
     public double[] q_val;
@@ -111,7 +111,7 @@ public class Utils {
 
         bacs_with_plasmid = new HashSet<>();
 
-        cog_info = new HashMap<String, COG>();
+        //cog_info = new HashMap<String, COG>();
 
         q_val = new double[200];
 
@@ -337,9 +337,9 @@ public class Utils {
      * Read COG_INFO_TABLE.txt and fill cog_info. For each cog that is used in our data, save information of functional category
      * @throws FileNotFoundException
      */
-    public void read_cog_info_table() throws FileNotFoundException {
-        cog_info = reader.read_cog_info_table(cog_to_index);
-    }
+    /*public void read_cog_info_table() throws FileNotFoundException {
+       // cog_info = reader.read_cog_info_table(cog_to_index);
+    }*/
 
 
     public double computeMotifPval(String[] motif_cogs, int max_insertions, int max_error, int max_deletions,

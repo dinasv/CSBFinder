@@ -4,19 +4,12 @@ import SuffixTrees.Edge;
 import SuffixTrees.InstanceNode;
 import Utils.Utils;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.PrintWriter;
-import java.io.UnsupportedEncodingException;
+import java.io.*;
 import java.math.RoundingMode;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
-
-import Utils.COG;
-
 
 /**
  * Created by Dina on 19/05/2017.
@@ -37,8 +30,8 @@ public class Writer {
     private int count_printed_motifs;
     private boolean debug;
 
-    public Writer(int max_error, int max_motif_gap, int max_deletion, int max_insertion, int quorum1, int quorum2,
-                  int min_motif_length, String dataset_name, boolean debug){
+    public Writer(int max_error, int max_deletion, int max_insertion, boolean debug, String catalog_path,
+                  String motif_instances_path){
         df = new DecimalFormat("#.##");
         df.setRoundingMode(RoundingMode.HALF_UP);
 
@@ -48,28 +41,21 @@ public class Writer {
         this.debug = debug;
         count_printed_motifs = 0;
 
-        createFiles(max_error, max_motif_gap, max_deletion, max_insertion, quorum1, quorum2, min_motif_length,
-                dataset_name);
+        createFiles(catalog_path, motif_instances_path);
 
     }
 
-    private void createFiles(int max_error, int max_motif_gap, int max_deletion, int max_insertion,
-                             int quorum1, int quorum2, int min_motif_length, String dataset_name){
-
-        String parameters = "_err" + max_error + "_wc" + max_motif_gap + "_del" + max_deletion +
-                "_ins" + max_insertion + "_q1_" + quorum1 + "_q2_" + quorum2 + "_l" + min_motif_length;
-
-        String catalog_path = "output/motif_catalog_" + dataset_name + parameters;
-        String motif_instances_path = catalog_path + "_instances";
+    private void createFiles(String catalog_path, String motif_instances_path){
 
         catalog_file = createOutputFile(catalog_path);
         motif_instances_file = createOutputFile(motif_instances_path);
 
+        String header = "motif_id\tlength\tscore\tinstance_count\tinstance_ratio\texact_instance_count" +
+                "\tmotif";
         if (catalog_file != null) {
-            String header = "motif_id\tlength\tmain_category\tscore\tinstance_count\tinstance_ratio\texact_instance_count" +
-                    "\tmotif_cogs\tmotif\n";
-            catalog_file.write(header);
+            catalog_file.write(header+ "\n");
         }
+
     }
 
     public int getCountPrintedMotifs(){
@@ -77,8 +63,12 @@ public class Writer {
     }
 
     public void closeFiles(){
-        catalog_file.close();
-        motif_instances_file.close();
+        if (catalog_file != null) {
+            catalog_file.close();
+        }
+        if (motif_instances_file != null) {
+            motif_instances_file.close();
+        }
     }
 
     public void printMotif(Motif motif, Utils utils){
@@ -112,105 +102,27 @@ public class Writer {
             motif_instances_file.print("\n");
 
             String[] motif_arr = motif.getMotif_arr();
-            String[] ret = getMotifMainCat(motif_arr, utils);
-            String motif_str = ret[0];
-            String motifMainCat = ret[1];
+            //String[] ret = getMotifMainCat(motif_arr, utils);
+            //String motif_str = ret[0];
+            //String motifMainCat = ret[1];
 
-            String motifs_catalog_line = motif.getMotif_id() + "\t" + motif.getLength() + "\t" +
-                    motifMainCat + "\t";
+            String motifs_catalog_line = motif.getMotif_id() + "\t" + motif.getLength() + "\t";
+                    //+motifMainCat + "\t";
 
             double motif_pval = utils.computeMotifPval(motif_arr, max_insertion, max_error, max_deletion, 0,
                     motif.get_instance_count(), motif.getMotif_id());
 
             motifs_catalog_line += df.format(motif_pval) + "\t"
-                    + motif.get_instance_count() + "\t="
-                    + motif.get_instance_count() + "/" + utils.datasets_size.get(0) + "\t"
+                    + motif.get_instance_count() + "\t"
+                    + df.format(motif.get_instance_count()/(double)utils.datasets_size.get(0)) + "\t"
                     + motif.get_exact_instance_count() + "\t";
 
-            motifs_catalog_line += "=\"" + motif_str + "\"";
-
-            for (String cog : motif_arr) {
-                motifs_catalog_line += "& CHAR(10) &\"" + getCogDesc(cog, utils) + "\"";
-
-            }
-
-            motifs_catalog_line += "\t" + motif_str;
+            motifs_catalog_line += "\t" + String.join("-", motif_arr);
 
             catalog_file.write(motifs_catalog_line + "\n");
         }
     }
 
-    private String[] getMotifMainCat(String[] motif_arr, Utils utils){
-        HashMap<String, Integer> count_motif_letter_cat = new HashMap<>();
-        HashSet<String> motif_main_cat = new HashSet<String>();
-
-        String motif_str = "";
-        String motif_letters = "";
-
-        for (String cog : motif_arr) {
-            if (cog.equals("X") || cog.equals("*")) {
-                motif_str += cog + " ";
-            } else {
-                motif_str += "COG" + cog + " ";
-            }
-            COG cog_obj = utils.cog_info.get(cog);
-            if (cog_obj != null){
-                String[] cog_main_cats = cog_obj.getFunctional_category_desc().split("_OR_");
-                for (String main_cat: cog_main_cats){
-                    motif_main_cat.add(main_cat);
-                }
-                String letters_desc = cog_obj.getLetter_desc();
-                String cog_letters = cog_obj.getFunctional_category_letters();
-                for (int i = 0; i < cog_letters.length(); i++) {
-                    String letter = cog_letters.substring(i, i + 1);
-                    if (!motif_letters.contains(letter)) {
-                        motif_letters += letter;
-                    }
-                }
-                if (count_motif_letter_cat.containsKey(letters_desc)){
-                    count_motif_letter_cat.put(letters_desc, count_motif_letter_cat.get(letters_desc)+1);
-                }else{
-                    count_motif_letter_cat.put(letters_desc, 1);
-                }
-            }
-        }
-
-        int max_count = 0;
-        String max_category = "";
-        for (Map.Entry<String, Integer> entry : count_motif_letter_cat.entrySet()) {
-            String cat = entry.getKey();
-            int count = entry.getValue();
-            if (count > max_count){
-                max_count = count;
-                max_category = cat;
-            }
-        }
-        count_motif_letter_cat.remove(max_category);
-        if (count_motif_letter_cat.values().contains(max_count)){
-            max_category = "WTF";
-        }
-        String[] ret = {motif_str, max_category};
-
-        return ret;
-    }
-
-    private String getCogDesc(String cog, Utils utils) {
-        String cog_description = "";
-        if (!cog.equals("*") && !cog.equals("X")) {
-            COG cog_obj = utils.cog_info.get(cog);
-            if (cog_obj == null) {
-                //System.out.println("NO description for COG " + cog);
-            } else {
-
-                cog_description = cog_obj.getSub_cat_desc();
-                String cog_description2 = cog_obj.getLetter_desc();
-                cog_description = "COG" + cog + " " + cog_description2 + ": " + cog_description;
-
-                //motifs_file.println(cog_description);
-            }
-        }
-        return cog_description;
-    }
 
     private PrintWriter createOutputFile(String path){
 

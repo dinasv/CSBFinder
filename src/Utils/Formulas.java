@@ -12,46 +12,6 @@ import static org.apache.commons.math3.util.CombinatoricsUtils.binomialCoefficie
  */
 public class Formulas {
 
-    public static double cog2cogScore(String cog1, String cog2, HashMap<String, COG> cog_info){
-        double MATCH_SCORE = 1;
-        double MISMATCH1 = 0.5;
-        double MISMATCH2 = 0.25;
-        double MISMATCH3 = 0;
-
-        if(cog1.equals(cog2)){
-            return MATCH_SCORE;
-        }else{
-            if (cog1.equals("X") || cog2.equals("X")){
-                return 0;
-            }else {
-                COG cog1_obj = cog_info.get(cog1);
-                COG cog2_obj = cog_info.get(cog2);
-                //equal letters
-                String cog1_letters = cog1_obj.getFunctional_category_letters();
-                String cog2_letters = cog1_obj.getFunctional_category_letters();
-
-                for (int i = 0; i < cog1_letters.length(); i++) {
-                    String letter = cog1_letters.substring(i, i+1);
-                    if (cog2_letters.contains(letter)){
-                        return MISMATCH1;
-                    }
-                }
-
-                //different letters, equal functional description, i.e. METABOLISM
-                String[] cog1_cat = cog1_obj.getFunctional_category_desc().split("/");
-                for (int i = 0; i < cog1_cat.length; i++) {
-                    String cat = cog1_cat[i];
-                    if (cog2_obj.getFunctional_category_desc().contains(cat)){
-                        return MISMATCH2;
-                    }
-                }
-                //different functional description
-                return MISMATCH3;
-
-            }
-        }
-    }
-
     /**
      * Computes a ranking score for a given motif
      * @param n the minimal number of input genomes where one of the motif genes appear
