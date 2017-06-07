@@ -85,11 +85,7 @@ public class Main {
             long startTime = System.nanoTime();
             min_motif_length = 2 + max_error;
 
-            findMotifs(max_error, max_wildcards, max_deletion, max_insertion, quorum1, quorum2, min_motif_length,
-                    bool_count, dataset_name, input_file_name, input_motifs_file_name, memory_saving_mode, utils,
-                    debug, cog_info_file_name, threshold);
-
-
+            findMotifs(utils);
 
             float estimatedTime = (float) (System.nanoTime() - startTime) / (float) Math.pow(10, 9);
             if (debug) {
@@ -107,20 +103,12 @@ public class Main {
     /**
      * Finds the motifs using OGMFinder and prints them
      *
-     * @param max_error
-     * @param max_motif_gap
-     * @param max_deletion
-     * @param quorum1
-     * @param min_motif_length
+     * @param utils
      * @return
      * @throws Exception
      */
 
-    public void findMotifs(int max_error, int max_motif_gap, int max_deletion, int max_insertion,
-                           int quorum1, int quorum2, int min_motif_length, boolean count_by_keys,
-                           String dataset_name, String input_file_name, String input_motifs_file_name,
-                           boolean memory_saving_mode, Utils utils, boolean debug,
-                           String cog_info_file_name, double threshold)
+    public void findMotifs(Utils utils)
             throws Exception {
 
         //wild card
@@ -157,7 +145,7 @@ public class Main {
             utils.buildMotifsTreeFromFile(path, motif_tree);
         }
 
-        String parameters = "_err" + max_error + "_wc" + max_motif_gap + "_del" + max_deletion +
+        String parameters = "_err" + max_error + "_wc" + max_deletion + "_del" + max_deletion +
                 "_ins" + max_insertion + "_q1_" + quorum1 + "_q2_" + quorum2 + "_l" + min_motif_length;
 
         String catalog_path = "output/motif_catalog_" + dataset_name + parameters;
@@ -167,8 +155,8 @@ public class Main {
 
         System.out.println("Extracting motifs");
 
-        OGMFinder ogmFinder = new OGMFinder(max_error, max_motif_gap, max_deletion, max_insertion, quorum1, quorum2, min_motif_length,
-                gap_char, wc_char, unknown_char, dataset_suffix_tree, motif_tree, count_by_keys, utils,
+        OGMFinder ogmFinder = new OGMFinder(max_error, max_deletion, max_deletion, max_insertion, quorum1, quorum2, min_motif_length,
+                gap_char, wc_char, unknown_char, dataset_suffix_tree, motif_tree, bool_count, utils,
                 memory_saving_mode, writer);
 
         if (input_motifs_file_name == null) {
@@ -190,20 +178,7 @@ public class Main {
             writer.closeFiles();
         }
 
-        String[] command = new String[4];
-        if (cog_info_file_name != null){
-            command = new String[6];
-            command[4] = "-f";
-            command[5] = "input/" + cog_info_file_name;
-        }
-
-        command[0] = "GreedyFamCluster.exe";
-        command[1] = catalog_path;
-        command[2] = "-t";
-        command[3] = Double.toString(threshold);
-
-        Process p = Runtime.getRuntime().exec(command);
-        p.waitFor();
+        postProcess(catalog_path);
 
         System.out.println(writer.getCountPrintedMotifs() + " motifs found");
 
@@ -237,6 +212,33 @@ public class Main {
                 // do something
             }
         }
+    }
+
+    private void postProcess(String catalog_path){
+        try {
+            String[] command = new String[4];
+            if (cog_info_file_name != null){
+                command = new String[6];
+                command[4] = "-f";
+                command[5] = "input/" + cog_info_file_name;
+            }
+
+            command[0] = "GreedyFamCluster.exe";
+            command[1] = catalog_path;
+            command[2] = "-t";
+            command[3] = Double.toString(threshold);
+
+            Process p = Runtime.getRuntime().exec(command);
+            p.waitFor();
+        } catch (IOException e) {
+            System.out.println("The file \"GreedyFamCluster.exe\" was not found. In order to further cluster OGMs \n" +
+                    "to families and to output the results in an .xslx format, download \"GreedyFamCluster.exe\" \n" +
+                    "from: https://www.cs.bgu.ac.il/~negevcb/OGMFinder, put it in the same directory with this \n" +
+                    "file and run OGMFinder again.");
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
     }
 
 }
