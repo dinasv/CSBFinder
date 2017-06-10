@@ -17,6 +17,10 @@ In the terminal (linux) or cmd (windows) type:
 ``` 
 java -jar OGMFinder.jar -i [-ins] [-q1] [-q2] [-l] [-bcount] [-ds] [-m] [-mem]
 ```
+For example, running OGMFinder.jar with input file 'cog_words_plasmid.txt' provided in [https://www.cs.bgu.ac.il/~negevcb/OGMFinder/OGMFinder/input/](https://www.cs.bgu.ac.il/~negevcb/OGMFinder/OGMFinder/input/), with **_q_**=50 and **_k_**=2:
+``` 
+java -jar OGMFinder.jar -i cog_words_plasmid -ins 2 -q2 50 -ds plasmid
+```
 
 ### Arguments
 Mandatory:
@@ -51,4 +55,7 @@ Optional:
    
 - **-mem**
 
-   A memory saving option. If this option is selected, there will be no removal of redundant OGMs. All instances of a redundant OGM substrings of another OGM instances.
+   A memory saving option. If this option is selected, there will be no removal of redundant OGMs.
+   
+   ### Input files
+   1. A mandatory input file containing all input sequences.
