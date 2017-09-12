@@ -1,80 +1,44 @@
 package Utils;
 
-import Main.Motif;
-
 /**
  * Contains details about the COG
  */
-public class COG implements Comparable<COG>{
+public class COG{
     String cog_id;
-    String functional_category_letters;
-    String functional_category_desc;
-    String letter_desc;
-    String sub_cat_desc;
-    //"phage" or "bacteria"
-    String cog_type;
+    String cog_desc;
+    String[] functional_letters;
+    String[] functional_categories;
 
-    int count;
 
-    public COG(String cog_id, String functional_category_letters, String functional_category_desc, String letter_desc, String sub_cat_desc, String cog_type){
+    public COG(String cog_id, String cog_desc, String[] functional_letters, String[] functional_categories){
         this.cog_id = cog_id;
-        this.functional_category_letters = functional_category_letters;
-        this.functional_category_desc = functional_category_desc;
-        this.letter_desc = letter_desc;
-        this.sub_cat_desc = sub_cat_desc;
-        this.cog_type = cog_type;
-        count = 0;
+        this.cog_desc = cog_desc;
+        this.functional_letters = functional_letters;
+        this.functional_categories = functional_categories;
+
     }
 
-    public COG(COG other, int count){
-        this.functional_category_letters = other.getFunctional_category_letters();
-        this.functional_category_desc = other.getFunctional_category_desc();
-        this.letter_desc = other.getLetter_desc();
-        this.count = count;
+    public COG(COG other, String cog_desc){
+        this.cog_id = cog_id;
+        this.cog_desc = cog_desc;
     }
 
-    public String getSub_cat_desc(){
-        return  sub_cat_desc;
+    public String getCogID(){
+        return cog_id;
     }
 
-    public String getFunctional_category_letters(){
-        return functional_category_letters;
-    }
-
-    public String getCogType(){
-        return cog_type;
-    }
-
-    public void setCog_type(String cog_type){
-        this.cog_type = cog_type;
-    }
-
-    public String getLetter_desc(){
-        return letter_desc;
-    }
-
-    public String getFunctional_category_desc(){
-        return functional_category_desc;
-    }
-
-    public void increment_count(int val){
-        count += val;
-    }
-
-    public int getCount(){
-        return  count;
+    public String getCog_desc(){
+        return cog_desc;
     }
 
 
-    @Override
-    public int compareTo(COG o) {
-        int comparedSize = o.getCount();
-        if (count < comparedSize) {
-            return 1;
-        } else if (count == comparedSize) {
-            return 0;
-        } else {
-            return -1;
-        }
+    public String[] getFunctional_categories(){
+        return functional_categories;
     }
+
+    public String[] getFunctional_letters(){
+        return functional_letters;
+    }
+
+
 }

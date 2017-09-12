@@ -64,14 +64,14 @@ public class Utils {
 
     public HashSet<String> bacs_with_plasmid;
 
-    //public HashMap<String, COG> cog_info;
-
     //memoization of computed q_val - it is the same for each motif length
     public double[] q_val;
 
     private MotifReader reader;
 
-    public Utils(){
+    public HashMap<String, COG> cog_info;
+
+    public Utils(String cog_info_file_name){
         index_to_cog = new ArrayList<String>();
         cog_to_index = new HashMap<String, Integer>();
 
@@ -111,11 +111,37 @@ public class Utils {
 
         bacs_with_plasmid = new HashSet<>();
 
-        //cog_info = new HashMap<String, COG>();
+        if (cog_info_file_name != null) {
+            cog_info = MotifReader.read_cog_info_table(cog_info_file_name);
+        }
 
         q_val = new double[200];
 
-        reader = new MotifReader();
+        //reader = new MotifReader();
+    }
+
+    private void countParalogsInSeqs(String[] cogs, int curr_seq_index){
+        for (String curr_cog : cogs) {
+
+            HashMap<String, Integer> curr_genome_paralogs_count = genome_to_cog_paralog_count.get(curr_seq_index);
+            if (curr_genome_paralogs_count == null) {
+                curr_genome_paralogs_count = new HashMap<>();
+                genome_to_cog_paralog_count.put(curr_seq_index, curr_genome_paralogs_count);
+            }
+
+            int curr_cog_paralog_count = 1;
+            if (curr_genome_paralogs_count.containsKey(curr_cog)) {
+                curr_cog_paralog_count += curr_genome_paralogs_count.get(curr_cog);
+            }
+            curr_genome_paralogs_count.put(curr_cog, curr_cog_paralog_count);
+
+            HashSet<Integer> genomes = cog_to_containing_genomes.get(curr_cog);
+            if (genomes == null) {
+                genomes = new HashSet<>();
+                cog_to_containing_genomes.put(curr_cog, genomes);
+            }
+            genomes.add(curr_seq_index);
+        }
     }
 
 
@@ -126,92 +152,96 @@ public class Utils {
      * @return
      * @throws Exception
      */
-    public int read_and_build_cog_words_tree(String input_file_name, GeneralizedSuffixTree words_suffix_tree) throws Exception {
-        String file_name = "input/"+input_file_name+".txt";
+    public int read_and_build_cog_words_tree(String input_file_name, GeneralizedSuffixTree words_suffix_tree) {
+        String file_name = "input/"+input_file_name+".fasta";
         //For each cog, how many genes belong to that cog in the dataset
         HashMap<String, Integer> genes_in_cog_count = new HashMap<>();
 
         HashSet<Integer> bac_indexes = new HashSet<>();
 
-        BufferedReader br = new BufferedReader(new FileReader(file_name));
+        BufferedReader br = null;
+        try {
+            br = new BufferedReader(new FileReader(file_name));
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
         int length_sum = 0;
         int genome_size = 0;
 
         try {
             String line = br.readLine();
-            int word_counter = 1;
-
+            int word_counter = 0;
             int longest_cog_word = 0;
-            //String last_bac_id = "";
-            int last_bac_index = -1;
+            int last_seq_index = -1;
+
+            int word_id = -1;
+            int curr_seq_index = -1;
 
             while (line != null) {
-                String[] cogs = line.split("\t");
-                if (cogs.length - 1 > longest_cog_word) {
-                    longest_cog_word = cogs.length - 1;
+                if (line.startsWith(">")) {
+                    line = line.substring(1);
+                    //e.g. 1|NC_009927|-1|Acaryochloris_marina_MBIC11017_uid58167|494
+                    String[] word_desc = line.trim().split("\\|");
+
+                    if (word_desc.length > 1) {
+
+                        //the last number (after the last |) indicates the id of the bacterial strain
+                        try {
+                            curr_seq_index = Integer.parseInt(word_desc[word_desc.length - 1]);
+                        }catch (NumberFormatException e){
+                            System.out.println("A word description in " + "input/"+input_file_name+".txt"
+                                                + " must end with an integer indicating the sequence id");
+                            break;
+                        }
+
+                        //the index of an input word
+                        try {
+                            word_id = Integer.parseInt(word_desc[0]);
+                        }catch (NumberFormatException e){
+                            System.out.println("A word description in " + "input/"+input_file_name+".txt"
+                                    + " must start with an integer indicating the word id");
+                            break;
+                        }
+
+                        //new sequence
+                        if (curr_seq_index != last_seq_index) {
+
+                            if (genome_size < min_genome_size && genome_size != 0) {
+                                min_genome_size = genome_size;
+                            }
+                            if (genome_size > max_genome_size) {
+                                max_genome_size = genome_size;
+                            }
+
+                            genome_size = 0;
+
+                            last_seq_index = curr_seq_index;
+                            bac_indexes.add(curr_seq_index);
+                        }
+                    }else{
+                        System.out.println("Invalid description in file " + "input/"+input_file_name+".txt. " +
+                                            "The description must be: >word_id|[...]|seq_id, were word_id is a " +
+                                            "unique integer and seq_id is a sequence id containing this word. " +
+                                            "There may be any optional description in between.");
+                    }
+                }else {
+                    String[] cogs = line.trim().split("-");
+                    if (cogs.length > longest_cog_word) {
+                        longest_cog_word = cogs.length - 1;
+                    }
+
+                    int word_size = cogs.length ;
+                    length_sum += word_size;
+                    genome_size += word_size;
+
+                    WordArray cog_word = create_word_array(cogs, 0, cogs.length);
+                    words_suffix_tree.put(cog_word, curr_seq_index, word_id);
+
+                    countParalogsInSeqs(cogs, curr_seq_index);
+
+                    word_counter++;
                 }
 
-                //e.g. 1#NC_009927#-1#Acaryochloris_marina_MBIC11017_uid58167#494
-                String[] word_name = cogs[0].split("#");
-                //e.g. Acaryochloris_marina_MBIC11017_uid58167
-                String bac_name = word_name[3];
-
-                //the last number (after the last #) indicates the id of the bacterial strain
-                int curr_bac_index = Integer.parseInt(word_name[word_name.length - 1]);
-
-                //new bacteria
-                if (curr_bac_index != last_bac_index) {
-
-                    if (genome_size < min_genome_size && genome_size!= 0){
-                        min_genome_size = genome_size;
-                    }
-                    if (genome_size > max_genome_size){
-                        max_genome_size = genome_size;
-                    }
-
-                    genome_size = 0;
-
-                    last_bac_index = curr_bac_index;
-                    bac_indexes.add(curr_bac_index);
-                }
-
-                int word_size = cogs.length - 1 - StringUtils.countMatches(line, "X");
-                length_sum += word_size;
-                genome_size += word_size;
-
-                //the index of the directon
-                int word_id = Integer.parseInt(word_name[0]);
-
-                WordArray cog_word = create_word_array(cogs, 1, cogs.length);
-
-                words_suffix_tree.put(cog_word, curr_bac_index, word_id);
-
-                for (int i = 1; i < cogs.length; i++) {
-                    String curr_cog = cogs[i];
-
-                    HashMap<String, Integer> curr_genome_paralogs_count = genome_to_cog_paralog_count.get(curr_bac_index);
-                    if (curr_genome_paralogs_count == null){
-                        curr_genome_paralogs_count = new HashMap<>();
-                        genome_to_cog_paralog_count.put(curr_bac_index, curr_genome_paralogs_count);
-                    }
-
-                    int curr_cog_paralog_count = 1;
-                    if (curr_genome_paralogs_count.containsKey(curr_cog)){
-                        curr_cog_paralog_count += curr_genome_paralogs_count.get(curr_cog);
-                    }
-                    curr_genome_paralogs_count.put(curr_cog, curr_cog_paralog_count);
-
-
-                    HashSet<Integer> genomes = cog_to_containing_genomes.get(curr_cog);
-                    if (genomes == null) {
-                        genomes = new HashSet<>();
-                        cog_to_containing_genomes.put(curr_cog, genomes);
-                    }
-                    genomes.add(curr_bac_index);
-
-                }
-
-                word_counter++;
                 line = br.readLine();
             }
 
@@ -235,7 +265,6 @@ public class Utils {
             logger.info("Number of bacs " + bac_indexes.size());
             logger.info("Number of cogs " + cog_to_index.size());
             datasets_size.add(bac_indexes.size());
-            //dataset_cog_homolog_num.add(genes_in_cog_count);
 
         } catch (IOException e) {
             e.printStackTrace();
@@ -247,10 +276,9 @@ public class Utils {
             }
         }
 
-        return length_sum / bac_indexes.size();
+        return bac_indexes.size();
     }
 
-    //TODO: Change hashmaps to arraylists for children?
     /**
      * Goes over the suffix_tree and simultaneously adding nodes to the trie
      * @param trie the new motifs trie
@@ -313,7 +341,7 @@ public class Utils {
      * @param end_index the index in cog_string where the string ends at (not including)
      * @return
      */
-     public WordArray create_word_array(String[] cog_string, int start_index, int end_index) throws Exception {
+     public WordArray create_word_array(String[] cog_string, int start_index, int end_index){
         int[] word = new int[end_index - start_index];
         for (int i = 0; i < word.length; i++) {
 
@@ -333,17 +361,9 @@ public class Utils {
         return new WordArray(word);
     }
 
-    /**
-     * Read COG_INFO_TABLE.txt and fill cog_info. For each cog that is used in our data, save information of functional category
-     * @throws FileNotFoundException
-     */
-    /*public void read_cog_info_table() throws FileNotFoundException {
-       // cog_info = reader.read_cog_info_table(cog_to_index);
-    }*/
 
-
-    public double computeMotifPval(String[] motif_cogs, int max_insertions, int max_error, int max_deletions,
-                                   int dataset_index, int motif_occs_keys_size, int motif_id){
+    public double computeMotifScore(String[] motif_cogs, int max_insertions, int max_error, int max_deletions,
+                                    int dataset_index, int motif_occs_keys_size, int motif_id){
         int genomes_count = datasets_size.get(dataset_index);
         int avg_genome_size = dataset_length_sum.get(dataset_index)/genomes_count;
 
@@ -367,8 +387,6 @@ public class Utils {
 
         int average_paralog_count = paralog_count_product_sum/intersection_of_genomes_with_motif_cogs.size();
 
-
-
         String error_type = "mismatch";
         if (max_insertions > 0){
             error_type = "insert";
@@ -377,7 +395,6 @@ public class Utils {
         }else if(max_deletions > 0){
             error_type = "deletion";
         }
-
 
         return Formulas.pval_cross_genome(avg_genome_size/*min_genome_size*/, motif_cogs.length, max_insertions,
                 average_paralog_count, genomes_count, motif_occs_keys_size, error_type, q_val, motif_id);

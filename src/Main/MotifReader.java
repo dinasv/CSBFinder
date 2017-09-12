@@ -18,58 +18,50 @@ public class MotifReader {
     }
 
     /**
-     * Read COG_INFO_TABLE.txt and fill cog_info. For each cog that is used in our data, save information of functional category
+     * Read COG_INFO_TABLE.txt and fill cog_info. For each cog that is used in our data,
+     * save information of functional category
      * @throws FileNotFoundException
      */
-    public HashMap<String, COG> read_cog_info_table(HashMap<String, Integer> cog_to_index) throws FileNotFoundException {
+    public static HashMap<String, COG> read_cog_info_table(String cog_info_file_name) {
         HashMap<String, COG> cog_info = new HashMap<>();
 
-        BufferedReader br = new BufferedReader(new FileReader("input/COG_INFO_TABLE.txt"));
+        BufferedReader br = null;
         try {
-
-            int counter = 0;
+            br = new BufferedReader(new FileReader(cog_info_file_name));
             String line = br.readLine();
             while (line != null) {
 
                 String[] cog_line = line.split(";");
+                if (cog_line.length > 0) {
+                    String cog_id = cog_line[0];
 
-                String cog_id = cog_line[0];
-                cog_id = cog_id.substring(3);
+                    if (cog_line.length > 1) {
+                        String cog_desc = cog_line[1];
+                        if (cog_line.length > 2) {
+                            String[] functional_letters = cog_line[2].split(",");
+                            String[] functional_categories = new String[functional_letters.length];
+                            if (cog_line.length > 2 + functional_letters.length) {
+                                for (int i = 0; i < functional_letters.length; i++) {
+                                    functional_categories[i] = cog_line[3 + i];
+                                }
+                                COG cog = new COG(cog_id, cog_desc, functional_letters, functional_categories);
+                                cog_info.put(cog_id, cog);
+                            }
+                            line = br.readLine();
+                        }
 
-                if (cog_to_index.containsKey(cog_id)) {
-                    String letters = cog_line[1];
-
-                    int index = 2;
-                    String char_letters = ""+letters.charAt(0);
-                    String fun_cats = cog_line[index++];
-                    String letter_descs = cog_line[index++].replace("/", "_");
-                    letter_descs = letter_descs.replace(":", "");
-                    for (int i = 1; i < letters.length(); i++) {
-                        char_letters += letters.charAt(i);
-                        fun_cats += "_OR_" + cog_line[index++];
-                        letter_descs += "_OR_" + cog_line[index++].replace("/", "_").replace(":", "");
                     }
-
-                    String sub_cat_desc = cog_line[index];
-                    String cog_type = "";
-
-                    COG cog = new COG(cog_id, char_letters, fun_cats, letter_descs, sub_cat_desc, cog_type);
-                    cog_info.put(cog_id, cog);
-                    counter ++;
-                }else{
-                    //System.out.println(cog_id);
-                    //System.out.println("COGs with info: " + counter);
                 }
-                line = br.readLine();
-
             }
             br.close();
 
         } catch (IOException e) {
-            e.printStackTrace();
+            System.out.println("File " + cog_info_file_name + " was not found");
         } finally {
             try {
-                br.close();
+                if (br != null) {
+                    br.close();
+                }
             } catch (IOException e) {
                 e.printStackTrace();
             }

@@ -1,5 +1,7 @@
 package Main;
 
+import PostProcess.Family;
+import PostProcess.FamilyClustering;
 import SuffixTrees.GeneralizedSuffixTree;
 import SuffixTrees.Trie;
 import Utils.Utils;
@@ -30,15 +32,17 @@ public class Main {
     @Parameter(names={"--quorum1", "-q1"}, description = "exact instance quorum")
     int quorum1 = 1;
     @Parameter(names={"--quorum2", "-q2"}, description = "approximate instance quorum")
-    int quorum2 = 1;
+    int quorum2 = -1;
     @Parameter(names={"--minlength", "-l"}, description = "minimal motif length")
-    int min_motif_length = 2;
+    int min_motif_length = -1;
+    @Parameter(names={"--maxlength", "-lmax"}, description = "maximal motif length")
+    int max_motif_length = Integer.MAX_VALUE;
     @Parameter(names={"--boolean-count", "-bcount"}, description = "if true, count one instance per input string",
             arity = 1)
     boolean bool_count = true;
     @Parameter(names={"--datasetname", "-ds"}, description = "dataset name")
     String dataset_name = "dataset1";
-    @Parameter(names={"--input", "-i"}, description = "input file name", required = true)
+    @Parameter(names={"--input", "-in"}, description = "input file name", required = true)
     String input_file_name = "";
     @Parameter(names={"--motifs", "-m"}, description = "input motifs file name")
     String input_motifs_file_name = null;
@@ -63,9 +67,9 @@ public class Main {
 
     public void run() throws Exception {
         if (help){
-            System.out.println("-i [input file name]");
+            System.out.println("-ins [input file name]");
         }else {
-            Utils utils = new Utils();
+            Utils utils = new Utils("input/"+cog_info_file_name);
 
             try {
                 if (!debug) {//disable logging information printed to screen
@@ -83,7 +87,9 @@ public class Main {
             }
 
             long startTime = System.nanoTime();
-            min_motif_length = 2 + max_error;
+            if (min_motif_length < 2) {
+                min_motif_length = 2 + max_error;
+            }
 
             findMotifs(utils);
 
@@ -130,34 +136,40 @@ public class Main {
 
         GeneralizedSuffixTree dataset_suffix_tree = new GeneralizedSuffixTree();
         utils.logger.info("Building Data tree");
+        System.out.println("Building Data tree");
 
-        utils.read_and_build_cog_words_tree(input_file_name, dataset_suffix_tree);
+
+        int number_of_genomes = utils.read_and_build_cog_words_tree(input_file_name, dataset_suffix_tree);
+        if (quorum2 == -1) {
+            quorum2 = number_of_genomes / 2;
+        }
 
         Trie motif_tree = null;
-        if (input_motifs_file_name == null) {
-            if (!memory_saving_mode) {
-                motif_tree = new Trie("enumeration");
-                utils.buildMotifTreeFromDataTree(motif_tree, dataset_suffix_tree, quorum1);
-            }
-        } else {
+        if (input_motifs_file_name != null) {
             motif_tree = new Trie("motif");
             String path = "input/" + input_motifs_file_name + ".txt";
             utils.buildMotifsTreeFromFile(path, motif_tree);
         }
 
-        String parameters = "_err" + max_error + "_wc" + max_deletion + "_del" + max_deletion +
-                "_ins" + max_insertion + "_q1_" + quorum1 + "_q2_" + quorum2 + "_l" + min_motif_length;
+        String parameters = "_ins" + max_insertion + "_q1_" + quorum1 + "_q2_" + quorum2 + "_l" + min_motif_length;
 
         String catalog_path = "output/motif_catalog_" + dataset_name + parameters;
         String motif_instances_path = catalog_path + "_instances";
 
-        Writer writer = new Writer(max_error, max_deletion, max_insertion, debug, catalog_path, motif_instances_path);
+        boolean include_families = true;
+        if (memory_saving_mode){
+            include_families = false;
+        }
 
-        System.out.println("Extracting motifs");
+        Writer writer = new Writer(max_error, max_deletion, max_insertion, debug, catalog_path, motif_instances_path,
+                include_families);
 
-        OGMFinder ogmFinder = new OGMFinder(max_error, max_deletion, max_deletion, max_insertion, quorum1, quorum2, min_motif_length,
-                gap_char, wc_char, unknown_char, dataset_suffix_tree, motif_tree, bool_count, utils,
-                memory_saving_mode, writer);
+        System.out.println("Extracting motifs from " + number_of_genomes + " genomes. " +
+                "Parameters: quorum="+ quorum2 + ", k=" + max_insertion + ", min-length=" + min_motif_length);
+
+        OGMFinder ogmFinder = new OGMFinder(max_error, max_deletion, max_deletion, max_insertion, quorum1, quorum2,
+                min_motif_length, max_motif_length, gap_char, wc_char, unknown_char, dataset_suffix_tree, motif_tree,
+                bool_count, utils, memory_saving_mode, writer, debug);
 
         if (input_motifs_file_name == null) {
             if (!debug && !memory_saving_mode) {
@@ -168,17 +180,31 @@ public class Main {
 
         if (!debug) {
             if (!memory_saving_mode) {
-                ArrayList<Motif> motifs_nodes = ogmFinder.getMotifs();
+                ArrayList<Motif> motifs = ogmFinder.getMotifs();
 
-                for (Motif motif : motifs_nodes) {
-                    writer.printMotif(motif, utils);
+                for (Motif motif: motifs){
+                    motif.calculateScore(utils, max_insertion, max_error, max_deletion);
+                    motif.calculateMainFunctionalCategory(utils);
+                }
+
+                System.out.println("Clustering to families");
+                ArrayList<Family> families = FamilyClustering.Cluster(motifs, 0.8, utils);
+
+                for (Family family: families) {
+                    writer.printFilteredMotif(family.getMotifs().get(0), utils, family.getFamilyId());
+                    for (Motif motif : family.getMotifs()) {
+                        writer.printMotif(motif, utils, family.getFamilyId());
+                    }
                 }
             }
-
-            writer.closeFiles();
         }
+        writer.closeFiles();
 
-        postProcess(catalog_path);
+        /*
+        if (!debug) {
+            System.out.println("Clustering to families");
+            postProcess(catalog_path);
+        }*/
 
         System.out.println(writer.getCountPrintedMotifs() + " motifs found");
 
@@ -190,7 +216,7 @@ public class Main {
         if (debug) {
             try {
                 if (max_insertion > 0) {
-                    PrintWriter output = new PrintWriter(new FileOutputStream(new File("insertions.txt"), true));
+                    PrintWriter output = new PrintWriter(new FileOutputStream(new File("OGMFinder.txt"), true));
                     output.println("err=" + max_insertion + "\t" + "q=" + quorum2);
                     output.println("Time" + "\t" + estimatedTime);
                     output.println("T_M nodes" + "\t" + ogmFinder.count_nodes_in_motif_tree);
@@ -227,6 +253,8 @@ public class Main {
             command[1] = catalog_path;
             command[2] = "-t";
             command[3] = Double.toString(threshold);
+
+            System.out.println("Executing " + String.join(" ", command));
 
             Process p = Runtime.getRuntime().exec(command);
             p.waitFor();

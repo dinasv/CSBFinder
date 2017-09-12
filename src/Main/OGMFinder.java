@@ -21,6 +21,7 @@ public class OGMFinder {
     private int q1;
     private int q2;
     private int min_motif_length;
+    private int max_motif_length;
 
     private GeneralizedSuffixTree data_tree;
 
@@ -34,14 +35,16 @@ public class OGMFinder {
     private int last_motif_key;
     private boolean memory_saving_mode;
 
+    private boolean debug;
+
     int total_chars_in_data;
     Utils utils;
     Writer writer;
 
     public OGMFinder(int max_error, int max_motif_wildcard, int max_deletion, int max_insertion, int quorum1, int quorum2,
-                     int min_motif_length, int gap_char, int wildcard_char, int unkown_cog_char,
+                     int min_motif_length, int max_motif_length, int gap_char, int wildcard_char, int unkown_cog_char,
                      GeneralizedSuffixTree data_t, Trie motif_trie, boolean count_by_keys, Utils utils,
-                     boolean memory_saving_mode, Writer writer){
+                     boolean memory_saving_mode, Writer writer, boolean debug){
 
         motifs = new HashMap<>();
         this.max_error = max_error;
@@ -52,6 +55,7 @@ public class OGMFinder {
         q1 = quorum1;
         q2 = quorum2;
         this.min_motif_length = min_motif_length;
+        this.max_motif_length = max_motif_length;
         this.gap_char = gap_char;
         this.wildcard_char = wildcard_char;
         this.unkown_cog_char = unkown_cog_char;
@@ -61,6 +65,7 @@ public class OGMFinder {
         last_motif_key = 0;
         this.memory_saving_mode = memory_saving_mode;
         this.writer = writer;
+        this.debug = debug;
 
         count_nodes_in_motif_tree = 0;
         count_nodes_in_data_tree = 0;
@@ -373,7 +378,8 @@ public class OGMFinder {
             diff_instances_count = extended_motif_node.getInstanceIndexCount();
         }
 
-        if (exact_instances_count >= q1 && diff_instances_count >= q2) {
+        if (exact_instances_count >= q1 && diff_instances_count >= q2 &&
+                (extended_motif_length - motif_wildcard_count <= max_motif_length)) {
             String type = extended_motif_node.getType();
             int ret;
             if (type.equals("enumeration")){
@@ -392,6 +398,8 @@ public class OGMFinder {
                                 extended_motif_node.getExact_instance_count());
 
                         if (memory_saving_mode){
+                            new_motif.calculateScore(utils, max_insertion, max_error, max_deletion);
+                            new_motif.calculateMainFunctionalCategory(utils);
                             writer.printMotif(new_motif, utils);
                         }else {
                             motifs.put(extended_motif, new_motif);
@@ -402,23 +410,24 @@ public class OGMFinder {
                         if (!(starts_with_wildcard(extended_motif))) {
                             //make sure that extended_motif is right maximal, if extended_motif has the same number of
                             // instances as the longer motif, prefer the longer motif
-                            if (diff_instances_count > ret) {// diff_instances_count >= ret always
+                            if (diff_instances_count > ret || debug) {// diff_instances_count >= ret always
                                 Motif new_motif = new Motif(extended_motif_node.getMotifKey(), extended_motif,
                                         extended_motif.split("\\|"), extended_motif_length,
                                         extended_motif_node.getInstanceKeys(), extended_motif_node.getInstances(),
                                         extended_motif_node.getExact_instance_count());
 
                                 if (memory_saving_mode){
+                                    new_motif.calculateScore(utils, max_insertion, max_error, max_deletion);
+                                    new_motif.calculateMainFunctionalCategory(utils);
                                     writer.printMotif(new_motif, utils);
                                 }else {
                                     motifs.put(extended_motif, new_motif);
 
+                                    /*
                                     if (motifs.size() % 1000 == 0){
                                         System.out.println("extracted " + motifs.size() + " so far");
-                                    }
+                                    }*/
                                 }
-
-
                             }
                         }
                     } else {
