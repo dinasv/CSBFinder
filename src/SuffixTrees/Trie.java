@@ -3,7 +3,7 @@ import Words.WordArray;
 import Utils.Utils;
 
 /**
- * Represents a Trie of string - each edge has only 1 char
+ * Represents a Generalized Trie - each edge has only 1 char
  * A string inserted to the Trie is the concatenation of labels from the root to a node with a key of that string
  */
 public class Trie {
@@ -11,13 +11,13 @@ public class Trie {
     /**
      * The root of the suffix tree
      */
-    public final MotifNode root;
+    public final PatternNode root;
     private boolean debug;
-    private String type;
+    private TreeType type;
     int last_key;
 
-    public Trie(String type){
-        root = new MotifNode(type);
+    public Trie(TreeType type){
+        root = new PatternNode(type);
 
         debug = false;
         this.type = type;
@@ -25,40 +25,40 @@ public class Trie {
         last_key = 0;
     }
 
-    public MotifNode getRoot(){
+    public PatternNode getRoot(){
         return root;
     }
 
-    public MotifNode put(WordArray str, Utils utils, int key){
-        MotifNode last_node = put(str, root, true, utils);
-        if (last_node != null && type.equals("motif")){
+    public PatternNode put(WordArray str, Utils utils, int key){
+        PatternNode last_node = put(str, root, true, utils);
+        if (last_node != null && type == TreeType.STATIC){
             last_node.setKey(key);
         }
         return last_node;
     }
 
-    public MotifNode put(WordArray str, Utils utils){
+    public PatternNode put(WordArray str, Utils utils){
         return put(str, root, true, utils);
     }
 
-    public MotifNode addNode(int ch, MotifNode src_node){
-        MotifNode target_node = src_node.getTargetNode(ch);
+    public PatternNode addNode(int ch, PatternNode src_node){
+        PatternNode target_node = src_node.getTargetNode(ch);
         if (target_node == null){
-            target_node = new MotifNode(type);
+            target_node = new PatternNode(type);
             src_node.addTargetNode(ch, target_node);
         }
         return target_node;
     }
 
-    public MotifNode put(WordArray str, MotifNode src_node, boolean include_unknown_char, Utils utils){
+    public PatternNode put(WordArray str, PatternNode src_node, boolean include_unknown_char, Utils utils){
         if (str.get_length() > 0) {
-            MotifNode curr_node = src_node;
+            PatternNode curr_node = src_node;
             for (int i = 0; i < str.get_length(); i++) {
                 int str_char = str.get_index(i);
-                if (include_unknown_char || (!include_unknown_char && !utils.index_to_cog.get(str_char).equals("X"))) {
+                if (include_unknown_char || (!include_unknown_char && !utils.index_to_char.get(str_char).equals("X"))) {
                     curr_node = addNode(str_char, curr_node);
 
-                    if (type.equals("enumeration") && curr_node.getMotifKey() <= 0) {
+                    if (type == TreeType.VIRTUAL && curr_node.getPatternKey() <= 0) {
                         curr_node.setKey(++last_key);
                     }
                 }
@@ -75,22 +75,22 @@ public class Trie {
      * @param key the key of that string
      * @throws IllegalStateException if an invalid index is passed as input
      */
-    public MotifNode put(WordArray str, int key, MotifNode extended_str_node) throws IllegalStateException {
+    public PatternNode put(WordArray str, int key, PatternNode extended_str_node) throws IllegalStateException {
         if (str.get_length() > 0) {
-            MotifNode curr_node = root;
+            PatternNode curr_node = root;
             int index = 0;
             //as long as the infix of str is in the tree, go on
             for (int i = 0; i < str.get_length(); i++) {
                 int str_char = str.get_index(i);
 
-                MotifNode target_node = curr_node.getTargetNode(str_char);
+                PatternNode target_node = curr_node.getTargetNode(str_char);
                 //there is no outgoing edge with str_char
                 if (target_node == null) {
                     break;
                 }
                 curr_node = target_node;
 
-                if (type.equals("enumeration") && curr_node.getMotifKey() <= 0){
+                if (type == TreeType.VIRTUAL && curr_node.getPatternKey() <= 0){
                     curr_node.setKey(++last_key);
                 }
 
@@ -108,12 +108,12 @@ public class Trie {
             for (int i = index; i < str.get_length(); i++) {
                 int str_char = str.get_index(i);
 
-                MotifNode next_node = new MotifNode(type);
+                PatternNode next_node = new PatternNode(type);
                 curr_node.addTargetNode(str_char, next_node);
 
                 curr_node = next_node;
 
-                if (type.equals("enumeration") && curr_node.getMotifKey() <= 0){
+                if (type == TreeType.VIRTUAL && curr_node.getPatternKey() <= 0){
                     curr_node.setKey(++last_key);
                 }
 
@@ -124,7 +124,7 @@ public class Trie {
             }
 
 
-            if (extended_str_node == null && type.equals("motif")) {
+            if (extended_str_node == null && type == TreeType.STATIC) {
                 curr_node.setKey(key);
             }
 
@@ -146,7 +146,7 @@ public class Trie {
         }
         return null;
     }
-    public Pair<MotifNode, Integer> search(WordArray str){
+    public Pair<PatternNode, Integer> search(WordArray str){
         return search(str, root);
     }
 
@@ -155,12 +155,12 @@ public class Trie {
      * @param str
      * @return
      */
-    public Pair<MotifNode, Integer> search(WordArray str, MotifNode src_node){
-        MotifNode curr_node = src_node;
+    public Pair<PatternNode, Integer> search(WordArray str, PatternNode src_node){
+        PatternNode curr_node = src_node;
         int index = 0;
         for (int i = 0; i < str.get_length(); i++) {
             int str_char = str.get_index(i);
-            MotifNode target_node = curr_node.getTargetNode(str_char);
+            PatternNode target_node = curr_node.getTargetNode(str_char);
 
             if (target_node == null){
                 break;
@@ -194,7 +194,7 @@ public class Trie {
         }
     }
 
-    public String getType(){
+    public TreeType getType(){
         return type;
     }
 }

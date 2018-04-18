@@ -1,6 +1,6 @@
 package PostProcess;
 
-import Main.Motif;
+import Main.Pattern;
 import Utils.Utils;
 
 import java.util.ArrayList;
@@ -10,34 +10,47 @@ import java.util.HashSet;
 
 /**
  * Created by Dina on 23/08/2017.
+ * Represents a family of patterns that share characters
  */
 public class Family {
+
     private String family_id;
-    private int family_rank;
-    private ArrayList<Motif> motifs;
-    private HashSet<Integer> gene_set;
+    //private int family_rank;
+    //members of the family
+    private ArrayList<Pattern> patterns;
+    //contains the union of all characters of all family members
+    private HashSet<Integer> char_set;
+    /**
+     * Score of the highest scoring member.
+     * Updated after calling  {@link #sortPatternsAndSetScore() sortPatternsAndSetScore} method
+     */
     private double score;
     private Utils utils;
 
-    public Family(String family_id, Motif first_motif, String[] genes, Utils utils){
+    public Family(String family_id, Pattern first_pattern, Utils utils){
         this.utils = utils;
         score = -1;
         this.family_id = family_id;
-        motifs = new ArrayList<>();
-        motifs.add(first_motif);
-        gene_set = new HashSet<>();
-        for (String cog: genes) {
-            int cog_index = utils.cog_to_index.get(cog);
-            gene_set.add(cog_index);
+        patterns = new ArrayList<>();
+        patterns.add(first_pattern);
+        char_set = new HashSet<>();
+        addCharsToCharsSet(first_pattern);
+    }
+
+    private void addCharsToCharsSet(Pattern pattern){
+        for (String cog: pattern.getPatternArr()) {
+            int cog_index = utils.char_to_index.get(cog);
+            char_set.add(cog_index);
         }
     }
 
     public HashSet<Integer> getGeneSet(){
-        return gene_set;
+        return char_set;
     }
 
-    public void addMotif(Motif motif){
-        motifs.add(motif);
+    public void addPattern(Pattern pattern){
+        addCharsToCharsSet(pattern);
+        patterns.add(pattern);
     }
 
     public String getFamilyId(){
@@ -52,13 +65,13 @@ public class Family {
         this.score = score;
     }
 
-    public void sortMotifs(){
-        Collections.sort(motifs, new Motif.ScoreComparator());
-        score = motifs.get(0).getScore();
+    public void sortPatternsAndSetScore(){
+        Collections.sort(patterns, new Pattern.ScoreComparator());
+        score = patterns.get(0).getScore();
     }
 
-    public ArrayList<Motif> getMotifs(){
-        return motifs;
+    public ArrayList<Pattern> getPatterns(){
+        return patterns;
     }
 
     public static class ScoreComparator implements Comparator<Family> {

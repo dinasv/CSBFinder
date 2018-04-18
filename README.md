@@ -1,5 +1,5 @@
 # OGMFinder
-OGMFinder was designed to find all ordered gene motifs (OGMs) in the input dataset. Given input genomes that are represented as gene 
+OGMFinder was designed to find all ordered gene patterns (OGMs) in the input dataset. Given input genomes that are represented as gene
 strings over an alphabet of gene family ids, an **_OGM_** is defined to be a substring of one of the genomes,
 that has an instance in at least **_q_** genomes. An instance of an OGM is allowed to have at most **_k_** insertions in relation to 
 that OGM. For example, if ABC is an OGM (each letter is a different gene family id) and k=2, ABC, AABC and ADBBC are instances of ABC, 

@@ -5,7 +5,12 @@ import Words.WordArray;
 import java.io.Serializable;
 
 /**
- * Based on https://github.com/abahgat/suffixtree code
+ * A modified version of the Suffix Tree code in https://github.com/abahgat/suffixtree
+ * Copyright 2012 Alessandro Bahgat Shehata
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
  * A Generalized Suffix Tree, based on the Ukkonen's paper "On-line construction of suffix trees"
  * http://www.cs.helsinki.fi/u/ukkonen/SuffixT1withFigs.pdf
  *
@@ -55,9 +60,6 @@ public class GeneralizedSuffixTree  implements Serializable{
 
     //The string from the root to this node is the full last added string (using "put")
     private SuffixNode fullStringNode;
-
-    //private HashMap<BitSet, Integer> bitset_to_cog = null;
-    //private ArrayList<String> index_to_cog;
 
     public GeneralizedSuffixTree() throws Exception {
         root = new InstanceNode();
@@ -162,11 +164,11 @@ public class GeneralizedSuffixTree  implements Serializable{
      * Entries must be inserted so that their indexes are in non-decreasing order,
      * otherwise an IllegalStateException will be raised.
      *
-     * @param str the string added to the tree
-     * @param key the key of that string
-     * @throws IllegalStateException if an invalid index is passed as input
+     * @param str the string (word) added to the tree
+     * @param key the key of the genome
+     * @param word_id the id of the word containing str
      */
-    public void put(WordArray str, int key, int word_index) throws IllegalStateException {
+    public void put(WordArray str, int key, String word_id, int word_index, int reverse) {
 
         // reset activeLeaf
         activeLeaf = root;
@@ -207,7 +209,7 @@ public class GeneralizedSuffixTree  implements Serializable{
 
         //add recursively the key and indexes to the nodes corresponding to this string
 
-        ((InstanceNode)fullStringNode).addDataIndex(key, word_index, 0);
+        ((InstanceNode)fullStringNode).addDataIndex(key, word_id, word_index, reverse);
 
 
     }
@@ -234,21 +236,15 @@ public class GeneralizedSuffixTree  implements Serializable{
     private Pair<Boolean, SuffixNode> testAndSplit(final SuffixNode inputs, final WordArray stringPart, final int t,
                                                    final WordArray remainder) {
 
-        //String stringPart_str = stringPart.to_string(bitset_to_cog, index_to_cog);
-        //String remainder_str = remainder.to_string(bitset_to_cog, index_to_cog);
-
         // descend the tree as far as possible
         Pair<SuffixNode, WordArray> ret = canonize(inputs, stringPart);
         SuffixNode s = ret.getFirst();
         WordArray str = ret.getSecond();
 
-        //String str_str = str.to_string(bitset_to_cog, index_to_cog);
-
         if (str.get_length() > 0) {
             Edge g = s.getEdge(str.get_index(0));
 
             WordArray label = g.getLabel();
-            //String label_str = label.to_string(bitset_to_cog, index_to_cog);
             // must see whether "str" is substring of the label of an edge
             if ((label.get_length() > str.get_length()) && (label.get_index(str.get_length()) == t)) {
                 return new Pair<Boolean, SuffixNode>(true, s);
@@ -282,8 +278,6 @@ public class GeneralizedSuffixTree  implements Serializable{
             } else {
 
                 if (remainder.equal(e.getLabel())) {
-                    //remainder_str = remainder.to_string(bitset_to_cog, index_to_cog);
-                    //String label_str = e.getLabel().to_string(bitset_to_cog, index_to_cog);
 
                     // update payload of destination node
                     //e.getDest().addRef(key);
@@ -308,7 +302,7 @@ public class GeneralizedSuffixTree  implements Serializable{
                     //e.setLabel(e.getLabel().substring(remainder.length())); --ORIGINAL CODE--
 
                     WordArray e_label_substr = getSubstring(e_label, remainder.get_length(), e_label.get_length());
-                    //String label_str = e_label_substr.to_string(bitset_to_cog, index_to_cog);
+                    //String label_str = e_label_substr.to_string(bitset_to_cog, index_to_char);
 
                     e.setLabel( e_label_substr );
                     newNode.addEdge(e_label_substr.get_index(0), e);
@@ -339,7 +333,6 @@ public class GeneralizedSuffixTree  implements Serializable{
             return new Pair<SuffixNode, WordArray>(s, inputstr);
         } else {
             SuffixNode currentNode = s;
-            //String str = inputstr;
 
             WordArray str = copySeq(inputstr);
             //Edge g = s.getEdge(str.charAt(0)); --ORIGINAL CODE--
@@ -379,16 +372,11 @@ public class GeneralizedSuffixTree  implements Serializable{
             SuffixNode s = inputNode;
 
             WordArray tempstr = stringPart;
-            //String tempstr_str = tempstr.to_string(bitset_to_cog, index_to_cog);
-            //String rest_str = rest.to_string(bitset_to_cog, index_to_cog);
 
             int newChar = stringPart.get_index(stringPart.get_length() - 1);
 
             // line 1
             SuffixNode oldroot = root;
-
-            // line 1b
-            //Pair<Boolean, Node> ret = testAndSplit(s, tempstr.substring(0, tempstr.length() - 1), newChar, rest, value); --ORIGINAL CODE--
 
             Pair<Boolean, SuffixNode> ret = testAndSplit(s, getSubstring(tempstr, 0, tempstr.get_length()-1), newChar, rest/*, key, index*/);
 
@@ -413,7 +401,6 @@ public class GeneralizedSuffixTree  implements Serializable{
                         fullStringNode = leaf;
                     }
 
-                    //rest_str = rest.to_string(bitset_to_cog, index_to_cog);
                     Edge newedge = new Edge(rest, leaf);
                     r.addEdge(newChar, newedge);
                 }

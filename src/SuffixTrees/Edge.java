@@ -9,7 +9,6 @@ import java.io.Serializable;
  * It has a label and a destination Node
  */
 public class Edge implements Serializable{
-    //private String label;
     private WordArray label;
     private SuffixNode dest;
 

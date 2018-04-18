@@ -50,8 +50,8 @@ public class InstanceNode extends SuffixNode {
     /**
      * Add position of the suffix (the starting index) of the string "key"
      */
-    void addDataIndex(int key, int word_index, int index) {
-        String val = word_index + "_" + index;
+    void addDataIndex(int key, String word_id, int index, int reverse) {
+        String val = word_id + "_" + index;
 
         ArrayList<String> key_indexes = data.get(key);
         if (key_indexes == null){
@@ -61,16 +61,16 @@ public class InstanceNode extends SuffixNode {
         data.put(key, key_indexes);
 
         // add this reference to all the suffixes as well
-        addIndexToSuffix(this, key, word_index, index);
+        addIndexToSuffix(this, key, word_id, index, reverse);
 
     }
 
-    private void addIndexToSuffix(InstanceNode node, int key, int word_index, int index){
+    private void addIndexToSuffix(InstanceNode node, int key, String word_id, int index, int reverse){
         InstanceNode iter = node.getSuffix();
         if (iter != null) {
             while (iter.getSuffix() != null) {
-                index++;
-                String val = word_index + "_" + index;
+                index += reverse;
+                String val = word_id + "_" + index;
 
                 ArrayList<String> key_indexes = iter.data.get(key);
                 if (key_indexes == null){

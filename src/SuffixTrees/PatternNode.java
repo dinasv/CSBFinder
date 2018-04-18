@@ -6,20 +6,20 @@ import java.util.*;
 
 /**
  * Created by Dina on 7/21/2016.
- * Represents a node in the motif tree
+ * Represents a node in the pattern tree
  */
-public class MotifNode {
-    private HashMap<Integer, MotifNode> target_nodes;
+public class PatternNode {
+    private HashMap<Integer, PatternNode> target_nodes;
     /**
      * Contains the key of the string concatenation from the root
      */
-    private int motif_key;
+    private int pattern_key;
 
     private int copy_count;
 
-    private String type;
+    private TreeType type;
 
-    private MotifNode suffix;
+    private PatternNode suffix;
 
     private int substring_length;
 
@@ -30,16 +30,16 @@ public class MotifNode {
     private String substring;
 
     /**
-     * Saves instances of the motif that starts in the root and ends in this node
+     * Saves instances of the pattern that starts in the root and ends in this node
      */
     private ArrayList<Instance> Instances;
     /**
-     * Saves all different keys of strings that the motif has an instance in.
+     * Saves all different keys of strings that the pattern has an instance in.
      * (union of getResult from all instance nodes)
      */
     private HashSet InstanceKeys;
     /**
-     * Saves number of instances of the motif (including multiple instances in the same input string)
+     * Saves number of instances of the pattern (including multiple instances in the same input string)
      */
     private int instanceIndexCount;
 
@@ -47,11 +47,11 @@ public class MotifNode {
 
     private int exact_instance_count;
 
-    public MotifNode(String type){
-        target_nodes = new HashMap<Integer, MotifNode>();
+    public PatternNode(TreeType type){
+        target_nodes = new HashMap<Integer, PatternNode>();
         suffix = null;
 
-        motif_key = -1;
+        pattern_key = -1;
         copy_count = 0;
         this.type = type;
 
@@ -66,10 +66,10 @@ public class MotifNode {
         exact_instance_count = 0;
     }
 
-    public MotifNode(MotifNode other){
+    public PatternNode(PatternNode other){
         substring = other.getSubstring();
         substring_length = other.getSubstring_length();
-        motif_key = other.getMotifKey();
+        pattern_key = other.getPatternKey();
         copy_count = other.getCopy_count()+1;
         type = other.type;
         suffix = other.getSuffix();
@@ -80,12 +80,12 @@ public class MotifNode {
         p_val = 0;
         exact_instance_count = 0;
 
-        HashMap<Integer, MotifNode> other_target_nodes = other.getTarget_nodes();
-        target_nodes = new HashMap<Integer, MotifNode>(other_target_nodes.size());
+        HashMap<Integer, PatternNode> other_target_nodes = other.getTarget_nodes();
+        target_nodes = new HashMap<Integer, PatternNode>(other_target_nodes.size());
         target_nodes.putAll(other_target_nodes);
     }
 
-    public HashMap<Integer, MotifNode> getTarget_nodes(){
+    public HashMap<Integer, PatternNode> getTarget_nodes(){
         return target_nodes;
     }
     public int getSubstring_length() {
@@ -96,35 +96,35 @@ public class MotifNode {
         this.substring_length = substring_length;
     }
 
-    public void addTargetNode(int ch, MotifNode node){
+    public void addTargetNode(int ch, PatternNode node){
         target_nodes.put(ch, node);
     }
 
-    public MotifNode getTargetNode(int ch){
+    public PatternNode getTargetNode(int ch){
         return target_nodes.get(ch);
     }
-    public MotifNode getSuffix() {
+    public PatternNode getSuffix() {
         return suffix;
     }
 
-    public void setSuffix(MotifNode suffix) {
+    public void setSuffix(PatternNode suffix) {
         this.suffix = suffix;
     }
 
-    public String getType(){
+    public TreeType getType(){
         return type;
     }
 
-    public void setType(String type){
+    public void setType(TreeType type){
         this.type = type;
     }
 
-    public int getMotifKey(){
-        return motif_key;
+    public int getPatternKey(){
+        return pattern_key;
     }
 
     public void setKey(int key){
-        motif_key = key;
+        pattern_key = key;
     }
 
     public int getCopy_count(){

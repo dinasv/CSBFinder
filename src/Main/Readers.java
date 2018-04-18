@@ -11,11 +11,7 @@ import java.util.HashMap;
 /**
  * Created by Boris on 19/05/2017.
  */
-public class MotifReader {
-
-    public MotifReader(){
-
-    }
+public class Readers {
 
     /**
      * Read COG_INFO_TABLE.txt and fill cog_info. For each cog that is used in our data,
@@ -34,7 +30,6 @@ public class MotifReader {
                 String[] cog_line = line.split(";");
                 if (cog_line.length > 0) {
                     String cog_id = cog_line[0];
-
                     if (cog_line.length > 1) {
                         String cog_desc = cog_line[1];
                         if (cog_line.length > 2) {
@@ -47,11 +42,14 @@ public class MotifReader {
                                 COG cog = new COG(cog_id, cog_desc, functional_letters, functional_categories);
                                 cog_info.put(cog_id, cog);
                             }
-                            line = br.readLine();
-                        }
 
+                        }else{
+                            COG cog = new COG(cog_id, cog_desc, new String[0], new String[0]);
+                            cog_info.put(cog_id, cog);
+                        }
                     }
                 }
+                line = br.readLine();
             }
             br.close();
 

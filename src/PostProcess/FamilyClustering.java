@@ -1,78 +1,92 @@
 package PostProcess;
 
-import Main.Instance;
-import Main.Motif;
+import Main.Pattern;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.Iterator;
+
 import Utils.Utils;
+
+import Main.CommandLineArgs.ClusterBy;
 
 /**
  * Created by Dina on 23/08/2017.
+ * Clusters patterns to families using a greedy method.
  */
 public class FamilyClustering {
 
-    public static ArrayList<Family> Cluster(ArrayList<Motif> motifs, double threshold, Utils utils){
+    public static ArrayList<Family> Cluster(ArrayList<Pattern> patterns, double threshold, ClusterBy cluster_by,
+                                            Utils utils){
 
-        ArrayList<Family> families = greedyClustering(motifs, threshold, utils);
+        ArrayList<Family> families = greedyClustering(patterns, threshold, cluster_by, utils);
 
         for (Family family: families){
-            family.sortMotifs();
-            for (Motif motif : family.getMotifs()){
-                System.out.println(motif.getScore());
-            }
+            family.sortPatternsAndSetScore();
         }
 
         Collections.sort(families, new Family.ScoreComparator());
         return families;
     }
 
-    private static ArrayList<Family> greedyClustering(ArrayList<Motif> motifs, double threshold, Utils utils){
+    private static ArrayList<Family> greedyClustering(ArrayList<Pattern> patterns, double threshold, ClusterBy cluster_by,
+                                                      Utils utils){
 
-        Collections.sort(motifs, new Motif.LengthComparator());
-        Motif longest_motif = motifs.get(0);
-        Family first_family = new Family("0", longest_motif, longest_motif.getMotif_arr(), utils);
+        if (cluster_by == ClusterBy.LENGTH){
+            Collections.sort(patterns, new Pattern.LengthComparator());
+            System.out.println("Sorting by " + cluster_by);
+        }else {
+            Collections.sort(patterns, new Pattern.ScoreComparator());
+            System.out.println("Sorting by " + cluster_by);
+
+        }
+
         ArrayList<Family> families = new ArrayList<>();
-        families.add(first_family);
+        Iterator<Pattern> it = patterns.iterator();
+        if (it.hasNext()) {
+            Pattern first_pattern = it.next();
+            Family first_family = new Family("0", first_pattern, utils);
+            families.add(first_family);
 
-        for (int i = 1; i < motifs.size(); i++) {
-            Motif curr_motif = motifs.get(i);
-            HashSet<Integer> curr_motif_gene_set = get_genes_set(curr_motif.getMotif_arr(), utils);
-            boolean added_motif = false;
-            for (Family family : families) {
-                HashSet<Integer> family_hash_set = family.getGeneSet();
-                int minimal_set_size = Math.min(family_hash_set.size(), curr_motif_gene_set.size());
+            while (it.hasNext()) {
+                Pattern curr_pattern = it.next();
 
-                HashSet<Integer> intersection = new HashSet<Integer>(curr_motif_gene_set);
-                intersection.retainAll(family_hash_set);
-                int intersection_size = intersection.size();
+                HashSet<Integer> curr_pattern_gene_set = get_genes_set(curr_pattern.getPatternArr(), utils);
+                boolean added_pattern = false;
+                for (Family family : families) {
+                    HashSet<Integer> family_hash_set = family.getGeneSet();
+                    int minimal_set_size = Math.min(family_hash_set.size(), curr_pattern_gene_set.size());
 
-                double thresh = threshold;
-                if (minimal_set_size >= 1 && minimal_set_size <= 3) {
-                    thresh = 1;
+                    HashSet<Integer> intersection = new HashSet<Integer>(curr_pattern_gene_set);
+                    intersection.retainAll(family_hash_set);
+
+                    double thresh = threshold;
+                    if (minimal_set_size >= 1 && minimal_set_size <= 2) {
+                        thresh = 1;
+                    }
+                    if (intersection.size() / (double) minimal_set_size >= thresh) {
+                        family.addPattern(curr_pattern);
+                        added_pattern = true;
+
+                        break;
+                    }
                 }
-                if (intersection_size / (double) minimal_set_size >= thresh) {
-                    family.addMotif(curr_motif);
-                    added_motif = true;
 
-                    break;
+                if (!added_pattern) {
+                    Family new_family = new Family(Integer.toString(families.size()), curr_pattern, utils);
+                    families.add(new_family);
                 }
-            }
-
-            if (!added_motif){
-                Family new_family = new Family(Integer.toString(families.size()), curr_motif, curr_motif.getMotif_arr(),
-                        utils);
-                families.add(new_family);
             }
         }
+
         return families;
     }
 
     private static HashSet<Integer> get_genes_set(String[] genes, Utils utils){
         HashSet<Integer> gene_set = new HashSet<>();
         for (String cog: genes) {
-            int cog_index = utils.cog_to_index.get(cog);
+            int cog_index = utils.char_to_index.get(cog);
             gene_set.add(cog_index);
         }
         return gene_set;

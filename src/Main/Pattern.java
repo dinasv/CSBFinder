@@ -5,22 +5,22 @@ import java.util.*;
 import Utils.*;
 
 /**
- *
+ * Represents a pattern consisting of characters
  **/
-public class Motif{
+public class Pattern {
     /**
      * e.g. COG1234 COG5234
      */
-    private String motif;
+    private String pattern;
     /**
      * Each cell contains the COG id, e.g. [1234, 5234]
      */
-    private String[] motif_arr;
-    private int motif_id;
+    private String[] pattern_arr;
+    private int pattern_id;
     private int instance_count;
 
     private int length;
-    private ArrayList<Instance> motif_instances;
+    private ArrayList<Instance> instances;
 
     private int exact_instance_count;
 
@@ -28,48 +28,48 @@ public class Motif{
 
     private String main_functional_category;
 
-    public Motif(int motif_id, String motif, String[] motif_arr, int length, HashSet<Integer> seq_keys,
-                 ArrayList<Instance> instances, int exact_instance_count){
-        this.motif_id = motif_id;
-        this.motif = motif;
-        this.motif_arr = motif_arr;
+    public Pattern(int pattern_id, String pattern, String[] pattern_arr, int length, HashSet<Integer> seq_keys,
+                   ArrayList<Instance> instances, int exact_instance_count){
+        this.pattern_id = pattern_id;
+        this.pattern = pattern;
+        this.pattern_arr = pattern_arr;
         this.length = length;
-        this.motif_instances = instances;
+        this.instances = instances;
         instance_count = seq_keys.size();
         this.exact_instance_count = exact_instance_count;
         score = 0;
         main_functional_category = "";
     }
 
-    public void setMotif_id(int motif_id){
-        this.motif_id = motif_id;
+    public void setPatternId(int pattern_id){
+        this.pattern_id = pattern_id;
     }
 
-    public int getMotif_id(){
-        return motif_id;
+    public int getPatternId(){
+        return pattern_id;
     }
 
     public ArrayList<Instance> get_instances(){
-        return motif_instances;
+        return instances;
     }
 
     public int getLength(){
         return length;
     }
 
-    public void setMotif(String motif){
-        this.motif = motif;
+    public void setPattern(String pattern){
+        this.pattern = pattern;
     }
-    public String getMotif(){
-        return motif;
+    public String getPattern(){
+        return pattern;
     }
 
-    public int get_instance_count(){
+    public int getInstanceCount(){
         return instance_count;
     }
 
-    public String[] getMotif_arr() {
-        return motif_arr;
+    public String[] getPatternArr() {
+        return pattern_arr;
     }
 
     public int get_exact_instance_count() {
@@ -78,8 +78,8 @@ public class Motif{
 
     public void calculateScore(Utils utils, int max_insertion, int max_error, int max_deletion){
 
-        score = utils.computeMotifScore(motif_arr, max_insertion, max_error, max_deletion, 0,
-                instance_count, motif_id);
+        score = utils.computePatternScore(pattern_arr, max_insertion, max_error, max_deletion,
+                instance_count, pattern_id);
     }
 
     public double getScore(){
@@ -96,7 +96,7 @@ public class Motif{
 
             HashMap<String, Integer> functional_letter_count = new HashMap<>();
             HashMap<String, String> functional_letter_to_desc = new HashMap<>();
-            for (String cog_id : motif_arr) {
+            for (String cog_id : pattern_arr) {
                 COG cog = utils.cog_info.get(cog_id);
                 if (cog != null) {
                     String[] functional_letters = cog.getFunctional_letters();
@@ -139,19 +139,19 @@ public class Motif{
     }
 
 
-    public static class LengthComparator implements Comparator<Motif> {
+    public static class LengthComparator implements Comparator<Pattern> {
 
         @Override
-        public int compare(Motif o1, Motif o2) {
+        public int compare(Pattern o1, Pattern o2) {
 
             // descending order
             return o2.getLength() - o1.getLength();
         }
     }
 
-    public static class ScoreComparator implements Comparator<Motif> {
+    public static class ScoreComparator implements Comparator<Pattern> {
         @Override
-        public int compare(Motif o1, Motif o2) {
+        public int compare(Pattern o1, Pattern o2) {
             if (o2.getScore() < o1.getScore()) return -1;
             if (o2.getScore() > o1.getScore()) return 1;
             return 0;

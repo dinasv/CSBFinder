@@ -206,7 +206,7 @@ public class WordArray implements Serializable{
     public String to_string(Utils utils){
         String str = "";
         for (int i=start_index; i<end_index; i++){
-            str += utils.index_to_cog.get(wordArray[i]) + "|";
+            str += utils.index_to_char.get(wordArray[i]) + "|";
         }
 
         return str;
