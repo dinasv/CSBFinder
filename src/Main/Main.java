@@ -16,9 +16,7 @@ import java.util.logging.SimpleFormatter;
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.ParameterException;
 
-/**
- * Created by Dina on 6/6/2016.
- */
+
 public class Main {
     private static CommandLineArgs cla;
     public static void main(String [ ] args) throws Exception{
@@ -33,7 +31,7 @@ public class Main {
         }catch (ParameterException e){
             System.err.println(e.getMessage());
 
-            jcommander = new JCommander(cla);
+            jcommander = JCommander.newBuilder().addObject(cla).build();
             jcommander.setProgramName("java -jar OGBFinder.jar");
             jcommander.usage();
             System.exit(1);
