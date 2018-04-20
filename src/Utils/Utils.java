@@ -80,7 +80,7 @@ public class Utils {
 
     public HashMap<String, COG> cog_info;
 
-    public Utils(String cog_info_file_name){
+    public Utils(HashMap<String, COG> cog_info){
         index_to_char = new ArrayList<String>();
         char_to_index = new HashMap<String, Integer>();
 
@@ -123,9 +123,8 @@ public class Utils {
 
         words_per_genome = new HashMap<>();
 
-        if (cog_info_file_name != null) {
-            cog_info = Readers.read_cog_info_table(cog_info_file_name);
-        }
+        this.cog_info = cog_info;
+
 
         q_val = new double[200];
 
@@ -227,13 +226,13 @@ public class Utils {
 
     /**
      *
-     * @param input_file_name
+     * @param input_file_path
      * @param dataset_gst
      * @return
      * @throws Exception
      */
-    public int read_and_build_dataset_tree(String input_file_name, GeneralizedSuffixTree dataset_gst) {
-        String file_name = "input/"+input_file_name+".fasta";
+    public int read_and_build_dataset_tree(String input_file_path, GeneralizedSuffixTree dataset_gst) {
+        String file_name = input_file_path;
 
         HashSet<Integer> genomes_indexes = new HashSet<>();
 

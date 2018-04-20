@@ -14,20 +14,30 @@ public class CommandLineArgs {
         SCORE
     }
 
-    public class PositiveInteger implements IParameterValidator {
+    public static class PositiveInteger implements IParameterValidator {
         public void validate(String name, String value) throws ParameterException {
-            int n = Integer.parseInt(value);
-            if (n < 0) {
-                throw new ParameterException("Parameter " + name + " should be positive (found " + value +")");
+            try {
+                int n = Integer.parseInt(value);
+                if (n < 0) {
+                    throw new ParameterException("Parameter " + name + " should be positive (found " + value + ")");
+                }
+            }catch (NumberFormatException e){
+                throw new ParameterException("Parameter " + name + " should be an integer (found " + value + ")");
+
             }
         }
     }
 
-    public class PositiveInteger2 implements IParameterValidator {
+    public static class PositiveInteger2 implements IParameterValidator {
         public void validate(String name, String value) throws ParameterException {
-            int n = Integer.parseInt(value);
-            if (n < 2) {
-                throw new ParameterException("Parameter " + name + " value should be at least 2 (found " + value +")");
+            try {
+                int n = Integer.parseInt(value);
+                if (n < 2) {
+                    throw new ParameterException("Parameter " + name + " value should be at least 2 (found " + value + ")");
+                }
+            }catch (NumberFormatException e){
+                throw new ParameterException("Parameter " + name + " should be an integer (found " + value + ")");
+
             }
         }
     }
@@ -39,18 +49,20 @@ public class CommandLineArgs {
             validateWith = PositiveInteger.class)
     public static int quorum2;
 
-    @Parameter(names={"-qexact"}, description = "Instance quorum without insertions",
-            validateWith = PositiveInteger.class)
+    @Parameter(names={"-qexact"}, description = "Instance quorum without insertions"
+                , validateWith = CommandLineArgs.PositiveInteger.class)
     public static int quorum1 = 1;
 
-    @Parameter(names={"-ins"}, description = "Maximal number of insertions allowed",
-            validateWith = PositiveInteger.class)
+    @Parameter(names={"-ins"}, description = "Maximal number of insertions allowed"
+            ,validateWith = CommandLineArgs.PositiveInteger.class)
     public static int max_insertion = 0;
 
-    @Parameter(names={"-l"}, description = "Minimal cluster length", validateWith = PositiveInteger2.class)
+    @Parameter(names={"-lmin"}, description = "Minimal cluster length"
+            , validateWith = CommandLineArgs.PositiveInteger2.class)
     public static int min_pattern_length = -1;
 
-    @Parameter(names={"-lmax"}, description = "Maximal cluster length", validateWith = PositiveInteger2.class)
+    @Parameter(names={"-lmax"}, description = "Maximal cluster length"
+            , validateWith = CommandLineArgs.PositiveInteger2.class)
     public static int max_pattern_length = Integer.MAX_VALUE;
 
     @Parameter(names={"-bcount"}, description = "If true, count one instance per input string",
@@ -63,7 +75,7 @@ public class CommandLineArgs {
     @Parameter(names={"--patterns", "-p"}, description = "Input patterns file name")
     public static String input_patterns_file_name = null;
 
-    @Parameter(names={"--cog-info"}, description = "gene families info file name")
+    @Parameter(names={"-cog-info"}, description = "Gene families info file name")
     public static String cog_info_file_name = null;
 
     @Parameter(names={"--threshold", "-t"}, description = "Threshold for family clustering")

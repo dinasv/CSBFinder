@@ -73,10 +73,10 @@ public class OGBFinder {
         count_nodes_in_data_tree = 0;
 
         PatternNode pattern_tree_root;
-        if (pattern_trie == null){
+        if (pattern_trie == null){//all patterns will be extracted from the data tree
             pattern_tree_root = new PatternNode(TreeType.VIRTUAL);
             pattern_tree_root.setKey(++last_pattern_key);
-        }else {
+        }else {//if we were given patterns as input
             pattern_tree_root = pattern_trie.getRoot();
         }
         findOGBs(pattern_tree_root);

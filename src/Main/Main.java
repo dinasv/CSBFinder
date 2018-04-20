@@ -5,7 +5,7 @@ import PostProcess.FamilyClustering;
 import SuffixTrees.GeneralizedSuffixTree;
 import SuffixTrees.TreeType;
 import SuffixTrees.Trie;
-import Utils.Utils;
+import Utils.*;
 
 import java.io.*;
 import java.util.*;
@@ -26,10 +26,10 @@ public class Main {
         JCommander jcommander = null;
         try {
             cla = new CommandLineArgs();
-            JCommander.newBuilder()
-                    .addObject(cla)
-                    .build()
-                    .parse(args);
+
+            jcommander = JCommander.newBuilder().addObject(cla).build();
+            jcommander.parse(args);
+
         }catch (ParameterException e){
             System.err.println(e.getMessage());
 
@@ -43,13 +43,14 @@ public class Main {
 
     public void run() throws Exception {
 
-        Utils utils;
-        if (cla.cog_info_file_name == null){
-            utils = new Utils(cla.cog_info_file_name);
-        }else{
-            utils = new Utils("input/"+cla.cog_info_file_name);
+        String INPUT_PATH = "input/";
+
+        HashMap<String, COG> cog_info = null;
+        if (cla.cog_info_file_name != null) {
+            cog_info = Readers.read_cog_info_table(INPUT_PATH + cla.cog_info_file_name);
         }
 
+        Utils utils = new Utils(cog_info);
 
         try {
             if (!cla.debug) {//disable logging information printed to screen
@@ -71,28 +72,21 @@ public class Main {
             cla.min_pattern_length = 2 + cla.max_error;
         }
 
-        findOGBs(utils);
+        pipeline(utils, INPUT_PATH);
 
         float estimatedTime = (float) (System.nanoTime() - startTime) / (float) Math.pow(10, 9);
-        if (cla.debug) {
-            if (cla.max_error >0) {
-                System.out.println("q2=" + cla.quorum2 + " err=" + cla.max_error + " time: " + estimatedTime);
-            }
-            if (cla.max_insertion >0) {
-                System.out.println("q2=" + cla.quorum2 + " ins=" + cla.max_insertion + " time: " + estimatedTime);
-            }
-        }
+
     }
 
     /**
-     * Finds the motifs using OGBFinder and prints them
+     * Executes OGBFinder and prints colinear synteny blocks
      *
      * @param utils
      * @return
      * @throws Exception
      */
 
-    public void findOGBs(Utils utils)
+    public void pipeline(Utils utils, String INPUT_PATH)
             throws Exception {
 
         //wild card
@@ -115,24 +109,23 @@ public class Main {
         System.out.println("Building Data tree");
 
 
-        int number_of_genomes = utils.read_and_build_dataset_tree(cla.input_file_name, dataset_suffix_tree);
+        int number_of_genomes = utils.read_and_build_dataset_tree(INPUT_PATH+cla.input_file_name,
+                                                                    dataset_suffix_tree);
         if (number_of_genomes != -1) {
-            if (cla.quorum2 == -1) {
-                cla.quorum2 = number_of_genomes / 2;
-            }
 
+            //read patterns from a file, and put them in a suffix trie
             Trie pattern_tree = null;
             if (cla.input_patterns_file_name != null) {
                 pattern_tree = new Trie(TreeType.STATIC);
-                String path = "input/" + cla.input_patterns_file_name + ".txt";
+                String path = INPUT_PATH + cla.input_patterns_file_name + ".txt";
                 utils.buildPatternsTreeFromFile(path, pattern_tree);
             }
 
             String parameters = "_ins" + cla.max_insertion + "_q1_" + cla.quorum1 + "_q2_" + cla.quorum2 + "_l" +
                     cla.min_pattern_length;
 
-            String catalog_path = "output/OGB_catalog_" + cla.dataset_name + parameters;
-            String motif_instances_path = catalog_path + "_instances";
+            String catalog_path = "output/Catalog_" + cla.dataset_name + parameters;
+            String instances_path = catalog_path + "_instances";
 
             boolean include_families = true;
             if (cla.memory_saving_mode) {
@@ -140,7 +133,7 @@ public class Main {
             }
 
             Writer writer = new Writer(cla.max_error, cla.max_deletion, cla.max_insertion, cla.debug, catalog_path,
-                    motif_instances_path,
+                    instances_path,
                     include_families, cla.output_file_type, utils.cog_info != null);
 
             System.out.println("Extracting OGBs from " + number_of_genomes + " genomes. " +
@@ -191,7 +184,6 @@ public class Main {
             utils.logger.info("Took " + estimatedTime + " seconds");
 
             System.out.println("Took " + estimatedTime + " seconds");
-
 
         }
     }
