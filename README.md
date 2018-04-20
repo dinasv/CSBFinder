@@ -1,5 +1,5 @@
 # OGMFinder v 0.1
-==============================
+
 -   [Overview](#overview)
 -   [Prerequisites](#prerequisites)
 -   [Running OGMFinder](#running)
