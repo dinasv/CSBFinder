@@ -1,18 +1,28 @@
-# OGMFinder
+# OGMFinder v 0.1
+==============================
+-   [Overview](#overview)
+-   [Prerequisites](#prerequisites)
+-   [Running OGMFinder](#running)
+
+<a name='overview'>Overview</a>
+--------
 OGMFinder was designed to find all ordered gene patterns (OGMs) in the input dataset. Given input genomes that are represented as gene
 strings over an alphabet of gene family ids, an **_OGM_** is defined to be a substring of one of the genomes,
 that has an instance in at least **_q_** genomes. An instance of an OGM is allowed to have at most **_k_** insertions in relation to 
 that OGM. For example, if ABC is an OGM (each letter is a different gene family id) and k=2, ABC, AABC and ADBBC are instances of ABC, 
 while ADGBBC is not. **_q_** and **_k_** are input parameteres specified by the user.
 
-## Getting Started
-OGMFinder can be executed on any operation system using JAVA.
+<a name='prerequisites'>Prerequisites</a>
+--------
 
-### Prerequisites
 [Java Runtime Environment (JRE)](http://www.oracle.com/technetwork/java/javase/downloads/index.html)
 8 or up.
 
-### Running OGMFinder
+<a name='running'>Running OGMFinder</a>
+--------
+
+OGMFinder can be executed on any operation system using JAVA.
+
 In the terminal (linux) or cmd (windows) type:
 ``` 
 java -jar OGMFinder.jar -i [-ins] [-q1] [-q2] [-l] [-bcount] [-ds] [-m] [-mem]
