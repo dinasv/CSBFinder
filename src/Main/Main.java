@@ -79,6 +79,28 @@ public class Main {
     }
 
     /**
+     * Read patterns from a file if a file is given, and put them in a suffix trie
+     * @param INPUT_PATH
+     * @param utils
+     * @return the Trie with the patterns, null if patterns file not given ot building the tree was unsuccessful
+     */
+    private Trie buildPatternsTree(String INPUT_PATH, Utils utils) {
+        Trie pattern_tree = null;
+        if (cla.input_patterns_file_name != null) {
+            //these arguments are not valid when input patterns are give
+            cla.min_pattern_length = 2;
+            cla.max_pattern_length = Integer.MAX_VALUE;
+
+            pattern_tree = new Trie(TreeType.STATIC);
+            String path = INPUT_PATH + cla.input_patterns_file_name;
+            if (!utils.buildPatternsTreeFromFile(path, pattern_tree)){
+                pattern_tree = null;//if tree building wasn't successful
+            }
+        }
+        return pattern_tree;
+    }
+
+    /**
      * Executes OGBFinder and prints colinear synteny blocks
      *
      * @param utils
@@ -86,7 +108,7 @@ public class Main {
      * @throws Exception
      */
 
-    public void pipeline(Utils utils, String INPUT_PATH)
+    private void pipeline(Utils utils, String INPUT_PATH)
             throws Exception {
 
         //wild card
@@ -113,13 +135,8 @@ public class Main {
                                                                     dataset_suffix_tree);
         if (number_of_genomes != -1) {
 
-            //read patterns from a file, and put them in a suffix trie
-            Trie pattern_tree = null;
-            if (cla.input_patterns_file_name != null) {
-                pattern_tree = new Trie(TreeType.STATIC);
-                String path = INPUT_PATH + cla.input_patterns_file_name + ".txt";
-                utils.buildPatternsTreeFromFile(path, pattern_tree);
-            }
+            //read patterns from a file if a file is given, and put them in a suffix trie
+            Trie pattern_tree = buildPatternsTree(INPUT_PATH, utils);
 
             String parameters = "_ins" + cla.max_insertion + "_q1_" + cla.quorum1 + "_q2_" + cla.quorum2 + "_l" +
                     cla.min_pattern_length;

@@ -334,36 +334,51 @@ public class Utils {
         return -1;
     }
 
+    /**
+     * Builds a Trie of patterns, given in a file.
+     * @param input_patterns_file_name
+     * @param pattern_tree
+     * @return True if succesful, False if exception occurred
+     */
+    public boolean buildPatternsTreeFromFile(String input_patterns_file_name, Trie pattern_tree) {
 
-    public void buildPatternsTreeFromFile(String input_patterns_file_name, Trie pattern_tree) throws Exception {
-        BufferedReader br = new BufferedReader(new FileReader(input_patterns_file_name));
         try {
-            //read header
+            BufferedReader br = new BufferedReader(new FileReader(input_patterns_file_name));
+
             String line = br.readLine();
-            if (line != null){
+
+            int pattern_id = 0;
+            while (line != null) {
+                if (line.charAt(0) == '>'){
+                    try {
+                        pattern_id = Integer.parseInt(line.substring(1));
+                    }catch (NumberFormatException e){
+                        System.out.println("Pattern id should be an integer, found " + line);
+                        return false;
+                    }
+                }else {
+                    String[] pattern = line.split("-");
+
+                    if (pattern.length > 1) {
+                        WordArray word = create_word_array_from_str(pattern);
+                        pattern_tree.put(word, this, pattern_id);
+                    }
+                }
                 line = br.readLine();
             }
 
-            while (line != null) {
-                String[] line_arr = line.split("\t");
-                if (line_arr.length > 1) {
-                    int pattern_id = Integer.parseInt(line_arr[0]);
-                    String[] wordStr = line_arr[line_arr.length-1].split("-");
-                    WordArray word = create_word_array_from_str(wordStr);
-                    pattern_tree.put(word, this, pattern_id);
-                    line = br.readLine();
-                }
-            }
-
-        } catch (IOException e) {
-            e.printStackTrace();
-        } finally {
             try {
                 br.close();
             } catch (IOException e) {
-                e.printStackTrace();
+                System.out.println("A problem occurred while reading file " +input_patterns_file_name);
+                return false;
             }
+
+        } catch (IOException e) {
+            System.out.println("A problem occurred while reading file " +input_patterns_file_name);
+            return false;
         }
+        return true;
     }
 
     /**

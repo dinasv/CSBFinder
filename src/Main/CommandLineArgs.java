@@ -59,7 +59,7 @@ public class CommandLineArgs {
 
     @Parameter(names={"-lmin"}, description = "Minimal cluster length"
             , validateWith = CommandLineArgs.PositiveInteger2.class)
-    public static int min_pattern_length = -1;
+    public static int min_pattern_length = 2;
 
     @Parameter(names={"-lmax"}, description = "Maximal cluster length"
             , validateWith = CommandLineArgs.PositiveInteger2.class)
