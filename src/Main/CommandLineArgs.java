@@ -47,7 +47,7 @@ public class CommandLineArgs {
 
     @Parameter(names={"-q"}, description = "Instance quorum with insertions", required = true,
             validateWith = PositiveInteger.class, order = 1)
-    public static int quorum2;
+    public static int quorum2 = 1;
 
     @Parameter(names={"-qexact"}, description = "Instance quorum without insertions"
                 , validateWith = CommandLineArgs.PositiveInteger.class, order = 3)
@@ -57,11 +57,11 @@ public class CommandLineArgs {
             ,validateWith = CommandLineArgs.PositiveInteger.class, order = 2)
     public static int max_insertion = 0;
 
-    @Parameter(names={"-lmin"}, description = "Minimal cluster length"
+    @Parameter(names={"-lmin"}, description = "Minimal length of a CSB"
             , validateWith = CommandLineArgs.PositiveInteger2.class, order = 4)
     public static int min_pattern_length = 2;
 
-    @Parameter(names={"-lmax"}, description = "Maximal cluster length"
+    @Parameter(names={"-lmax"}, description = "Maximal length of a CSB"
             , validateWith = CommandLineArgs.PositiveInteger2.class, order = 5)
     public static int max_pattern_length = Integer.MAX_VALUE;
 
@@ -106,7 +106,7 @@ public class CommandLineArgs {
 
 
 
-    //@Parameter(names = "--help", help = true)
-    //public static boolean help;
+    @Parameter(names = "--help", description = "Show usage", help = true)
+    public static boolean help;
 }
 
