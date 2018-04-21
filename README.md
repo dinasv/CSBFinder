@@ -3,6 +3,8 @@
 -   [Overview](#overview)
 -   [Prerequisites](#prerequisites)
 -   [Running OGMFinder](#running)
+-   [Input files formats](#input)
+
 
 <a name='overview'>Overview</a>
 --------
@@ -25,47 +27,63 @@ OGMFinder can be executed on any operation system using JAVA.
 
 In the terminal (linux) or cmd (windows) type:
 ``` 
-java -jar OGMFinder.jar -i [-ins] [-q1] [-q2] [-l] [-bcount] [-ds] [-m] [-mem]
+java -jar OGMFinder.jar [options]
 ```
-For example, running OGMFinder.jar with input file 'cog_words_plasmid.txt' provided in [https://www.cs.bgu.ac.il/~negevcb/OGMFinder/OGMFinder/input/](https://www.cs.bgu.ac.il/~negevcb/OGMFinder/OGMFinder/input/), with **_q_**=50 and **_k_**=2:
+> Note: When executing OGMFinder on a large dataset, add the option -Xmx8g (8g or more, depending on your RAM size).
+For example:
+``` 
+java -Xmx8g -jar OGMFinder.jar [options]
+```
+
+### Options:
+Mandatory:
+- **-in**   
+    Input file name. See [Input files formats](#input) for more details.
+- **-q**   
+      Instance quorum with insertions. Minimal number of input sequences with a CSB instance.   
+      Default: 1
+      
+Optional:     
+- **-ins**   
+      Maximal number of insertions allowed    
+      Default: 0
+- **-qexact**
+      Instance quorum without insertions. Minimal number of input sequences with a CSB instance without insertions.   
+      Default: 1
+- **-lmin**   
+      Minimal length of a CSB   
+      Default: 2
+- **-lmax**
+      Maximal length of a CSB   
+      Default: 2147483647   
+- **--datasetname, -ds**   
+      Dataset name   
+      Default: dataset1
+- ***--patterns, -p***   
+      Input CSB patterns file name. See [Input files formats](#input) for more details.
+- **-cog-info**   
+      Gene families information file name. See [Input files formats](#input) for more details.
+- **-bcount**   
+      If true, count one instance per input sequence   
+      Default: true
+- **--threshold, -t**   
+      Threshold for family clustering   
+      Default: 0.8
+- **-out**   
+      Output file type   
+      Default: XLSX   
+      Possible Values: [TXT, XLSX]
+- **-clust-by**   
+      Cluster CSBs to families by: 'score' or 'length'  
+      Default: SCORE   
+      Possible Values: [LENGTH, SCORE]
+- **--help**   
+      Show usage
+
+For example, running OGMFinder.jar with input file 'plasmids.txt' provided in [https://www.cs.bgu.ac.il/~negevcb/OGMFinder/OGMFinder/input/](https://www.cs.bgu.ac.il/~negevcb/OGMFinder/OGMFinder/input/), with **_q_**=50 and **_k_**=2:
 ``` 
 java -jar OGMFinder.jar -i cog_words_plasmid -ins 2 -q2 50 -ds plasmid
 ```
 
-### Arguments
-Mandatory:
-- **-i, --input**			
-  
-   input file name containing a dataset of strings over an alphabet of ids, must be a *\*.txt* file located in *input* folder.
-   If the file is large, it is recommended to use the option -Xmx8g (depending on RAM size)
-   
-Optional:
-- **-ins, --insertion**
-   
-   maximal number of insertions (k), default 0
-- **-q1, --quorum1**		
-   
-   minimal number of input strings the must contain an OGM as a substring, default 1
-- **-q2, --quorum2**
-   
-   minimal number of input strings the must contain at least one instance of an OGM with up to *-ins* insertions, default 1
-- **-l, --minlength**	
-   
-   minimal OGM length, default 2
-- **-bcount, --boolean-count**
-   
-   A boolean indicating whether to at most one OGM instance in each input string (true), or by the total number of instances
-   (could be more than one instance in each input string) (false), default true
-- **-ds, --datasetname**
-   
-   dataset name, default *dataset1*
-- **-m, --motifs**
-   
-   input file name containing putative OGMs, must be a *\*.txt* file located in *input* folder. If this file is provided, there will be no de-novo motif extraction. Only the given OGMs will be analyzed.
-   
-- **-mem**
+<a name='input'>Input files formats</a>
 
-   A memory saving option. If this option is selected, there will be no removal of redundant OGMs.
-   
-   ### Input files
-   1. A mandatory input file containing all input sequences.
