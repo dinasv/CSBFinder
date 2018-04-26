@@ -11,7 +11,7 @@ import Utils.*;
  * Search for approximate patterns appearing in at least q2 input sequences.
  * The motif must occur with no errors in q1 input sequences.
  */
-public class OGBFinder {
+public class CSBFinder {
     public static long count_nodes_in_pattern_tree;
     public static long count_nodes_in_data_tree;
     private static final String DELIMITER = "-";
@@ -43,7 +43,7 @@ public class OGBFinder {
     Utils utils;
     Writer writer;
 
-    public OGBFinder(int max_error, int max_wildcards, int max_deletion, int max_insertion, int quorum1, int quorum2,
+    public CSBFinder(int max_error, int max_wildcards, int max_deletion, int max_insertion, int quorum1, int quorum2,
                      int min_pattern_length, int max_pattern_length, int gap_char, int wildcard_char, int unkown_cog_char,
                      GeneralizedSuffixTree data_t, Trie pattern_trie, boolean count_by_keys, Utils utils,
                      boolean memory_saving_mode, Writer writer, boolean debug){

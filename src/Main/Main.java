@@ -22,7 +22,7 @@ public class Main {
     private static CommandLineArgs cla;
 
     public static void printUsageAndExit(JCommander jcommander, int exitStatus){
-        jcommander.setProgramName("java -jar OGBFinder.jar");
+        jcommander.setProgramName("java -jar CSBFinder.jar");
         jcommander.usage();
         System.exit(exitStatus);
     }
@@ -63,7 +63,7 @@ public class Main {
             if (!cla.debug) {//disable logging information printed to screen
                 LogManager.getLogManager().reset();
             }
-            FileHandler fh = new FileHandler("OGBFinder.log");
+            FileHandler fh = new FileHandler("CSBFinder.log");
             utils.logger.addHandler(fh);
             SimpleFormatter formatter = new SimpleFormatter();
             fh.setFormatter(formatter);
@@ -105,7 +105,7 @@ public class Main {
     }
 
     /**
-     * Executes OGBFinder and prints colinear synteny blocks
+     * Executes CSBFinder and prints colinear synteny blocks
      *
      * @param utils
      * @return
@@ -156,11 +156,11 @@ public class Main {
                     instances_path,
                     include_families, cla.output_file_type, utils.cog_info != null);
 
-            System.out.println("Extracting OGBs from " + number_of_genomes + " genomes. " +
+            System.out.println("Extracting CSBs from " + number_of_genomes + " genomes. " +
                     "Parameters: quorum=" + cla.quorum2 + ", k=" + cla.max_insertion + ", min-length="
                     + cla.min_pattern_length);
 
-            OGBFinder OGBFinder = new OGBFinder(cla.max_error, cla.max_wildcards, cla.max_deletion, cla.max_insertion,
+            CSBFinder CSBFinder = new CSBFinder(cla.max_error, cla.max_wildcards, cla.max_deletion, cla.max_insertion,
                     cla.quorum1, cla.quorum2,
                     cla.min_pattern_length, cla.max_pattern_length, utils.GAP_CHAR_INDEX, utils.WC_CHAR_INDEX,
                     unknown_char,
@@ -169,15 +169,15 @@ public class Main {
 
             if (cla.input_patterns_file_name == null) {
                 if (!cla.memory_saving_mode) {
-                    System.out.println("Removing redundant OGBs");
-                    utils.logger.info("OGBs found: " + OGBFinder.getPatternsCount());
-                    OGBFinder.removeRedundantPatterns();
-                    utils.logger.info("OGBs left after removing redundant OGBs: " + OGBFinder.getPatternsCount());
+                    System.out.println("Removing redundant CSBs");
+                    utils.logger.info("CSBs found: " + CSBFinder.getPatternsCount());
+                    CSBFinder.removeRedundantPatterns();
+                    utils.logger.info("CSBs left after removing redundant CSBs: " + CSBFinder.getPatternsCount());
                 }
             }
 
             if (!cla.memory_saving_mode) {
-                ArrayList<Pattern> patterns = OGBFinder.getPatterns();
+                ArrayList<Pattern> patterns = CSBFinder.getPatterns();
 
                 for (Pattern pattern : patterns) {
                     pattern.calculateScore(utils, cla.max_insertion, cla.max_error, cla.max_deletion);
@@ -189,7 +189,7 @@ public class Main {
 
                 System.out.println("Writing to files");
                 for (Family family : families) {
-                    writer.printFilteredOGB(family.getPatterns().get(0), utils, family.getFamilyId());
+                    writer.printFilteredCSB(family.getPatterns().get(0), utils, family.getFamilyId());
                     for (Pattern pattern : family.getPatterns()) {
                         writer.printPattern(pattern, utils, family.getFamilyId());
                     }
@@ -198,7 +198,7 @@ public class Main {
             }
             writer.closeFiles();
 
-            System.out.println(writer.getCountPrintedPatterns() + " OGBs found");
+            System.out.println(writer.getCountPrintedPatterns() + " CSBs found");
 
             float estimatedTime = (float) (System.nanoTime() - startTime) / (float) Math.pow(10, 9);
             utils.logger.info("Took " + estimatedTime + " seconds");

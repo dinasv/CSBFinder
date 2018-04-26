@@ -18,8 +18,8 @@ import Main.CommandLineArgs.OutputType;
 /**
  * Created by Dina on 19/05/2017.
  * Writes the output files:
- *      catalog_file: OGMs catalog
- *      instances_file: The strings in which each OGM has an instance
+ *      catalog_file: CSBs catalog
+ *      instances_file: The strings in which each CSB has an instance
  */
 public class Writer {
     //output files
@@ -39,7 +39,7 @@ public class Writer {
     private int max_insertion;
     private int count_printed_patterns;
     private int count_printed_filtered_patterns;
-    private int next_line_index_OGB_desc_sheet;
+    private int next_line_index_desc_sheet;
     private boolean cog_info_exists;
     private boolean debug;
 
@@ -58,7 +58,7 @@ public class Writer {
         this.debug = debug;
         count_printed_patterns = 0;
         count_printed_filtered_patterns = 0;
-        next_line_index_OGB_desc_sheet = 0;
+        next_line_index_desc_sheet = 0;
 
         this.output_file_type = output_file_type;
         this.cog_info_exists = cog_info_exists;
@@ -83,7 +83,7 @@ public class Writer {
     }
 
     private void createFiles(String catalog_path, String instances_path, boolean include_families){
-        String header = "ID\tLength\tScore\tInstance_Count\tInstance_Ratio\tExact_Instance_Count\tOGB";
+        String header = "ID\tLength\tScore\tInstance_Count\tInstance_Ratio\tExact_Instance_Count\tCSB";
         if (cog_info_exists){
             header += "\tMain_Category";
         }
@@ -102,10 +102,10 @@ public class Writer {
             catalog_sheet = catalog_workbook.createSheet("Catalog");
             writeHeaderToSheet(header, catalog_sheet, include_families);
             if (include_families) {
-                filtered_patterns_sheet = catalog_workbook.createSheet("Filtered OGBs");
+                filtered_patterns_sheet = catalog_workbook.createSheet("Filtered CSBs");
             }
             if (cog_info_exists){
-                patterns_description_sheet = catalog_workbook.createSheet("OGBs description");
+                patterns_description_sheet = catalog_workbook.createSheet("CSBs description");
             }
             writeHeaderToSheet(header, filtered_patterns_sheet, include_families);
         }
@@ -199,16 +199,16 @@ public class Writer {
      * @param utils
      * @param family_id
      */
-    public void printFilteredOGB(Pattern pattern, Utils utils, String family_id){
+    public void printFilteredCSB(Pattern pattern, Utils utils, String family_id){
         if(output_file_type == OutputType.XLSX){
             if (pattern != null) {
                 count_printed_filtered_patterns++;
-                printOGBLineToExcelSheet(filtered_patterns_sheet, pattern, count_printed_filtered_patterns, family_id, utils);
+                printCSBLineToExcelSheet(filtered_patterns_sheet, pattern, count_printed_filtered_patterns, family_id, utils);
             }
         }
     }
 
-    private void printOGBLineToExcelSheet(Sheet sheet, Pattern pattern, int row_num, String family_id, Utils utils){
+    private void printCSBLineToExcelSheet(Sheet sheet, Pattern pattern, int row_num, String family_id, Utils utils){
         Row row = sheet.createRow(row_num);
         int col = 0;
         row.createCell(col++).setCellValue(pattern.getPatternId());
@@ -258,10 +258,10 @@ public class Writer {
         if (pattern != null) {
             count_printed_patterns++;
             if(output_file_type == OutputType.XLSX) {
-                printOGBLineToExcelSheet(catalog_sheet, pattern, count_printed_patterns, family_id, utils);
+                printCSBLineToExcelSheet(catalog_sheet, pattern, count_printed_patterns, family_id, utils);
                 if (patterns_description_sheet != null) {
-                    next_line_index_OGB_desc_sheet = printPatternDescToExcelSheet(patterns_description_sheet,
-                            next_line_index_OGB_desc_sheet, pattern, utils);
+                    next_line_index_desc_sheet = printPatternDescToExcelSheet(patterns_description_sheet,
+                            next_line_index_desc_sheet, pattern, utils);
                 }
             }else if(output_file_type == OutputType.TXT){
                 String catalog_line = pattern.getPatternId() + "\t" + pattern.getLength() + "\t";
@@ -297,13 +297,12 @@ public class Writer {
 
         try {
             new File("output").mkdir();
+            String output_path = path + ".fasta";
             try {
-                PrintWriter output_file = new PrintWriter(path + ".fasta", "UTF-8");
+                PrintWriter output_file = new PrintWriter(output_path, "UTF-8");
                 return output_file;
-            } catch (FileNotFoundException e) {
-                e.printStackTrace();
-            } catch (UnsupportedEncodingException e) {
-                e.printStackTrace();
+            } catch (Exception e) {
+                System.out.println("Cannot write to file " + output_path);
             }
         }catch (SecurityException e){
             System.out.println("The directory 'output' could not be created, therefore no output is printed. " +
