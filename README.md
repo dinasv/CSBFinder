@@ -24,12 +24,12 @@ The input is a set of genomes and parameters **_k_** (number of allowed insertio
 
 In the terminal (linux) or cmd (windows) type:
 ``` 
-java -jar OGMFinder.jar [options]
+java -jar CSBFinder.jar [options]
 ```
-> Note: When executing OGMFinder on a large dataset, add the option -Xmx8g (8g or more, depending on your RAM size).
+> Note: When executing CSBFinder on a large dataset, add the option -Xmx8g (8g or more, depending on your RAM size).
 For example:
 ``` 
-java -Xmx8g -jar OGMFinder.jar [options]
+java -Xmx8g -jar CSBFinder.jar [options]
 ```
 
 ### Options:
@@ -77,12 +77,6 @@ Optional:
 - **--help**   
       Show usage
       
-### Options:
-For example, running OGMFinder.jar with input file 'plasmids.txt' provided in [https://www.cs.bgu.ac.il/~negevcb/CSBFinder/plasmid_genomes.fasta](file), with **_q_**=50 and **_k_**=2:
-``` 
-java -jar OGMFinder.jar -i cog_words_plasmid -ins 2 -q2 50 -ds plasmid
-```
-
 <a name='input'>Input files formats</a>
 --------------
 
@@ -233,4 +227,24 @@ Two output files will be written to a directory named "output"
     Klebsiella_pneumoniae_NTUH_K2044_uid59073	NC_006625_257_length_2
     Cronobacter_turicensis_z3032_uid40821	NC_013283_105_length_2
     ```
+<a name='sample'>Sample input files</a>   
+--------------------------------------
+
+Download the following file and extract it to a directory named "input" in the same location of CSBFinder.jar: [sample_input.zip](https://github.com/dinasv/CSBFinder/raw/master/input/sample_input.zip)
+
+It contains two datasets:
+ - Chromosomal dataset - 1,485 genomes with at least one chromosome, plasmids were removed.
+ - Plasmid dataset - 471 genomes with at least one plasmid, chromosomes were removed.
+ 
+It also contains cog_info.txt file with gene family information
+
+**Sample execution of CSBFinder using the _Plasmid dataset_**
+``` 
+java -jar CSBFinder.jar -in plasmid_genomes.fasta -q 10 -ins 1 -ds plasmids -cog-info cog_info.txt
+```
+**Sample execution of CSBFinder using the _Chromosomal dataset_**
+``` 
+java -Xmx8g -jar CSBFinder.jar -in chromosomal_genomes.fasta -q 50 -ins 1 -ds chromosomes -cog-info cog_info.txt
+```
+
 
