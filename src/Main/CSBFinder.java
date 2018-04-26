@@ -7,9 +7,9 @@ import java.util.*;
 import Utils.*;
 
 /**
- * Suffix Tree based algorithm for motif discovery
- * Search for approximate patterns appearing in at least q2 input sequences.
- * The motif must occur with no errors in q1 input sequences.
+ * Suffix Tree based algorithm for CSB pattern discovery
+ * A CSB is a substring of at least quorum1 input sequences and must have instance in at least quorum2 input sequences
+ * An instance can differ from a CSB by at most k insertions
  */
 public class CSBFinder {
     public static long count_nodes_in_pattern_tree;
@@ -27,6 +27,7 @@ public class CSBFinder {
 
     private GeneralizedSuffixTree data_tree;
 
+    //contains all extracted patterns
     private HashMap<String, Pattern> patterns;
 
     private int gap_char;
@@ -43,6 +44,27 @@ public class CSBFinder {
     Utils utils;
     Writer writer;
 
+    /**
+     *
+     * @param max_error
+     * @param max_wildcards
+     * @param max_deletion
+     * @param max_insertion maximal number of insertions allowed in an instance of a pattern
+     * @param quorum1 the pattern must be a substring of at least quorum1 input sequences
+     * @param quorum2 the pattern should have an instance in at least quorum2 input sequences
+     * @param min_pattern_length
+     * @param max_pattern_length
+     * @param gap_char
+     * @param wildcard_char
+     * @param unkown_cog_char
+     * @param data_t GST representing all input sequences
+     * @param pattern_trie
+     * @param count_by_keys if true, counts one instance in each input sequence
+     * @param utils
+     * @param memory_saving_mode
+     * @param writer
+     * @param debug
+     */
     public CSBFinder(int max_error, int max_wildcards, int max_deletion, int max_insertion, int quorum1, int quorum2,
                      int min_pattern_length, int max_pattern_length, int gap_char, int wildcard_char, int unkown_cog_char,
                      GeneralizedSuffixTree data_t, Trie pattern_trie, boolean count_by_keys, Utils utils,
@@ -79,7 +101,7 @@ public class CSBFinder {
         }else {//if we were given patterns as input
             pattern_tree_root = pattern_trie.getRoot();
         }
-        findOGBs(pattern_tree_root);
+        findPatterns(pattern_tree_root);
     }
 
     public int getPatternsCount(){
@@ -90,7 +112,7 @@ public class CSBFinder {
      * Calls the recursive function spellPatterns
      * @param pattern_node a node in the pattern tree, the pattern tree traversal begins from this node
      */
-    private void findOGBs(PatternNode pattern_node) {
+    private void findPatterns(PatternNode pattern_node) {
 
         data_tree.computeCount();
         total_chars_in_data = ((InstanceNode) data_tree.getRoot()).getCount_by_indexes();
