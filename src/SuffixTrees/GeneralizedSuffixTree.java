@@ -61,7 +61,7 @@ public class GeneralizedSuffixTree  implements Serializable{
     //The string from the root to this node is the full last added string (using "put")
     private SuffixNode fullStringNode;
 
-    public GeneralizedSuffixTree() throws Exception {
+    public GeneralizedSuffixTree() {
         root = new InstanceNode();
 
         activeLeaf = root;

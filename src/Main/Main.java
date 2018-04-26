@@ -18,7 +18,15 @@ import com.beust.jcommander.ParameterException;
 
 
 public class Main {
+
     private static CommandLineArgs cla;
+
+    public static void printUsageAndExit(JCommander jcommander, int exitStatus){
+        jcommander.setProgramName("java -jar OGBFinder.jar");
+        jcommander.usage();
+        System.exit(exitStatus);
+    }
+
     public static void main(String [ ] args) throws Exception{
         Main main = new Main();
         JCommander jcommander = null;
@@ -27,14 +35,15 @@ public class Main {
 
             jcommander = JCommander.newBuilder().addObject(cla).build();
             jcommander.parse(args);
+            if (cla.help){
+                printUsageAndExit(jcommander, 0);
+            }
 
         }catch (ParameterException e){
             System.err.println(e.getMessage());
 
             jcommander = JCommander.newBuilder().addObject(cla).build();
-            jcommander.setProgramName("java -jar OGBFinder.jar");
-            jcommander.usage();
-            System.exit(1);
+            printUsageAndExit(jcommander, 1);
         }
         main.run();
     }
@@ -65,14 +74,11 @@ public class Main {
             e.printStackTrace();
         }
 
-        long startTime = System.nanoTime();
         if (cla.min_pattern_length < 2) {
             cla.min_pattern_length = 2 + cla.max_error;
         }
 
         pipeline(utils, INPUT_PATH);
-
-        float estimatedTime = (float) (System.nanoTime() - startTime) / (float) Math.pow(10, 9);
 
     }
 
@@ -106,8 +112,7 @@ public class Main {
      * @throws Exception
      */
 
-    private void pipeline(Utils utils, String INPUT_PATH)
-            throws Exception {
+    private void pipeline(Utils utils, String INPUT_PATH){
 
         //wild card
         utils.char_to_index.put(utils.WC_CHAR, utils.WC_CHAR_INDEX);
