@@ -2,8 +2,9 @@
 
 -   [Overview](#overview)
 -   [Prerequisites](#prerequisites)
--   [Running OGMFinder](#running)
+-   [Running CSBFinder](#running)
 -   [Input files formats](#input)
+-   [Output files](#output)
 
 
 <a name='overview'>Overview</a>
@@ -77,7 +78,7 @@ Optional:
       Show usage
       
 ### Options:
-For example, running OGMFinder.jar with input file 'plasmids.txt' provided in [https://www.cs.bgu.ac.il/~negevcb/OGMFinder/OGMFinder/input/](https://www.cs.bgu.ac.il/~negevcb/OGMFinder/OGMFinder/input/), with **_q_**=50 and **_k_**=2:
+For example, running OGMFinder.jar with input file 'plasmids.txt' provided in [https://www.cs.bgu.ac.il/~negevcb/CSBFinder/plasmid_genomes.fasta](file), with **_q_**=50 and **_k_**=2:
 ``` 
 java -jar OGMFinder.jar -i cog_words_plasmid -ins 2 -q2 50 -ds plasmid
 ```
