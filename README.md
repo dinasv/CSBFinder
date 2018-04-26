@@ -21,16 +21,16 @@ The input is a set of genomes and parameters **_k_** (number of allowed insertio
 
 <a name='running'>Running CSBFinder</a>
 --------
-
-In the terminal (linux) or cmd (windows) type:
-``` 
-java -jar CSBFinder.jar [options]
-```
-> Note: When executing CSBFinder on a large dataset, add the option -Xmx8g (8g or more, depending on your RAM size).
-For example:
-``` 
-java -Xmx8g -jar CSBFinder.jar [options]
-```
+- Download the [latest release](https://github.com/dinasv/CSBFinder/releases) (CSBFinder.jar)
+- In the terminal (linux) or cmd (windows) type:
+    ``` 
+    java -jar CSBFinder.jar [options]
+    ```
+    > Note: When executing CSBFinder on a large dataset, add the option -Xmx8g (8g or more, depending on your RAM size).
+    For example:
+    ``` 
+    java -Xmx8g -jar CSBFinder.jar [options]
+    ```
 
 ### Options:
 Mandatory:
