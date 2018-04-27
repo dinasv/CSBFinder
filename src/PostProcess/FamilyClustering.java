@@ -35,11 +35,8 @@ public class FamilyClustering {
 
         if (cluster_by == ClusterBy.LENGTH){
             Collections.sort(patterns, new Pattern.LengthComparator());
-            System.out.println("Sorting by " + cluster_by);
         }else {
             Collections.sort(patterns, new Pattern.ScoreComparator());
-            System.out.println("Sorting by " + cluster_by);
-
         }
 
         ArrayList<Family> families = new ArrayList<>();

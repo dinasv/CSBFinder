@@ -5,11 +5,10 @@ import java.util.Arrays;
 import Utils.*;
 
 /**
- * Created by Dina on 6/2/2016.
  * WordArray object represents a "word". The chars of the word are integers.
  * It contains a pointer to wordArray (the "word"), and indexes that represent a substring of this "word"
  */
-public class WordArray implements Serializable{
+public class WordArray{
 
     public int[] wordArray;
     //start index in wordArray

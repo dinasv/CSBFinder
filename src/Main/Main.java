@@ -7,7 +7,6 @@ import SuffixTrees.TreeType;
 import SuffixTrees.Trie;
 import Utils.*;
 
-import java.io.*;
 import java.util.*;
 import java.util.logging.FileHandler;
 import java.util.logging.LogManager;
@@ -27,7 +26,7 @@ public class Main {
         System.exit(exitStatus);
     }
 
-    public static void main(String [ ] args) throws Exception{
+    public static void main(String [ ] args){
         Main main = new Main();
         JCommander jcommander = null;
         try {
@@ -48,7 +47,7 @@ public class Main {
         main.run();
     }
 
-    public void run() throws Exception {
+    public void run() {
 
         String INPUT_PATH = "input/";
 
@@ -57,21 +56,20 @@ public class Main {
             cog_info = Readers.read_cog_info_table(INPUT_PATH + cla.cog_info_file_name);
         }
 
-        Utils utils = new Utils(cog_info);
+        Utils utils = new Utils(cog_info, cla.debug);
 
         try {
-            if (!cla.debug) {//disable logging information printed to screen
-                LogManager.getLogManager().reset();
-            }
-            FileHandler fh = new FileHandler("CSBFinder.log");
-            utils.logger.addHandler(fh);
-            SimpleFormatter formatter = new SimpleFormatter();
-            fh.setFormatter(formatter);
+            if (cla.debug) {
+                //LogManager.getLogManager().reset();//disable logging information printed to screen
 
-        } catch (SecurityException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
+                FileHandler fh = new FileHandler("CSBFinder.log");
+                utils.logger.addHandler(fh);
+                SimpleFormatter formatter = new SimpleFormatter();
+                fh.setFormatter(formatter);
+            }
+
+        } catch (Exception e) {
+            System.out.println("An exception occured while trying to create a log file");
         }
 
         if (cla.min_pattern_length < 2) {
@@ -130,19 +128,21 @@ public class Main {
         long startTime = System.nanoTime();
 
         GeneralizedSuffixTree dataset_suffix_tree = new GeneralizedSuffixTree();
-        utils.logger.info("Building Data tree");
+        if (cla.debug) {
+            utils.logger.info("Building Data tree");
+        }
         System.out.println("Building Data tree");
 
 
-        int number_of_genomes = utils.read_and_build_dataset_tree(INPUT_PATH+cla.input_file_name,
+        int number_of_genomes = utils.readAndBuildDatasetTree(INPUT_PATH+cla.input_file_name,
                                                                     dataset_suffix_tree);
+
         if (number_of_genomes != -1) {
 
             //read patterns from a file if a file is given, and put them in a suffix trie
             Trie pattern_tree = buildPatternsTree(INPUT_PATH, utils);
 
-            String parameters = "_ins" + cla.max_insertion + "_q1_" + cla.quorum1 + "_q2_" + cla.quorum2 + "_l" +
-                    cla.min_pattern_length;
+            String parameters = "_ins" + cla.max_insertion + "_q" + cla.quorum2;
 
             String catalog_path = "output/Catalog_" + cla.dataset_name + parameters;
             String instances_path = catalog_path + "_instances";
@@ -156,9 +156,7 @@ public class Main {
                     instances_path,
                     include_families, cla.output_file_type, utils.cog_info != null);
 
-            System.out.println("Extracting CSBs from " + number_of_genomes + " genomes. " +
-                    "Parameters: quorum=" + cla.quorum2 + ", k=" + cla.max_insertion + ", min-length="
-                    + cla.min_pattern_length);
+            System.out.println("Extracting CSBs from " + number_of_genomes + " input sequences.");
 
             CSBFinder CSBFinder = new CSBFinder(cla.max_error, cla.max_wildcards, cla.max_deletion, cla.max_insertion,
                     cla.quorum1, cla.quorum2,
@@ -170,9 +168,13 @@ public class Main {
             if (cla.input_patterns_file_name == null) {
                 if (!cla.memory_saving_mode) {
                     System.out.println("Removing redundant CSBs");
-                    utils.logger.info("CSBs found: " + CSBFinder.getPatternsCount());
+                    if (cla.debug) {
+                        utils.logger.info("CSBs found: " + CSBFinder.getPatternsCount());
+                    }
                     CSBFinder.removeRedundantPatterns();
-                    utils.logger.info("CSBs left after removing redundant CSBs: " + CSBFinder.getPatternsCount());
+                    if (cla.debug) {
+                        utils.logger.info("CSBs left after removing redundant CSBs: " + CSBFinder.getPatternsCount());
+                    }
                 }
             }
 
@@ -201,10 +203,15 @@ public class Main {
             System.out.println(writer.getCountPrintedPatterns() + " CSBs found");
 
             float estimatedTime = (float) (System.nanoTime() - startTime) / (float) Math.pow(10, 9);
-            utils.logger.info("Took " + estimatedTime + " seconds");
+            if (cla.debug) {
+                utils.logger.info("Took " + estimatedTime + " seconds");
+            }
 
             System.out.println("Took " + estimatedTime + " seconds");
 
+        }else{
+            System.out.println("Could not read input sequences");
+            System.exit(1);
         }
     }
 }

@@ -38,7 +38,7 @@ public class Utils {
     public int min_genome_size;
     public int max_genome_size;
 
-    public Logger logger;
+    public Logger logger = null;
 
     /**
      * For each dataset, for each cog - saves the average number of cog occs per genome (excluding genomes in which cog doesn't appear)
@@ -76,11 +76,13 @@ public class Utils {
     //memoization of computed q_val - it is the same for each pattern length
     public double[] q_val;
 
-    private Readers reader;
+    private boolean debug;
 
     public HashMap<String, COG> cog_info;
 
-    public Utils(HashMap<String, COG> cog_info){
+    public Utils(HashMap<String, COG> cog_info, boolean debug){
+        this.debug = debug;
+
         index_to_char = new ArrayList<String>();
         char_to_index = new HashMap<String, Integer>();
 
@@ -94,7 +96,9 @@ public class Utils {
         min_genome_size = Integer.MAX_VALUE;
         max_genome_size = 0;
 
-        logger = Logger.getLogger("MyLog");
+        if (debug) {
+            logger = Logger.getLogger("MyLog");
+        }
 
         dataset_cog_homolog_num = new ArrayList<>();
 
@@ -128,7 +132,6 @@ public class Utils {
 
         q_val = new double[200];
 
-        //reader = new Readers();
     }
 
     private void countParalogsInSeqs(ArrayList<Gene> directon, int curr_seq_index){
@@ -226,12 +229,11 @@ public class Utils {
 
     /**
      *
-     * @param input_file_path
-     * @param dataset_gst
-     * @return
-     * @throws Exception
+     * @param input_file_path path to input file with input sequences
+     * @param dataset_gst the input sequences are inserted to thie GST
+     * @return number of input sequences that contains at least one valid direction
      */
-    public int read_and_build_dataset_tree(String input_file_path, GeneralizedSuffixTree dataset_gst) {
+    public int readAndBuildDatasetTree(String input_file_path, GeneralizedSuffixTree dataset_gst) {
         String file_name = input_file_path;
 
         HashSet<Integer> genomes_indexes = new HashSet<>();
@@ -311,23 +313,30 @@ public class Utils {
                 //logger.info("Number of cog words: " + word_counter);
                 //logger.info("Longest cog word: " + longest_cog_word);
                 //logger.info("Average cog word length: " + (double) length_sum / word_counter);
-                logger.info("Average genome size: " + length_sum / genomes_indexes.size());
+                if (debug) {
+                    logger.info("Average genome size: " + length_sum / genomes_indexes.size());
 
-                logger.info("Number of genomes " + genomes_indexes.size());
-                logger.info("Number of cogs " + char_to_index.size());
+                    logger.info("Number of genomes " + genomes_indexes.size());
+                    logger.info("Number of cogs " + char_to_index.size());
+                }
                 number_of_genomes = genomes_indexes.size();
+                if (number_of_genomes == 0){
+                    return -1;
+                }
 
             } catch (IOException e) {
-                e.printStackTrace();
+                System.out.println("An exception occured while reading " + file_name);
+                return -1;
             } finally {
                 try {
                     br.close();
                 } catch (IOException e) {
-                    e.printStackTrace();
+                    System.out.println("Cannot close file " + file_name);
+                    return -1;
                 }
             }
 
-            return genomes_indexes.size();
+            return number_of_genomes;
         } catch (FileNotFoundException e) {
             System.out.println("File " + file_name + " was not found.");
         }
@@ -336,8 +345,8 @@ public class Utils {
 
     /**
      * Builds a Trie of patterns, given in a file.
-     * @param input_patterns_file_name
-     * @param pattern_tree
+     * @param input_patterns_file_name path to input file containing patterns
+     * @param pattern_tree the patterns are inserted to this GST
      * @return True if succesful, False if exception occurred
      */
     public boolean buildPatternsTreeFromFile(String input_patterns_file_name, Trie pattern_tree) {
@@ -385,7 +394,7 @@ public class Utils {
      * Convert a directon to wordArray, using char_to_index
      * @param directon contains the Genes comprising this directon, all in the same strand, without intervening
      *                 gene in the opposite strand
-     * @return
+     * @return WordArray representing this directon
      */
      public WordArray create_word_array(ArrayList<Gene> directon){
         int[] word = new int[directon.size()];
@@ -410,7 +419,7 @@ public class Utils {
     /**
      * Converts an array of strings to wordArray, using char_to_index
      * @param str contains the characters comprising this str
-     * @return
+     * @return WordArray representing this str
      */
     public WordArray create_word_array_from_str(String[] str){
         int[] word = new int[str.length];
@@ -434,9 +443,12 @@ public class Utils {
 
 
     public double computePatternScore(String[] pattern_chars, int max_insertions, int max_error, int max_deletions,
-                                      int pattern_occs_keys_size, int pattern_id){
-        int genomes_count = number_of_genomes;
-        int avg_genome_size = dataset_length_sum/genomes_count;
+                                      int pattern_occs_keys_size){
+
+        int avg_genome_size = 1;
+        if (number_of_genomes > 0 ) {
+            avg_genome_size = dataset_length_sum / number_of_genomes;
+        }
 
         HashSet<Integer> intersection_of_genomes_with_pattern_chars = new HashSet<>(cog_to_containing_genomes.get(pattern_chars[0]));
         for (int i = 1; i < pattern_chars.length; i++) {
@@ -458,16 +470,7 @@ public class Utils {
 
         int average_paralog_count = paralog_count_product_sum/intersection_of_genomes_with_pattern_chars.size();
 
-        String error_type = "mismatch";
-        if (max_insertions > 0){
-            error_type = "insert";
-        }else if (max_error > 0){
-            error_type = "mismatch";
-        }else if(max_deletions > 0){
-            error_type = "deletion";
-        }
-
         return Formulas.pval_cross_genome(avg_genome_size/*min_genome_size*/, pattern_chars.length, max_insertions,
-                average_paralog_count, genomes_count, pattern_occs_keys_size, error_type, q_val, pattern_id);
+                average_paralog_count, number_of_genomes, pattern_occs_keys_size, q_val);
     }
 }

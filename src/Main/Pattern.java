@@ -78,8 +78,7 @@ public class Pattern {
 
     public void calculateScore(Utils utils, int max_insertion, int max_error, int max_deletion){
 
-        score = utils.computePatternScore(pattern_arr, max_insertion, max_error, max_deletion,
-                instance_count, pattern_id);
+        score = utils.computePatternScore(pattern_arr, max_insertion, max_error, max_deletion, instance_count);
     }
 
     public double getScore(){

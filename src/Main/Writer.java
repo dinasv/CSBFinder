@@ -79,6 +79,7 @@ public class Writer {
         }catch (SecurityException e){
             System.out.println("The directory 'output' could not be created, therefore no output is printed. " +
                     "Please create a directory named 'output' in the following path: " + System.getProperty("user.dir"));
+            System.exit(1);
         }
     }
 
@@ -142,6 +143,7 @@ public class Writer {
                 fileOut.close();
             } catch (Exception e) {
                 System.out.println("A problem occurred while trying to write to file "+catalog_path+".xlsx");
+                System.exit(1);
             }
         }
         if (instances_file != null) {
@@ -216,7 +218,7 @@ public class Writer {
         try{
             row.createCell(col++).setCellValue(Double.valueOf(DF.format(pattern.getScore())));
         }catch (Exception e){
-            row.createCell(col++).setCellValue(DF.format(pattern.getScore()));
+            row.createCell(col).setCellValue(DF.format(pattern.getScore()));
         }
         row.createCell(col++).setCellValue(pattern.getInstanceCount());
         row.createCell(col++).setCellValue(Double.valueOf(DF.format(pattern.getInstanceCount() /
@@ -303,10 +305,12 @@ public class Writer {
                 return output_file;
             } catch (Exception e) {
                 System.out.println("Cannot write to file " + output_path);
+                System.exit(1);
             }
         }catch (SecurityException e){
             System.out.println("The directory 'output' could not be created, therefore no output is printed. " +
                     "Please create a directory named 'output' in the following path: " + System.getProperty("user.dir"));
+            System.exit(1);
         }
         return null;
     }

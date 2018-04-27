@@ -20,14 +20,13 @@ public class Formulas {
      * @param h product of average paralog frequency for each gene in the motif
      * @param G minimal number of input genomes, where one of the cog appears
      * @param g motif occurrence count
-     * @param error_type mismatch/insert/deletion
+     * @param q_val arr used for memoization, as each patterns with the same length have the same basic q_val
      * @return ranking score
      */
-    public static double pval_cross_genome(int n, int w, int k, int h, int G, int g, String error_type, double[] q_val
-                                            , int motif_id){
+    public static double pval_cross_genome(int n, int w, int k, int h, int G, int g, double[] q_val){
         double result = 0;
 
-        double q = q_homologs(n, w, k, h, error_type, q_val);
+        double q = q_homologs(n, w, k, h, q_val);
 
         double a = g/(double)G;
         if ( a == 1){
@@ -51,15 +50,17 @@ public class Formulas {
         return a*Math.log(a/p) + (1-a)*Math.log((1-a)/(1-p));
     }
 
-    public static double q_homologs(int n, int w, int k, int h, String error_type, double[] q_val){
+    public static double q_homologs(int n, int w, int k, int h, double[] q_val){
         double q_result = 0;
-        if (error_type.equals("insert")) {
+        q_result = q_insert(n, w, k, q_val);
+
+        /*if (error_type.equals("insert")) {
             q_result = q_insert(n, w, k, q_val);
         }else if(error_type.equals("mismatch")){
             q_result = q_mismatch(n, w, k, q_val);
         }else if(error_type.equals("deletion")){
             q_result =  q_deletion(n, w, k, q_val);
-        }
+        }*/
 
         double result = q_result*h;
         return result;
@@ -95,7 +96,7 @@ public class Formulas {
 
     public static double q_insert(int n, int w, int k, double[] q_val){
         double result = 0;
-        if ( q_val[w] != 0){
+        if (q_val[w] != 0){
             result = q_val[w];
         }else {
             for (int i = 0; i < k + 1; i++) {
