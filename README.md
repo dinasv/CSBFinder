@@ -22,7 +22,7 @@ The input is a set of genomes and parameters **_k_** (number of allowed insertio
 
 <a name='running'>Running CSBFinder</a>
 --------
-- Download the [latest release](https://github.com/dinasv/CSBFinder/releases) (CSBFinder.jar)
+- Download the [latest release](https://github.com/dinasv/CSBFinder/releases) of CSBFinder.jar
 - In the terminal (linux) or cmd (windows) type:
     ``` 
     java -jar CSBFinder.jar [options]
