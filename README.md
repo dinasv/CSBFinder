@@ -18,7 +18,7 @@ The input is a set of genomes and parameters **_k_** (number of allowed insertio
 --------
 
 [Java Runtime Environment (JRE)](http://www.oracle.com/technetwork/java/javase/downloads/index.html)
-8 or up.
+8 or higher.
 
 <a name='running'>Running CSBFinder</a>
 --------
@@ -32,11 +32,12 @@ The input is a set of genomes and parameters **_k_** (number of allowed insertio
     ``` 
     java -Xmx8g -jar CSBFinder.jar [options]
     ```
+> [Sample input files](#sample) are provided below
 
 ### Options:
 Mandatory:
 - **-in**   
-    Input file name, located in a directory named 'input'. See [Input files formats](#input) for more details.
+    Input file name with genome sequences, located in a directory named 'input'. See [Input files formats](#input) for more details.
 - **-q**   
       Instance quorum with insertions. Minimal number of input sequences with a CSB instance.   
       Default: 1
@@ -53,11 +54,11 @@ Optional:
       Default: 2
 - **-lmax**
       Maximal length of a CSB   
-      Default: 2147483647   
+      Default: 2147483647 (longest possible CSB in the dataset)
 - **--datasetname, -ds**   
       Dataset name   
       Default: dataset1
-- ***--patterns, -p***   
+- **--patterns, -p**   
       Input CSB patterns file name, located in a directory named 'input'. See [Input files formats](#input) for more details.
 - **-cog-info**   
       Gene families information file name, located in a directory named 'input'. See [Input files formats](#input) for more details.
@@ -231,9 +232,10 @@ Two output files will be written to a directory named "output"
 <a name='sample'>Sample input files</a>   
 --------------------------------------
 
-Download the following file and extract it to a directory named "input" in the same location of CSBFinder.jar: [sample_input.zip](https://github.com/dinasv/CSBFinder/raw/master/input/sample_input.zip)
+Download the following zip file and extract it to a directory named "input" in the same location of CSBFinder.jar:
+> [sample_input.zip](https://github.com/dinasv/CSBFinder/raw/master/input/sample_input.zip)
 
-It contains two datasets:
+This file contains two datasets:
  - Chromosomal dataset - 1,485 genomes with at least one chromosome, plasmids were removed.
  - Plasmid dataset - 471 genomes with at least one plasmid, chromosomes were removed.
  
