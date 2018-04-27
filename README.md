@@ -5,6 +5,7 @@
 -   [Running CSBFinder](#running)
 -   [Input files formats](#input)
 -   [Output files](#output)
+-   [Sample input files](#sample)
 
 
 <a name='overview'>Overview</a>
