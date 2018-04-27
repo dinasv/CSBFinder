@@ -148,7 +148,7 @@ COG0600	+
 ### Input file containing gene family ID information
 - Optional input file
 - Its name is indicated using the "-cog-info" option
-- Contains information regarding gene family IDs, this information will be printed in the output files anc an help decipher the function of a CSB 
+- Contains information regarding gene family IDs, this information will be printed in the output files as the functional description of CSB genes 
 
 This file should use the following format:
 ```
