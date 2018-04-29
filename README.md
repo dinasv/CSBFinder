@@ -6,6 +6,7 @@
 -   [Input files formats](#input)
 -   [Output files](#output)
 -   [Sample input files](#sample)
+-   [License](#license)
 
 
 <a name='overview'>Overview</a>
@@ -250,4 +251,7 @@ java -jar CSBFinder.jar -in plasmid_genomes.fasta -q 10 -ins 1 -ds plasmids -cog
 java -Xmx8g -jar CSBFinder.jar -in chromosomal_genomes.fasta -q 50 -ins 1 -ds chromosomes -cog-info cog_info.txt
 ```
 
+<a name='license'>License</a>
+--------------
 
+Licensed under the Apache License, Version 2.0. See more details in [LICENSE](https://github.com/dinasv/CSBFinder/blob/master/LICENSE) file
