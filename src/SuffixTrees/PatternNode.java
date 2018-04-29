@@ -5,7 +5,6 @@ import Main.Instance;
 import java.util.*;
 
 /**
- * Created by Dina on 7/21/2016.
  * Represents a node in the pattern tree
  */
 public class PatternNode {

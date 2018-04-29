@@ -23,6 +23,7 @@ import Main.CommandLineArgs.OutputType;
  */
 public class Writer {
     //output files
+    private FileOutputStream catalog_file_xls;
     private PrintWriter catalog_file;
     private PrintWriter instances_file;
 
@@ -68,9 +69,49 @@ public class Writer {
         patterns_description_sheet = null;
 
         this.catalog_path = catalog_path;
-        createOutputDirectory();
-        createFiles(catalog_path, instances_path, include_families);
 
+        init(catalog_path, instances_path, include_families);
+
+    }
+
+    private void init(String catalog_path, String instances_path, boolean include_families){
+        createOutputDirectory();
+        createOutputFiles(catalog_path, instances_path);
+        createHeaders(include_families);
+    }
+
+    private PrintWriter createOutputPrintWriter(String path){
+        try {
+            PrintWriter output_file = new PrintWriter(path, "UTF-8");
+
+            return output_file;
+        } catch (Exception e) {
+            System.out.println("Cannot create file " + path);
+            System.exit(1);
+        }
+        return null;
+    }
+
+
+    private void createOutputFiles(String catalog_path, String instances_path) {
+
+        if (output_file_type == OutputType.TXT) {
+            catalog_path += ".txt";
+            catalog_file = createOutputPrintWriter(catalog_path);
+        }
+
+        if (output_file_type == OutputType.XLSX) {
+            catalog_path += ".xlsx";
+            try {
+                catalog_file_xls = new FileOutputStream(catalog_path);
+            } catch (Exception e) {
+                System.out.println("Cannot create file " + catalog_path + ". Close the file first.");
+                System.exit(1);
+            }
+        }
+
+        instances_path += ".fasta";
+        instances_file = createOutputPrintWriter(instances_path);
     }
 
     private void createOutputDirectory(){
@@ -83,7 +124,8 @@ public class Writer {
         }
     }
 
-    private void createFiles(String catalog_path, String instances_path, boolean include_families){
+    private void createHeaders(boolean include_families){
+
         String header = "ID\tLength\tScore\tInstance_Count\tInstance_Ratio\tExact_Instance_Count\tCSB";
         if (cog_info_exists){
             header += "\tMain_Category";
@@ -93,8 +135,6 @@ public class Writer {
         }
 
         if (output_file_type == OutputType.TXT) {
-            catalog_file = createOutputFile(catalog_path);
-
             if (catalog_file != null) {
                 catalog_file.write(header + "\n");
             }
@@ -110,9 +150,6 @@ public class Writer {
             }
             writeHeaderToSheet(header, filtered_patterns_sheet, include_families);
         }
-
-        instances_file = createOutputFile(instances_path);
-
 
     }
 
@@ -136,11 +173,9 @@ public class Writer {
                 catalog_file.close();
             }
         }else if(output_file_type == OutputType.XLSX){
-            FileOutputStream fileOut = null;
             try {
-                fileOut = new FileOutputStream(catalog_path+".xlsx");
-                catalog_workbook.write(fileOut);
-                fileOut.close();
+                catalog_workbook.write(catalog_file_xls);
+                catalog_file_xls.close();
             } catch (Exception e) {
                 System.out.println("A problem occurred while trying to write to file "+catalog_path+".xlsx");
                 System.exit(1);
@@ -178,17 +213,13 @@ public class Writer {
 
             for (Map.Entry<String, ArrayList<String>> entry : instance_seq_and_location.entrySet()) {
                 String seq_key = entry.getKey();
-                if (seq_key == null){
-                    System.out.println("null");
-                }
+
                 instances_file.print(seq_key);
                 ArrayList<String> word_ids = entry.getValue();
                 for (String word_id : word_ids){
                     instances_file.print("\t" + word_id);
                 }
-                //String word_id = entry.getValue();
-                //instances_file.println("seq" + seq + "_" + word_id + "\t");
-                //instances_file.println(seq_name);
+
                 instances_file.print("\n");
             }
 
@@ -250,7 +281,7 @@ public class Writer {
             if (cog_obj!=null) {
                 row.createCell(1).setCellValue(cog_obj.getCog_desc());
             }else{
-                System.out.println(cog + " description is null");
+                row.createCell(1).setCellValue("-");
             }
         }
         return row_num+1;
@@ -295,25 +326,7 @@ public class Writer {
         printPattern(pattern, utils, null);
     }
 
-    private PrintWriter createOutputFile(String path){
 
-        try {
-            new File("output").mkdir();
-            String output_path = path + ".fasta";
-            try {
-                PrintWriter output_file = new PrintWriter(output_path, "UTF-8");
-                return output_file;
-            } catch (Exception e) {
-                System.out.println("Cannot write to file " + output_path);
-                System.exit(1);
-            }
-        }catch (SecurityException e){
-            System.out.println("The directory 'output' could not be created, therefore no output is printed. " +
-                    "Please create a directory named 'output' in the following path: " + System.getProperty("user.dir"));
-            System.exit(1);
-        }
-        return null;
-    }
 
 
 }

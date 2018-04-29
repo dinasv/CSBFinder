@@ -60,7 +60,7 @@ public class Main {
 
         try {
             if (cla.debug) {
-                //LogManager.getLogManager().reset();//disable logging information printed to screen
+                LogManager.getLogManager().reset();//disable logging information printed to screen
 
                 FileHandler fh = new FileHandler("CSBFinder.log");
                 utils.logger.addHandler(fh);
