@@ -247,14 +247,17 @@ Two output files will be written to a directory named "output"
 <a name='sample'>Sample input files</a>   
 --------------------------------------
 
-Download the following zip file and extract it to a directory named "input" in the same location of CSBFinder.jar:
-> [sample_input.zip](https://github.com/dinasv/CSBFinder/raw/master/input/sample_input.zip)
+Download the following zip file and extract its content to the same location as CSBFinder.jar:
 
-This file contains two datasets:
- - Chromosomal dataset - 1,485 genomes with at least one chromosome, plasmids were removed.
- - Plasmid dataset - 471 genomes with at least one plasmid, chromosomes were removed.
- 
-It also contains cog_info.txt file with functional information of homology groups
+> [Sample_input_files.zip](https://github.com/dinasv/CSBFinder/raw/master/input/Sample_input_files.zip)
+
+The above zip file contains three files, located inside a folder named 'input':
+- plasmid_genomes.fasta   
+    _Plasmid dataset_ - 471 genomes with at least one plasmid, chromosomes were removed.
+- chromosomal_genomes.fasta    
+    _Chromosomal dataset_ - 1,485 genomes with at least one chromosome, plasmids were removed.
+- cog_info.txt   
+    Functional information of homology groups
 
 **Sample execution of CSBFinder using the _Plasmid dataset_**
 ``` 
