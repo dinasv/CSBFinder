@@ -7,6 +7,7 @@
 -   [Output files](#output)
 -   [Sample input files](#sample)
 -   [License](#license)
+-   [Author](#author)
 
 
 <a name='overview'>Overview</a>
@@ -214,7 +215,7 @@ Two output files will be written to a directory named "output"
     - Each entry is composed of a header (CSB ID and genes), followed by lines describing the instances
     - Each line describes the locations of CSB instances in a specific input genome
     - There can be more than one instance in each genome
-    - Ecah instance in present in a replicon (e.g. chromosome/plasmid), begins from a specific index and can have different lengths, depending on the number of insertions in the instance
+    - Ecah instance is present in a replicon (e.g. chromosome/plasmid), begins from a specific index and can have different lengths, depending on the number of insertions in the instance
     
     This file has the following format:
     
@@ -252,12 +253,22 @@ It also contains cog_info.txt file with functional information of homology group
 ``` 
 java -jar CSBFinder.jar -in plasmid_genomes.fasta -q 10 -ins 1 -ds plasmids -cog-info cog_info.txt
 ```
+> On a laptop computer with Intel Core i7 processor and 8GB RAM, this execution should take a few seconds
+
 **Sample execution of CSBFinder using the _Chromosomal dataset_**
 ``` 
 java -Xmx8g -jar CSBFinder.jar -in chromosomal_genomes.fasta -q 50 -ins 1 -ds chromosomes -cog-info cog_info.txt
 ```
+> On a laptop computer with Intel Core i7 processor and 8GB RAM, this execution should take less than 5 minutes
+
 
 <a name='license'>License</a>
 --------------
 
 Licensed under the Apache License, Version 2.0. See more details in [LICENSE](https://github.com/dinasv/CSBFinder/blob/master/LICENSE) file
+
+<a name='author'>Author</a>
+--------------
+Dina Svetlitsky
+
+dina.svetlitsky@gmail.com
