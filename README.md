@@ -209,7 +209,13 @@ Two output files will be written to a directory named "output"
         - Information about gene family IDs of each CSB
 
 - **File 2: CSB instances**: A FASTA file with the same name as the catalog file, only with the suffix "\_instances"
-
+    
+    - Each entry represents a CSB and all its instances in the input genomes 
+    - Each entry is composed of a header (CSB ID and genes), followed by lines describing the instances
+    - Each line describes the locations of CSB instances in a specific input genome
+    - There can be more than one instance in each genome
+    - Ecah instance in present in a replicon (e.g. chromosome/plasmid), begins from a specific index and can have different lengths, depending on the number of insertions in the instance
+    
     This file has the following format:
     
     ```
