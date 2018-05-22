@@ -6,13 +6,15 @@
 -   [Input files formats](#input)
 -   [Output files](#output)
 -   [Sample input files](#sample)
+-   [License](#license)
+-   [Author](#author)
 
 
 <a name='overview'>Overview</a>
 --------
 CSBFinder is a standalone software tool, executed using command line, for the discovery, ranking and clustering of colinear synteny blocks (CSBs) identified in large genomic datasets.
 
-The input is a set of genomes and parameters **_k_** (number of allowed insertions) and **_q_** (the quorum parameter). The genomes are modeled as strings of homologous gene family IDs, where genes belonging to the same homology family have identical IDs. The genomes are mined to identify substrings that qualify as CSBs: patterns of gene-family IDs that appear as an exact substring of at least one of the input genomes, and have instances in at least **_q_** genomes, where each instance may vary from the CSB pattern by at most **_k_** gene insertions. The discovered CSBs are ranked according to a probabilistic score and clustered to families according to their gene content similarity.
+The input is a set of genomes and parameters **_k_** (number of allowed insertions) and **_q_** (the quorum parameter). The genomes are modeled as strings of homologous genes, where genes belonging to the same homology group have identical IDs. A homology group is regarded as a 'gene' throughout the text. In our model, a CSB is a patterns of genes that appears as a substring of at least one of the input genomes, and has instances in at least **_q_** genomes, where each instance may vary from the CSB by at most **_k_** gene insertions. The genomes are mined to identify patterns that qualify as CSBs. The discovered CSBs are ranked according to a probabilistic score and clustered to families according to their gene content similarity.
 
 <a name='prerequisites'>Prerequisites</a>
 --------
@@ -23,6 +25,11 @@ The input is a set of genomes and parameters **_k_** (number of allowed insertio
 <a name='running'>Running CSBFinder</a>
 --------
 - Download the [latest release](https://github.com/dinasv/CSBFinder/releases) of CSBFinder.jar
+- You can use the link https://github.com/dinasv/CSBFinder/releases/download/v[VERSION]/CSBFinder.jar for direct download. For example, in linux:
+    ```
+    wget https://github.com/dinasv/CSBFinder/releases/download/v0.2.0/CSBFinder.jar 
+    ```
+    
 - In the terminal (linux) or cmd (windows) type:
     ``` 
     java -jar CSBFinder.jar [options]
@@ -32,6 +39,8 @@ The input is a set of genomes and parameters **_k_** (number of allowed insertio
     ``` 
     java -Xmx8g -jar CSBFinder.jar [options]
     ```
+    
+
 > [Sample input files](#sample) are provided below
 
 ### Options:
@@ -87,15 +96,15 @@ All input files must be located in a directory named 'input', in the same direct
 ### Input file containing input genome sequences
 - Mandatory input file
 - Its name is indicated using the "-in" option
-- Contains all input genomes modeled as strings, where each character is a gene family ID (for example, COG ID)
+- Contains all input genomes modeled as strings, where each character is a homology group ID that contains the corresponding gene (for example, COG ID)
 - FASTA file
 
 This file should use the following format:
 ```
 >[genome name] | [ replicon name (e.g. plasmid or chromosome id)]
-[gene family ID] TAB [Strand (+ or -)] TAB [you can add additional information]
-[gene family ID] TAB [Strand (+ or -)] TAB [you can add additional information] 
-[gene family ID] TAB [Strand (+ or -)] TAB [you can add additional information] 
+[homology group ID] TAB [Strand (+ or -)] TAB [you can add additional information]
+[homology group ID] TAB [Strand (+ or -)] TAB [you can add additional information] 
+[homology group ID] TAB [Strand (+ or -)] TAB [you can add additional information] 
 ....
 ```
 
@@ -108,7 +117,7 @@ All replicons of the same genome should be consecutive, i.e.:
 >genomeB|replicon1
 ...
 ```
-> Genes that are not annotated by a gene family ID, should be marked as 'X'
+> Genes that does not belong to any homology group, should be marked as 'X'
 
 #### Example:
 ```
@@ -145,10 +154,10 @@ COG0600	+
 ....
 ```
 
-### Input file containing gene family ID information
+### Input file with functional information of homology group IDs 
 - Optional input file
 - Its name is indicated using the "-cog-info" option
-- Contains information regarding gene family IDs, this information will be printed in the output files as the functional description of CSB genes 
+- Information from this file will be printed in the catalog output file, as the functional description of CSB genes 
 
 This file should use the following format:
 ```
@@ -171,9 +180,9 @@ COG0320;Lipoate synthase;H;Coenzyme transport and metabolism;LipA;
 This file should use the following format:
 ```
 >[unique pattern ID, must be an integer]
-[gene family IDs seperated by hyphens]
+[homology group IDs seperated by hyphens]
 >[unique pattern ID, must be an integer]
-[gene family IDs seperated by hyphens]
+[homology group IDs seperated by hyphens]
 ```
 
 #### Example
@@ -189,7 +198,7 @@ COG3736-COG3504-COG2948
 --------------
 Two output files will be written to a directory named "output"
 
-- **A Catalog of CSBs**: An excel file containing the discovered CSBs named "Catalog_[dataset name]\_ins[number of allowed insertions]\_q[quorum parameter].xlsx"   
+- **File 1: A Catalog of CSBs**: An excel file containing the discovered CSBs named "Catalog_[dataset name]\_ins[number of allowed insertions]\_q[quorum parameter].xlsx"   
     This file contains three sheets: 
     1. Catalog    
         - Each line describes a single CSB
@@ -199,7 +208,7 @@ Two output files will be written to a directory named "output"
             - Instance count: number of input sequences with an insatnce
             - Instance_Ratio: number of input sequences with an insatnce divided by the number of input sequences
             - Exact_Instance_Count: number of input sequences with an instance that doesn't contain insertions
-            - CSB: a sequence of gene family IDs 
+            - CSB: a sequence of genes
             - Main_Category: if functional category was provided in the -cog-info file, this column contains the functional category of                             the majority of CSB gene families
             - Family_ID: CSBs with similar gene content will belong to the same family, indicated by a postive integer
     2. Filtered CSBs
@@ -207,16 +216,22 @@ Two output files will be written to a directory named "output"
     3. CSBs description
         - Information about gene family IDs of each CSB
 
-- **Information of CSB instances**: A text FASTA file in the same name as the catalog file, only with the suffix "\_instances"
-
+- **File 2: CSB instances**: A FASTA file with the same name as the catalog file, only with the suffix "\_instances"
+    
+    - Each entry represents a CSB and all its instances in the input genomes 
+    - Each entry is composed of a header (CSB ID and genes), followed by lines describing the instances
+    - Each line describes the locations of CSB instances in a specific input genome
+    - There can be more than one instance in each genome
+    - Ecah instance is present in a replicon (e.g. chromosome/plasmid), begins from a specific index and can have different lengths, depending on the number of insertions in the instance
+    
     This file has the following format:
     
     ```
-    >[CSB ID]	[CSB gene family IDs]
+    >[CSB ID] TAB [CSB genes]
      [genome name] TAB [replicon name]_[start index]_length_[instance length]
      [genome name] TAB [replicon name]_[start index]_length_[instance length]
      ...
-     >[CSB ID]	[CSB gene family IDs]
+     >[CSB ID] TAB	[CSB genes]
      [genome name] TAB [replicon name]_[start index]_length_[instance length]
      [genome name] TAB [replicon name]_[start index]_length_[instance length]
      ...
@@ -232,22 +247,38 @@ Two output files will be written to a directory named "output"
 <a name='sample'>Sample input files</a>   
 --------------------------------------
 
-Download the following zip file and extract it to a directory named "input" in the same location of CSBFinder.jar:
-> [sample_input.zip](https://github.com/dinasv/CSBFinder/raw/master/input/sample_input.zip)
+Download the following zip file and extract its content to the same location as CSBFinder.jar:
 
-This file contains two datasets:
- - Chromosomal dataset - 1,485 genomes with at least one chromosome, plasmids were removed.
- - Plasmid dataset - 471 genomes with at least one plasmid, chromosomes were removed.
- 
-It also contains cog_info.txt file with gene family information
+> [Sample_input_files.zip](https://github.com/dinasv/CSBFinder/raw/master/input/Sample_input_files.zip)
+
+The above zip file contains three files, located inside a folder named 'input':
+- plasmid_genomes.fasta   
+    _Plasmid dataset_ - 471 genomes with at least one plasmid, chromosomes were removed.
+- chromosomal_genomes.fasta    
+    _Chromosomal dataset_ - 1,485 genomes with at least one chromosome, plasmids were removed.
+- cog_info.txt   
+    Functional information of homology groups
 
 **Sample execution of CSBFinder using the _Plasmid dataset_**
 ``` 
 java -jar CSBFinder.jar -in plasmid_genomes.fasta -q 10 -ins 1 -ds plasmids -cog-info cog_info.txt
 ```
+> On a laptop computer with Intel Core i7 processor and 8GB RAM, this execution should take a few seconds
+
 **Sample execution of CSBFinder using the _Chromosomal dataset_**
 ``` 
 java -Xmx8g -jar CSBFinder.jar -in chromosomal_genomes.fasta -q 50 -ins 1 -ds chromosomes -cog-info cog_info.txt
 ```
+> On a laptop computer with Intel Core i7 processor and 8GB RAM, this execution should take less than 5 minutes
 
 
+<a name='license'>License</a>
+--------------
+
+Licensed under the Apache License, Version 2.0. See more details in [LICENSE](https://github.com/dinasv/CSBFinder/blob/master/LICENSE) file
+
+<a name='author'>Author</a>
+--------------
+Dina Svetlitsky
+
+dina.svetlitsky@gmail.com
