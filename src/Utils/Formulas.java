@@ -33,10 +33,9 @@ public class Formulas {
             result = -G*Math.log(q);
         } else if (q < a && q > 0 && a < 1){
             result = G*H(a, q);
-            //double res = -Math.log(binomialCDF(G, g, q));
         }else{
             result = binomialCDF(G, g, q);
-
+            //base e
             result = -Math.log(result);
         }
 

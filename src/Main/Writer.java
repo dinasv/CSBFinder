@@ -206,7 +206,7 @@ public class Writer {
                     }
                     ArrayList<String> word_ids = instance_seq_and_location.get(seq_name);
                     for (String word_id : entry.getValue()) {
-                        word_ids.add(word_id+ "_length_" + instance_length);
+                        word_ids.add(word_id+ "|length_" + instance_length);
                     }
                 }
             }

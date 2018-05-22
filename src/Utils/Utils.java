@@ -185,14 +185,16 @@ public class Utils {
                 directon.add(gene);
 
                 if (end_directon){
+
                     int directon_start_index = gene_index-directon.size()+1;
                     int reverse = 1;
+
                     directon = remove_x_from_end(directon);
 
                     if (directon.get(0).getStrand().equals("-")) {
                         Collections.reverse(directon);
                         reverse = -1;
-                        directon_start_index = gene_index;
+                        directon_start_index = directon_start_index + directon.size() - 1;
                     }
 
                     //add directon to suffix tree

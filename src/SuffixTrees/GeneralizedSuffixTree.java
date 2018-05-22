@@ -5,10 +5,11 @@ import Words.WordArray;
 import java.io.Serializable;
 
 /**
- * A modified version of the Suffix Tree code in https://github.com/abahgat/suffixtree
+ * A modified version of the Suffix Tree code from https://github.com/abahgat/suffixtree
  * Copyright 2012 Alessandro Bahgat Shehata
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
+ * the License. You may obtain a copy of the License at
  * http://www.apache.org/licenses/LICENSE-2.0
  *
  * A Generalized Suffix Tree, based on the Ukkonen's paper "On-line construction of suffix trees"

@@ -51,7 +51,7 @@ public class InstanceNode extends SuffixNode {
      * Add position of the suffix (the starting index) of the string "key"
      */
     void addDataIndex(int key, String word_id, int index, int reverse) {
-        String val = word_id + "_" + index;
+        String val = word_id + "|" + index;
 
         ArrayList<String> key_indexes = data.get(key);
         if (key_indexes == null){
@@ -70,7 +70,7 @@ public class InstanceNode extends SuffixNode {
         if (iter != null) {
             while (iter.getSuffix() != null) {
                 index += reverse;
-                String val = word_id + "_" + index;
+                String val = word_id + "|" + index;
 
                 ArrayList<String> key_indexes = iter.data.get(key);
                 if (key_indexes == null){
