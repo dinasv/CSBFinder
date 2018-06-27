@@ -202,13 +202,5 @@ public class WordArray{
         return true;
     }
 
-    public String to_string(Utils utils){
-        String str = "";
-        for (int i=start_index; i<end_index; i++){
-            str += utils.index_to_char.get(wordArray[i]) + "|";
-        }
-
-        return str;
-    }
 
 }

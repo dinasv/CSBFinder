@@ -72,7 +72,7 @@ public class Pattern {
         return pattern_arr;
     }
 
-    public int get_exact_instance_count() {
+    public int getExactInstanceCount() {
         return exact_instance_count;
     }
 
@@ -89,13 +89,15 @@ public class Pattern {
         this.score = score;
     }
 
-    public void calculateMainFunctionalCategory(Utils utils){
+    public void calculateMainFunctionalCategory(Utils utils, boolean is_directons){
         if (utils.cog_info != null) {
-
 
             HashMap<String, Integer> functional_letter_count = new HashMap<>();
             HashMap<String, String> functional_letter_to_desc = new HashMap<>();
             for (String cog_id : pattern_arr) {
+                if (! is_directons){
+                    cog_id = cog_id.substring(0, cog_id.length()-1);
+                }
                 COG cog = utils.cog_info.get(cog_id);
                 if (cog != null) {
                     String[] functional_letters = cog.getFunctional_letters();
@@ -133,7 +135,7 @@ public class Pattern {
         }
     }
 
-    public String getMain_functional_category() {
+    public String getMainFunctionalCategory() {
         return main_functional_category;
     }
 

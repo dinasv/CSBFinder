@@ -93,11 +93,11 @@ public class Instance implements Comparable<Instance>{
         return substring;
     }
 
-    public void add_insertion_index(int index){
+    public void addInsertionIndex(int index){
         insertion_indexes.add(index);
     }
 
-    public void add_all_insertion_indexes(ArrayList<Integer> indexes){
+    public void addAllInsertionIndexes(ArrayList<Integer> indexes){
         insertion_indexes.addAll(indexes);
     }
 
@@ -135,7 +135,7 @@ public class Instance implements Comparable<Instance>{
         this.length = length;
     }
 
-    public ArrayList<Integer> get_insertion_indexes(){
+    public ArrayList<Integer> getInsertionIndexes(){
         return insertion_indexes;
     }
 }

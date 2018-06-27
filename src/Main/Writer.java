@@ -33,7 +33,6 @@ public class Writer {
     private Sheet patterns_description_sheet;
     String catalog_path;
 
-    private DecimalFormat DF;
 
     private int max_error;
     private int max_deletion;
@@ -43,14 +42,18 @@ public class Writer {
     private int next_line_index_desc_sheet;
     private boolean cog_info_exists;
     private boolean debug;
+    private boolean is_directons;
+
+    private static final String DELIMITER = "|";
+    private static final DecimalFormat DF = new DecimalFormat("#.####");
 
     OutputType output_file_type;
 
 
     public Writer(int max_error, int max_deletion, int max_insertion, boolean debug, String catalog_path,
                   String instances_path, boolean include_families, OutputType output_file_type,
-                  boolean cog_info_exists){
-        DF = new DecimalFormat("#.####");
+                  boolean cog_info_exists, boolean is_directons){
+
         DF.setRoundingMode(RoundingMode.HALF_UP);
 
         this.max_error = max_error;
@@ -63,6 +66,7 @@ public class Writer {
 
         this.output_file_type = output_file_type;
         this.cog_info_exists = cog_info_exists;
+        this.is_directons = is_directons;
 
         catalog_sheet = null;
         filtered_patterns_sheet = null;
@@ -254,10 +258,10 @@ public class Writer {
         row.createCell(col++).setCellValue(pattern.getInstanceCount());
         row.createCell(col++).setCellValue(Double.valueOf(DF.format(pattern.getInstanceCount() /
                 (double) utils.number_of_genomes)));
-        row.createCell(col++).setCellValue(pattern.get_exact_instance_count());
-        row.createCell(col++).setCellValue(String.join("-", pattern.getPatternArr()));
+        row.createCell(col++).setCellValue(pattern.getExactInstanceCount());
+        row.createCell(col++).setCellValue(String.join(DELIMITER, pattern.getPatternArr()));
         if (utils.cog_info != null) {
-            row.createCell(col++).setCellValue(pattern.getMain_functional_category());
+            row.createCell(col++).setCellValue(pattern.getMainFunctionalCategory());
         }
         if (family_id != null){
             row.createCell(col++).setCellValue(family_id);
@@ -275,6 +279,9 @@ public class Writer {
 
         for (String cog : pattern.getPatternArr()){
             row = sheet.createRow(row_num++);
+            if (!is_directons){
+                cog = cog.substring(0, cog.length()-1);
+            }
             COG cog_obj = utils.cog_info.get(cog);
 
             row.createCell(0).setCellValue(cog);
@@ -302,12 +309,12 @@ public class Writer {
                 catalog_line += DF.format(pattern.getScore()) + "\t"
                         + pattern.getInstanceCount() + "\t"
                         + DF.format(pattern.getInstanceCount() / (double) utils.number_of_genomes) + "\t"
-                        + pattern.get_exact_instance_count() + "\t";
+                        + pattern.getExactInstanceCount() + "\t";
 
-                catalog_line += String.join("-", pattern.getPatternArr()) + "\t";
+                catalog_line += String.join(DELIMITER, pattern.getPatternArr()) + "\t";
 
                 if (cog_info_exists) {
-                    catalog_line += pattern.getMain_functional_category() + "\t";
+                    catalog_line += pattern.getMainFunctionalCategory() + "\t";
                 }
                 if (family_id != null){
                     catalog_line += family_id;
@@ -325,8 +332,5 @@ public class Writer {
     public void printPattern(Pattern pattern, Utils utils){
         printPattern(pattern, utils, null);
     }
-
-
-
 
 }

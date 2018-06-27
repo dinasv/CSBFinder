@@ -88,6 +88,10 @@ public class CommandLineArgs {
     @Parameter(names={"-clust-by"}, description = "Cluster CSBs to families by: 'score' or 'length'", order = 12)
     public static ClusterBy cluster_by = ClusterBy.SCORE;
 
+    @Parameter(names={"-directon"}, description = "If true, segment to is_directons",
+            arity = 1, order = 13)
+    public static boolean is_directons = true;
+
 
     @Parameter(names={"--mismatch", "-err"}, description = "Maximal number of mismatches allowed", hidden = true)
     public static int max_error = 0;

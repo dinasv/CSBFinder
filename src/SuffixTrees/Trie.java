@@ -55,7 +55,7 @@ public class Trie {
             PatternNode curr_node = src_node;
             for (int i = 0; i < str.get_length(); i++) {
                 int str_char = str.get_index(i);
-                if (include_unknown_char || (!include_unknown_char && !utils.index_to_char.get(str_char).equals("X"))) {
+                if (include_unknown_char || (!include_unknown_char && str_char != utils.UNK_CHAR_INDEX )) {
                     curr_node = addNode(str_char, curr_node);
 
                     if (type == TreeType.VIRTUAL && curr_node.getPatternKey() <= 0) {

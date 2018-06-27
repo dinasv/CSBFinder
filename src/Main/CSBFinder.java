@@ -14,7 +14,7 @@ import Utils.*;
 public class CSBFinder {
     public static long count_nodes_in_pattern_tree;
     public static long count_nodes_in_data_tree;
-    private static final String DELIMITER = "-";
+    private static final String DELIMITER = "_";
 
     private static int max_error;
     private static int max_wildcards;
@@ -32,11 +32,12 @@ public class CSBFinder {
 
     private int gap_char;
     private int wildcard_char;
-    private int unkown_cog_char;
     private boolean count_by_keys;
 
     private int last_pattern_key;
     private boolean memory_saving_mode;
+
+    private boolean isDirectons;
 
     private boolean debug;
 
@@ -56,7 +57,6 @@ public class CSBFinder {
      * @param max_pattern_length
      * @param gap_char
      * @param wildcard_char
-     * @param unkown_cog_char
      * @param data_t GST representing all input sequences
      * @param pattern_trie
      * @param count_by_keys if true, counts one instance in each input sequence
@@ -66,9 +66,9 @@ public class CSBFinder {
      * @param debug
      */
     public CSBFinder(int max_error, int max_wildcards, int max_deletion, int max_insertion, int quorum1, int quorum2,
-                     int min_pattern_length, int max_pattern_length, int gap_char, int wildcard_char, int unkown_cog_char,
+                     int min_pattern_length, int max_pattern_length, int gap_char, int wildcard_char,
                      GeneralizedSuffixTree data_t, Trie pattern_trie, boolean count_by_keys, Utils utils,
-                     boolean memory_saving_mode, Writer writer, boolean debug){
+                     boolean memory_saving_mode, Writer writer, boolean isDirectons,  boolean debug){
 
         patterns = new HashMap<>();
         this.max_error = max_error;
@@ -82,13 +82,13 @@ public class CSBFinder {
         this.max_pattern_length = max_pattern_length;
         this.gap_char = gap_char;
         this.wildcard_char = wildcard_char;
-        this.unkown_cog_char = unkown_cog_char;
         this.count_by_keys = count_by_keys;
         total_chars_in_data = -1;
         this.utils = utils;
         last_pattern_key = 0;
         this.memory_saving_mode = memory_saving_mode;
         this.writer = writer;
+        this.isDirectons = isDirectons;
         this.debug = debug;
 
         count_nodes_in_pattern_tree = 0;
@@ -145,6 +145,23 @@ public class CSBFinder {
     }
 
     /**
+     * Returns the reverse compliment of a pattern. e.g. [COG1+, COG2-] -> [COG2+, COG1-]
+     * @param pattern
+     * @return
+     */
+    private String[] reversePattern(String[] pattern){
+        String[] reversed_pattern = new String[pattern.length];
+        int j = 0;
+        for (int i = pattern.length-1; i >= 0; i--) {
+            String gene = pattern[i];
+            String prefix = gene.substring(0, gene.length()-1);
+            String reversed_strand = Utils.reverseStrand(gene.substring(gene.length()-1));
+            reversed_pattern[j++] = prefix + reversed_strand;
+        }
+        return reversed_pattern;
+    }
+
+    /**
      * Remove patterns that are suffixes of existing patterns, and has the same number of instances
      * If a pattern passes the quorum1, all its sub-patterns also pass the quorum1
      * If a (sub-pattern instance count = pattern instance count) : the sub-pattern is always a part of the larger
@@ -152,14 +169,12 @@ public class CSBFinder {
      * Therefore it is sufficient to remove each pattern suffix if it has the same instance count
      */
     public void removeRedundantPatterns() {
-        ArrayList<String> patterns_to_remove = new ArrayList<String>();
+        HashSet<String> patterns_to_remove = new HashSet<>();
         for (Map.Entry<String, Pattern> entry : patterns.entrySet()) {
 
             Pattern pattern = entry.getValue();
             String[] pattern_arr = pattern.getPatternArr();
-            //String str = entry.getKey();
 
-            //String suffix_str = str.substring(5);
             String[] suffix_arr = Arrays.copyOfRange(pattern_arr, 1, pattern_arr.length);
             String suffix_str = String.join(DELIMITER, suffix_arr) + DELIMITER;
             Pattern suffix = patterns.get(suffix_str);
@@ -169,6 +184,16 @@ public class CSBFinder {
                 int suffix_count = suffix.getInstanceCount();
                 if (suffix_count == pattern_count){
                     patterns_to_remove.add(suffix_str);
+                }
+            }
+
+            //remove reverse compliments
+            if (!isDirectons){
+                String pattern_str = String.join(DELIMITER, pattern_arr) + DELIMITER;
+                String reversed_pattern_str = String.join(DELIMITER, reversePattern(pattern_arr)) + DELIMITER;
+                Pattern reversed_pattern = patterns.get(reversed_pattern_str);
+                if (reversed_pattern != null && !patterns_to_remove.contains(pattern_str)){
+                    patterns_to_remove.add(reversed_pattern_str);
                 }
             }
         }
@@ -330,7 +355,7 @@ public class CSBFinder {
 
                 if (data_tree_target_node.getCount_by_keys() >= q1) {
 
-                    if (alpha == unkown_cog_char) {
+                    if (alpha == utils.UNK_CHAR_INDEX) {
                         if (q1 == 0 && !pattern.startsWith("X")) {
                             spellPatternsVirtually(pattern_node, data_node, data_edge_index + 1, data_edge,
                             pattern, pattern_length, wildcard_count);
@@ -356,7 +381,7 @@ public class CSBFinder {
             InstanceNode data_tree_target_node = (InstanceNode) data_edge.getDest();
 
             if (data_tree_target_node.getCount_by_keys() >= q1) {
-                if (alpha == unkown_cog_char) {
+                if (alpha == utils.UNK_CHAR_INDEX) {
                     //spellPatternsVirtually(pattern_node, data_node, data_edge_index + 1, data_edge,
                             //pattern, pattern_length, wildcard_count);
                 } else {
@@ -449,7 +474,7 @@ public class CSBFinder {
 
                         if (memory_saving_mode){
                             new_pattern.calculateScore(utils, max_insertion, max_error, max_deletion);
-                            new_pattern.calculateMainFunctionalCategory(utils);
+                            new_pattern.calculateMainFunctionalCategory(utils, isDirectons);
                             writer.printPattern(new_pattern, utils);
                         }else {
                             patterns.put(extended_pattern, new_pattern);
@@ -468,7 +493,7 @@ public class CSBFinder {
 
                                 if (memory_saving_mode){
                                     new_pattern.calculateScore(utils, max_insertion, max_error, max_deletion);
-                                    new_pattern.calculateMainFunctionalCategory(utils);
+                                    new_pattern.calculateMainFunctionalCategory(utils, isDirectons);
                                     writer.printPattern(new_pattern, utils);
                                 }else {
                                     patterns.put(extended_pattern, new_pattern);
@@ -580,9 +605,9 @@ public class CSBFinder {
             if (insertions < max_insertion && instance.getLength() > 0){
                 if (next_ch != ch) {
                     String extended_instance_string = appendChar(instance.getSubstring(), next_ch);
-                    Instance next_instance = new Instance(next_node_instance, next_edge_instance, next_edge_index, error, deletions, instance.get_insertion_indexes(), extended_instance_string, instance.getLength() + 1);
-                    next_instance.add_insertion_index(instance.getLength());
-                    next_instance.add_all_insertion_indexes(instance.get_insertion_indexes());
+                    Instance next_instance = new Instance(next_node_instance, next_edge_instance, next_edge_index, error, deletions, instance.getInsertionIndexes(), extended_instance_string, instance.getLength() + 1);
+                    next_instance.addInsertionIndex(instance.getLength());
+                    next_instance.addAllInsertionIndexes(instance.getInsertionIndexes());
                     extendInstance(extended_pattern, next_instance, ch);
                     count_nodes_in_data_tree++;
                 }
@@ -664,8 +689,8 @@ public class CSBFinder {
                 if (ch != next_ch) {
                     String extended_instance_string = appendChar(instance.getSubstring(), next_ch);
                     Instance next_instance = new Instance(next_node, next_edge, next_edge_index, error, deletions,
-                            instance.get_insertion_indexes(), extended_instance_string, instance.getLength() + 1);
-                    next_instance.add_insertion_index(instance.getLength());
+                            instance.getInsertionIndexes(), extended_instance_string, instance.getLength() + 1);
+                    next_instance.addInsertionIndex(instance.getLength());
                     extendInstance(patternNode, next_instance, ch);
                     count_nodes_in_data_tree++;
                 }
@@ -691,7 +716,7 @@ public class CSBFinder {
                                       Edge next_edge, int next_edge_index, int next_error, int next_deletions) {
         String extended_instance_string = appendChar(instance.getSubstring(), next_ch);
         Instance next_instance = new Instance(next_node, next_edge, next_edge_index, next_error, next_deletions,
-                instance.get_insertion_indexes(), extended_instance_string, instance.getLength()+1);
+                instance.getInsertionIndexes(), extended_instance_string, instance.getLength()+1);
         extended_pattern.addInstance(next_instance, max_insertion);
 
         count_nodes_in_data_tree++;

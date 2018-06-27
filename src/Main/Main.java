@@ -121,9 +121,13 @@ public class Main {
         utils.index_to_char.add(utils.GAP_CHAR);
 
         //unkown cog
-        int unknown_char = 2;
         utils.char_to_index.put(utils.UNK_CHAR, utils.UNK_CHAR_INDEX);
         utils.index_to_char.add(utils.UNK_CHAR);
+        //if the sequence is not segmented to is_directons
+        utils.char_to_index.put("X+", utils.UNK_CHAR_INDEX);
+        utils.char_to_index.put("X-", utils.UNK_CHAR_INDEX);
+
+
 
         long startTime = System.nanoTime();
 
@@ -135,7 +139,7 @@ public class Main {
 
 
         int number_of_genomes = utils.readAndBuildDatasetTree(INPUT_PATH+cla.input_file_name,
-                                                                    dataset_suffix_tree);
+                                                                    dataset_suffix_tree, cla.is_directons);
 
         if (number_of_genomes != -1) {
 
@@ -154,16 +158,15 @@ public class Main {
 
             Writer writer = new Writer(cla.max_error, cla.max_deletion, cla.max_insertion, cla.debug, catalog_path,
                     instances_path,
-                    include_families, cla.output_file_type, utils.cog_info != null);
+                    include_families, cla.output_file_type, utils.cog_info != null, cla.is_directons);
 
             System.out.println("Extracting CSBs from " + number_of_genomes + " input sequences.");
 
             CSBFinder CSBFinder = new CSBFinder(cla.max_error, cla.max_wildcards, cla.max_deletion, cla.max_insertion,
                     cla.quorum1, cla.quorum2,
                     cla.min_pattern_length, cla.max_pattern_length, utils.GAP_CHAR_INDEX, utils.WC_CHAR_INDEX,
-                    unknown_char,
                     dataset_suffix_tree, pattern_tree, cla.bool_count, utils, cla.memory_saving_mode, writer,
-                    cla.debug);
+                    cla.is_directons, cla.debug);
 
             if (cla.input_patterns_file_name == null) {
                 if (!cla.memory_saving_mode) {
@@ -183,7 +186,7 @@ public class Main {
 
                 for (Pattern pattern : patterns) {
                     pattern.calculateScore(utils, cla.max_insertion, cla.max_error, cla.max_deletion);
-                    pattern.calculateMainFunctionalCategory(utils);
+                    pattern.calculateMainFunctionalCategory(utils, cla.is_directons);
                 }
 
                 System.out.println("Clustering to families");
