@@ -219,12 +219,12 @@ public class Utils {
         return directons_length_sum;
     }
 
-    private boolean updateGenomes(String curr_genome_name, int genome_size, int curr_genome_index,
-                                  HashSet<Integer> genomes_indexes){
+    private boolean updateGenomes(String curr_genome_name, int genome_size, int curr_genome_index){
+                                  //HashSet<Integer> genomes_indexes){
         boolean is_updated = false;
         if (!genome_name_to_key.containsKey(curr_genome_name)) {
             if (genome_size > 0 && curr_genome_index != -1) {
-                genomes_indexes.add(curr_genome_index);
+                //genomes_indexes.add(curr_genome_index);
                 genome_key_to_name.put(curr_genome_index, curr_genome_name);
                 genome_name_to_key.put(curr_genome_name, curr_genome_index);
                 is_updated = true;
@@ -257,7 +257,7 @@ public class Utils {
                                        boolean directons) {
         String file_name = input_file_path;
 
-        HashSet<Integer> genomes_indexes = new HashSet<>();
+        //HashSet<Integer> genomes_indexes = new HashSet<>();
 
         BufferedReader br = null;
         try {
@@ -312,7 +312,7 @@ public class Utils {
                         if (word_desc.length > 0) {
                             String next_genome_name = word_desc[0];
 
-                            updateGenomes(curr_genome_name, genome_size, curr_genome_index, genomes_indexes);
+                            updateGenomes(curr_genome_name, genome_size, curr_genome_index);
 
                             if (!next_genome_name.equals(curr_genome_name)) {
                                 curr_genome_index++;
@@ -342,7 +342,7 @@ public class Utils {
                 length_sum += replicon_length;
                 genome_size += replicon_length;
 
-                updateGenomes(curr_genome_name, genome_size, curr_genome_index, genomes_indexes);
+                updateGenomes(curr_genome_name, genome_size, curr_genome_index);
 
                 dataset_length_sum = length_sum;
 
@@ -353,12 +353,12 @@ public class Utils {
                 //logger.info("Longest cog word: " + longest_cog_word);
                 //logger.info("Average cog word length: " + (double) length_sum / word_counter);
                 if (debug) {
-                    logger.info("Average genome size: " + length_sum / genomes_indexes.size());
+                    logger.info("Average genome size: " + length_sum / genome_key_to_name.size());
 
-                    logger.info("Number of genomes " + genomes_indexes.size());
+                    logger.info("Number of genomes " + genome_key_to_name.size());
                     logger.info("Number of cogs " + char_to_index.size());
                 }
-                number_of_genomes = genomes_indexes.size();
+                number_of_genomes = genome_key_to_name.size();
                 if (number_of_genomes == 0){
                     return -1;
                 }
