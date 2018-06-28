@@ -25,7 +25,6 @@ public class Directon extends Replicon{
             int strand = genes.get(0).getStrand().equals("-") ? -1 : 1;
             if (strand == -1) {
                 reverse();
-                //setStartIndex(super.getStartIndex() + size() - 1);
             }
             super.setStrand(strand);
         }

@@ -162,7 +162,7 @@ public class Utils {
     }
 
 
-    private ArrayList<Directon> splitRepliconToDirectons(Replicon replicon) {
+    private static ArrayList<Directon> splitRepliconToDirectons(Replicon replicon) {
 
         ArrayList<Directon> directons = new ArrayList<>();
 
@@ -187,10 +187,11 @@ public class Utils {
                         directon.setStartIndex(gene_index-directon.size()+1);
 
                         directon.removeXFromEnd(UNK_CHAR);
-                        directon.setStrand();
+                        if (directon.size() > 1) {
+                            directon.setStrand();
 
-                        directons.add(directon);
-
+                            directons.add(directon);
+                        }
                     }
 
                     directon = new Directon();
@@ -203,11 +204,10 @@ public class Utils {
     }
 
     private boolean updateGenomes(String curr_genome_name, int genome_size, int curr_genome_index){
-                                  //HashSet<Integer> genomes_indexes){
+
         boolean is_updated = false;
         if (!genome_name_to_key.containsKey(curr_genome_name)) {
             if (genome_size > 0 && curr_genome_index != -1) {
-                //genomes_indexes.add(curr_genome_index);
                 genome_key_to_name.put(curr_genome_index, curr_genome_name);
                 genome_name_to_key.put(curr_genome_name, curr_genome_index);
                 is_updated = true;
