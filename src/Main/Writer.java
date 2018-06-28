@@ -7,6 +7,7 @@ import Utils.*;
 import java.io.*;
 import java.math.RoundingMode;
 import java.text.DecimalFormat;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 import org.apache.poi.ss.usermodel.Row;
@@ -50,8 +51,8 @@ public class Writer {
     OutputType output_file_type;
 
 
-    public Writer(int max_error, int max_deletion, int max_insertion, boolean debug, String catalog_path,
-                  String instances_path, boolean include_families, OutputType output_file_type,
+    public Writer(int max_error, int max_deletion, int max_insertion, boolean debug, String catalog_file_name,
+                  String instances_file_name, boolean include_families, OutputType output_file_type,
                   boolean cog_info_exists, boolean is_directons){
 
         DF.setRoundingMode(RoundingMode.HALF_UP);
@@ -72,15 +73,24 @@ public class Writer {
         filtered_patterns_sheet = null;
         patterns_description_sheet = null;
 
-        this.catalog_path = catalog_path;
+        this.catalog_path = catalog_file_name;
 
-        init(catalog_path, instances_path, include_families);
+        init(catalog_file_name, instances_file_name, include_families);
 
     }
 
-    private void init(String catalog_path, String instances_path, boolean include_families){
-        createOutputDirectory();
-        createOutputFiles(catalog_path, instances_path);
+    private void init(String catalog_file_name, String instances_file_name, boolean include_families){
+        Date dNow = new Date( );
+        SimpleDateFormat ft = new SimpleDateFormat ("dd_MM_yyyy_hh_mm_ss_a");
+
+        //System.out.println("Current Date: " + ft.format(dNow))
+
+        String path = "output";
+        createOutputDirectory(path);
+        path += "/"+ft.format(dNow)+"/";
+        createOutputDirectory(path);
+
+        createOutputFiles(path + catalog_file_name, path +instances_file_name);
         createHeaders(include_families);
     }
 
@@ -118,11 +128,11 @@ public class Writer {
         instances_file = createOutputPrintWriter(instances_path);
     }
 
-    private void createOutputDirectory(){
+    private void createOutputDirectory(String path){
         try {
-            new File("output").mkdir();
+            new File(path).mkdir();
         }catch (SecurityException e){
-            System.out.println("The directory 'output' could not be created, therefore no output is printed. " +
+            System.out.println("The directory \'"+path+"\' could not be created, therefore no output is printed. " +
                     "Please create a directory named 'output' in the following path: " + System.getProperty("user.dir"));
             System.exit(1);
         }

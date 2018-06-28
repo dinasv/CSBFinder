@@ -148,16 +148,17 @@ public class Main {
 
             String parameters = "_ins" + cla.max_insertion + "_q" + cla.quorum2;
 
-            String catalog_path = "output/Catalog_" + cla.dataset_name + parameters;
-            String instances_path = catalog_path + "_instances";
+            String catalog_file_name = "Catalog_" + cla.dataset_name + parameters;
+            //String catalog_path = "output/Catalog_" + cla.dataset_name + parameters;
+            String instances_file_name = catalog_file_name + "_instances";
 
             boolean include_families = true;
             if (cla.memory_saving_mode) {
                 include_families = false;
             }
 
-            Writer writer = new Writer(cla.max_error, cla.max_deletion, cla.max_insertion, cla.debug, catalog_path,
-                    instances_path,
+            Writer writer = new Writer(cla.max_error, cla.max_deletion, cla.max_insertion, cla.debug, catalog_file_name,
+                    instances_file_name,
                     include_families, cla.output_file_type, utils.cog_info != null, cla.is_directons);
 
             System.out.println("Extracting CSBs from " + number_of_genomes + " input sequences.");
