@@ -167,9 +167,9 @@ public class GeneralizedSuffixTree  implements Serializable{
      *
      * @param str the string (word) added to the tree
      * @param key the key of the genome
-     * @param word_id the id of the word containing str
+     * @param replicon_id the id of the word containing str
      */
-    public void put(WordArray str, int key, String word_id, int word_index, int reverse) {
+    public void put(WordArray str, int key, int replicon_id, int start_index, int strand) {
 
         // reset activeLeaf
         activeLeaf = root;
@@ -210,7 +210,7 @@ public class GeneralizedSuffixTree  implements Serializable{
 
         //add recursively the key and indexes to the nodes corresponding to this string
 
-        ((InstanceNode)fullStringNode).addDataIndex(key, word_id, word_index, reverse);
+        ((InstanceNode)fullStringNode).addDataIndex(key, replicon_id, start_index, strand);
 
 
     }

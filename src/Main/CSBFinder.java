@@ -14,7 +14,7 @@ import Utils.*;
 public class CSBFinder {
     public static long count_nodes_in_pattern_tree;
     public static long count_nodes_in_data_tree;
-    private static final String DELIMITER = "_";
+    private static final String DELIMITER = " ";
 
     private static int max_error;
     private static int max_wildcards;
@@ -144,6 +144,10 @@ public class CSBFinder {
                 seq.get_start_index() + end_index);
     }
 
+    private static String reverseStrand(String strand){
+        return strand.equals("-") ? "+" : "-";
+    }
+
     /**
      * Returns the reverse compliment of a pattern. e.g. [COG1+, COG2-] -> [COG2+, COG1-]
      * @param pattern
@@ -155,7 +159,7 @@ public class CSBFinder {
         for (int i = pattern.length-1; i >= 0; i--) {
             String gene = pattern[i];
             String prefix = gene.substring(0, gene.length()-1);
-            String reversed_strand = Utils.reverseStrand(gene.substring(gene.length()-1));
+            String reversed_strand = reverseStrand(gene.substring(gene.length()-1));
             reversed_pattern[j++] = prefix + reversed_strand;
         }
         return reversed_pattern;

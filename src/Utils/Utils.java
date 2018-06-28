@@ -1,12 +1,13 @@
 package Utils;
 
+import Words.Directon;
+import Words.Replicon;
 import Words.WordArray;
 import SuffixTrees.*;
 
 import java.io.*;
 import java.util.*;
 import java.util.logging.Logger;
-import java.util.stream.Collectors;
 
 /**
  * Contain static methods for building suffix trees
@@ -32,6 +33,7 @@ public class Utils {
      */
     public HashMap<String, Integer> genome_name_to_key;
     public HashMap<Integer, String> genome_key_to_name;
+    public HashMap<Integer, String> replicon_key_to_name;
 
     public int dataset_length_sum ;
 
@@ -90,6 +92,7 @@ public class Utils {
 
         genome_name_to_key = new HashMap<>();
         genome_key_to_name = new HashMap<>();
+        replicon_key_to_name = new HashMap<>();
 
         dataset_length_sum = 0;
 
@@ -158,25 +161,18 @@ public class Utils {
         }
     }
 
-    private ArrayList<Gene> removeXFromEnd(ArrayList<Gene> directon){
-        int i = directon.size()-1;
-        while (i>=0 && directon.get(i).getCog_id().equals(UNK_CHAR)){
-            i--;
-        }
-        directon = new ArrayList<Gene>(directon.subList(0, i+1));
-        return directon;
-    }
 
-    private int splitRepliconToDirectons(ArrayList<Gene> replicon_genes, GeneralizedSuffixTree dataset_gst,
-                                         int curr_seq_index, String replicon_id) {
+    private ArrayList<Directon> splitRepliconToDirectons(Replicon replicon) {
 
-        ArrayList<Gene> directon = new ArrayList<>();
-        int directons_length_sum = 0;
+        ArrayList<Directon> directons = new ArrayList<>();
+
+        Directon directon = new Directon();
+
         int gene_index = 0;
-        for (Gene gene : replicon_genes) {
+        for (Gene gene : replicon.getGenes()) {
             //end directon if it is the last gene in the regulon, or if next gene is on different strand
-            boolean end_directon = (gene_index == replicon_genes.size()-1) ||
-                    !(gene.getStrand().equals(replicon_genes.get(gene_index+1).getStrand()));
+            boolean end_directon = (gene_index == replicon.size()-1) ||
+                    !(gene.getStrand().equals(replicon.getGenes().get(gene_index+1).getStrand()));
             if (directon.size() == 0) {
                 if (!gene.getCog_id().equals(UNK_CHAR) && !end_directon) {
                     directon.add(gene);
@@ -184,39 +180,26 @@ public class Utils {
             } else {
                 directon.add(gene);
 
-                if (end_directon){
+                if (end_directon){//directon.size()>0
 
-                    int directon_start_index = gene_index-directon.size()+1;
-                    int reverse = 1;
-
-                    directon = removeXFromEnd(directon);
-
-                    if (directon.get(0).getStrand().equals("-")) {
-                        Collections.reverse(directon);
-                        reverse = -1;
-                        directon_start_index = directon_start_index + directon.size() - 1;
-                    }
-
-                    //add directon to suffix tree
                     if (directon.size() > 1) {
-                        WordArray cog_word = createWordArray(directon);
-                        dataset_gst.put(cog_word, curr_seq_index, replicon_id, directon_start_index, reverse);
 
-                        String[] directon_genes = directon.stream().map(gene_obj -> gene_obj.getCog_id())
-                                .collect(Collectors.toList())
-                                .toArray(new String[directon.size()]);
+                        directon.setStartIndex(gene_index-directon.size()+1);
 
-                        countParalogsInSeqs(directon_genes, curr_seq_index);
-                        directons_length_sum += directon.size();
+                        directon.removeXFromEnd(UNK_CHAR);
+                        directon.setStrand();
+
+                        directons.add(directon);
+
                     }
 
-                    directon = new ArrayList<>();
+                    directon = new Directon();
                 }
             }
             gene_index ++;
         }
 
-        return directons_length_sum;
+        return directons;
     }
 
     private boolean updateGenomes(String curr_genome_name, int genome_size, int curr_genome_index){
@@ -233,31 +216,62 @@ public class Utils {
         return is_updated;
     }
 
-    public static String reverseStrand(String strand){
-        return strand.equals("-") ? "+" : "-";
+    /**
+     * Turns a replicon or a directon into an array of genes and puts in in the @dataset_gst
+     * @param replicon
+     * @param dataset_gst
+     * @param curr_genome_index
+     */
+    private void putWordInDataTree(Replicon replicon, GeneralizedSuffixTree dataset_gst, int curr_genome_index){
+        String[] genes = replicon.getGenesIDs();
+        WordArray cog_word = createWordArray(genes);
+        dataset_gst.put(cog_word, curr_genome_index, Replicon.index, replicon.getStartIndex(), replicon.getStrand());
+
+        countParalogsInSeqs(genes, curr_genome_index);
     }
-    private String[] reverseReplicon(ArrayList<Gene> replicon_genes){
-        String[] reversed_replicon = new String[replicon_genes.size()];
-        int i = 0;
-        ListIterator<Gene> li = replicon_genes.listIterator(replicon_genes.size());
-        while(li.hasPrevious()) {
-            Gene gene = li.previous();
-            reversed_replicon[i++] = gene.getCog_id() + reverseStrand(gene.getStrand());
+
+    /**
+     * Insert replicon, or split the replicon to directons and then insert
+     * @param is_directons
+     * @param replicon
+     * @param dataset_gst
+     * @param curr_genome_index
+     * @return
+     */
+    private int updateDataTree(boolean is_directons, Replicon replicon, GeneralizedSuffixTree dataset_gst,
+                                int curr_genome_index){
+
+        int replicon_length = 0;
+        if (is_directons) {
+            ArrayList<Directon> directons = splitRepliconToDirectons(replicon);
+
+            for (Directon directon: directons){
+                replicon_length += directon.size();
+                putWordInDataTree(directon, dataset_gst, curr_genome_index);
+            }
+
+        }else{
+
+            putWordInDataTree(replicon, dataset_gst, curr_genome_index);
+
+            //reverse replicon
+            replicon.reverse();
+            putWordInDataTree(replicon, dataset_gst, curr_genome_index);
+
+            replicon_length += replicon.size() * 2;
         }
-        return reversed_replicon;
+        return replicon_length;
     }
 
     /**
      *
      * @param input_file_path path to input file with input sequences
-     * @param dataset_gst the input sequences are inserted to thie GST
+     * @param dataset_gst the input sequences are inserted to this GST
      * @return number of input sequences that contains at least one valid direction
      */
     public int readAndBuildDatasetTree(String input_file_path, GeneralizedSuffixTree dataset_gst,
-                                       boolean directons) {
+                                       boolean is_directons) {
         String file_name = input_file_path;
-
-        //HashSet<Integer> genomes_indexes = new HashSet<>();
 
         BufferedReader br = null;
         try {
@@ -273,37 +287,20 @@ public class Utils {
                 int curr_genome_index = -1;
                 String curr_genome_name = "";
 
-                ArrayList<Gene> replicon_genes = new ArrayList<>();
+                Replicon replicon = new Replicon(1);
 
                 while (line != null) {
                     if (line.startsWith(">")) {
 
                         if (curr_genome_index != -1) {
-                            int replicon_length = 0;
-                            if (directons) {
-                                replicon_length = splitRepliconToDirectons(replicon_genes, dataset_gst,
-                                        curr_genome_index, replicon_id);
-                            }else{
-                                String[] replicon = new String[replicon_genes.size()];
-                                replicon = replicon_genes.stream().map(gene -> gene.getCog_id() + gene.getStrand())
-                                        .collect(Collectors.toList())
-                                        .toArray(replicon);
-                                WordArray cog_word = createWordArrayFromStr(replicon);
-                                dataset_gst.put(cog_word, curr_genome_index, replicon_id, 0, 1);
 
-                                String[] reversed_replicon = reverseReplicon(replicon_genes);
-                                cog_word = createWordArrayFromStr(reversed_replicon);
-                                dataset_gst.put(cog_word, curr_genome_index, replicon_id, cog_word.get_length()-1, -1);
+                            int replicon_length = updateDataTree(is_directons, replicon, dataset_gst, curr_genome_index);
 
-                                countParalogsInSeqs(reversed_replicon, curr_genome_index);
-                                countParalogsInSeqs(replicon, curr_genome_index);
-                                replicon_length = replicon.length * 2;
-                            }
                             length_sum += replicon_length;
                             genome_size += replicon_length;
                         }
 
-                        replicon_genes = new ArrayList<>();
+                        replicon = new Replicon(1);
 
                         line = line.substring(1); //remove ">"
                         //e.g. Acaryochloris_marina_MBIC11017_uid58167|NC_009927
@@ -320,9 +317,14 @@ public class Utils {
                             }
 
                             curr_genome_name = next_genome_name;
+
+                            Replicon.index ++;
+
                             if (word_desc.length > 1) {
                                 replicon_id = word_desc[1];
+                                replicon_key_to_name.put(Replicon.index, replicon_id);
                             }
+
                         }
                     } else {
                         String[] split_line = line.trim().split("\t");
@@ -330,15 +332,14 @@ public class Utils {
                             String gene_family = split_line[0];
                             String strand = split_line[1];
                             Gene gene = new Gene(gene_family, strand);
-                            replicon_genes.add(gene);
+                            replicon.add(gene);
                         }
                     }
 
                     line = br.readLine();
                 }
 
-                int replicon_length = splitRepliconToDirectons(replicon_genes, dataset_gst,
-                        curr_genome_index, replicon_id);
+                int replicon_length = updateDataTree(is_directons, replicon, dataset_gst, curr_genome_index);
                 length_sum += replicon_length;
                 genome_size += replicon_length;
 
@@ -346,12 +347,6 @@ public class Utils {
 
                 dataset_length_sum = length_sum;
 
-
-                //logger.info("Min genome size=" + min_genome_size);
-                //logger.info("Max genome size=" + max_genome_size);
-                //logger.info("Number of cog words: " + word_counter);
-                //logger.info("Longest cog word: " + longest_cog_word);
-                //logger.info("Average cog word length: " + (double) length_sum / word_counter);
                 if (debug) {
                     logger.info("Average genome size: " + length_sum / genome_key_to_name.size());
 
@@ -408,7 +403,7 @@ public class Utils {
                     String[] pattern = line.split("-");
 
                     if (pattern.length > 1) {
-                        WordArray word = createWordArrayFromStr(pattern);
+                        WordArray word = createWordArray(pattern);
                         pattern_tree.put(word, this, pattern_id);
                     }
                 }
@@ -429,38 +424,13 @@ public class Utils {
         return true;
     }
 
-    /**
-     * Convert a directon to wordArray, using char_to_index
-     * @param directon contains the Genes comprising this directon, all in the same strand, without intervening
-     *                 gene in the opposite strand
-     * @return WordArray representing this directon
-     */
-     public WordArray createWordArray(ArrayList<Gene> directon){
-        int[] word = new int[directon.size()];
-        int i = 0;
-        for(Gene gene: directon){
-            int char_index = -1;
-            if (char_to_index.containsKey(gene.getCog_id())) {
-                char_index = char_to_index.get(gene.getCog_id());
-            } else {
-                char_index = index_to_char.size();
-                index_to_char.add(gene.getCog_id());
-                char_to_index.put(gene.getCog_id(), char_index);
-            }
-
-            word[i] = char_index;
-            i++;
-        }
-
-        return new WordArray(word);
-    }
 
     /**
      * Converts an array of strings to wordArray, using char_to_index
      * @param str contains the characters comprising this str
      * @return WordArray representing this str
      */
-    public WordArray createWordArrayFromStr(String[] str){
+    public WordArray createWordArray(String[] str){
         int[] word = new int[str.length];
         int i = 0;
         for(String ch: str){

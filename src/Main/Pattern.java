@@ -13,7 +13,7 @@ public class Pattern {
      */
     private String pattern;
     /**
-     * Each cell contains the COG id, e.g. [1234, 5234]
+     * Each cell contains the COG id, e.g. [COG1234, COG5234]
      */
     private String[] pattern_arr;
     private int pattern_id;

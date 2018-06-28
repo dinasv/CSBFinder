@@ -194,7 +194,7 @@ public class Writer {
         if (instances_file != null) {
             instances_file.println(">" + pattern.getPatternId() + "\t" + pattern.getPattern());
 
-            HashMap<String, ArrayList<String>> instance_seq_and_location = new HashMap<>();
+            HashMap<String, ArrayList<Integer[]>> instance_seq_and_location = new HashMap<>();
             for (Instance instance : pattern.get_instances()) {
                 InstanceNode instance_node = instance.getNodeInstance();
                 if (instance.getEdge() != null) {
@@ -202,26 +202,37 @@ public class Writer {
                     instance_node = (InstanceNode) edge.getDest();
                 }
                 int instance_length = instance.getLength();
-                for (Map.Entry<Integer, ArrayList<String>> entry : instance_node.getResults().entrySet()) {
+                for (Map.Entry<Integer, ArrayList<Integer[]>> entry : instance_node.getResults().entrySet()) {
                     String seq_name = utils.genome_key_to_name.get(entry.getKey());
 
                     if (!instance_seq_and_location.containsKey(seq_name)) {
-                        instance_seq_and_location.put(seq_name, new ArrayList<>());
+                        instance_seq_and_location.put(seq_name, new ArrayList<Integer[]>());
                     }
-                    ArrayList<String> word_ids = instance_seq_and_location.get(seq_name);
-                    for (String word_id : entry.getValue()) {
-                        word_ids.add(word_id+ "|length_" + instance_length);
+                    ArrayList<Integer[]> instances_info = instance_seq_and_location.get(seq_name);
+                    for (Integer[] instance_info : entry.getValue()) {
+                        instances_info.add(new Integer[] {instance_info[0], instance_info[1], instance_length,
+                                instance_info[2]});
                     }
                 }
             }
 
-            for (Map.Entry<String, ArrayList<String>> entry : instance_seq_and_location.entrySet()) {
+            for (Map.Entry<String, ArrayList<Integer[]>> entry : instance_seq_and_location.entrySet()) {
                 String seq_key = entry.getKey();
 
                 instances_file.print(seq_key);
-                ArrayList<String> word_ids = entry.getValue();
-                for (String word_id : word_ids){
-                    instances_file.print("\t" + word_id);
+                ArrayList<Integer[]> instances_info = entry.getValue();
+                for (Integer[] instance_info : instances_info){
+                    String replicon_name = utils.replicon_key_to_name.get(instance_info[0]);
+                    int strand = instance_info[3];
+                    int instance_start_index = instance_info[1];
+                    int instance_length = instance_info[2];
+                    int instance_end_index = instance_info[1] + instance_length - 1;
+                    if (strand == -1){
+                        instance_end_index = instance_start_index;
+                        instance_start_index = instance_end_index - instance_length + 1;
+                    }
+
+                    instances_file.print("\t" + replicon_name + "|["+instance_start_index +","+ instance_end_index+"]");
                 }
 
                 instances_file.print("\n");

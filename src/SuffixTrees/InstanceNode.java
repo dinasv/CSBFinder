@@ -9,8 +9,9 @@ public class InstanceNode extends SuffixNode {
 
     /**
      * Save for every string key in data, the position of the suffix of that string that ends at this node
+     * sequence_id : {(replicon_id|start_index|strand)}
      */
-    private HashMap<Integer, ArrayList<String>> data;
+    private HashMap<Integer, ArrayList<Integer[]>> data;
 
     /**
      * The total number of <em>different</em> results that are stored in this
@@ -28,58 +29,55 @@ public class InstanceNode extends SuffixNode {
      * node and in underlying ones (i.e. nodes that can be reached through paths
      * starting from <tt>this</tt>.
      * key = genome id
-     * value = wordId_wordIndex
+     * value = a list of (replicon_id, start_index)
      *
      * This must be calculated explicitly using computeAndCacheCount
      */
-    private HashMap<Integer, ArrayList<String>> results;
+    private HashMap<Integer, ArrayList<Integer[]>> results;
 
 
     public InstanceNode(){
-        results = new HashMap<Integer, ArrayList<String>>();
-        data = new HashMap<Integer, ArrayList<String>>();
+        results = new HashMap<Integer, ArrayList<Integer[]>>();
+        data = new HashMap<Integer, ArrayList<Integer[]>>();
     }
 
     public InstanceNode(InstanceNode other){
         super(other);
 
-        results = new HashMap<Integer, ArrayList<String>>();
-        data = new HashMap<Integer, ArrayList<String>>();
+        results = new HashMap<Integer, ArrayList<Integer[]>>();
+        data = new HashMap<Integer, ArrayList<Integer[]>>();
     }
 
     /**
      * Add position of the suffix (the starting index) of the string "key"
      */
-    void addDataIndex(int key, String word_id, int index, int reverse) {
-        String val = word_id + "|" + index;
+    void addDataIndex(int key, int replicon_id, int start_index, int strand) {
 
-        ArrayList<String> key_indexes = data.get(key);
+        ArrayList<Integer[]> key_indexes = data.get(key);
         if (key_indexes == null){
-            key_indexes = new ArrayList<String>();
+            key_indexes = new ArrayList<Integer[]>();
         }
-        key_indexes.add(val);
+        key_indexes.add(new Integer[] {replicon_id, start_index, strand});
         data.put(key, key_indexes);
 
         // add this reference to all the suffixes as well
-        addIndexToSuffix(this, key, word_id, index, reverse);
+        addIndexToSuffix(this, key, replicon_id, start_index, strand);
 
     }
 
-    private void addIndexToSuffix(InstanceNode node, int key, String word_id, int index, int reverse){
+    private void addIndexToSuffix(InstanceNode node, int key, int replicon_id, int start_index, int strand){
         InstanceNode iter = node.getSuffix();
         if (iter != null) {
             while (iter.getSuffix() != null) {
-                index += reverse;
-                String val = word_id + "|" + index;
+                start_index += strand;
 
-                ArrayList<String> key_indexes = iter.data.get(key);
+                ArrayList<Integer[]> key_indexes = iter.data.get(key);
                 if (key_indexes == null){
-                    key_indexes = new ArrayList<String>();
+                    key_indexes = new ArrayList<Integer[]>();
                     iter.data.put(key, key_indexes);
                 }
-                key_indexes.add(val);
+                key_indexes.add(new Integer[] {replicon_id, start_index, strand});
 
-                //iter.data.put(key, val);
                 iter = iter.getSuffix();
             }
         }
@@ -99,7 +97,7 @@ public class InstanceNode extends SuffixNode {
         return count_by_keys;
     }
 
-    private HashMap<Integer, ArrayList<String>> computeAndCacheCountRecursive() {
+    private HashMap<Integer, ArrayList<Integer[]>> computeAndCacheCountRecursive() {
         count_by_keys = 0;
         count_by_indexes = 0;
         //add all data_indexes to results
@@ -109,7 +107,7 @@ public class InstanceNode extends SuffixNode {
         for (Map.Entry<Integer, Edge> entry : edges.entrySet()) {
             Edge e = entry.getValue();
             InstanceNode destNode = (InstanceNode)e.getDest();
-            HashMap<Integer, ArrayList<String>> dest_data_indexes = destNode.computeAndCacheCountRecursive();
+            HashMap<Integer, ArrayList<Integer[]>> dest_data_indexes = destNode.computeAndCacheCountRecursive();
 
             count_by_indexes += multimapAddAll(results, dest_data_indexes);
 
@@ -118,14 +116,14 @@ public class InstanceNode extends SuffixNode {
         return results;
     }
 
-    private static int multimapAddAll(HashMap<Integer, ArrayList<String>>  multimap_to, HashMap<Integer, ArrayList<String>>  multimap_from ){
+    private static int multimapAddAll(HashMap<Integer, ArrayList<Integer[]>>  multimap_to, HashMap<Integer, ArrayList<Integer[]>>  multimap_from ){
         int indexes_counter = 0;
-        for (Map.Entry<Integer, ArrayList<String>> entry : multimap_from.entrySet()) {
+        for (Map.Entry<Integer, ArrayList<Integer[]>> entry : multimap_from.entrySet()) {
             int key = entry.getKey();
 
-            ArrayList<String> indexSet =  multimap_to.get(key);
+            ArrayList<Integer[]> indexSet =  multimap_to.get(key);
             if (indexSet == null) {
-                indexSet = new ArrayList<String>();
+                indexSet = new ArrayList<Integer[]>();
                 multimap_to.put(key, indexSet);
             }
 
@@ -161,7 +159,7 @@ public class InstanceNode extends SuffixNode {
 
         return count_by_indexes;
     }
-    public HashMap<Integer, ArrayList<String>> getResults(){
+    public HashMap<Integer, ArrayList<Integer[]>> getResults(){
         if (-1 == count_by_keys) {
             throw new IllegalStateException("getResults() shouldn't be called without calling computeCount() first");
         }
