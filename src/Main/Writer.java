@@ -236,10 +236,10 @@ public class Writer {
                     int strand = instance_info[3];
                     int instance_start_index = instance_info[1];
                     int instance_length = instance_info[2];
-                    int instance_end_index = instance_info[1] + instance_length - 1;
+                    int instance_end_index = instance_info[1] + instance_length;
                     if (strand == -1){
-                        instance_end_index = instance_start_index;
-                        instance_start_index = instance_end_index - instance_length + 1;
+                        instance_end_index = instance_start_index + 1;
+                        instance_start_index = instance_end_index - instance_length;
                     }
 
                     instances_file.print("\t" + replicon_name + "|["+instance_start_index +","+ instance_end_index+"]");
