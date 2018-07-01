@@ -15,7 +15,6 @@ import java.util.HashSet;
 public class Family {
 
     private String family_id;
-    //private int family_rank;
     //members of the family
     private ArrayList<Pattern> patterns;
     //contains the union of all characters of all family members
@@ -26,19 +25,28 @@ public class Family {
      */
     private double score;
     private Utils utils;
+    private boolean directons;
 
-    public Family(String family_id, Pattern first_pattern, Utils utils){
+    public Family(String family_id, Pattern first_pattern, Utils utils, boolean directons){
         this.utils = utils;
         score = -1;
         this.family_id = family_id;
         patterns = new ArrayList<>();
         patterns.add(first_pattern);
         char_set = new HashSet<>();
+        this.directons = directons;
         addCharsToCharsSet(first_pattern);
     }
 
     private void addCharsToCharsSet(Pattern pattern){
-        for (String cog: pattern.getPatternArr()) {
+        addCharsToCharsSet(pattern.getPatternArr());
+        if (!directons){
+            addCharsToCharsSet(pattern.getReversePatternArr());
+        }
+    }
+
+    private void addCharsToCharsSet(String[] pattern_arr){
+        for (String cog: pattern_arr) {
             int cog_index = utils.char_to_index.get(cog);
             char_set.add(cog_index);
         }

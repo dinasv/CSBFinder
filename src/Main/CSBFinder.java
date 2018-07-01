@@ -144,26 +144,6 @@ public class CSBFinder {
                 seq.get_start_index() + end_index);
     }
 
-    private static String reverseStrand(String strand){
-        return strand.equals("-") ? "+" : "-";
-    }
-
-    /**
-     * Returns the reverse compliment of a pattern. e.g. [COG1+, COG2-] -> [COG2+, COG1-]
-     * @param pattern
-     * @return
-     */
-    private String[] reversePattern(String[] pattern){
-        String[] reversed_pattern = new String[pattern.length];
-        int j = 0;
-        for (int i = pattern.length-1; i >= 0; i--) {
-            String gene = pattern[i];
-            String prefix = gene.substring(0, gene.length()-1);
-            String reversed_strand = reverseStrand(gene.substring(gene.length()-1));
-            reversed_pattern[j++] = prefix + reversed_strand;
-        }
-        return reversed_pattern;
-    }
 
     /**
      * Remove patterns that are suffixes of existing patterns, and has the same number of instances
@@ -194,7 +174,7 @@ public class CSBFinder {
             //remove reverse compliments
             if (!isDirectons){
                 String pattern_str = String.join(DELIMITER, pattern_arr) + DELIMITER;
-                String reversed_pattern_str = String.join(DELIMITER, reversePattern(pattern_arr)) + DELIMITER;
+                String reversed_pattern_str = String.join(DELIMITER, pattern.getReversePatternArr()) + DELIMITER;
                 Pattern reversed_pattern = patterns.get(reversed_pattern_str);
                 if (reversed_pattern != null && !patterns_to_remove.contains(pattern_str)){
                     patterns_to_remove.add(reversed_pattern_str);

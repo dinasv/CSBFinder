@@ -191,7 +191,8 @@ public class Main {
                 }
 
                 System.out.println("Clustering to families");
-                ArrayList<Family> families = FamilyClustering.Cluster(patterns, cla.threshold, cla.cluster_by, utils);
+                ArrayList<Family> families = FamilyClustering.Cluster(patterns, cla.threshold, cla.cluster_by, utils,
+                        cla.is_directons);
 
                 System.out.println("Writing to files");
                 for (Family family : families) {

@@ -16,6 +16,7 @@ public class Pattern {
      * Each cell contains the COG id, e.g. [COG1234, COG5234]
      */
     private String[] pattern_arr;
+    private String[] reverse_pattern_arr;
     private int pattern_id;
     private int instance_count;
 
@@ -39,6 +40,7 @@ public class Pattern {
         this.exact_instance_count = exact_instance_count;
         score = 0;
         main_functional_category = "";
+        reverse_pattern_arr = reverseComplimentPattern(pattern_arr);
     }
 
     public void setPatternId(int pattern_id){
@@ -137,6 +139,31 @@ public class Pattern {
 
     public String getMainFunctionalCategory() {
         return main_functional_category;
+    }
+
+    private static String reverseStrand(String strand){
+        return strand.equals("-") ? "+" : "-";
+    }
+
+    /**
+     * Returns the reverse compliment of a pattern. e.g. [COG1+, COG2-] -> [COG2+, COG1-]
+     * @param pattern
+     * @return
+     */
+    private static String[] reverseComplimentPattern(String[] pattern){
+        String[] reversed_pattern = new String[pattern.length];
+        int j = 0;
+        for (int i = pattern.length-1; i >= 0; i--) {
+            String gene = pattern[i];
+            String prefix = gene.substring(0, gene.length()-1);
+            String reversed_strand = reverseStrand(gene.substring(gene.length()-1));
+            reversed_pattern[j++] = prefix + reversed_strand;
+        }
+        return reversed_pattern;
+    }
+
+    public String[] getReversePatternArr() {
+        return reverse_pattern_arr;
     }
 
 
