@@ -69,14 +69,25 @@ public class Main {
             }
 
         } catch (Exception e) {
-            System.out.println("An exception occured while trying to create a log file");
+            System.out.println("An exception occurred while trying to create a log file");
         }
 
         if (cla.min_pattern_length < 2) {
             cla.min_pattern_length = 2 + cla.max_error;
         }
 
+        long beforeUsedMem = Runtime.getRuntime().totalMemory()-Runtime.getRuntime().freeMemory();
+
         pipeline(utils, INPUT_PATH);
+
+        if (cla.debug){
+
+            long afterUsedMem=Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory();
+            long actualMemUsed = afterUsedMem - beforeUsedMem;
+
+            System.out.println(actualMemUsed);
+
+        }
 
     }
 
@@ -127,16 +138,14 @@ public class Main {
         utils.char_to_index.put("X+", utils.UNK_CHAR_INDEX);
         utils.char_to_index.put("X-", utils.UNK_CHAR_INDEX);
 
-
-
         long startTime = System.nanoTime();
 
         GeneralizedSuffixTree dataset_suffix_tree = new GeneralizedSuffixTree();
+        long beforeUsedMem = 0;
         if (cla.debug) {
             utils.logger.info("Building Data tree");
         }
         System.out.println("Building Data tree");
-
 
         int number_of_genomes = utils.readAndBuildDatasetTree(INPUT_PATH+cla.input_file_name,
                                                                     dataset_suffix_tree, cla.is_directons);

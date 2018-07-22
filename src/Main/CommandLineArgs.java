@@ -88,7 +88,7 @@ public class CommandLineArgs {
     @Parameter(names={"-clust-by"}, description = "Cluster CSBs to families by: 'score' or 'length'", order = 12)
     public static ClusterBy cluster_by = ClusterBy.SCORE;
 
-    @Parameter(names={"-directon"}, description = "If true, segment to is_directons",
+    @Parameter(names={"-directon"}, description = "If true, segment input sequences directons",
             arity = 1, order = 13)
     public static boolean is_directons = true;
 
@@ -108,9 +108,7 @@ public class CommandLineArgs {
     @Parameter(names = "-debug", description = "Debug mode", hidden = true)
     public static boolean debug = false;
 
-
-
-    @Parameter(names = "--help", description = "Show usage", help = true)
+    @Parameter(names = {"-h","--help"}, description = "Show usage", help = true)
     public static boolean help;
 }
 

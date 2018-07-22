@@ -43,6 +43,7 @@ public class FamilyClustering {
         if (minimal_set_size >= 1 && minimal_set_size <= 2) {
             threshold = 1;
         }
+
         if (intersection.size() / (double) minimal_set_size >= threshold) {
             family.addPattern(curr_pattern);
             return true;
