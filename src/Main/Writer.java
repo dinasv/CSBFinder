@@ -16,6 +16,11 @@ import org.apache.poi.xssf.streaming.SXSSFWorkbook;
 
 import Main.CommandLineArgs.OutputType;
 
+import java.util.logging.FileHandler;
+import java.util.logging.LogManager;
+import java.util.logging.Logger;
+import java.util.logging.SimpleFormatter;
+
 /**
  * Created by Dina on 19/05/2017.
  * Writes the output files:
@@ -32,8 +37,8 @@ public class Writer {
     private Sheet catalog_sheet;
     private Sheet filtered_patterns_sheet;
     private Sheet patterns_description_sheet;
-    String catalog_path;
-
+    private String catalog_path;
+    private String catalog_instances_path;
 
     private int max_error;
     private int max_deletion;
@@ -48,8 +53,9 @@ public class Writer {
     private static final String DELIMITER = "|";
     private static final DecimalFormat DF = new DecimalFormat("#.####");
 
-    OutputType output_file_type;
+    private OutputType output_file_type;
 
+    public Logger logger = null;
 
     public Writer(int max_error, int max_deletion, int max_insertion, boolean debug, String catalog_file_name,
                   String instances_file_name, boolean include_families, OutputType output_file_type,
@@ -73,25 +79,43 @@ public class Writer {
         filtered_patterns_sheet = null;
         patterns_description_sheet = null;
 
-        this.catalog_path = catalog_file_name;
-
         init(catalog_file_name, instances_file_name, include_families);
 
+    }
+
+    public void writeLogger(String msg){
+        if (debug && logger != null){
+            logger.info(msg);
+        }
     }
 
     private void init(String catalog_file_name, String instances_file_name, boolean include_families){
         Date dNow = new Date( );
         SimpleDateFormat ft = new SimpleDateFormat ("dd_MM_yyyy_hh_mm_ss_a");
 
-        //System.out.println("Current Date: " + ft.format(dNow))
-
         String path = "output";
         createOutputDirectory(path);
         path += "/"+ft.format(dNow)+"/";
         createOutputDirectory(path);
 
-        createOutputFiles(path + catalog_file_name, path +instances_file_name);
+        catalog_path = path + catalog_file_name;
+        catalog_instances_path = path +instances_file_name;
+        createOutputFiles();
         createHeaders(include_families);
+
+        //create logger file
+        try {
+            logger = Logger.getLogger("MyLog");
+            LogManager.getLogManager().reset();//disable logging information printed to screen
+
+            FileHandler fh = new FileHandler(path + "CSBFinder.log");
+            logger.addHandler(fh);
+            SimpleFormatter formatter = new SimpleFormatter();
+            fh.setFormatter(formatter);
+
+        } catch (Exception e) {
+            System.out.println("An exception occurred while trying to create a log file");
+        }
     }
 
     private PrintWriter createOutputPrintWriter(String path){
@@ -107,14 +131,12 @@ public class Writer {
     }
 
 
-    private void createOutputFiles(String catalog_path, String instances_path) {
+    private void createOutputFiles() {
 
         if (output_file_type == OutputType.TXT) {
             catalog_path += ".txt";
             catalog_file = createOutputPrintWriter(catalog_path);
-        }
-
-        if (output_file_type == OutputType.XLSX) {
+        } else if (output_file_type == OutputType.XLSX) {
             catalog_path += ".xlsx";
             try {
                 catalog_file_xls = new FileOutputStream(catalog_path);
@@ -124,8 +146,8 @@ public class Writer {
             }
         }
 
-        instances_path += ".fasta";
-        instances_file = createOutputPrintWriter(instances_path);
+        catalog_instances_path += ".fasta";
+        instances_file = createOutputPrintWriter(catalog_instances_path);
     }
 
     private void createOutputDirectory(String path){
@@ -155,25 +177,24 @@ public class Writer {
         }else if(output_file_type == OutputType.XLSX) {
             catalog_workbook = new SXSSFWorkbook(10);
             catalog_sheet = catalog_workbook.createSheet("Catalog");
-            writeHeaderToSheet(header, catalog_sheet, include_families);
+            writeHeaderToSheet(header, catalog_sheet);
             if (include_families) {
                 filtered_patterns_sheet = catalog_workbook.createSheet("Filtered CSBs");
+                writeHeaderToSheet(header, filtered_patterns_sheet);
             }
             if (cog_info_exists){
                 patterns_description_sheet = catalog_workbook.createSheet("CSBs description");
             }
-            writeHeaderToSheet(header, filtered_patterns_sheet, include_families);
         }
 
     }
 
-    private void writeHeaderToSheet(String header, Sheet sheet, boolean include_families){
+    private void writeHeaderToSheet(String header, Sheet sheet){
         Row row = sheet.createRow(0);
         int i = 0;
         for (String str: header.split("\t")){
             row.createCell(i++).setCellValue(str);
         }
-
     }
 
     public int getCountPrintedPatterns(){
@@ -190,13 +211,28 @@ public class Writer {
             try {
                 catalog_workbook.write(catalog_file_xls);
                 catalog_file_xls.close();
+                if (debug){
+                    File file = new File(catalog_path);
+                    if(file.delete()){
+                        System.out.println(catalog_path + " deleted");
+                    }
+                }
             } catch (Exception e) {
-                System.out.println("A problem occurred while trying to write to file "+catalog_path+".xlsx");
+                System.out.println("A problem occurred while trying to write to file "+catalog_path);
                 System.exit(1);
             }
         }
         if (instances_file != null) {
             instances_file.close();
+            if (debug){
+                File file = new File(catalog_instances_path);
+                if(file.delete()){
+                    System.out.println(catalog_instances_path + " deleted");
+                }else{
+                    System.out.println(catalog_instances_path + " not deleted");
+
+                }
+            }
         }
     }
 

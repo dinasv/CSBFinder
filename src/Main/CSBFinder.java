@@ -124,7 +124,8 @@ public class CSBFinder {
 
         pattern_node.addInstance(empty_instance, max_insertion);
         if (pattern_node.getType()== TreeType.VIRTUAL){
-            spellPatternsVirtually(pattern_node, data_tree_root, -1, null, "", 0, 0);
+            spellPatternsVirtually(pattern_node, data_tree_root, -1, null, "",
+                    0, 0);
         }else {
             spellPatterns(pattern_node, "", 0, 0);
         }
@@ -365,10 +366,7 @@ public class CSBFinder {
             InstanceNode data_tree_target_node = (InstanceNode) data_edge.getDest();
 
             if (data_tree_target_node.getCount_by_keys() >= q1) {
-                if (alpha == utils.UNK_CHAR_INDEX) {
-                    //spellPatternsVirtually(pattern_node, data_node, data_edge_index + 1, data_edge,
-                            //pattern, pattern_length, wildcard_count);
-                } else {
+                if (alpha != utils.UNK_CHAR_INDEX) {
 
                     target_node = new PatternNode(TreeType.VIRTUAL);
                     target_node.setKey(++last_pattern_key);
@@ -388,6 +386,15 @@ public class CSBFinder {
         return max_num_of_diff_instances;
     }
 
+    private void handlePattern(Pattern new_pattern, String extended_pattern){
+        if (memory_saving_mode){
+            new_pattern.calculateScore(utils, max_insertion, max_error, max_deletion);
+            new_pattern.calculateMainFunctionalCategory(utils, isDirectons);
+            writer.printPattern(new_pattern, utils);
+        }else {
+            patterns.put(extended_pattern, new_pattern);
+        }
+    }
 
 
     /**
@@ -439,6 +446,7 @@ public class CSBFinder {
 
         if (exact_instances_count >= q1 && diff_instances_count >= q2 &&
                 (extended_pattern_length - wildcard_count <= max_pattern_length)) {
+
             TreeType type = extended_pattern_node.getType();
             int ret;
             if (type == TreeType.VIRTUAL){
@@ -456,13 +464,8 @@ public class CSBFinder {
                                 extended_pattern_node.getInstanceKeys(), extended_pattern_node.getInstances(),
                                 extended_pattern_node.getExact_instance_count());
 
-                        if (memory_saving_mode){
-                            new_pattern.calculateScore(utils, max_insertion, max_error, max_deletion);
-                            new_pattern.calculateMainFunctionalCategory(utils, isDirectons);
-                            writer.printPattern(new_pattern, utils);
-                        }else {
-                            patterns.put(extended_pattern, new_pattern);
-                        }
+                        handlePattern(new_pattern, extended_pattern);
+
                     }
                 } else if (type == TreeType.VIRTUAL) {
                     if (alpha != wildcard_char) {
@@ -475,12 +478,10 @@ public class CSBFinder {
                                         extended_pattern_node.getInstanceKeys(), extended_pattern_node.getInstances(),
                                         extended_pattern_node.getExact_instance_count());
 
-                                if (memory_saving_mode){
-                                    new_pattern.calculateScore(utils, max_insertion, max_error, max_deletion);
-                                    new_pattern.calculateMainFunctionalCategory(utils, isDirectons);
-                                    writer.printPattern(new_pattern, utils);
-                                }else {
-                                    patterns.put(extended_pattern, new_pattern);
+                                handlePattern(new_pattern, extended_pattern);
+
+                                if (debug && (getPatternsCount() % 5000 == 0) ){
+                                    utils.measureMemory();
                                 }
                             }
                         }
@@ -562,13 +563,13 @@ public class CSBFinder {
                             next_edge_instance = null;
                             next_edge_index = -1;
                         }
-                        addInstanceToPattern(extended_pattern, instance, ch, next_node_instance, next_edge_instance, next_edge_index, error,
-                                deletions);
+                        addInstanceToPattern(extended_pattern, instance, ch, next_node_instance, next_edge_instance,
+                                next_edge_index, error, deletions);
                     } else {
                         //extend instance by deletions char
                         if (deletions < max_deletion) {
-                            addInstanceToPattern(extended_pattern, instance, gap_char, node_instance, edge_instance, edge_index, error,
-                                    deletions + 1);
+                            addInstanceToPattern(extended_pattern, instance, gap_char, node_instance, edge_instance,
+                                    edge_index, error, deletions + 1);
                         }
                     }
                 }
@@ -589,7 +590,8 @@ public class CSBFinder {
             if (insertions < max_insertion && instance.getLength() > 0){
                 if (next_ch != ch) {
                     String extended_instance_string = appendChar(instance.getSubstring(), next_ch);
-                    Instance next_instance = new Instance(next_node_instance, next_edge_instance, next_edge_index, error, deletions, instance.getInsertionIndexes(), extended_instance_string, instance.getLength() + 1);
+                    Instance next_instance = new Instance(next_node_instance, next_edge_instance, next_edge_index,
+                            error, deletions, instance.getInsertionIndexes(), extended_instance_string, instance.getLength() + 1);
                     next_instance.addInsertionIndex(instance.getLength());
                     next_instance.addAllInsertionIndexes(instance.getInsertionIndexes());
                     extendInstance(extended_pattern, next_instance, ch);
@@ -698,6 +700,7 @@ public class CSBFinder {
      */
     private void addInstanceToPattern(PatternNode extended_pattern, Instance instance, int next_ch, InstanceNode next_node,
                                       Edge next_edge, int next_edge_index, int next_error, int next_deletions) {
+
         String extended_instance_string = appendChar(instance.getSubstring(), next_ch);
         Instance next_instance = new Instance(next_node, next_edge, next_edge_index, next_error, next_deletions,
                 instance.getInsertionIndexes(), extended_instance_string, instance.getLength()+1);

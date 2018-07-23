@@ -7,7 +7,7 @@ import SuffixTrees.*;
 
 import java.io.*;
 import java.util.*;
-import java.util.logging.Logger;
+import Main.Writer;
 
 /**
  * Contain static methods for building suffix trees
@@ -38,14 +38,9 @@ public class Utils {
     public int dataset_length_sum ;
 
     public int min_genome_size;
-    public int max_genome_size;
 
-    public Logger logger = null;
+    //public Logger logger = null;
 
-    /**
-     * For each dataset, for each cog - saves the average number of cog occs per genome (excluding genomes in which cog doesn't appear)
-     */
-    public ArrayList<HashMap<String, Integer>> dataset_cog_homolog_num = new ArrayList<>();
     /**
      * for each cog, a set of genomes (bac_index) in which the cog appears
      */
@@ -53,37 +48,20 @@ public class Utils {
 
     public HashMap<Integer, HashMap<String, Integer>> genome_to_cog_paralog_count;
 
-    public ArrayList<HashMap<String, Integer>> genus_count_by_dataset;
-
-    public HashMap<String, Integer> genus_to_index;
-
-    public ArrayList<String> index_to_genus;
-
-    public ArrayList<HashMap<String, Integer>> class_count_by_dataset;
-
-    public HashMap<String, Integer> class_to_index;
-
-    public ArrayList<String> index_to_class;
-
-    public ArrayList<HashMap<String, Integer>> phylum_count_by_dataset;
-
-    public HashMap<String, Integer> phylum_to_index;
-
-    public ArrayList<String> index_to_phylum;
-
-    public HashSet<String> bacs_with_plasmid;
-
-    public HashMap<Integer, Integer>  words_per_genome;
-
     //memoization of computed q_val - it is the same for each pattern length
     public double[] q_val;
 
-    private boolean debug;
 
     public HashMap<String, COG> cog_info;
 
-    public Utils(HashMap<String, COG> cog_info, boolean debug){
-        this.debug = debug;
+    public long initiailMem;
+    public long currMem;
+
+    Writer writer = null;
+
+
+    public Utils(HashMap<String, COG> cog_info, Writer writer){
+        this.writer = writer;
 
         index_to_char = new ArrayList<String>();
         char_to_index = new HashMap<String, Integer>();
@@ -97,44 +75,26 @@ public class Utils {
         dataset_length_sum = 0;
 
         min_genome_size = Integer.MAX_VALUE;
-        max_genome_size = 0;
-
-        if (debug) {
-            logger = Logger.getLogger("MyLog");
-        }
-
-        dataset_cog_homolog_num = new ArrayList<>();
 
         cog_to_containing_genomes = new HashMap<>();
 
         genome_to_cog_paralog_count = new HashMap<>();
 
-        genus_count_by_dataset = new ArrayList<>();
-
-        genus_to_index = new HashMap<>();
-
-        index_to_genus = new ArrayList<>();
-
-        class_count_by_dataset = new ArrayList<>();
-        class_to_index = new HashMap<>();
-
-        index_to_class = new ArrayList<>();
-
-        phylum_count_by_dataset = new ArrayList<>();
-
-        phylum_to_index = new HashMap<>();
-
-        index_to_phylum = new ArrayList<>();
-
-        bacs_with_plasmid = new HashSet<>();
-
-        words_per_genome = new HashMap<>();
-
         this.cog_info = cog_info;
 
+        initiailMem = Runtime.getRuntime().totalMemory()-Runtime.getRuntime().freeMemory();
+        currMem = initiailMem;
 
         q_val = new double[200];
 
+    }
+
+    public void measureMemory(){
+        long currMem = Runtime.getRuntime().totalMemory()-Runtime.getRuntime().freeMemory();
+        if (currMem > this.currMem){
+            this.currMem = currMem;
+        }
+        System.out.println(currMem-initiailMem);
     }
 
     private void countParalogsInSeqs(String[] directon, int curr_seq_index){
@@ -347,12 +307,11 @@ public class Utils {
 
                 dataset_length_sum = length_sum;
 
-                if (debug) {
-                    logger.info("Average genome size: " + length_sum / genome_key_to_name.size());
 
-                    logger.info("Number of genomes " + genome_key_to_name.size());
-                    logger.info("Number of cogs " + char_to_index.size());
-                }
+                writer.writeLogger("Average genome size: " + length_sum / genome_key_to_name.size());
+                writer.writeLogger("Number of genomes " + genome_key_to_name.size());
+                writer.writeLogger("Number of cogs " + char_to_index.size());
+
                 number_of_genomes = genome_key_to_name.size();
                 if (number_of_genomes == 0){
                     return -1;
