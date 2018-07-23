@@ -27,7 +27,7 @@ The input is a set of genomes and parameters **_k_** (number of allowed insertio
 - Download the [latest release](https://github.com/dinasv/CSBFinder/releases) of CSBFinder.jar
 - You can use the link https://github.com/dinasv/CSBFinder/releases/download/v[VERSION]/CSBFinder.jar for direct download. For example, in linux:
     ```
-    wget https://github.com/dinasv/CSBFinder/releases/download/v0.2.0/CSBFinder.jar 
+    wget https://github.com/dinasv/CSBFinder/releases/download/v0.2.1/CSBFinder.jar 
     ```
     
 - In the terminal (linux) or cmd (windows) type:
@@ -222,27 +222,30 @@ Two output files will be written to a directory named "output"
     - Each entry is composed of a header (CSB ID and genes), followed by lines describing the instances
     - Each line describes the locations of CSB instances in a specific input genome
     - There can be more than one instance in each genome
-    - Ecah instance is present in a replicon (e.g. chromosome/plasmid), begins from a specific index and can have different lengths, depending on the number of insertions in the instance
+    - Each instance that is present in a replicon (e.g. chromosome/plasmid), begins from a specific index and can have different lengths, depending on the number of insertions allowed in the instance
+    - If a start index of an instance is *i*, an instance on the minus strand starts from index *i* and ends on index *i-(instance length)*
+    - The index of the first gene in a replicon is 0 
     
     This file has the following format:
     
     ```
     >[CSB ID] TAB [CSB genes]
-     [genome name] TAB [replicon name]_[start index]_length_[instance length]
-     [genome name] TAB [replicon name]_[start index]_length_[instance length]
+     [genome name] TAB [replicon name]|[instance start index]|length_[instance length]
+     [genome name] TAB [replicon name]|[instance start index]|length_[instance length]
+
      ...
      >[CSB ID] TAB	[CSB genes]
-     [genome name] TAB [replicon name]_[start index]_length_[instance length]
-     [genome name] TAB [replicon name]_[start index]_length_[instance length]
+     [genome name] TAB [replicon name]|[instance start index]|length_[instance length]
+     [genome name] TAB [replicon name]|[instance start index]|length_[instance length]
      ...
     ```
     #### Example
     ```
     >20880	COG4264-COG3486-
-    Halomicrobium_mukohataei_DSM_12286_uid59107	NC_013201_97_length_3
-    Sinorhizobium_medicae_WSM419_uid58549	NC_009620_521_length_3	NC_009620_672_length_3	NC_009621_768_length_3	NC_009620_639_length_3
-    Klebsiella_pneumoniae_NTUH_K2044_uid59073	NC_006625_257_length_2
-    Cronobacter_turicensis_z3032_uid40821	NC_013283_105_length_2
+    Halomicrobium_mukohataei_DSM_12286_uid59107	NC_013201|97|length_3
+    Sinorhizobium_medicae_WSM419_uid58549	NC_009620|521|length_3	NC_009620|672|length_3	NC_009621|768|length_3	NC_009620|639|length_3
+    Klebsiella_pneumoniae_NTUH_K2044_uid59073	NC_006625|257|length_2
+    Cronobacter_turicensis_z3032_uid40821	NC_013283|105|length_2
     ```
 <a name='sample'>Sample input files</a>   
 --------------------------------------
