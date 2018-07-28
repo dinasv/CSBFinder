@@ -25,22 +25,22 @@ public class Family {
      */
     private double score;
     private Utils utils;
-    private boolean directons;
+    private boolean non_directons;
 
-    public Family(String family_id, Pattern first_pattern, Utils utils, boolean directons){
+    public Family(String family_id, Pattern first_pattern, Utils utils, boolean non_directons){
         this.utils = utils;
         score = -1;
         this.family_id = family_id;
         patterns = new ArrayList<>();
         patterns.add(first_pattern);
         char_set = new HashSet<>();
-        this.directons = directons;
+        this.non_directons = non_directons;
         addCharsToCharsSet(first_pattern);
     }
 
     private void addCharsToCharsSet(Pattern pattern){
         addCharsToCharsSet(pattern.getPatternArr());
-        if (!directons){
+        if (non_directons){
             addCharsToCharsSet(pattern.getReversePatternArr());
         }
     }

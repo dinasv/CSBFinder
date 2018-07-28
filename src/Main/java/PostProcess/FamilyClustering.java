@@ -18,9 +18,9 @@ import Main.CommandLineArgs.ClusterBy;
 public class FamilyClustering {
 
     public static ArrayList<Family> Cluster(ArrayList<Pattern> patterns, double threshold, ClusterBy cluster_by,
-                                            Utils utils, boolean directons){
+                                            Utils utils, boolean non_directons){
 
-        ArrayList<Family> families = greedyClustering(patterns, threshold, cluster_by, utils, directons);
+        ArrayList<Family> families = greedyClustering(patterns, threshold, cluster_by, utils, non_directons);
 
         for (Family family: families){
             family.sortPatternsAndSetScore();
@@ -52,7 +52,7 @@ public class FamilyClustering {
     }
 
     private static ArrayList<Family> greedyClustering(ArrayList<Pattern> patterns, double threshold, ClusterBy cluster_by,
-                                                      Utils utils, boolean directons){
+                                                      Utils utils, boolean non_directons){
 
         if (cluster_by == ClusterBy.LENGTH){
             Collections.sort(patterns, new Pattern.LengthComparator());
@@ -64,7 +64,7 @@ public class FamilyClustering {
         Iterator<Pattern> it = patterns.iterator();
         if (it.hasNext()) {
             Pattern first_pattern = it.next();
-            Family first_family = new Family("0", first_pattern, utils, directons);
+            Family first_family = new Family("0", first_pattern, utils, non_directons);
 
             families.add(first_family);
 
@@ -83,7 +83,7 @@ public class FamilyClustering {
                 }
 
                 if (!added_pattern) {
-                    Family new_family = new Family(Integer.toString(families.size()), curr_pattern, utils, directons);
+                    Family new_family = new Family(Integer.toString(families.size()), curr_pattern, utils, non_directons);
                     families.add(new_family);
                 }
             }

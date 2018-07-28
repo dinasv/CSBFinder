@@ -65,9 +65,9 @@ public class CommandLineArgs {
             , validateWith = CommandLineArgs.PositiveInteger2.class, order = 5)
     public static int max_pattern_length = Integer.MAX_VALUE;
 
-    @Parameter(names={"-bcount"}, description = "If true, count one instance per input string",
-            arity = 1, order = 9)
-    public static boolean bool_count = true;
+    @Parameter(names={"-mult-count"}, description = "Count multiple instances per input string, not just one",
+            order = 9)
+    public static boolean mult_count = false;
 
     @Parameter(names={"--datasetname", "-ds"}, description = "Dataset name", order = 6)
     public static String dataset_name = "dataset1";
@@ -88,10 +88,8 @@ public class CommandLineArgs {
     @Parameter(names={"-clust-by"}, description = "Cluster CSBs to families by: 'score' or 'length'", order = 12)
     public static ClusterBy cluster_by = ClusterBy.SCORE;
 
-    @Parameter(names={"-directon"}, description = "If true, segment input sequences directons",
-            arity = 1, order = 13)
-    public static boolean is_directons = true;
-
+    @Parameter(names={"-non-directons"}, description = "If true, segment input sequences directons", order = 13)
+    public static boolean non_directons = false;
 
     @Parameter(names={"--mismatch", "-err"}, description = "Maximal number of mismatches allowed", hidden = true)
     public static int max_error = 0;

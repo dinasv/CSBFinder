@@ -192,25 +192,17 @@ public class Utils {
 
     /**
      * Insert replicon, or split the replicon to directons and then insert
-     * @param is_directons
+     * @param non_directons
      * @param replicon
      * @param dataset_gst
      * @param curr_genome_index
      * @return
      */
-    private int updateDataTree(boolean is_directons, Replicon replicon, GeneralizedSuffixTree dataset_gst,
+    private int updateDataTree(boolean non_directons, Replicon replicon, GeneralizedSuffixTree dataset_gst,
                                 int curr_genome_index){
 
         int replicon_length = 0;
-        if (is_directons) {
-            ArrayList<Directon> directons = splitRepliconToDirectons(replicon);
-
-            for (Directon directon: directons){
-                replicon_length += directon.size();
-                putWordInDataTree(directon, dataset_gst, curr_genome_index);
-            }
-
-        }else{
+        if (non_directons) {
 
             putWordInDataTree(replicon, dataset_gst, curr_genome_index);
 
@@ -219,6 +211,16 @@ public class Utils {
             putWordInDataTree(replicon, dataset_gst, curr_genome_index);
 
             replicon_length += replicon.size() * 2;
+
+        }else{
+
+            ArrayList<Directon> directons = splitRepliconToDirectons(replicon);
+
+            for (Directon directon: directons){
+                replicon_length += directon.size();
+                putWordInDataTree(directon, dataset_gst, curr_genome_index);
+            }
+
         }
         return replicon_length;
     }
@@ -230,7 +232,7 @@ public class Utils {
      * @return number of input sequences that contains at least one valid direction
      */
     public int readAndBuildDatasetTree(String input_file_path, GeneralizedSuffixTree dataset_gst,
-                                       boolean is_directons) {
+                                       boolean non_directons) {
         String file_name = input_file_path;
 
         BufferedReader br = null;
@@ -254,7 +256,7 @@ public class Utils {
 
                         if (curr_genome_index != -1) {
 
-                            int replicon_length = updateDataTree(is_directons, replicon, dataset_gst, curr_genome_index);
+                            int replicon_length = updateDataTree(non_directons, replicon, dataset_gst, curr_genome_index);
 
                             length_sum += replicon_length;
                             genome_size += replicon_length;
@@ -299,7 +301,7 @@ public class Utils {
                     line = br.readLine();
                 }
 
-                int replicon_length = updateDataTree(is_directons, replicon, dataset_gst, curr_genome_index);
+                int replicon_length = updateDataTree(non_directons, replicon, dataset_gst, curr_genome_index);
                 length_sum += replicon_length;
                 genome_size += replicon_length;
 

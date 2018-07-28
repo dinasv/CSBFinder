@@ -83,7 +83,7 @@ public class Main {
 
         Writer writer = new Writer(cla.max_error, cla.max_deletion, cla.max_insertion, cla.debug, catalog_file_name,
                 instances_file_name,
-                include_families, cla.output_file_type, cog_info_exists, cla.is_directons, output_path);
+                include_families, cla.output_file_type, cog_info_exists, cla.non_directons, output_path);
 
         return writer;
     }
@@ -155,7 +155,7 @@ public class Main {
         //unkown cog
         utils.char_to_index.put(utils.UNK_CHAR, utils.UNK_CHAR_INDEX);
         utils.index_to_char.add(utils.UNK_CHAR);
-        //if the sequence is not segmented to is_directons
+        //if the sequence is not segmented to non_directons
         utils.char_to_index.put("X+", utils.UNK_CHAR_INDEX);
         utils.char_to_index.put("X-", utils.UNK_CHAR_INDEX);
 
@@ -167,7 +167,7 @@ public class Main {
         System.out.println("Building Data tree");
 
         int number_of_genomes = utils.readAndBuildDatasetTree(INPUT_PATH+cla.input_file_name,
-                                                                    dataset_suffix_tree, cla.is_directons);
+                                                                    dataset_suffix_tree, cla.non_directons);
 
         utils.measureMemory();
 
@@ -181,8 +181,8 @@ public class Main {
             CSBFinder CSBFinder = new CSBFinder(cla.max_error, cla.max_wildcards, cla.max_deletion, cla.max_insertion,
                     cla.quorum1, cla.quorum2,
                     cla.min_pattern_length, cla.max_pattern_length, utils.GAP_CHAR_INDEX, utils.WC_CHAR_INDEX,
-                    dataset_suffix_tree, pattern_tree, cla.bool_count, utils, cla.memory_saving_mode, writer,
-                    cla.is_directons, cla.debug);
+                    dataset_suffix_tree, pattern_tree, cla.mult_count, utils, cla.memory_saving_mode, writer,
+                    cla.non_directons, cla.debug);
 
             utils.measureMemory();
 
@@ -204,13 +204,13 @@ public class Main {
 
                 for (Pattern pattern : patterns) {
                     pattern.calculateScore(utils, cla.max_insertion, cla.max_error, cla.max_deletion);
-                    pattern.calculateMainFunctionalCategory(utils, cla.is_directons);
+                    pattern.calculateMainFunctionalCategory(utils, cla.non_directons);
                 }
                 utils.measureMemory();
 
                 System.out.println("Clustering to families");
                 ArrayList<Family> families = FamilyClustering.Cluster(patterns, cla.threshold, cla.cluster_by, utils,
-                        cla.is_directons);
+                        cla.non_directons);
 
                 utils.measureMemory();
 

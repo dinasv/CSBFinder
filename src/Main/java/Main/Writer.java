@@ -7,7 +7,6 @@ import Utils.*;
 import java.io.*;
 import java.math.RoundingMode;
 import java.text.DecimalFormat;
-import java.text.SimpleDateFormat;
 import java.util.*;
 
 import org.apache.poi.ss.usermodel.Row;
@@ -16,10 +15,7 @@ import org.apache.poi.xssf.streaming.SXSSFWorkbook;
 
 import Main.CommandLineArgs.OutputType;
 
-import java.util.logging.FileHandler;
-import java.util.logging.LogManager;
 import java.util.logging.Logger;
-import java.util.logging.SimpleFormatter;
 
 /**
  * Created by Dina on 19/05/2017.
@@ -48,7 +44,7 @@ public class Writer {
     private int next_line_index_desc_sheet;
     private boolean cog_info_exists;
     private boolean debug;
-    private boolean is_directons;
+    private boolean non_directons;
 
     private static final String DELIMITER = "|";
     private static final DecimalFormat DF = new DecimalFormat("#.####");
@@ -59,7 +55,7 @@ public class Writer {
 
     public Writer(int max_error, int max_deletion, int max_insertion, boolean debug, String catalog_file_name,
                   String instances_file_name, boolean include_families, OutputType output_file_type,
-                  boolean cog_info_exists, boolean is_directons, String output_path){
+                  boolean cog_info_exists, boolean non_directons, String output_path){
 
         DF.setRoundingMode(RoundingMode.HALF_UP);
 
@@ -73,7 +69,7 @@ public class Writer {
 
         this.output_file_type = output_file_type;
         this.cog_info_exists = cog_info_exists;
-        this.is_directons = is_directons;
+        this.non_directons = non_directons;
 
         catalog_sheet = null;
         filtered_patterns_sheet = null;
@@ -316,7 +312,7 @@ public class Writer {
 
         for (String cog : pattern.getPatternArr()){
             row = sheet.createRow(row_num++);
-            if (!is_directons){
+            if (non_directons){
                 cog = cog.substring(0, cog.length()-1);
             }
             COG cog_obj = utils.cog_info.get(cog);

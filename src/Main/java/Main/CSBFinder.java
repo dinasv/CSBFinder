@@ -32,12 +32,12 @@ public class CSBFinder {
 
     private int gap_char;
     private int wildcard_char;
-    private boolean count_by_keys;
+    private boolean mult_count;
 
     private int last_pattern_key;
     private boolean memory_saving_mode;
 
-    private boolean isDirectons;
+    private boolean non_directons;
 
     private boolean debug;
 
@@ -59,7 +59,7 @@ public class CSBFinder {
      * @param wildcard_char
      * @param data_t GST representing all input sequences
      * @param pattern_trie
-     * @param count_by_keys if true, counts one instance in each input sequence
+     * @param mult_count if true, counts one instance in each input sequence
      * @param utils
      * @param memory_saving_mode
      * @param writer
@@ -67,8 +67,8 @@ public class CSBFinder {
      */
     public CSBFinder(int max_error, int max_wildcards, int max_deletion, int max_insertion, int quorum1, int quorum2,
                      int min_pattern_length, int max_pattern_length, int gap_char, int wildcard_char,
-                     GeneralizedSuffixTree data_t, Trie pattern_trie, boolean count_by_keys, Utils utils,
-                     boolean memory_saving_mode, Writer writer, boolean isDirectons,  boolean debug){
+                     GeneralizedSuffixTree data_t, Trie pattern_trie, boolean mult_count, Utils utils,
+                     boolean memory_saving_mode, Writer writer, boolean non_directons, boolean debug){
 
         patterns = new HashMap<>();
         this.max_error = max_error;
@@ -82,13 +82,13 @@ public class CSBFinder {
         this.max_pattern_length = max_pattern_length;
         this.gap_char = gap_char;
         this.wildcard_char = wildcard_char;
-        this.count_by_keys = count_by_keys;
+        this.mult_count = mult_count;
         total_chars_in_data = -1;
         this.utils = utils;
         last_pattern_key = 0;
         this.memory_saving_mode = memory_saving_mode;
         this.writer = writer;
-        this.isDirectons = isDirectons;
+        this.non_directons = non_directons;
         this.debug = debug;
 
         count_nodes_in_pattern_tree = 0;
@@ -173,7 +173,7 @@ public class CSBFinder {
             }
 
             //remove reverse compliments
-            if (!isDirectons){
+            if (non_directons){
                 String pattern_str = String.join(DELIMITER, pattern_arr) + DELIMITER;
                 String reversed_pattern_str = String.join(DELIMITER, pattern.getReversePatternArr()) + DELIMITER;
                 Pattern reversed_pattern = patterns.get(reversed_pattern_str);
@@ -389,7 +389,7 @@ public class CSBFinder {
     private void handlePattern(Pattern new_pattern, String extended_pattern){
         if (memory_saving_mode){
             new_pattern.calculateScore(utils, max_insertion, max_error, max_deletion);
-            new_pattern.calculateMainFunctionalCategory(utils, isDirectons);
+            new_pattern.calculateMainFunctionalCategory(utils, non_directons);
             writer.printPattern(new_pattern, utils);
         }else {
             patterns.put(extended_pattern, new_pattern);
@@ -438,10 +438,10 @@ public class CSBFinder {
         extended_pattern_node.setExact_instance_count(exact_instances_count);
 
         int diff_instances_count;
-        if (count_by_keys){
-            diff_instances_count = extended_pattern_node.getInstanceKeysSize();
-        }else {
+        if (mult_count){
             diff_instances_count = extended_pattern_node.getInstanceIndexCount();
+        }else {
+            diff_instances_count = extended_pattern_node.getInstanceKeysSize();
         }
 
         if (exact_instances_count >= q1 && diff_instances_count >= q2 &&
