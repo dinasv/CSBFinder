@@ -39,8 +39,6 @@ public class Utils {
 
     public int min_genome_size;
 
-    //public Logger logger = null;
-
     /**
      * for each cog, a set of genomes (bac_index) in which the cog appears
      */
