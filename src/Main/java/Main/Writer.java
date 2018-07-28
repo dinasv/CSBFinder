@@ -59,7 +59,7 @@ public class Writer {
 
     public Writer(int max_error, int max_deletion, int max_insertion, boolean debug, String catalog_file_name,
                   String instances_file_name, boolean include_families, OutputType output_file_type,
-                  boolean cog_info_exists, boolean is_directons){
+                  boolean cog_info_exists, boolean is_directons, String output_path){
 
         DF.setRoundingMode(RoundingMode.HALF_UP);
 
@@ -79,43 +79,23 @@ public class Writer {
         filtered_patterns_sheet = null;
         patterns_description_sheet = null;
 
-        init(catalog_file_name, instances_file_name, include_families);
+        init(catalog_file_name, instances_file_name, include_families, output_path);
 
     }
-
+/*
     public void writeLogger(String msg){
         if (debug && logger != null){
             logger.info(msg);
         }
     }
+*/
+    private void init(String catalog_file_name, String instances_file_name, boolean include_families,
+                      String output_path){
 
-    private void init(String catalog_file_name, String instances_file_name, boolean include_families){
-        Date dNow = new Date( );
-        SimpleDateFormat ft = new SimpleDateFormat ("dd_MM_yyyy_hh_mm_ss_a");
-
-        String path = "output";
-        createOutputDirectory(path);
-        path += "/"+ft.format(dNow)+"/";
-        createOutputDirectory(path);
-
-        catalog_path = path + catalog_file_name;
-        catalog_instances_path = path +instances_file_name;
+        catalog_path = output_path + catalog_file_name;
+        catalog_instances_path = output_path +instances_file_name;
         createOutputFiles();
         createHeaders(include_families);
-
-        //create logger file
-        try {
-            logger = Logger.getLogger("MyLog");
-            LogManager.getLogManager().reset();//disable logging information printed to screen
-
-            FileHandler fh = new FileHandler(path + "CSBFinder.log");
-            logger.addHandler(fh);
-            SimpleFormatter formatter = new SimpleFormatter();
-            fh.setFormatter(formatter);
-
-        } catch (Exception e) {
-            System.out.println("An exception occurred while trying to create a log file");
-        }
     }
 
     private PrintWriter createOutputPrintWriter(String path){
@@ -150,7 +130,7 @@ public class Writer {
         instances_file = createOutputPrintWriter(catalog_instances_path);
     }
 
-    private void createOutputDirectory(String path){
+    public static void createOutputDirectory(String path){
         try {
             new File(path).mkdir();
         }catch (SecurityException e){

@@ -7,6 +7,7 @@ import SuffixTrees.TreeType;
 import SuffixTrees.Trie;
 import Utils.*;
 
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 import com.beust.jcommander.JCommander;
@@ -15,16 +16,14 @@ import com.beust.jcommander.ParameterException;
 
 public class Main {
 
-    private static CommandLineArgs cla;
+    private CommandLineArgs cla;
+    private MyLogger logger;
+    private String output_path;
+    private Writer writer;
+    private Utils utils;
+    private String INPUT_PATH = "input/";
 
-    private static void printUsageAndExit(JCommander jcommander, int exitStatus){
-        jcommander.setProgramName("java -jar CSBFinder.jar");
-        jcommander.usage();
-        System.exit(exitStatus);
-    }
-
-    public static void main(String [ ] args){
-        Main main = new Main();
+    public Main(String [ ] args){
         JCommander jcommander = null;
         try {
             cla = new CommandLineArgs();
@@ -41,7 +40,36 @@ public class Main {
             jcommander = JCommander.newBuilder().addObject(cla).build();
             printUsageAndExit(jcommander, 1);
         }
-        main.run();
+
+        output_path = createOutputPath();
+        logger = new MyLogger(output_path, cla.debug);
+
+        boolean cog_info_exists = (cla.cog_info_file_name != null);
+        writer = createWriter(cog_info_exists);
+
+        HashMap<String, COG> cog_info = null;
+
+        if (cog_info_exists) {
+            cog_info = Readers.read_cog_info_table(INPUT_PATH + cla.cog_info_file_name);
+        }
+
+        utils = new Utils(cog_info, logger);
+
+        if (cla.min_pattern_length < 2) {
+            cla.min_pattern_length = 2 + cla.max_error;
+        }
+
+        run();
+    }
+
+    private static void printUsageAndExit(JCommander jcommander, int exitStatus){
+        jcommander.setProgramName("java -jar CSBFinder.jar");
+        jcommander.usage();
+        System.exit(exitStatus);
+    }
+
+    public static void main(String [ ] args){
+        new Main(args);
     }
 
     private Writer createWriter(boolean cog_info_exists){
@@ -55,37 +83,33 @@ public class Main {
 
         Writer writer = new Writer(cla.max_error, cla.max_deletion, cla.max_insertion, cla.debug, catalog_file_name,
                 instances_file_name,
-                include_families, cla.output_file_type, cog_info_exists, cla.is_directons);
+                include_families, cla.output_file_type, cog_info_exists, cla.is_directons, output_path);
 
         return writer;
     }
 
+    private static String createOutputPath(){
+        Date dNow = new Date( );
+        SimpleDateFormat ft = new SimpleDateFormat ("dd_MM_yyyy_hh_mm_ss_a");
+
+        String path = "output";
+        Writer.createOutputDirectory(path);
+        path += "/"+ft.format(dNow)+"/";
+        Writer.createOutputDirectory(path);
+
+        return path;
+    }
+
     public void run() {
 
-        String INPUT_PATH = "input/";
-
-        HashMap<String, COG> cog_info = null;
-        boolean cog_info_exists = (cla.cog_info_file_name != null);
-        if (cog_info_exists) {
-            cog_info = Readers.read_cog_info_table(INPUT_PATH + cla.cog_info_file_name);
-        }
-
-        Writer writer = createWriter(cog_info_exists);
-
-        Utils utils = new Utils(cog_info, writer);
-
-        if (cla.min_pattern_length < 2) {
-            cla.min_pattern_length = 2 + cla.max_error;
-        }
-
-        pipeline(utils, INPUT_PATH, writer);
+        pipeline();
 
         if (cla.debug){
             utils.measureMemory();
             long actualMemUsed = utils.currMem - utils.initiailMem;
 
             System.out.println(actualMemUsed);
-            writer.writeLogger("Genomes:" +utils.number_of_genomes + "," + actualMemUsed);
+            logger.writeLogger("Genomes:" +utils.number_of_genomes + "," + actualMemUsed);
 
         }
 
@@ -93,11 +117,9 @@ public class Main {
 
     /**
      * Read patterns from a file if a file is given, and put them in a suffix trie
-     * @param INPUT_PATH
-     * @param utils
      * @return the Trie with the patterns, null if patterns file not given ot building the tree was unsuccessful
      */
-    private Trie buildPatternsTree(String INPUT_PATH, Utils utils) {
+    private Trie buildPatternsTree() {
         Trie pattern_tree = null;
         if (cla.input_patterns_file_name != null) {
             //these arguments are not valid when input patterns are give
@@ -116,12 +138,11 @@ public class Main {
     /**
      * Executes CSBFinder and prints colinear synteny blocks
      *
-     * @param utils
      * @return
      * @throws Exception
      */
 
-    private void pipeline(Utils utils, String INPUT_PATH, Writer writer){
+    private void pipeline(){
 
         //wild card
         utils.char_to_index.put(utils.WC_CHAR, utils.WC_CHAR_INDEX);
@@ -142,7 +163,7 @@ public class Main {
 
         GeneralizedSuffixTree dataset_suffix_tree = new GeneralizedSuffixTree();
 
-        writer.writeLogger("Building Data tree");
+        logger.writeLogger("Building Data tree");
         System.out.println("Building Data tree");
 
         int number_of_genomes = utils.readAndBuildDatasetTree(INPUT_PATH+cla.input_file_name,
@@ -153,7 +174,7 @@ public class Main {
         if (number_of_genomes != -1) {
 
             //read patterns from a file if a file is given, and put them in a suffix trie
-            Trie pattern_tree = buildPatternsTree(INPUT_PATH, utils);
+            Trie pattern_tree = buildPatternsTree();
 
             System.out.println("Extracting CSBs from " + number_of_genomes + " input sequences.");
 
@@ -168,12 +189,12 @@ public class Main {
             if (cla.input_patterns_file_name == null) {
                 if (!cla.memory_saving_mode) {
                     System.out.println("Removing redundant CSBs");
-                    writer.writeLogger("CSBs found: " + CSBFinder.getPatternsCount());
+                    logger.writeLogger("CSBs found: " + CSBFinder.getPatternsCount());
 
                     CSBFinder.removeRedundantPatterns();
                     if (cla.debug) {
                         utils.measureMemory();
-                        writer.writeLogger("CSBs left after removing redundant CSBs: " + CSBFinder.getPatternsCount());
+                        logger.writeLogger("CSBs left after removing redundant CSBs: " + CSBFinder.getPatternsCount());
                     }
                 }
             }
@@ -208,13 +229,13 @@ public class Main {
             System.out.println(writer.getCountPrintedPatterns() + " CSBs found");
 
             float estimatedTime = (float) (System.nanoTime() - startTime) / (float) Math.pow(10, 9);
-            writer.writeLogger("Took " + estimatedTime + " seconds");
+            logger.writeLogger("Took " + estimatedTime + " seconds");
 
             System.out.println("Took " + estimatedTime + " seconds");
 
         }else{
             System.out.println("Could not read input sequences");
-            writer.writeLogger("Could not read input sequences");
+            logger.writeLogger("Could not read input sequences");
             System.exit(1);
         }
     }

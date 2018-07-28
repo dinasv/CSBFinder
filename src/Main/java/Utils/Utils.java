@@ -1,5 +1,6 @@
 package Utils;
 
+import Main.MyLogger;
 import Words.Directon;
 import Words.Replicon;
 import Words.WordArray;
@@ -7,7 +8,8 @@ import SuffixTrees.*;
 
 import java.io.*;
 import java.util.*;
-import Main.Writer;
+import java.util.logging.Logger;
+
 
 /**
  * Contain static methods for building suffix trees
@@ -55,11 +57,11 @@ public class Utils {
     public long initiailMem;
     public long currMem;
 
-    Writer writer = null;
+    private MyLogger logger;
 
 
-    public Utils(HashMap<String, COG> cog_info, Writer writer){
-        this.writer = writer;
+    public Utils(HashMap<String, COG> cog_info, MyLogger logger){
+        this.logger = logger;
 
         index_to_char = new ArrayList<String>();
         char_to_index = new HashMap<String, Integer>();
@@ -306,9 +308,9 @@ public class Utils {
                 dataset_length_sum = length_sum;
 
 
-                writer.writeLogger("Average genome size: " + length_sum / genome_key_to_name.size());
-                writer.writeLogger("Number of genomes " + genome_key_to_name.size());
-                writer.writeLogger("Number of cogs " + char_to_index.size());
+                logger.writeLogger("Average genome size: " + length_sum / genome_key_to_name.size());
+                logger.writeLogger("Number of genomes " + genome_key_to_name.size());
+                logger.writeLogger("Number of cogs " + char_to_index.size());
 
                 number_of_genomes = genome_key_to_name.size();
                 if (number_of_genomes == 0){
