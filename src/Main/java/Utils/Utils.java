@@ -8,7 +8,6 @@ import SuffixTrees.*;
 
 import java.io.*;
 import java.util.*;
-import java.util.logging.Logger;
 
 
 /**
@@ -39,8 +38,6 @@ public class Utils {
 
     public int dataset_length_sum ;
 
-    public int min_genome_size;
-
     /**
      * for each cog, a set of genomes (bac_index) in which the cog appears
      */
@@ -56,6 +53,8 @@ public class Utils {
 
     public long initiailMem;
     public long currMem;
+
+    private PatternScore pattern_score;
 
     private MyLogger logger;
 
@@ -74,8 +73,6 @@ public class Utils {
 
         dataset_length_sum = 0;
 
-        min_genome_size = Integer.MAX_VALUE;
-
         cog_to_containing_genomes = new HashMap<>();
 
         genome_to_cog_paralog_count = new HashMap<>();
@@ -85,8 +82,6 @@ public class Utils {
         initiailMem = Runtime.getRuntime().totalMemory()-Runtime.getRuntime().freeMemory();
         currMem = initiailMem;
 
-        q_val = new double[200];
-
     }
 
     public void measureMemory(){
@@ -94,7 +89,7 @@ public class Utils {
         if (currMem > this.currMem){
             this.currMem = currMem;
         }
-        System.out.println(currMem-initiailMem);
+        //System.out.println(currMem-initiailMem);
     }
 
     private void countParalogsInSeqs(String[] directon, int curr_seq_index){
@@ -236,6 +231,7 @@ public class Utils {
         String file_name = input_file_path;
 
         BufferedReader br = null;
+        int max_genomes_size = 0;
         try {
             br = new BufferedReader(new FileReader(file_name));
 
@@ -275,6 +271,9 @@ public class Utils {
 
                             if (!next_genome_name.equals(curr_genome_name)) {
                                 curr_genome_index++;
+                                if (genome_size > max_genomes_size){
+                                    max_genomes_size = genome_size;
+                                }
                                 genome_size = 0;
                             }
 
@@ -307,6 +306,10 @@ public class Utils {
 
                 updateGenomes(curr_genome_name, genome_size, curr_genome_index);
 
+                if (genome_size > max_genomes_size){
+                    max_genomes_size = genome_size;
+                }
+
                 dataset_length_sum = length_sum;
 
 
@@ -317,6 +320,9 @@ public class Utils {
                 number_of_genomes = genome_key_to_name.size();
                 if (number_of_genomes == 0){
                     return -1;
+                }else{
+                    pattern_score = new PatternScore(max_genomes_size, number_of_genomes, dataset_length_sum,
+                            cog_to_containing_genomes, genome_to_cog_paralog_count);
                 }
 
             } catch (IOException e) {
@@ -415,32 +421,9 @@ public class Utils {
     public double computePatternScore(String[] pattern_chars, int max_insertions, int max_error, int max_deletions,
                                       int pattern_occs_keys_size){
 
-        int avg_genome_size = 1;
-        if (number_of_genomes > 0 ) {
-            avg_genome_size = dataset_length_sum / number_of_genomes;
+        if (pattern_score != null){
+            return pattern_score.computePatternScore(pattern_chars, max_insertions, pattern_occs_keys_size);
         }
-
-        HashSet<Integer> intersection_of_genomes_with_pattern_chars = new HashSet<>(cog_to_containing_genomes.get(pattern_chars[0]));
-        for (int i = 1; i < pattern_chars.length; i++) {
-            intersection_of_genomes_with_pattern_chars.retainAll(cog_to_containing_genomes.get(pattern_chars[i]));
-        }
-
-        int paralog_count_product_sum = 0;
-        int paralog_count_product;
-        for (int seq_key: intersection_of_genomes_with_pattern_chars) {
-
-            HashMap<String, Integer> curr_seq_paralog_count = genome_to_cog_paralog_count.get(seq_key);
-            paralog_count_product = 1;
-            for (String cog : pattern_chars) {
-                int curr_cog_paralog_count = curr_seq_paralog_count.get(cog);
-                paralog_count_product *= curr_cog_paralog_count;
-            }
-            paralog_count_product_sum += paralog_count_product;
-        }
-
-        int average_paralog_count = paralog_count_product_sum/intersection_of_genomes_with_pattern_chars.size();
-
-        return Formulas.pval_cross_genome(avg_genome_size/*min_genome_size*/, pattern_chars.length, max_insertions,
-                average_paralog_count, number_of_genomes, pattern_occs_keys_size, q_val);
+        return -1;
     }
 }
