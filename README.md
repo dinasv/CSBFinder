@@ -12,9 +12,9 @@
 
 <a name='overview'>Overview</a>
 --------
-CSBFinder is a standalone software tool, executed using command line, for the discovery, ranking and clustering of colinear synteny blocks (CSBs) identified in large genomic datasets.
+CSBFinder is a standalone software tool, executed using command line, for the discovery, ranking and clustering of local colinear syntenic blocks (CSBs) identified in large genomic datasets.
 
-The input is a set of genomes and parameters **_k_** (number of allowed insertions) and **_q_** (the quorum parameter). The genomes are modeled as strings of homologous genes, where genes belonging to the same homology group have identical IDs. A homology group is regarded as a 'gene' throughout the text. In our model, a CSB is a patterns of genes that appears as a substring of at least one of the input genomes, and has instances in at least **_q_** genomes, where each instance may vary from the CSB by at most **_k_** gene insertions. The genomes are mined to identify patterns that qualify as CSBs. The discovered CSBs are ranked according to a probabilistic score and clustered to families according to their gene content similarity.
+The input is a set of genomes and parameters **_k_** (number of allowed insertions) and **_q_** (the quorum parameter). The genomes are modeled as strings of homologous genes identifires, where genes belonging to the same homology group have identical IDs. A homology group is regarded as a 'gene' throughout the text. In our model, a CSB is a patterns of genes that appears as a substring of at least one of the input genomes, and has instances in at least **_q_** genomes, where each instance may vary from the CSB by at most **_k_** gene insertions. The genomes are mined to identify patterns that qualify as CSBs. The discovered CSBs are ranked according to a probabilistic score and clustered to families according to their gene content similarity.
 
 <a name='prerequisites'>Prerequisites</a>
 --------
@@ -230,22 +230,20 @@ Two output files will be written to a directory named "output"
     
     ```
     >[CSB ID] TAB [CSB genes]
-     [genome name] TAB [replicon name]|[instance start index]|length_[instance length]
-     [genome name] TAB [replicon name]|[instance start index]|length_[instance length]
+     [genome name] TAB [replicon name]|[[instance start index (inclusive),instance end index (exclusive)]]
+     [genome name] TAB [replicon name]|[[instance start index (inclusive),instance end index (exclusive)]]
 
      ...
      >[CSB ID] TAB	[CSB genes]
-     [genome name] TAB [replicon name]|[instance start index]|length_[instance length]
-     [genome name] TAB [replicon name]|[instance start index]|length_[instance length]
+     [genome name] TAB [replicon name]|[[instance start index (inclusive),instance end index (exclusive)]]
+     [genome name] TAB [replic     [genome name] TAB [replicon name]|[[instance start index (inclusive),instance end index (exclusive)]]
      ...
     ```
     #### Example
     ```
-    >20880	COG4264-COG3486-
-    Halomicrobium_mukohataei_DSM_12286_uid59107	NC_013201|97|length_3
-    Sinorhizobium_medicae_WSM419_uid58549	NC_009620|521|length_3	NC_009620|672|length_3	NC_009621|768|length_3	NC_009620|639|length_3
-    Klebsiella_pneumoniae_NTUH_K2044_uid59073	NC_006625|257|length_2
-    Cronobacter_turicensis_z3032_uid40821	NC_013283|105|length_2
+    >4539	COG1012 COG0665 
+    Rhizobium_leguminosarum_bv__trifolii_WSM2304_uid58997	NC_011368|[829,831]	NC_011368|[832,834]
+    Agrobacterium_vitis_S4_uid58249	NC_011981|[171,173]
     ```
 <a name='sample'>Sample input files</a>   
 --------------------------------------
