@@ -2,10 +2,7 @@ package PostProcess;
 
 import Utils.Pattern;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Iterator;
+import java.util.*;
 
 import Utils.Utils;
 
@@ -17,10 +14,10 @@ import Main.CommandLineArgs.ClusterBy;
  */
 public class FamilyClustering {
 
-    public static ArrayList<Family> Cluster(ArrayList<Pattern> patterns, double threshold, ClusterBy cluster_by,
+    public static List<Family> Cluster(List<Pattern> patterns, double threshold, ClusterBy cluster_by,
                                             Utils utils, boolean non_directons){
 
-        ArrayList<Family> families = greedyClustering(patterns, threshold, cluster_by, utils, non_directons);
+        List<Family> families = greedyClustering(patterns, threshold, cluster_by, utils, non_directons);
 
         for (Family family: families){
             family.sortPatternsAndSetScore();
@@ -31,13 +28,13 @@ public class FamilyClustering {
     }
 
     private static boolean addToFamily(Family family, double threshold, Pattern curr_pattern,
-                                       HashSet<Integer> curr_pattern_gene_set){
+                                       Set<Integer> curr_pattern_gene_set){
 
-        HashSet<Integer> family_hash_set = family.getGeneSet();
-        int minimal_set_size = Math.min(family_hash_set.size(), curr_pattern_gene_set.size());
+        Set<Integer> family_set = family.getGeneSet();
+        int minimal_set_size = Math.min(family_set.size(), curr_pattern_gene_set.size());
 
-        HashSet<Integer> intersection = new HashSet<Integer>(curr_pattern_gene_set);
-        intersection.retainAll(family_hash_set);
+        Set<Integer> intersection = new HashSet<Integer>(curr_pattern_gene_set);
+        intersection.retainAll(family_set);
 
         //double thresh = threshold;
         if (minimal_set_size >= 1 && minimal_set_size <= 2) {
@@ -51,7 +48,7 @@ public class FamilyClustering {
         return false;
     }
 
-    private static ArrayList<Family> greedyClustering(ArrayList<Pattern> patterns, double threshold, ClusterBy cluster_by,
+    private static List<Family> greedyClustering(List<Pattern> patterns, double threshold, ClusterBy cluster_by,
                                                       Utils utils, boolean non_directons){
 
         if (cluster_by == ClusterBy.LENGTH){
@@ -60,7 +57,7 @@ public class FamilyClustering {
             Collections.sort(patterns, new Pattern.ScoreComparator());
         }
 
-        ArrayList<Family> families = new ArrayList<>();
+        List<Family> families = new ArrayList<>();
         Iterator<Pattern> it = patterns.iterator();
         if (it.hasNext()) {
             Pattern first_pattern = it.next();
@@ -71,7 +68,7 @@ public class FamilyClustering {
             while (it.hasNext()) {
                 Pattern curr_pattern = it.next();
 
-                HashSet<Integer> curr_pattern_gene_set = get_genes_set(curr_pattern.getPatternArr(), utils);
+                Set<Integer> curr_pattern_gene_set = get_genes_set(curr_pattern.getPatternArr(), utils);
 
                 boolean added_pattern = false;
                 for (Family family : families) {
@@ -92,8 +89,8 @@ public class FamilyClustering {
         return families;
     }
 
-    private static HashSet<Integer> get_genes_set(String[] genes, Utils utils){
-        HashSet<Integer> gene_set = new HashSet<>();
+    private static Set<Integer> get_genes_set(String[] genes, Utils utils){
+        Set<Integer> gene_set = new HashSet<>();
         for (String cog: genes) {
             int cog_index = utils.char_to_index.get(cog);
             gene_set.add(cog_index);

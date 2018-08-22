@@ -29,7 +29,7 @@ public class CSBFinder {
     private GeneralizedSuffixTree data_tree;
 
     //contains all extracted patterns
-    private HashMap<String, Pattern> patterns;
+    private Map<String, Pattern> patterns;
 
     private int gap_char;
     private int wildcard_char;
@@ -246,9 +246,9 @@ public class CSBFinder {
             addWildcardEdge(pattern_node, true);
         }
 
-        ArrayList<Instance> instances = pattern_node.getInstances();
+        List<Instance> instances = pattern_node.getInstances();
 
-        HashMap<Integer, PatternNode> target_nodes = pattern_node.getTarget_nodes();
+        Map<Integer, PatternNode> target_nodes = pattern_node.getTarget_nodes();
 
         //the maximal number of different instances, of one of the extended patterns
         int max_num_of_diff_instances = -1;
@@ -310,12 +310,12 @@ public class CSBFinder {
                                        Edge data_edge,
                                        String pattern, int pattern_length, int wildcard_count) {
 
-        ArrayList<Instance> instances = pattern_node.getInstances();
+        List<Instance> instances = pattern_node.getInstances();
         //the maximal number of different instances, of one of the extended patterns
         int max_num_of_diff_instances = -1;
         int num_of_diff_instances = 0;
 
-        HashMap<Integer, Edge> data_node_edges = null;
+        Map<Integer, Edge> data_node_edges = null;
 
         WordArray data_edge_label;
         if (data_edge != null) {
@@ -413,7 +413,7 @@ public class CSBFinder {
 
     private int extendPattern(int alpha, int data_edge_index, InstanceNode data_node, Edge data_edge,
                               int wildcard_count, String pattern, PatternNode target_node,
-                              PatternNode pattern_node, ArrayList<Instance> Instances, int pattern_length) {
+                              PatternNode pattern_node, List<Instance> Instances, int pattern_length) {
 
         String extended_pattern = appendChar(pattern, alpha);
         PatternNode extended_pattern_node = target_node;
@@ -526,7 +526,7 @@ public class CSBFinder {
         //The substring ends at the current node_instance, edge_index = -1
         if (edge_instance == null) {
             //Go over all the edges from node_instance, see if the instance can be extended
-            HashMap<Integer, Edge> instance_edges = node_instance.getEdges();
+            Map<Integer, Edge> instance_edges = node_instance.getEdges();
 
             //we can extend the instance using all outgoing edges, increment error if needed
             if (ch == wildcard_char) {
@@ -639,7 +639,7 @@ public class CSBFinder {
      * @param ch
      * @param patternNode
      */
-    private int addAllInstanceEdges(Boolean make_insertion, Instance instance, HashMap<Integer, Edge> instance_edges,
+    private int addAllInstanceEdges(Boolean make_insertion, Instance instance, Map<Integer, Edge> instance_edges,
                                     int deletions, int error, InstanceNode instance_node, int edge_index, int ch,
                                     PatternNode patternNode) {
         int curr_error = error;
@@ -714,7 +714,7 @@ public class CSBFinder {
     /**
      * @return
      */
-    public ArrayList<Pattern> getPatterns() {
+    public List<Pattern> getPatterns() {
         return new ArrayList<Pattern>(patterns.values());
     }
 

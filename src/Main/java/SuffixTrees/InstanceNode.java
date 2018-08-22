@@ -13,7 +13,7 @@ public class InstanceNode extends SuffixNode {
      * Save for every string key in data, the position of the suffix of that string that ends at this node
      * sequence_id : {(replicon_id|start_index|strand)}
      */
-    private HashMap<Integer, List<InstanceLocation>> data;
+    private Map<Integer, List<InstanceLocation>> data;
 
     /**
      * The total number of <em>different</em> results that are stored in this
@@ -35,7 +35,7 @@ public class InstanceNode extends SuffixNode {
      *
      * This must be calculated explicitly using computeAndCacheCount
      */
-    private HashMap<Integer, List<InstanceLocation>> results;
+    private Map<Integer, List<InstanceLocation>> results;
 
 
     public InstanceNode(){
@@ -102,17 +102,17 @@ public class InstanceNode extends SuffixNode {
         return count_by_keys;
     }
 
-    private HashMap<Integer, List<InstanceLocation>> computeAndCacheCountRecursive() {
+    private Map<Integer, List<InstanceLocation>> computeAndCacheCountRecursive() {
         count_by_keys = 0;
         count_by_indexes = 0;
         //add all data_indexes to results
         count_by_indexes += multimapAddAll(results, data);
 
-        HashMap<Integer, Edge> edges = getEdges();
+        Map<Integer, Edge> edges = getEdges();
         for (Map.Entry<Integer, Edge> entry : edges.entrySet()) {
             Edge e = entry.getValue();
             InstanceNode destNode = (InstanceNode)e.getDest();
-            HashMap<Integer, List<InstanceLocation>> dest_data_indexes = destNode.computeAndCacheCountRecursive();
+            Map<Integer, List<InstanceLocation>> dest_data_indexes = destNode.computeAndCacheCountRecursive();
 
             count_by_indexes += multimapAddAll(results, dest_data_indexes);
 
@@ -121,7 +121,7 @@ public class InstanceNode extends SuffixNode {
         return results;
     }
 
-    private static int multimapAddAll(HashMap<Integer, List<InstanceLocation>>  multimap_to, HashMap<Integer, List<InstanceLocation>>  multimap_from ){
+    private static int multimapAddAll(Map<Integer, List<InstanceLocation>>  multimap_to, Map<Integer, List<InstanceLocation>>  multimap_from ){
         int indexes_counter = 0;
         for (Map.Entry<Integer, List<InstanceLocation>> entry : multimap_from.entrySet()) {
             int key = entry.getKey();
@@ -164,7 +164,7 @@ public class InstanceNode extends SuffixNode {
 
         return count_by_indexes;
     }
-    public HashMap<Integer, List<InstanceLocation>> getResults(){
+    public Map<Integer, List<InstanceLocation>> getResults(){
         if (-1 == count_by_keys) {
             throw new IllegalStateException("getResults() shouldn't be called without calling computeCount() first");
         }

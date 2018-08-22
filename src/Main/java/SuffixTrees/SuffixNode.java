@@ -18,7 +18,7 @@ public class SuffixNode{
      * The set of edges starting from this node
      * used in suffix and enumeration tree
      */
-    private final HashMap<Integer, Edge> edges;
+    private final Map<Integer, Edge> edges;
 
     /**
      * The concat of labels from root to this node
@@ -37,7 +37,7 @@ public class SuffixNode{
         return edges.get(ch);
     }
 
-    public HashMap<Integer, Edge> getEdges() {
+    public Map<Integer, Edge> getEdges() {
         return edges;
     }
 
@@ -66,7 +66,7 @@ public class SuffixNode{
         substring = other.getSubstring();
         substring_length = other.getSubstring_length();
 
-        HashMap<Integer, Edge> other_edges = other.getEdges();
+        Map<Integer, Edge> other_edges = other.getEdges();
         edges = new HashMap<Integer, Edge>(other_edges.size());
         for (Map.Entry<Integer, Edge> entry : other_edges.entrySet()) {
             int ch = entry.getKey();

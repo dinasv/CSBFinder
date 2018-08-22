@@ -3,10 +3,7 @@ package PostProcess;
 import Utils.Pattern;
 import Utils.Utils;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashSet;
+import java.util.*;
 
 /**
  * Created by Dina on 23/08/2017.
@@ -16,7 +13,7 @@ public class Family {
 
     private String family_id;
     //members of the family
-    private ArrayList<Pattern> patterns;
+    private List<Pattern> patterns;
     //contains the union of all characters of all family members
     private HashSet<Integer> char_set;
     /**
@@ -78,7 +75,7 @@ public class Family {
         score = patterns.get(0).getScore();
     }
 
-    public ArrayList<Pattern> getPatterns(){
+    public List<Pattern> getPatterns(){
         return patterns;
     }
 

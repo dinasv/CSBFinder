@@ -4,6 +4,8 @@ import org.apache.commons.math3.special.Beta;
 
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 
 import static org.apache.commons.math3.util.CombinatoricsUtils.binomialCoefficient;
 
@@ -26,13 +28,13 @@ public class PatternScore {
     /**
      * for each cog, a set of genomes (bac_index) in which the cog appears
      */
-    public HashMap<String, HashSet<Integer>> cog_to_containing_genomes;
+    public Map<String, Set<Integer>> cog_to_containing_genomes;
 
-    public HashMap<Integer, HashMap<String, Integer>> genome_to_cog_paralog_count;
+    public Map<Integer, Map<String, Integer>> genome_to_cog_paralog_count;
 
-    public PatternScore(int max_genome_size, int number_of_genomes, int dataset_length_sum, HashMap<String,
-                        HashSet<Integer>> cog_to_containing_genomes,
-                        HashMap<Integer, HashMap<String, Integer>> genome_to_cog_paralog_count){
+    public PatternScore(int max_genome_size, int number_of_genomes, int dataset_length_sum,
+                        Map<String, Set<Integer>> cog_to_containing_genomes,
+                        Map<Integer, Map<String, Integer>> genome_to_cog_paralog_count){
 
         q_vals = new double[max_genome_size+1];
         this.number_of_genomes = number_of_genomes;
@@ -47,7 +49,7 @@ public class PatternScore {
 
     public double computePatternScore(String[] pattern_chars, int max_insertions, int pattern_occs_keys_size){
 
-        HashSet<Integer> intersection_of_genomes_with_pattern_chars = new HashSet<>(cog_to_containing_genomes.get(pattern_chars[0]));
+        Set<Integer> intersection_of_genomes_with_pattern_chars = new HashSet<>(cog_to_containing_genomes.get(pattern_chars[0]));
         for (int i = 1; i < pattern_chars.length; i++) {
             intersection_of_genomes_with_pattern_chars.retainAll(cog_to_containing_genomes.get(pattern_chars[i]));
         }
@@ -56,7 +58,7 @@ public class PatternScore {
         int paralog_count_product;
         for (int seq_key: intersection_of_genomes_with_pattern_chars) {
 
-            HashMap<String, Integer> curr_seq_paralog_count = genome_to_cog_paralog_count.get(seq_key);
+            Map<String, Integer> curr_seq_paralog_count = genome_to_cog_paralog_count.get(seq_key);
             paralog_count_product = 1;
             for (String cog : pattern_chars) {
                 int curr_cog_paralog_count = curr_seq_paralog_count.get(cog);

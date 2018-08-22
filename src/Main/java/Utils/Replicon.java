@@ -4,6 +4,7 @@ import Utils.Gene;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 import java.util.ListIterator;
 import java.util.stream.Collectors;
 
@@ -12,7 +13,7 @@ import java.util.stream.Collectors;
  */
 public class Replicon {
 
-    protected ArrayList<Gene> genes;
+    protected List<Gene> genes;
     private int strand;
     private int start_index;
     public static int index = -1;
@@ -51,7 +52,7 @@ public class Replicon {
         this.start_index = start_index;
     }
 
-    public ArrayList<Gene> getGenes(){
+    public List<Gene> getGenes(){
         return genes;
     }
 

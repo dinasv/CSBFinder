@@ -7,6 +7,7 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.Map;
 
 
 public class Readers {
@@ -16,8 +17,8 @@ public class Readers {
      * save information of functional category
      * @throws FileNotFoundException
      */
-    public static HashMap<String, COG> read_cog_info_table(String cog_info_file_name) {
-        HashMap<String, COG> cog_info = new HashMap<>();
+    public static Map<String, COG> read_cog_info_table(String cog_info_file_name) {
+        Map<String, COG> cog_info = new HashMap<>();
 
         BufferedReader br = null;
         try {

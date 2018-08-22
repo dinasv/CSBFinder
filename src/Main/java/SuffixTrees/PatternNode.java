@@ -8,7 +8,7 @@ import java.util.*;
  * Represents a node in the pattern tree
  */
 public class PatternNode {
-    private HashMap<Integer, PatternNode> target_nodes;
+    private Map<Integer, PatternNode> target_nodes;
     /**
      * Contains the key of the string concatenation from the root
      */
@@ -31,12 +31,12 @@ public class PatternNode {
     /**
      * Saves instances of the pattern that starts in the root and ends in this node
      */
-    private ArrayList<Instance> Instances;
+    private List<Instance> Instances;
     /**
      * Saves all different keys of strings that the pattern has an instance in.
      * (union of getResult from all instance nodes)
      */
-    private HashSet InstanceKeys;
+    private Set InstanceKeys;
     /**
      * Saves number of instances of the pattern (including multiple instances in the same input string)
      */
@@ -79,12 +79,12 @@ public class PatternNode {
         p_val = 0;
         exact_instance_count = 0;
 
-        HashMap<Integer, PatternNode> other_target_nodes = other.getTarget_nodes();
+        Map<Integer, PatternNode> other_target_nodes = other.getTarget_nodes();
         target_nodes = new HashMap<Integer, PatternNode>(other_target_nodes.size());
         target_nodes.putAll(other_target_nodes);
     }
 
-    public HashMap<Integer, PatternNode> getTarget_nodes(){
+    public Map<Integer, PatternNode> getTarget_nodes(){
         return target_nodes;
     }
     public int getSubstring_length() {
@@ -144,7 +144,7 @@ public class PatternNode {
         incrementInstanceCount(instance_node.getCount_by_indexes());
     }
 
-    public ArrayList<Instance> getInstances(){
+    public List<Instance> getInstances(){
         return Instances;
     }
 
@@ -156,7 +156,7 @@ public class PatternNode {
         return InstanceKeys.size();
     }
 
-    public HashSet<Integer> getInstanceKeys(){
+    public Set<Integer> getInstanceKeys(){
         return InstanceKeys;
     }
 

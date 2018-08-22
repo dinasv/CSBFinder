@@ -20,7 +20,7 @@ public class Pattern {
     private int instance_count;
 
     private int length;
-    private ArrayList<Instance> instances;
+    private List<Instance> instances;
 
     private int exact_instance_count;
 
@@ -28,8 +28,8 @@ public class Pattern {
 
     private String main_functional_category;
 
-    public Pattern(int pattern_id, String pattern, String[] pattern_arr, int length, HashSet<Integer> seq_keys,
-                   ArrayList<Instance> instances, int exact_instance_count){
+    public Pattern(int pattern_id, String pattern, String[] pattern_arr, int length, Set<Integer> seq_keys,
+                   List<Instance> instances, int exact_instance_count){
         this.pattern_id = pattern_id;
         this.pattern = pattern;
         this.pattern_arr = pattern_arr;
@@ -50,7 +50,7 @@ public class Pattern {
         return pattern_id;
     }
 
-    public ArrayList<Instance> get_instances(){
+    public List<Instance> get_instances(){
         return instances;
     }
 
@@ -93,8 +93,8 @@ public class Pattern {
     public void calculateMainFunctionalCategory(Utils utils, boolean non_directons){
         if (utils.cog_info != null) {
 
-            HashMap<String, Integer> functional_letter_count = new HashMap<>();
-            HashMap<String, String> functional_letter_to_desc = new HashMap<>();
+            Map<String, Integer> functional_letter_count = new HashMap<>();
+            Map<String, String> functional_letter_to_desc = new HashMap<>();
             for (String cog_id : pattern_arr) {
                 if (non_directons){
                     cog_id = cog_id.substring(0, cog_id.length()-1);

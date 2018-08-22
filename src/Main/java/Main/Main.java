@@ -50,7 +50,7 @@ public class Main {
         boolean cog_info_exists = (cla.cog_info_file_name != null);
         writer = createWriter(cog_info_exists);
 
-        HashMap<String, COG> cog_info = null;
+        Map<String, COG> cog_info = null;
 
         if (cog_info_exists) {
             cog_info = Readers.read_cog_info_table(INPUT_PATH + cla.cog_info_file_name);
@@ -203,7 +203,7 @@ public class Main {
             }
 
             if (!cla.memory_saving_mode) {
-                ArrayList<Pattern> patterns = CSBFinder.getPatterns();
+                List<Pattern> patterns = CSBFinder.getPatterns();
 
                 for (Pattern pattern : patterns) {
                     pattern.calculateScore(utils, cla.max_insertion, cla.max_error, cla.max_deletion);
@@ -212,7 +212,7 @@ public class Main {
                 utils.measureMemory();
 
                 System.out.println("Clustering to families");
-                ArrayList<Family> families = FamilyClustering.Cluster(patterns, cla.threshold, cla.cluster_by, utils,
+                List<Family> families = FamilyClustering.Cluster(patterns, cla.threshold, cla.cluster_by, utils,
                         cla.non_directons);
 
                 utils.measureMemory();

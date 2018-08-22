@@ -11,8 +11,8 @@ import java.util.*;
  * Contain static methods for building suffix trees
  */
 public class Utils {
-    public ArrayList<String> index_to_char;
-    public HashMap<String, Integer> char_to_index;
+    public List<String> index_to_char;
+    public Map<String, Integer> char_to_index;
 
     public static final int WC_CHAR_INDEX = 0;
     public static final String WC_CHAR = "*";
@@ -29,24 +29,24 @@ public class Utils {
     /**
      * accession number to tax key
      */
-    public HashMap<String, Integer> genome_name_to_key;
-    public HashMap<Integer, String> genome_key_to_name;
-    public HashMap<Integer, String> replicon_key_to_name;
+    public Map<String, Integer> genome_name_to_key;
+    public Map<Integer, String> genome_key_to_name;
+    public Map<Integer, String> replicon_key_to_name;
 
     public int dataset_length_sum ;
 
     /**
      * for each cog, a set of genomes (bac_index) in which the cog appears
      */
-    public HashMap<String, HashSet<Integer>> cog_to_containing_genomes;
+    public Map<String, Set<Integer>> cog_to_containing_genomes;
 
-    public HashMap<Integer, HashMap<String, Integer>> genome_to_cog_paralog_count;
+    public Map<Integer, Map<String, Integer>> genome_to_cog_paralog_count;
 
     //memoization of computed q_val - it is the same for each pattern length
     public double[] q_val;
 
 
-    public HashMap<String, COG> cog_info;
+    public Map<String, COG> cog_info;
 
     public long initiailMem;
     public long currMem;
@@ -56,7 +56,7 @@ public class Utils {
     private MyLogger logger;
 
 
-    public Utils(HashMap<String, COG> cog_info, MyLogger logger){
+    public Utils(Map<String, COG> cog_info, MyLogger logger){
         this.logger = logger;
 
         index_to_char = new ArrayList<String>();
@@ -92,7 +92,7 @@ public class Utils {
     private void countParalogsInSeqs(String[] directon, int curr_seq_index){
         for (String gene : directon) {
 
-            HashMap<String, Integer> curr_genome_paralogs_count = genome_to_cog_paralog_count.get(curr_seq_index);
+            Map<String, Integer> curr_genome_paralogs_count = genome_to_cog_paralog_count.get(curr_seq_index);
             if (curr_genome_paralogs_count == null) {
                 curr_genome_paralogs_count = new HashMap<>();
                 genome_to_cog_paralog_count.put(curr_seq_index, curr_genome_paralogs_count);
@@ -104,7 +104,7 @@ public class Utils {
             }
             curr_genome_paralogs_count.put(gene, curr_cog_paralog_count);
 
-            HashSet<Integer> genomes = cog_to_containing_genomes.get(gene);
+            Set<Integer> genomes = cog_to_containing_genomes.get(gene);
             if (genomes == null) {
                 genomes = new HashSet<>();
                 cog_to_containing_genomes.put(gene, genomes);
@@ -114,9 +114,9 @@ public class Utils {
     }
 
 
-    private static ArrayList<Directon> splitRepliconToDirectons(Replicon replicon) {
+    private static List<Directon> splitRepliconToDirectons(Replicon replicon) {
 
-        ArrayList<Directon> directons = new ArrayList<>();
+        List<Directon> directons = new ArrayList<>();
 
         Directon directon = new Directon();
 
@@ -207,7 +207,7 @@ public class Utils {
 
         }else{
 
-            ArrayList<Directon> directons = splitRepliconToDirectons(replicon);
+            List<Directon> directons = splitRepliconToDirectons(replicon);
 
             for (Directon directon: directons){
                 replicon_length += directon.size();

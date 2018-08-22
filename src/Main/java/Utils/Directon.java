@@ -2,6 +2,7 @@ package Utils;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 import java.util.stream.Collectors;
 
 /**
@@ -9,7 +10,7 @@ import java.util.stream.Collectors;
  */
 public class Directon extends Replicon{
 
-    public ArrayList<Gene> removeXFromEnd(String UNK_CHAR){
+    public List<Gene> removeXFromEnd(String UNK_CHAR){
         int i = size()-1;
         while (i>=0 && genes.get(i).getCog_id().equals(UNK_CHAR)){
             i--;
