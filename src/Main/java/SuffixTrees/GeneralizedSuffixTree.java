@@ -1,6 +1,7 @@
 package SuffixTrees;
 
-import Words.WordArray;
+import Utils.InstanceLocation;
+import Utils.WordArray;
 
 import java.io.Serializable;
 
@@ -167,9 +168,9 @@ public class GeneralizedSuffixTree  implements Serializable{
      *
      * @param str the string (word) added to the tree
      * @param key the key of the genome
-     * @param replicon_id the id of the word containing str
+     * @param instanceInfo info regarding the location of this word
      */
-    public void put(WordArray str, int key, int replicon_id, int start_index, int strand) {
+    public void put(WordArray str, int key, InstanceLocation instance_info) {
 
         // reset activeLeaf
         activeLeaf = root;
@@ -210,7 +211,7 @@ public class GeneralizedSuffixTree  implements Serializable{
 
         //add recursively the key and indexes to the nodes corresponding to this string
 
-        ((InstanceNode)fullStringNode).addDataIndex(key, replicon_id, start_index, strand);
+        ((InstanceNode)fullStringNode).addDataIndex(key, instance_info);
 
 
     }

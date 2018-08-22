@@ -1,4 +1,4 @@
-package Words;
+package Utils;
 
 import Utils.Gene;
 
@@ -61,8 +61,8 @@ public class Replicon {
 
     public void reverse(){
         Collections.reverse(genes);
-        start_index = strand == 1 ? start_index + size() - 1 : start_index - size() + 1;
         strand = strand * -1;
+        start_index = strand == -1 ? start_index + size() - 1 : start_index - size() + 1;
     }
 
 

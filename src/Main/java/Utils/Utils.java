@@ -1,9 +1,6 @@
 package Utils;
 
-import Main.MyLogger;
-import Words.Directon;
-import Words.Replicon;
-import Words.WordArray;
+import IO.MyLogger;
 import SuffixTrees.*;
 
 import java.io.*;
@@ -180,7 +177,8 @@ public class Utils {
     private void putWordInDataTree(Replicon replicon, GeneralizedSuffixTree dataset_gst, int curr_genome_index){
         String[] genes = replicon.getGenesIDs();
         WordArray cog_word = createWordArray(genes);
-        dataset_gst.put(cog_word, curr_genome_index, Replicon.index, replicon.getStartIndex(), replicon.getStrand());
+        InstanceLocation instance_info = new InstanceLocation(Replicon.index, replicon.getStartIndex(), replicon.getStrand());
+        dataset_gst.put(cog_word, curr_genome_index, instance_info);
 
         countParalogsInSeqs(genes, curr_genome_index);
     }

@@ -1,6 +1,6 @@
 package SuffixTrees;
 
-import Main.Instance;
+import Utils.Instance;
 
 import java.util.*;
 
@@ -24,7 +24,7 @@ public class PatternNode {
 
     /**
      * The concat of labels from root to this node
-     * i.e. 1209|1088|1091|4723|
+     * e.g. COG1209 COG1088 COG1091 COG 4723
      */
     private String substring;
 

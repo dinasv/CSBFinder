@@ -1,8 +1,7 @@
-package Words;
-
-import Utils.Gene;
+package Utils;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.stream.Collectors;
 
 /**
@@ -23,10 +22,12 @@ public class Directon extends Replicon{
     public void setStrand() {
         if (genes.size() > 0 ){
             int strand = genes.get(0).getStrand().equals("-") ? -1 : 1;
-            if (strand == -1) {
-                reverse();
-            }
+
             super.setStrand(strand);
+            if (strand == -1) {
+                Collections.reverse(genes);
+                setStartIndex(getStartIndex() + size() - 1);
+            }
         }
     }
 

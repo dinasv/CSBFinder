@@ -1,4 +1,4 @@
-package Main;
+package IO;
 import java.util.logging.FileHandler;
 import java.util.logging.LogManager;
 import java.util.logging.Logger;

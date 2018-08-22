@@ -1,8 +1,6 @@
-package Main;
+package Utils;
 
 import java.util.*;
-
-import Utils.*;
 
 /**
  * Represents a pattern consisting of characters
@@ -17,6 +15,7 @@ public class Pattern {
      */
     private String[] pattern_arr;
     private String[] reverse_pattern_arr;
+
     private int pattern_id;
     private int instance_count;
 

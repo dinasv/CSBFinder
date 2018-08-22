@@ -1,8 +1,6 @@
-package Words;
+package Utils;
 
-import java.io.Serializable;
 import java.util.Arrays;
-import Utils.*;
 
 /**
  * WordArray object represents a "word". The chars of the word are integers.

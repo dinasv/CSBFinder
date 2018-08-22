@@ -1,6 +1,7 @@
 package Main;
 
-import Words.WordArray;
+import IO.Writer;
+import Utils.WordArray;
 import SuffixTrees.*;
 
 import java.util.*;

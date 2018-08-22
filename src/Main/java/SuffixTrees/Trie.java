@@ -1,5 +1,5 @@
 package SuffixTrees;
-import Words.WordArray;
+import Utils.WordArray;
 import Utils.Utils;
 
 /**

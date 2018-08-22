@@ -1,7 +1,5 @@
-package Main;
+package IO;
 
-import SuffixTrees.Edge;
-import SuffixTrees.InstanceNode;
 import Utils.*;
 
 import java.io.*;
@@ -213,48 +211,22 @@ public class Writer {
     }
 
     private void printInstances(Pattern pattern, Utils utils){
+
         if (instances_file != null) {
+
             instances_file.println(">" + pattern.getPatternId() + "\t" + pattern.getPattern());
 
-            HashMap<String, ArrayList<Integer[]>> instance_seq_and_location = new HashMap<>();
-            for (Instance instance : pattern.get_instances()) {
-                InstanceNode instance_node = instance.getNodeInstance();
-                if (instance.getEdge() != null) {
-                    Edge edge = instance.getEdge();
-                    instance_node = (InstanceNode) edge.getDest();
-                }
-                int instance_length = instance.getLength();
-                for (Map.Entry<Integer, ArrayList<Integer[]>> entry : instance_node.getResults().entrySet()) {
-                    String seq_name = utils.genome_key_to_name.get(entry.getKey());
+            for (Map.Entry<Integer, List<InstanceLocation>> entry : groupSameSeqInstances(pattern).entrySet()) {
 
-                    if (!instance_seq_and_location.containsKey(seq_name)) {
-                        instance_seq_and_location.put(seq_name, new ArrayList<Integer[]>());
-                    }
-                    ArrayList<Integer[]> instances_info = instance_seq_and_location.get(seq_name);
-                    for (Integer[] instance_info : entry.getValue()) {
-                        instances_info.add(new Integer[] {instance_info[0], instance_info[1], instance_length,
-                                instance_info[2]});
-                    }
-                }
-            }
+                String seq_name = utils.genome_key_to_name.get(entry.getKey());
+                instances_file.print(seq_name);
 
-            for (Map.Entry<String, ArrayList<Integer[]>> entry : instance_seq_and_location.entrySet()) {
-                String seq_key = entry.getKey();
+                List<InstanceLocation> instances_locations = entry.getValue();
+                for (InstanceLocation instance_location : instances_locations){
+                    String replicon_name = utils.replicon_key_to_name.get(instance_location.getRepliconId());
 
-                instances_file.print(seq_key);
-                ArrayList<Integer[]> instances_info = entry.getValue();
-                for (Integer[] instance_info : instances_info){
-                    String replicon_name = utils.replicon_key_to_name.get(instance_info[0]);
-                    int strand = instance_info[3];
-                    int instance_start_index = instance_info[1];
-                    int instance_length = instance_info[2];
-                    int instance_end_index = instance_info[1] + instance_length;
-                    if (strand == -1){
-                        instance_end_index = instance_start_index + 1;
-                        instance_start_index = instance_end_index - instance_length;
-                    }
-
-                    instances_file.print("\t" + replicon_name + "|["+instance_start_index +","+ instance_end_index+"]");
+                    instances_file.print("\t" + replicon_name + "|[" + instance_location.getStartIndex() + ","
+                            + instance_location.getEndIndex() + "]");
                 }
 
                 instances_file.print("\n");
@@ -262,6 +234,33 @@ public class Writer {
 
         }
     }
+
+    /**
+     * Group all instances of pattern that are located in the same sequence
+     * @param pattern
+     * @return
+     */
+    private Map<Integer, List<InstanceLocation>> groupSameSeqInstances(Pattern pattern){
+        Map<Integer, List<InstanceLocation>> instance_seq_to_location = new HashMap<>();
+        for (Instance instance : pattern.get_instances()) {
+
+            int instance_length = instance.getLength();
+            for (Map.Entry<Integer, List<InstanceLocation>> entry : instance.getInstanceLocations().entrySet()) {
+                int seq_key = entry.getKey();
+
+                if (!instance_seq_to_location.containsKey(seq_key)) {
+                    instance_seq_to_location.put(seq_key, new ArrayList<InstanceLocation>());
+                }
+                List<InstanceLocation> instances_locations = instance_seq_to_location.get(seq_key);
+                for (InstanceLocation instance_location : entry.getValue()) {
+                    instance_location.setEndIndex(instance_length);
+                    instances_locations.add(instance_location);
+                }
+            }
+        }
+        return instance_seq_to_location;
+    }
+
 
     /**
      * Prints a pattern with the highest score in its family to a different sheet

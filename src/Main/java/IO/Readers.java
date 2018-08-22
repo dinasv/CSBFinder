@@ -1,4 +1,4 @@
-package Main;
+package IO;
 
 import Utils.COG;
 

@@ -1,6 +1,6 @@
 package PostProcess;
 
-import Main.Pattern;
+import Utils.Pattern;
 
 import java.util.ArrayList;
 import java.util.Collections;

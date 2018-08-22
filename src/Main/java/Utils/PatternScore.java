@@ -34,7 +34,7 @@ public class PatternScore {
                         HashSet<Integer>> cog_to_containing_genomes,
                         HashMap<Integer, HashMap<String, Integer>> genome_to_cog_paralog_count){
 
-        q_vals = new double[max_genome_size];
+        q_vals = new double[max_genome_size+1];
         this.number_of_genomes = number_of_genomes;
         this.cog_to_containing_genomes = cog_to_containing_genomes;
         this.genome_to_cog_paralog_count = genome_to_cog_paralog_count;
