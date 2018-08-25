@@ -35,6 +35,7 @@ public class InstanceLocation {
     }
 
     public void setEndIndex(int instance_length) {
+        instance_length -= 1;
         instance_length *= strand;
         end_index = start_index + instance_length;
     }
