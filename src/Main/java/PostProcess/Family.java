@@ -35,6 +35,13 @@ public class Family {
         addCharsToCharsSet(first_pattern);
     }
 
+    public Family(Family family) {
+        patterns = new ArrayList<>(family.getPatterns());
+        score = family.score;
+        utils = family.utils;
+        family_id = family.family_id;
+    }
+
     private void addCharsToCharsSet(Pattern pattern){
         addCharsToCharsSet(pattern.getPatternArr());
         if (non_directons){
@@ -78,6 +85,11 @@ public class Family {
     public List<Pattern> getPatterns(){
         return patterns;
     }
+
+    public void setPatterns(List<Pattern> plist) {
+        this.patterns = plist;
+    }
+
 
     public static class ScoreComparator implements Comparator<Family> {
         @Override

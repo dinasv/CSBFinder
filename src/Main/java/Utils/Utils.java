@@ -42,10 +42,6 @@ public class Utils {
 
     public Map<Integer, Map<String, Integer>> genome_to_cog_paralog_count;
 
-    //memoization of computed q_val - it is the same for each pattern length
-    public double[] q_val;
-
-
     public Map<String, COG> cog_info;
 
     public long initiailMem;
@@ -55,8 +51,12 @@ public class Utils {
 
     private MyLogger logger;
 
+    Map<String, Map<String, List<Gene>>> genomeToRepliconsMap;
+
 
     public Utils(Map<String, COG> cog_info, MyLogger logger){
+        genomeToRepliconsMap = new HashMap<>();
+
         this.logger = logger;
 
         index_to_char = new ArrayList<String>();
@@ -78,6 +78,21 @@ public class Utils {
 
         initiailMem = Runtime.getRuntime().totalMemory()-Runtime.getRuntime().freeMemory();
         currMem = initiailMem;
+
+        //wild card
+        char_to_index.put(WC_CHAR, WC_CHAR_INDEX);
+        index_to_char.add(WC_CHAR);
+
+        //gap
+        char_to_index.put(GAP_CHAR, GAP_CHAR_INDEX);
+        index_to_char.add(GAP_CHAR);
+
+        //unkown cog
+        char_to_index.put(UNK_CHAR, UNK_CHAR_INDEX);
+        index_to_char.add(UNK_CHAR);
+        //if the sequence is not segmented to non_directons
+        char_to_index.put("X+", UNK_CHAR_INDEX);
+        char_to_index.put("X-", UNK_CHAR_INDEX);
 
     }
 
@@ -292,6 +307,18 @@ public class Utils {
                             String strand = split_line[1];
                             Gene gene = new Gene(gene_family, strand);
                             replicon.add(gene);
+
+                            if (!genomeToRepliconsMap.containsKey(curr_genome_name)){
+                                genomeToRepliconsMap.put(curr_genome_name, new HashMap<>());
+                            }
+                            Map<String, List<Gene>> genomeRepliconsMap = genomeToRepliconsMap.get(curr_genome_name);
+
+                            if (!genomeRepliconsMap.containsKey(replicon_id)){
+                                genomeRepliconsMap.put(replicon_id, new ArrayList<>());
+                            }
+                            List<Gene> repliconGenesList = genomeRepliconsMap.get(replicon_id);
+
+                            repliconGenesList.add(gene);
                         }
                     }
 
@@ -423,5 +450,17 @@ public class Utils {
             return pattern_score.computePatternScore(pattern_chars, max_insertions, pattern_occs_keys_size);
         }
         return -1;
+    }
+
+    public void setCogInfo(Map<String, COG> cog_info) {
+        this.cog_info = cog_info;
+    }
+
+    public Map<String, COG> getCogInfo() {
+        return this.cog_info;
+    }
+
+    public Map<String,Map<String,List<Gene>>> getGenomeToRepliconsMap() {
+        return this.genomeToRepliconsMap;
     }
 }

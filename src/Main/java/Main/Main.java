@@ -147,21 +147,6 @@ public class Main {
 
     private void pipeline(){
 
-        //wild card
-        utils.char_to_index.put(utils.WC_CHAR, utils.WC_CHAR_INDEX);
-        utils.index_to_char.add(utils.WC_CHAR);
-
-        //gap
-        utils.char_to_index.put(utils.GAP_CHAR, utils.GAP_CHAR_INDEX);
-        utils.index_to_char.add(utils.GAP_CHAR);
-
-        //unkown cog
-        utils.char_to_index.put(utils.UNK_CHAR, utils.UNK_CHAR_INDEX);
-        utils.index_to_char.add(utils.UNK_CHAR);
-        //if the sequence is not segmented to non_directons
-        utils.char_to_index.put("X+", utils.UNK_CHAR_INDEX);
-        utils.char_to_index.put("X-", utils.UNK_CHAR_INDEX);
-
         long startTime = System.nanoTime();
 
         GeneralizedSuffixTree dataset_suffix_tree = new GeneralizedSuffixTree();

@@ -28,6 +28,8 @@ public class Pattern {
 
     private String main_functional_category;
 
+    private String familyId;
+
     public Pattern(int pattern_id, String pattern, String[] pattern_arr, int length, Set<Integer> seq_keys,
                    List<Instance> instances, int exact_instance_count){
         this.pattern_id = pattern_id;
@@ -163,6 +165,14 @@ public class Pattern {
 
     public String[] getReversePatternArr() {
         return reverse_pattern_arr;
+    }
+
+    public String getFamilyId() {
+        return familyId;
+    }
+
+    public void setFamilyId(String familyId) {
+        this.familyId = familyId;
     }
 
 
