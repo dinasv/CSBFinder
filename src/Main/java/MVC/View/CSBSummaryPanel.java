@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.Map;
 import java.util.List;
 import MVC.View.Shapes.Shape;
+import Utils.COG;
 
 
 public class CSBSummaryPanel extends JPanel {
@@ -36,7 +37,7 @@ public class CSBSummaryPanel extends JPanel {
     }
 
 
-    public void displaySummary(Map<String, String> info, Map<String, Color> colorsUsed) {
+    public void displaySummary(List<COG> info, Map<String, Color> colorsUsed) {
         StringBuilder sb = new StringBuilder();
         sb.append(HEADER + NEWLINE);
 
@@ -46,16 +47,18 @@ public class CSBSummaryPanel extends JPanel {
 
         List<HighlightInfo> highlightInfos = new ArrayList<>(info.size());
 
-        info.keySet().forEach(s -> {
+        for (COG cog: info){
             sb.append(NEWLINE);
             int startIndex = sb.length();
-            sb.append(s);
-            highlightInfos.add(new HighlightInfo(startIndex, sb.length(), colorsUsed.get(s)));
+            sb.append(cog.getCogID());
+            highlightInfos.add(new HighlightInfo(startIndex, sb.length(), colorsUsed.get(cog.getCogID())));
 
-            sb.append(": ");
-            sb.append(info.get(s)) ;
+            sb.append(" ");
+            sb.append(String.join("/",cog.getFunctional_categories()));
+            sb.append(" | ");
+            sb.append(cog.getCog_desc());
             sb.append(NEWLINE);
-        });
+        }
 
         summary.setText(sb.toString());
 

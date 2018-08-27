@@ -3,6 +3,7 @@ package MVC.Controller;
 import MVC.Common.*;
 import MVC.Model.CSBFinderModel;
 import MVC.View.MainFrame;
+import Utils.COG;
 import Utils.Pattern;
 import Utils.Gene;
 
@@ -33,8 +34,8 @@ public class CSBFinderController {
         });
     }
 
-    public void loadFile(String file_path, boolean is_directon) {
-        this.model.loadFile(file_path, is_directon);
+    public void loadInputGenomesFile(String file_path) {
+        this.model.loadInputGenomesFile(file_path);
     }
 
     public void saveOutputFiles(String outputFileType) { this.model.saveOutputFiles(outputFileType); }
@@ -43,7 +44,7 @@ public class CSBFinderController {
         this.model.findCSBs(request);
     }
 
-    public Map<String, String> getCogInfo(List<String> cogs) {
+    public List<COG> getCogInfo(List<String> cogs) {
         return model.getCogInfo(cogs);
     }
 
@@ -55,7 +56,7 @@ public class CSBFinderController {
 
 //    public static void main(String[] args) {
 //        CSBFinderController controller = new CSBFinderController();
-//        controller.loadFile("E:\\Coding\\java\\CSBFinderCore\\input\\plasmid_genomes.fasta", true);
+//        controller.loadInputGenomesFile("E:\\Coding\\java\\CSBFinderCore\\input\\plasmid_genomes.fasta", true);
 //
 //        CSBFinderRequest request = new CSBFinderRequest();
 ////        request.setCsb_pattern_file_name("e:\\Coding\\java\\CSBFinderCore\\input\\cog_info.txt");

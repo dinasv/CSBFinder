@@ -11,6 +11,7 @@ import MVC.View.Listeners.LoadFileListener;
 import MVC.View.Listeners.RunListener;
 import MVC.View.Listeners.SaveOutputListener;
 import CLI.CommandLineArgs;
+import Utils.COG;
 import Utils.Pattern;
 import PostProcess.Family;
 
@@ -132,7 +133,7 @@ public class MainFrame extends JFrame {
 
                         @Override
                         protected Void doInBackground() throws Exception {
-                            controller.loadFile(f.getPath(), isDirecton);
+                            controller.loadInputGenomesFile(f.getPath());
                             return null;
                         }
 
@@ -208,7 +209,7 @@ public class MainFrame extends JFrame {
             @Override
             public void rowClickedOccurred(FamilyRowClickedEvent e) {
                 Pattern p = e.getPattern();
-                Map<String, String> cogInfo = controller.getCogInfo(Arrays.asList(p.getPatternArr()));
+                List<COG> cogInfo = controller.getCogInfo(Arrays.asList(p.getPatternArr()));
                 genomes.displayInstances(p.getPattern(), controller.getInstances(p));
                 summaryPanel.setCogInfo(cogInfo, genomes.getColorsUsed());
             }

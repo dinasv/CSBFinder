@@ -42,7 +42,7 @@ public class CSBFinderModel {
         this.utils = new Utils(null, logger);
     }
 
-    public void loadFile(String path, boolean is_directons) {
+    public void loadInputGenomesFile(String path) {
         this.init();
         dataset_suffix_tree = new GeneralizedSuffixTree();
         number_of_genomes = utils.readAndBuildDatasetTree(path,
@@ -87,8 +87,6 @@ public class CSBFinderModel {
 
 
     private void findCSBs() {
-
-        writer = createWriter(cla.cog_info_file_name != null && !"".equals(cla.cog_info_file_name));
 
         long startTime = System.nanoTime();
 
@@ -158,6 +156,9 @@ public class CSBFinderModel {
     }
 
     public void saveOutputFiles(String outputFileType) {
+
+        writer = createWriter(cla.cog_info_file_name != null && !"".equals(cla.cog_info_file_name));
+
         writer.setOutputFileType(CommandLineArgs.OutputType.valueOf(outputFileType));
         System.out.println("Writing to files");
         for (Family family : families) {
@@ -201,13 +202,13 @@ public class CSBFinderModel {
         this.csbFinderDoneListener = csbFinderDoneListener;
     }
 
-    public Map<String, String> getCogInfo(List<String> cogs) {
-        Map<String, String> cogInfo = new HashMap<>();
+    public List<COG> getCogInfo(List<String> cogs) {
+        List<COG> cogInfo = new ArrayList<COG>();
         if (utils.getCogInfo() != null) {
             cogs.forEach(cog -> {
                 COG c = utils.getCogInfo().get(cog);
                 if (c != null) {
-                    cogInfo.put(cog, c.getCog_desc());
+                    cogInfo.add(c);
                 }
             });
         }
