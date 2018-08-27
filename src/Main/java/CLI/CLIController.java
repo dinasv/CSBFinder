@@ -71,9 +71,9 @@ public class CLIController {
         System.exit(exitStatus);
     }
 
-    public static void main(String [ ] args){
-        new CLIController(args);
-    }
+    //public static void main(String [ ] args){
+        //new CLIController(args);
+    //}
 
     private Writer createWriter(boolean cog_info_exists){
         String parameters = "_ins" + cla.max_insertion + "_q" + cla.quorum2;

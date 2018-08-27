@@ -5,7 +5,7 @@ import java.util.List;
 
 public class CSBFinderRequest {
 
-    private int minimalInputSequesnces  = 1;
+    private int quorum = 1;
     private int numberOfInsertions = 0;
     private int quorumWithoutInsertions = 1;
     private int minimalCSBLength = 2;
@@ -18,12 +18,12 @@ public class CSBFinderRequest {
     private float familyClusterThreshold = 0.8f;
     private String clusterType = "score";
 
-    public int getMinimalInputSequesnces() {
-        return minimalInputSequesnces;
+    public int getQuorum() {
+        return quorum;
     }
 
-    public void setMinimalInputSequesnces(int minimalInputSequesnces) {
-        this.minimalInputSequesnces = minimalInputSequesnces;
+    public void setQuorum(int quorum) {
+        this.quorum = quorum;
     }
 
     public int getNumberOfInsertions() {
@@ -122,7 +122,7 @@ public class CSBFinderRequest {
         argList.add("");
 
         argList.add("-q");
-        argList.add(String.valueOf(minimalInputSequesnces));
+        argList.add(String.valueOf(quorum));
 
         argList.add("-ins");
         argList.add(String.valueOf(numberOfInsertions));

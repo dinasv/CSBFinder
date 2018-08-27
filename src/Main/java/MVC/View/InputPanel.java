@@ -86,7 +86,7 @@ public class InputPanel extends JPanel {
 
     private void initRequest(CSBFinderRequest request) {
         request.setNumberOfInsertions((int) numOfInsertions.getValue());
-        request.setMinimalInputSequesnces((int) quorum.getValue());
+        request.setQuorum((int) quorum.getValue());
         request.setQuorumWithoutInsertions((int) quorumWithoutInsertions.getValue());
         request.setMinimalCSBLength((int) minCSBLength.getValue());
         request.setMaximumCSBLength((int) maxCSBLength.getValue());

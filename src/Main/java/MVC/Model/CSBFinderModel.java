@@ -37,7 +37,7 @@ public class CSBFinderModel {
 
     }
 
-    public MyLogger logger = new MyLogger(createOutputPath(), true);
+    public MyLogger logger = new MyLogger("",true);
     public void init() {
         this.utils = new Utils(null, logger);
     }
@@ -52,26 +52,44 @@ public class CSBFinderModel {
 
     }
 
-    public void findCSBs(CSBFinderRequest request) {
-        String[] args = request.toArgArray();
-        JCommander jcommander;
+    private JCommander parseArgs(String[] args){
+        JCommander jcommander = null;
         try {
             cla = new CommandLineArgs();
 
             jcommander = JCommander.newBuilder().addObject(cla).build();
             jcommander.parse(args);
-            writer = createWriter(cla.cog_info_file_name != null && !"".equals(cla.cog_info_file_name));
+            return jcommander;
 
-            this.findCSBs();
         } catch (ParameterException e){
             System.err.println(e.getMessage());
 
-            jcommander = JCommander.newBuilder().addObject(cla).build();
+            return null;
+            //jcommander = JCommander.newBuilder().addObject(cla).build();
 //            printUsageAndExit(jcommander, 1);
         }
     }
 
+    public void findCSBs(CSBFinderRequest request) {
+        String[] args = request.toArgArray();
+
+        findCSBs(args);
+    }
+
+    public void findCSBs(String[] args) {
+        JCommander jcommander = parseArgs(args);
+        if (jcommander != null){
+            //writer = createWriter(cla.cog_info_file_name != null && !"".equals(cla.cog_info_file_name));
+
+            this.findCSBs();
+        }
+    }
+
+
     private void findCSBs() {
+
+        writer = createWriter(cla.cog_info_file_name != null && !"".equals(cla.cog_info_file_name));
+
         long startTime = System.nanoTime();
 
         Map<String, COG> cog_info = null;
