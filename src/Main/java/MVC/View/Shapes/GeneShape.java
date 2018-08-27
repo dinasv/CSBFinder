@@ -7,9 +7,9 @@ public class GeneShape implements Shape{
 
     private int x, y;
 
-    private int squareWidth;
+    private int rectWidth;
     private int arrowWidth;
-    private int squareHeight;
+    private int rectHeight;
     private int arrowHeight;
     private Color color;
     private Label label;
@@ -19,12 +19,12 @@ public class GeneShape implements Shape{
             this.x = shapeParams.getX();
             this.y = shapeParams.getY();
 
-            this.squareWidth = shapeParams.getShapeDimensions().getSquareWidth();
+            this.rectWidth = shapeParams.getShapeDimensions().getSquareWidth();
             this.arrowWidth = shapeParams.getShapeDimensions().getArrowWidth();
-            this.squareHeight = shapeParams.getShapeDimensions().getSquareHeight();
+            this.rectHeight = shapeParams.getShapeDimensions().getSquareHeight();
             this.color = shapeParams.getColor();
 
-            arrowHeight = squareHeight / 2;
+            arrowHeight = rectHeight / 2;
 
             this.label = shapeParams.getLabel();
             this.strand = shapeParams.getStrand();
@@ -33,38 +33,33 @@ public class GeneShape implements Shape{
 
     public void draw(Graphics g) {
 
-        int[] xPoints = {squareWidth, squareWidth+arrowWidth, squareWidth, 0};
-        int[] yPoints = {0, arrowHeight, squareHeight, squareHeight};
+        int rectStartX = x;
+        int arrowStartX = x + rectWidth;
+        int arrowEndX = x + rectWidth + arrowWidth;
 
         if (strand.equals("-")){
-            int[] xPointsNew = {0, arrowWidth, squareWidth+arrowWidth, squareWidth+arrowWidth, arrowWidth, 0};
-            int[] yPointsNew = {arrowHeight, 0, 0, squareHeight, squareHeight, arrowHeight};
-
-            xPoints = xPointsNew;
-            yPoints = yPointsNew;
+            rectStartX = x + arrowWidth;
+            arrowStartX =  x + arrowWidth;
+            arrowEndX = x;
         }
 
-        GeneralPath geneShapePath = new GeneralPath();
-
-        geneShapePath.moveTo(x , y);
-        for (int i = 0; i < xPoints.length; i++) {
-            geneShapePath.lineTo(xPoints[i] + x, yPoints[i] + y);
-        }
-        geneShapePath.closePath();
-
-        Graphics2D g2d = (Graphics2D) g;
+        // Draw gene
+        int[] xPoints = {arrowStartX, arrowEndX, arrowStartX};
+        int[] yPoints = {y, y+ rectHeight /2, y+ rectHeight};
         g.setColor(color);
-        g2d.fill(geneShapePath);
+        g.fillRect(rectStartX, y, rectWidth, rectHeight);
+        g.fillPolygon(xPoints, yPoints, 3);
 
-        g2d.setColor(label.getColor());
-        g2d.setFont(label.getFont());
+        // Draw label
+        g.setColor(label.getColor());
+        g.setFont(label.getFont());
 
-        int labelWidth = g2d.getFontMetrics().stringWidth(label.getText());
-        int labelPositionX = x + (squareWidth - labelWidth)/2;
+        int labelWidth = g.getFontMetrics().stringWidth(label.getText());
+        int labelPositionX = x + (rectWidth - labelWidth)/2;
         if (strand.equals("-")){
             labelPositionX += arrowWidth;
         }
-        g2d.drawString(label.getText(), labelPositionX, y+arrowHeight+5);
+        g.drawString(label.getText(), labelPositionX, y+arrowHeight+5);
     }
 
 }

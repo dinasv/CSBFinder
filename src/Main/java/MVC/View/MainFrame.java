@@ -209,8 +209,8 @@ public class MainFrame extends JFrame {
             public void rowClickedOccurred(FamilyRowClickedEvent e) {
                 Pattern p = e.getPattern();
                 Map<String, String> cogInfo = controller.getCogInfo(Arrays.asList(p.getPatternArr()));
-                summaryPanel.setCogInfo(cogInfo);
                 genomes.displayInstances(p.getPattern(), controller.getInstances(p));
+                summaryPanel.setCogInfo(cogInfo, genomes.getColorsUsed());
             }
         });
     }

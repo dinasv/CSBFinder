@@ -4,6 +4,7 @@ import MVC.View.Listeners.FamilyRowClickedListener;
 import PostProcess.Family;
 
 import javax.swing.*;
+import java.awt.*;
 import java.util.List;
 import java.util.Map;
 
@@ -32,7 +33,7 @@ public class SummaryPanel extends JSplitPane {
         tabs.setFamilyRowClickedListener(listener);
     }
 
-    public void setCogInfo(Map<String,String> cogInfo) {
-        csbSummaryPanel.displaySummary(cogInfo);
+    public void setCogInfo(Map<String,String> cogInfo, Map<String, Color> colorsUsed) {
+        csbSummaryPanel.displaySummary(cogInfo, colorsUsed);
     }
 }

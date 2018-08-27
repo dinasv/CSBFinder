@@ -9,7 +9,7 @@ public class CSBSummaryPanel extends JPanel {
     JTextArea summary;
     private static final String HEADER = "CSB Information";
     private static final String NEWLINE = "\n";
-    private static final String NO_COG_INFO_WARNNING = "Oops, No cog info found. Did you load the cog info file?";
+    private static final String NO_COG_INFO_WARNNING = "Oops, No cog info found. Did you load the gene orthology info file?";
 
     CSBSummaryPanel() {
         setLayout(new BorderLayout());
@@ -23,7 +23,7 @@ public class CSBSummaryPanel extends JPanel {
         add(scroll, BorderLayout.CENTER);
     }
 
-    public void displaySummary(Map<String, String> info) {
+    public void displaySummary(Map<String, String> info, Map<String, Color> colorsUsed) {
         StringBuilder sb = new StringBuilder();
         sb.append(HEADER + NEWLINE);
 

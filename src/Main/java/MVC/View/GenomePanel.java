@@ -23,14 +23,16 @@ public class GenomePanel extends JPanel {
 
     private static final String CSB_PREFIX = "Instances for CSB: ";
 
+    private  Map<String, Color> colorsUsed;
+
     public GenomePanel() {
         setGCLayout();
         setLayout(new BorderLayout());
         container = new JPanel(new GridBagLayout());
-//
+
         scroll = new JScrollPane(container);
-        //scroll.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
-        scroll.getHorizontalScrollBar().setPreferredSize(new Dimension(0,0));
+        scroll.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+        //scroll.getHorizontalScrollBar().setPreferredSize(new Dimension(0,0));
 
 
         title = new JLabel("");
@@ -39,6 +41,9 @@ public class GenomePanel extends JPanel {
 
         add(title, BorderLayout.NORTH);
         add(scroll);
+
+        colorsUsed = new HashMap<>();
+        colorsUsed.put(Utils.UNK_CHAR, Color.lightGray);
     }
 
     public void displayInstances(String pattenId, Map<String,List<List<Gene>>> instances) {
@@ -64,14 +69,12 @@ public class GenomePanel extends JPanel {
         Insets insetName = new Insets(0, 0, 0, 5);
         Insets insetList = new Insets(0, 0, 0, 15);
 
-        Map<String, ShapeParams> genesLabelsUsed = new HashMap();
-
         for (Map.Entry<String, List<List<Gene>>> entry: instances.entrySet()) {
             genomeName = getGeneNameComponent(entry.getKey());
             genomeName.setPreferredSize(new Dimension(GENOME_NAME_WIDTH, 25));
             genomeName.setToolTipText(entry.getKey());
 
-            JScrollPane instancesRow = getInstancesRow(entry.getValue(), genesLabelsUsed);
+            JScrollPane instancesRow = getInstancesRow(entry.getValue());
             int instanceRowWidth = scroll.getViewport().getSize().width - GENOME_NAME_WIDTH - 10;
             instancesRow.setPreferredSize(new Dimension(instanceRowWidth, 35));
 
@@ -84,13 +87,13 @@ public class GenomePanel extends JPanel {
         }
     }
 
-    private JScrollPane getInstancesRow(List<List<Gene>> instancesList, Map<String, ShapeParams> genesLabelsUsed) {
+    private JScrollPane getInstancesRow(List<List<Gene>> instancesList) {
 
         int x = 0;
         int y = 0;
         List<ShapesContainer> shapesContainerList = new ArrayList<>();
         for (List<Gene> instance : instancesList) {
-            ShapesContainer shapesContainer = getShapesContainer(instance, genesLabelsUsed, x, y);
+            ShapesContainer shapesContainer = getShapesContainer(instance, x, y);
             shapesContainerList.add(shapesContainer);
             x += shapesContainer.getContainerDimensions().getWidth() + CONTAINERS_DIST;
         }
@@ -109,15 +112,14 @@ public class GenomePanel extends JPanel {
 
     }
 
-    private ShapesContainer getShapesContainer(List<Gene> genes, Map<String, ShapeParams> genesLabelsUsed, int x, int y){
+    private ShapesContainer getShapesContainer(List<Gene> genes, int x, int y){
         List<ShapeParams> shapeParamsList = new ArrayList<>();
         for (Gene gene : genes) {
 
             Color color;
-            if (gene.getCog_id().equals(Utils.UNK_CHAR)){
-                color = Color.lightGray;
-            }else if (genesLabelsUsed.containsKey(gene.getCog_id())){
-                color = genesLabelsUsed.get(gene.getCog_id()).getColor();
+
+            if (colorsUsed.containsKey(gene.getCog_id())){
+                color = colorsUsed.get(gene.getCog_id());
             }else {
                 color = getRandomColor();
             }
@@ -125,7 +127,7 @@ public class GenomePanel extends JPanel {
                     60, 15, 30), gene);
 
             shapeParamsList.add(shapeParams);
-            genesLabelsUsed.put(gene.getCog_id(), shapeParams);
+            colorsUsed.put(gene.getCog_id(), color);
         }
         return new ShapesContainer(shapeParamsList, x, y);
     }
@@ -150,4 +152,7 @@ public class GenomePanel extends JPanel {
         gc = new GridBagConstraints();
     }
 
+    public Map<String,Color> getColorsUsed(){
+        return colorsUsed;
+    }
 }
