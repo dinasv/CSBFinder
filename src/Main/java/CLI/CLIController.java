@@ -1,4 +1,4 @@
-package Main;
+package CLI;
 
 import IO.MyLogger;
 import IO.Readers;
@@ -17,7 +17,7 @@ import com.beust.jcommander.JCommander;
 import com.beust.jcommander.ParameterException;
 
 
-public class Main {
+public class CLIController {
 
     private CommandLineArgs cla;
     private MyLogger logger;
@@ -26,7 +26,7 @@ public class Main {
     private Utils utils;
     private String INPUT_PATH = "input/";
 
-    public Main(String [ ] args){
+    public CLIController(String [ ] args){
         JCommander jcommander = null;
         try {
             cla = new CommandLineArgs();
@@ -72,7 +72,7 @@ public class Main {
     }
 
     public static void main(String [ ] args){
-        new Main(args);
+        new CLIController(args);
     }
 
     private Writer createWriter(boolean cog_info_exists){

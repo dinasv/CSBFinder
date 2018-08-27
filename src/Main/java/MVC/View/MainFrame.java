@@ -10,7 +10,7 @@ import MVC.View.Listeners.FamilyRowClickedListener;
 import MVC.View.Listeners.LoadFileListener;
 import MVC.View.Listeners.RunListener;
 import MVC.View.Listeners.SaveOutputListener;
-import Main.CommandLineArgs;
+import CLI.CommandLineArgs;
 import Utils.Pattern;
 import PostProcess.Family;
 

@@ -6,7 +6,7 @@ import java.util.*;
 
 import Utils.Utils;
 
-import Main.CommandLineArgs.ClusterBy;
+import CLI.CommandLineArgs.ClusterBy;
 
 /**
  * Created by Dina on 23/08/2017.

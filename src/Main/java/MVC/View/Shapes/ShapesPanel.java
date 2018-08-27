@@ -12,6 +12,7 @@ public class ShapesPanel extends JPanel{
     private List<Shape> shapes = new ArrayList<>();
 
     public ShapesPanel(List<ShapesContainer> shapesContainers, int CONTAINERS_DIST) {
+        shapes = new ArrayList<>();
 
         setBackground(Color.WHITE);
         int width = 0;

@@ -1,4 +1,4 @@
-package Main;
+package CLI;
 
 import IO.Writer;
 import Utils.WordArray;

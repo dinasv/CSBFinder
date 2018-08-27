@@ -1,4 +1,4 @@
-package Main;
+package CLI;
 import com.beust.jcommander.IParameterValidator;
 import com.beust.jcommander.Parameter;
 import com.beust.jcommander.ParameterException;

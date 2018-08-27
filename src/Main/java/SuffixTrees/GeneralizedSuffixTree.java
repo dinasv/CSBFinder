@@ -20,7 +20,7 @@ import java.io.Serializable;
  * Unlike common suffix trees, which are generally used to build an index out of one (very) long string,
  * a Generalized Suffix Tree can be used to build an index over many strings.
 
- * Its Main operations are put and search:
+ * Its CLI operations are put and search:
  * Put adds the given key to the index, allowing for later retrieval of the given value.
  * Search can be used to retrieve the set of all the values that were put in the index with keys that contain a given input.
  *
@@ -391,7 +391,7 @@ public class GeneralizedSuffixTree  implements Serializable{
                 // line 3
                 Edge tempEdge = r.getEdge(newChar);
                 if (null != tempEdge) {
-                    // such a node is already present. This is one of the Main differences from Ukkonen's case:
+                    // such a node is already present. This is one of the CLI differences from Ukkonen's case:
                     // the tree can contain deeper nodes at this stage because different strings were added by previous iterations.
                     leaf = (SuffixNode)tempEdge.getDest();
                 } else {

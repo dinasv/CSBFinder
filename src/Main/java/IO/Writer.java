@@ -11,7 +11,7 @@ import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.xssf.streaming.SXSSFWorkbook;
 
-import Main.CommandLineArgs.OutputType;
+import CLI.CommandLineArgs.OutputType;
 
 import java.util.logging.Logger;
 

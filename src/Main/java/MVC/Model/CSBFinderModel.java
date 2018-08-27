@@ -4,7 +4,7 @@ import IO.MyLogger;
 import IO.Readers;
 import IO.Writer;
 import MVC.Common.*;
-import Main.*;
+import CLI.*;
 import PostProcess.Family;
 import PostProcess.FamilyClustering;
 import SuffixTrees.*;
