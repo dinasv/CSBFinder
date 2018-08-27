@@ -36,7 +36,6 @@ public class CSBFinder {
     private boolean mult_count;
 
     private int last_pattern_key;
-    private boolean memory_saving_mode;
 
     private boolean non_directons;
 
@@ -44,7 +43,6 @@ public class CSBFinder {
 
     int total_chars_in_data;
     Utils utils;
-    Writer writer;
 
     /**
      *
@@ -62,14 +60,12 @@ public class CSBFinder {
      * @param pattern_trie
      * @param mult_count if true, counts one instance in each input sequence
      * @param utils
-     * @param memory_saving_mode
-     * @param writer
      * @param debug
      */
     public CSBFinder(int max_error, int max_wildcards, int max_deletion, int max_insertion, int quorum1, int quorum2,
                      int min_pattern_length, int max_pattern_length, int gap_char, int wildcard_char,
                      GeneralizedSuffixTree data_t, Trie pattern_trie, boolean mult_count, Utils utils,
-                     boolean memory_saving_mode, Writer writer, boolean non_directons, boolean debug){
+                     boolean non_directons, boolean debug){
 
         patterns = new HashMap<>();
         this.max_error = max_error;
@@ -87,8 +83,6 @@ public class CSBFinder {
         total_chars_in_data = -1;
         this.utils = utils;
         last_pattern_key = 0;
-        this.memory_saving_mode = memory_saving_mode;
-        this.writer = writer;
         this.non_directons = non_directons;
         this.debug = debug;
 
@@ -388,13 +382,7 @@ public class CSBFinder {
     }
 
     private void handlePattern(Pattern new_pattern, String extended_pattern){
-        if (memory_saving_mode){
-            new_pattern.calculateScore(utils, max_insertion, max_error, max_deletion);
-            new_pattern.calculateMainFunctionalCategory(utils, non_directons);
-            writer.printPattern(new_pattern, utils);
-        }else {
-            patterns.put(extended_pattern, new_pattern);
-        }
+        patterns.put(extended_pattern, new_pattern);
     }
 
 

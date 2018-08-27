@@ -98,11 +98,6 @@ public class CommandLineArgs {
     @Parameter(names={"--wildcard", "-wc"}, description = "Maximal number of wildcards allowed", hidden = true)
     public static int max_wildcards = 0;
 
-    //TODO: check how much memory consumption is improved
-    @Parameter(names = "-mem", description = "Memory Saving Mode", hidden = true)
-    public static boolean memory_saving_mode = false;
-
-
     @Parameter(names = "-debug", description = "Debug mode", hidden = true)
     public static boolean debug = false;
 

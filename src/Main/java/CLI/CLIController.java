@@ -80,9 +80,6 @@ public class CLIController {
         String catalog_file_name = "Catalog_" + cla.dataset_name + parameters;
         String instances_file_name = catalog_file_name + "_instances";
         boolean include_families = true;
-        if (cla.memory_saving_mode) {
-            include_families = false;
-        }
 
         Writer writer = new Writer(cla.max_error, cla.max_deletion, cla.max_insertion, cla.debug, catalog_file_name,
                 instances_file_name,
@@ -169,49 +166,47 @@ public class CLIController {
             CSBFinder CSBFinder = new CSBFinder(cla.max_error, cla.max_wildcards, cla.max_deletion, cla.max_insertion,
                     cla.quorum1, cla.quorum2,
                     cla.min_pattern_length, cla.max_pattern_length, utils.GAP_CHAR_INDEX, utils.WC_CHAR_INDEX,
-                    dataset_suffix_tree, pattern_tree, cla.mult_count, utils, cla.memory_saving_mode, writer,
+                    dataset_suffix_tree, pattern_tree, cla.mult_count, utils,
                     cla.non_directons, cla.debug);
 
             utils.measureMemory();
 
             if (cla.input_patterns_file_name == null) {
-                if (!cla.memory_saving_mode) {
-                    System.out.println("Removing redundant CSBs");
-                    logger.writeLogger("CSBs found: " + CSBFinder.getPatternsCount());
+                System.out.println("Removing redundant CSBs");
+                logger.writeLogger("CSBs found: " + CSBFinder.getPatternsCount());
 
-                    CSBFinder.removeRedundantPatterns();
-                    if (cla.debug) {
-                        utils.measureMemory();
-                        logger.writeLogger("CSBs left after removing redundant CSBs: " + CSBFinder.getPatternsCount());
-                    }
+                CSBFinder.removeRedundantPatterns();
+                if (cla.debug) {
+                    utils.measureMemory();
+                    logger.writeLogger("CSBs left after removing redundant CSBs: " + CSBFinder.getPatternsCount());
                 }
+
             }
 
-            if (!cla.memory_saving_mode) {
-                List<Pattern> patterns = CSBFinder.getPatterns();
+            List<Pattern> patterns = CSBFinder.getPatterns();
 
-                for (Pattern pattern : patterns) {
-                    pattern.calculateScore(utils, cla.max_insertion, cla.max_error, cla.max_deletion);
-                    pattern.calculateMainFunctionalCategory(utils, cla.non_directons);
-                }
-                utils.measureMemory();
-
-                System.out.println("Clustering to families");
-                List<Family> families = FamilyClustering.Cluster(patterns, cla.threshold, cla.cluster_by, utils,
-                        cla.non_directons);
-
-                utils.measureMemory();
-
-                System.out.println("Writing to files");
-                for (Family family : families) {
-                    writer.printFilteredCSB(family.getPatterns().get(0), utils, family.getFamilyId());
-                    for (Pattern pattern : family.getPatterns()) {
-                        writer.printPattern(pattern, utils, family.getFamilyId());
-                    }
-                }
-                utils.measureMemory();
-
+            for (Pattern pattern : patterns) {
+                pattern.calculateScore(utils, cla.max_insertion, cla.max_error, cla.max_deletion);
+                pattern.calculateMainFunctionalCategory(utils, cla.non_directons);
             }
+            utils.measureMemory();
+
+            System.out.println("Clustering to families");
+            List<Family> families = FamilyClustering.Cluster(patterns, cla.threshold, cla.cluster_by, utils,
+                    cla.non_directons);
+
+            utils.measureMemory();
+
+            System.out.println("Writing to files");
+            for (Family family : families) {
+                writer.printFilteredCSB(family.getPatterns().get(0), utils, family.getFamilyId());
+                for (Pattern pattern : family.getPatterns()) {
+                    writer.printPattern(pattern, utils, family.getFamilyId());
+                }
+            }
+            utils.measureMemory();
+
+
             writer.closeFiles();
 
             System.out.println(writer.getCountPrintedPatterns() + " CSBs found");
