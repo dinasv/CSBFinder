@@ -26,8 +26,11 @@ public class FamilyPanel extends JPanel {
         table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         table.getSelectionModel().addListSelectionListener(e -> {
             if (!e.getValueIsAdjusting() && table.getSelectedRow() != -1) {
+                FamilyTableModel model = ((FamilyTableModel) table.getModel());
+
                 rowClickedListener.rowClickedOccurred(new FamilyRowClickedEvent(
-                        ((FamilyTableModel) table.getModel()).getRowAt(table.getSelectedRow())
+                        //((FamilyTableModel) table.getModel()).getRowAt(table.getSelectedRow())
+                        model.getPattern((String) table.getValueAt(table.getSelectedRow(), model.getIndexOfColumn(model.CSB)))
                 ));
             }
         });

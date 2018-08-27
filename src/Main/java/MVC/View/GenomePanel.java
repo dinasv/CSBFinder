@@ -2,6 +2,7 @@ package MVC.View;
 
 import MVC.View.Shapes.*;
 import Utils.Gene;
+import Utils.Utils;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -17,6 +18,7 @@ public class GenomePanel extends JPanel {
     private GridBagConstraints gc;
 
     private static final int CONTAINERS_DIST = 50;
+    private static final int GENOME_NAME_WIDTH = 100;
     Random rnd = new Random();
 
     private static final String CSB_PREFIX = "Instances for CSB: ";
@@ -27,7 +29,8 @@ public class GenomePanel extends JPanel {
         container = new JPanel(new GridBagLayout());
 //
         scroll = new JScrollPane(container);
-        scroll.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+        //scroll.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+        scroll.getHorizontalScrollBar().setPreferredSize(new Dimension(0,0));
 
 
         title = new JLabel("");
@@ -35,7 +38,7 @@ public class GenomePanel extends JPanel {
         title.setFont(new Font(Font.SERIF, Font.BOLD, 18));
 
         add(title, BorderLayout.NORTH);
-        add(scroll, BorderLayout.WEST);
+        add(scroll);
     }
 
     public void displayInstances(String pattenId, Map<String,List<List<Gene>>> instances) {
@@ -53,7 +56,7 @@ public class GenomePanel extends JPanel {
 
     private void setData(Map<String,List<List<Gene>>> instances) {
 
-        JLabel geneName;
+        JLabel genomeName;
 
         int colIndex = 0;
 
@@ -64,15 +67,16 @@ public class GenomePanel extends JPanel {
         Map<String, ShapeParams> genesLabelsUsed = new HashMap();
 
         for (Map.Entry<String, List<List<Gene>>> entry: instances.entrySet()) {
-            geneName = getGeneNameComponent(entry.getKey());
-            geneName.setPreferredSize(new Dimension(100, 25));
-            geneName.setToolTipText(entry.getKey());
+            genomeName = getGeneNameComponent(entry.getKey());
+            genomeName.setPreferredSize(new Dimension(GENOME_NAME_WIDTH, 25));
+            genomeName.setToolTipText(entry.getKey());
 
             JScrollPane instancesRow = getInstancesRow(entry.getValue(), genesLabelsUsed);
-            instancesRow.setPreferredSize(new Dimension(1050, 35));
+            int instanceRowWidth = scroll.getViewport().getSize().width - GENOME_NAME_WIDTH - 10;
+            instancesRow.setPreferredSize(new Dimension(instanceRowWidth, 35));
 
             gc.gridx = 0; gc.gridy = colIndex; gc.weightx = 0; gc.anchor = GridBagConstraints.FIRST_LINE_START; gc.insets = insetName;
-            container.add(geneName, gc);
+            container.add(genomeName, gc);
             gc.gridx = 1; gc.gridy = colIndex; gc.weightx = 2; gc.anchor = GridBagConstraints.FIRST_LINE_START; gc.insets = insetList;
             JPanel p = new JPanel(new BorderLayout());
             container.add(instancesRow, gc);
@@ -94,7 +98,8 @@ public class GenomePanel extends JPanel {
         ShapesPanel shapesPanel = new ShapesPanel(shapesContainerList, CONTAINERS_DIST);
         JScrollPane scrollPane = new JScrollPane(shapesPanel);
         scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_NEVER);
-        scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+        //scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+        scrollPane.getHorizontalScrollBar().setPreferredSize(new Dimension(0,0));
 
         MouseAdapter ma = new MouseAdapterScroller(shapesPanel);
 
@@ -109,7 +114,9 @@ public class GenomePanel extends JPanel {
         for (Gene gene : genes) {
 
             Color color;
-            if (genesLabelsUsed.containsKey(gene.getCog_id())){
+            if (gene.getCog_id().equals(Utils.UNK_CHAR)){
+                color = Color.lightGray;
+            }else if (genesLabelsUsed.containsKey(gene.getCog_id())){
                 color = genesLabelsUsed.get(gene.getCog_id()).getColor();
             }else {
                 color = getRandomColor();

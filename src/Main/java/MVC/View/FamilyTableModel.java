@@ -4,9 +4,7 @@ import Utils.Pattern;
 import PostProcess.Family;
 
 import javax.swing.table.AbstractTableModel;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class FamilyTableModel extends AbstractTableModel {
@@ -20,6 +18,9 @@ public class FamilyTableModel extends AbstractTableModel {
     public final static String MAIN_CATEGORY = "Main_Category";
     public final static String FAMILY_ID = "Family_ID";
 
+    public final static String DELIMITER = "-";
+
+
     public final static  String[] columns = new String[] {
             ID,
             LENGTH ,
@@ -32,6 +33,8 @@ public class FamilyTableModel extends AbstractTableModel {
     };
 
     private List<Pattern> data;
+    private Map<String, Pattern> csbToPatternMap;
+
 
     @Override
     public String getColumnName(int column) {
@@ -81,7 +84,7 @@ public class FamilyTableModel extends AbstractTableModel {
             case EXACT_INSTANCE_COUNT:
                 return p.getExactInstanceCount();
             case CSB:
-                return Arrays.asList(p.getPatternArr()).stream().collect(Collectors.joining("-"));
+                return Arrays.asList(p.getPatternArr()).stream().collect(Collectors.joining(DELIMITER));
             case MAIN_CATEGORY:
                 return p.getMainFunctionalCategory();
             case FAMILY_ID:
@@ -112,9 +115,19 @@ public class FamilyTableModel extends AbstractTableModel {
 
     public void setData(List<Family> families) {
         this.data = new ArrayList<>();
+        this.csbToPatternMap = new HashMap<>();
+
         for (Family family: families) {
-            family.getPatterns().forEach(pattern -> pattern.setFamilyId(family.getFamilyId()));
+            family.getPatterns().forEach(pattern -> {
+                pattern.setFamilyId(family.getFamilyId());
+                csbToPatternMap.put(pattern.getPattern(), pattern);
+            });
             data.addAll(family.getPatterns());
         }
+    }
+
+    public Pattern getPattern(String csbWithDelimiter) {
+        String csb = String.join(" ", csbWithDelimiter.split(DELIMITER)) + " ";
+        return csbToPatternMap.get(csb);
     }
 }

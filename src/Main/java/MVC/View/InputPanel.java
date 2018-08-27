@@ -71,7 +71,7 @@ public class InputPanel extends JPanel {
         });
 
         setBorder(BorderFactory.createCompoundBorder(
-                BorderFactory.createTitledBorder("Inputs"),
+                BorderFactory.createTitledBorder("Parameters"),
                 BorderFactory.createEmptyBorder(5, 5, 5, 5)));
 
         setLayout(new GridBagLayout());
@@ -171,23 +171,23 @@ public class InputPanel extends JPanel {
 
     private void initFields() {
 
-        // Minimum Input Sequence
-        quorum.setModel(new SpinnerNumberModel(1, 1, 5, 1));
+        // Quorum
+        quorum.setModel(new SpinnerNumberModel(1, 1, 2000, 1));
         ((JSpinner.DefaultEditor) quorum.getEditor()).getTextField().setColumns(3);
 
         // Number Of Insertions
         numOfInsertions.setModel(new SpinnerNumberModel(0, 0, 5, 1));
         ((JSpinner.DefaultEditor)numOfInsertions.getEditor()).getTextField().setColumns(3);
 
-        // Quorum
+        // Quorum without insertions
         quorumWithoutInsertions.setModel(new SpinnerNumberModel(1, 1, 5, 1));
         ((JSpinner.DefaultEditor)quorumWithoutInsertions.getEditor()).getTextField().setColumns(3);
 
         // CSB min length
-        minCSBLength.setModel(new SpinnerNumberModel(2, 2, 100, 10));
+        minCSBLength.setModel(new SpinnerNumberModel(2, 2, 100, 1));
 
         // CSB max length
-        maxCSBLength.setModel(new SpinnerNumberModel(Integer.MAX_VALUE, 100, Integer.MAX_VALUE, 1));
+        maxCSBLength.setModel(new SpinnerNumberModel(Integer.MAX_VALUE, 2, Integer.MAX_VALUE, 1));
         ((JSpinner.DefaultEditor)maxCSBLength.getEditor()).getTextField().setColumns(8);
 
         // dataset name
@@ -220,8 +220,8 @@ public class InputPanel extends JPanel {
 
         // Cluster Type
         DefaultListModel clusterModel = new DefaultListModel();
-        clusterModel.addElement("Length");
         clusterModel.addElement("Score");
+        clusterModel.addElement("Length");
         clusterTypeField.setModel(clusterModel);
         clusterTypeField.setSelectedIndex(0);
     }
