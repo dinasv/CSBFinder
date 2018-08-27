@@ -1,6 +1,5 @@
 package CLI;
 
-import IO.Writer;
 import Utils.WordArray;
 import SuffixTrees.*;
 
@@ -13,14 +12,16 @@ import Utils.*;
  * An instance can differ from a CSB by at most k insertions
  */
 public class CSBFinderCore {
-    public static long count_nodes_in_pattern_tree;
-    public static long count_nodes_in_data_tree;
+
     private static final String DELIMITER = " ";
 
-    private static int max_error;
-    private static int max_wildcards;
-    private static int max_deletion;
-    private static int max_insertion;
+    public static long count_nodes_in_pattern_tree;
+    public static long count_nodes_in_data_tree;
+
+    private int max_error;
+    private int max_wildcards;
+    private int max_deletion;
+    private int max_insertion;
     private int q1;
     private int q2;
     private int min_pattern_length;
@@ -31,8 +32,6 @@ public class CSBFinderCore {
     //contains all extracted patterns
     private Map<String, Pattern> patterns;
 
-    //private int gap_char;
-    //private int wildcard_char;
     private boolean mult_count;
 
     private int last_pattern_key;
@@ -46,9 +45,7 @@ public class CSBFinderCore {
 
     /**
      *
-     * @param cla
-     * @param gap_char
-     * @param wildcard_char
+     * @param cla args
      * @param data_t GST representing all input sequences
      * @param pattern_trie
      * @param utils
@@ -71,8 +68,6 @@ public class CSBFinderCore {
 
         data_tree = data_t;
 
-        //this.gap_char = gap_char;
-        //this.wildcard_char = wildcard_char;
         total_chars_in_data = -1;
         this.utils = utils;
         last_pattern_key = 0;
