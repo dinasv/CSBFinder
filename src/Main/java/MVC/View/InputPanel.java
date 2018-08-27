@@ -231,6 +231,11 @@ public class InputPanel extends JPanel {
         Insets insetField = new Insets(0, 0, 0, 0);
 
         int y = 0;
+
+        addComponentToGC(0, y, 1, 0.2, insetLabel, geneInfoFilePathLabel, LINE_START);
+        addComponentToGC(1, y, 1, 0.2, insetField, geneInfoFilePath, LINE_START);
+        addComponentToGC(2, y++, 1, 0.2, insetField, loadGeneInfoBtn, LINE_START);
+
         addComponentToGC(0, y, 1, 0.1, insetLabel, quorumLabel, LINE_START);
         addComponentToGC(1, y++, 1, 0.1, insetField, quorum, LINE_START);
 
@@ -253,9 +258,6 @@ public class InputPanel extends JPanel {
         addComponentToGC(1, y, 1, 0.2, insetField, patternFilePath, LINE_START);
         addComponentToGC(2, y++, 1, 0.2, insetField, loadPatternBtn, LINE_START);
 
-        addComponentToGC(0, y, 1, 0.2, insetLabel, geneInfoFilePathLabel, LINE_START);
-        addComponentToGC(1, y, 1, 0.2, insetField, geneInfoFilePath, LINE_START);
-        addComponentToGC(2, y++, 1, 0.2, insetField, loadGeneInfoBtn, LINE_START);
 
         addComponentToGC(0, y, 1, 0.1, insetLabel, bcountLabel, LINE_START);
         addComponentToGC(1, y++, 1, 0.1, insetField, bcount, LINE_START);
