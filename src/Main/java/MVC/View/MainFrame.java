@@ -78,7 +78,7 @@ public class MainFrame extends JFrame {
                 CSBFinderRequest request = e.getRequest();
 
 //                request.setQuorumWithoutInsertions(5);
-//                request.setGeneInfoFilePath("E:\\Coding\\Java\\CSBFinder\\input\\cog_info.txt");
+//                request.setGeneInfoFilePath("E:\\Coding\\Java\\CSBFinderCore\\input\\cog_info.txt");
 
                 SwingUtilities.invokeLater(new Runnable() {
                     @Override

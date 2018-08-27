@@ -12,7 +12,7 @@ import Utils.*;
  * A CSB is a substring of at least quorum1 input sequences and must have instance in at least quorum2 input sequences
  * An instance can differ from a CSB by at most k insertions
  */
-public class CSBFinder {
+public class CSBFinderCore {
     public static long count_nodes_in_pattern_tree;
     public static long count_nodes_in_data_tree;
     private static final String DELIMITER = " ";
@@ -31,8 +31,8 @@ public class CSBFinder {
     //contains all extracted patterns
     private Map<String, Pattern> patterns;
 
-    private int gap_char;
-    private int wildcard_char;
+    //private int gap_char;
+    //private int wildcard_char;
     private boolean mult_count;
 
     private int last_pattern_key;
@@ -46,48 +46,43 @@ public class CSBFinder {
 
     /**
      *
-     * @param max_error
-     * @param max_wildcards
-     * @param max_deletion
-     * @param max_insertion maximal number of insertions allowed in an instance of a pattern
-     * @param quorum1 the pattern must be a substring of at least quorum1 input sequences
-     * @param quorum2 the pattern should have an instance in at least quorum2 input sequences
-     * @param min_pattern_length
-     * @param max_pattern_length
+     * @param cla
      * @param gap_char
      * @param wildcard_char
      * @param data_t GST representing all input sequences
      * @param pattern_trie
-     * @param mult_count if true, counts one instance in each input sequence
      * @param utils
      * @param debug
      */
-    public CSBFinder(int max_error, int max_wildcards, int max_deletion, int max_insertion, int quorum1, int quorum2,
-                     int min_pattern_length, int max_pattern_length, int gap_char, int wildcard_char,
-                     GeneralizedSuffixTree data_t, Trie pattern_trie, boolean mult_count, Utils utils,
-                     boolean non_directons, boolean debug){
+    public CSBFinderCore(CommandLineArgs cla, GeneralizedSuffixTree data_t, Trie pattern_trie, Utils utils,
+                         boolean debug){
 
-        patterns = new HashMap<>();
-        this.max_error = max_error;
-        this.max_wildcards = max_wildcards;
-        this.max_deletion = max_deletion;
-        this.max_insertion = max_insertion;
+        // args
+        this.max_error = cla.max_error;
+        this.max_wildcards = cla.max_wildcards;
+        this.max_deletion = cla.max_deletion;
+        this.max_insertion = cla.max_insertion;
+        q1 = cla.quorum1;
+        q2 = cla.quorum2;
+        this.non_directons = cla.non_directons;
+        this.min_pattern_length = cla.min_pattern_length;
+        this.max_pattern_length = cla.max_pattern_length;
+        this.mult_count = cla.mult_count;
+
         data_tree = data_t;
-        q1 = quorum1;
-        q2 = quorum2;
-        this.min_pattern_length = min_pattern_length;
-        this.max_pattern_length = max_pattern_length;
-        this.gap_char = gap_char;
-        this.wildcard_char = wildcard_char;
-        this.mult_count = mult_count;
+
+        //this.gap_char = gap_char;
+        //this.wildcard_char = wildcard_char;
         total_chars_in_data = -1;
         this.utils = utils;
         last_pattern_key = 0;
-        this.non_directons = non_directons;
+
         this.debug = debug;
 
         count_nodes_in_pattern_tree = 0;
         count_nodes_in_data_tree = 0;
+
+        patterns = new HashMap<>();
 
         PatternNode pattern_tree_root;
         if (pattern_trie == null){//all patterns will be extracted from the data tree
@@ -186,16 +181,16 @@ public class CSBFinder {
      * @param node
      */
     private void addWildcardEdge(PatternNode node, Boolean copy_node) {
-        PatternNode targetNode = node.getTargetNode(wildcard_char);
+        PatternNode targetNode = node.getTargetNode(Utils.WC_CHAR_INDEX);
         if (targetNode == null) {
-            int[] wildcard = {wildcard_char};
+            int[] wildcard = {Utils.WC_CHAR_INDEX};
             //create a copy of node
             PatternNode newnode = new PatternNode(node);
-            node.addTargetNode(wildcard_char, newnode);
+            node.addTargetNode(Utils.WC_CHAR_INDEX, newnode);
         } else {
-            PatternNode newnode = node.getTargetNode(wildcard_char);
+            PatternNode newnode = node.getTargetNode(Utils.WC_CHAR_INDEX);
             newnode = new PatternNode(newnode);
-            targetNode.addTargetNode(wildcard_char, newnode);
+            targetNode.addTargetNode(Utils.WC_CHAR_INDEX, newnode);
         }
     }
 
@@ -255,7 +250,7 @@ public class CSBFinder {
             target_node = entry.getValue();
 
             //go over edges that are not wild cards
-            if (alpha!=wildcard_char) {
+            if (alpha != Utils.WC_CHAR_INDEX) {
                 num_of_diff_instance = extendPattern(alpha, -1, null, null,
                                     pattern_wildcard_count, pattern, target_node, pattern_node, instances, pattern_length);
 
@@ -269,9 +264,9 @@ public class CSBFinder {
 
         //handle wild card edge
         if (pattern_node.getType().equals("pattern") || pattern_wildcard_count < max_wildcards) {
-            target_node = pattern_node.getTargetNode(wildcard_char);
+            target_node = pattern_node.getTargetNode(Utils.WC_CHAR_INDEX);
             if (target_node != null) {
-                num_of_diff_instance = extendPattern(wildcard_char, -1, null, null,
+                num_of_diff_instance = extendPattern(Utils.WC_CHAR_INDEX, -1, null, null,
                             pattern_wildcard_count + 1, pattern, target_node, pattern_node, instances, pattern_length);
                 if (num_of_diff_instance > max_num_of_diff_instances) {
                     max_num_of_diff_instances = num_of_diff_instance;
@@ -408,7 +403,7 @@ public class CSBFinder {
         int extended_pattern_length = pattern_length + 1;
 
         //if there is a wildcard in the current pattern, have to create a copy of the subtree
-        if (wildcard_count > 0 && alpha!=wildcard_char) {
+        if (wildcard_count > 0 && alpha != Utils.WC_CHAR_INDEX) {
             extended_pattern_node = new PatternNode(extended_pattern_node);
             pattern_node.addTargetNode(alpha, extended_pattern_node);
         }
@@ -457,7 +452,7 @@ public class CSBFinder {
 
                     }
                 } else if (type == TreeType.VIRTUAL) {
-                    if (alpha != wildcard_char) {
+                    if (alpha != Utils.WC_CHAR_INDEX) {
                         if (!(starts_with_wildcard(extended_pattern))) {
                             //make sure that extended_pattern is right maximal, if extended_pattern has the same number of
                             // instances as the longer pattern, prefer the longer pattern
@@ -517,12 +512,12 @@ public class CSBFinder {
             Map<Integer, Edge> instance_edges = node_instance.getEdges();
 
             //we can extend the instance using all outgoing edges, increment error if needed
-            if (ch == wildcard_char) {
+            if (ch == Utils.WC_CHAR_INDEX) {
                 exact_instance_count = addAllInstanceEdges(false, instance, instance_edges, deletions, error, node_instance,
                         edge_index, ch, extended_pattern);
                 //extend instance by deletions char
                 if (deletions < max_deletion) {
-                    addInstanceToPattern(extended_pattern, instance, gap_char, node_instance, edge_instance, edge_index,
+                    addInstanceToPattern(extended_pattern, instance, Utils.GAP_CHAR_INDEX, node_instance, edge_instance, edge_index,
                             error, deletions + 1);
                 }
             } else {
@@ -536,7 +531,7 @@ public class CSBFinder {
                             error, node_instance, edge_index, ch, extended_pattern);
                     //extend instance by deletions char
                     if (deletions < max_deletion) {
-                        addInstanceToPattern(extended_pattern, instance, gap_char, node_instance, edge_instance, edge_index,
+                        addInstanceToPattern(extended_pattern, instance, Utils.GAP_CHAR_INDEX, node_instance, edge_instance, edge_index,
                                 error, deletions + 1);
                     }
                 } else {//error = max error, only edge_instance starting with ch can be added, or deletions
@@ -557,7 +552,7 @@ public class CSBFinder {
                     } else {
                         //extend instance by deletions char
                         if (deletions < max_deletion) {
-                            addInstanceToPattern(extended_pattern, instance, gap_char, node_instance, edge_instance,
+                            addInstanceToPattern(extended_pattern, instance, Utils.GAP_CHAR_INDEX, node_instance, edge_instance,
                                     edge_index, error, deletions + 1);
                         }
                     }
@@ -594,7 +589,7 @@ public class CSBFinder {
                 addInstanceToPattern(extended_pattern, instance, next_ch, next_node_instance, next_edge_instance, next_edge_index, error,
                         deletions);
             } else {
-                if (ch == wildcard_char) {
+                if (ch == Utils.WC_CHAR_INDEX) {
                     addInstanceToPattern(extended_pattern, instance, next_ch, next_node_instance, next_edge_instance, next_edge_index, error,
                             deletions);
                 } else {
@@ -604,7 +599,7 @@ public class CSBFinder {
                     }
                     //extend instance by deletions char
                     if (deletions < max_deletion) {
-                        addInstanceToPattern(extended_pattern, instance, gap_char, node_instance, edge_instance, edge_index, error, deletions + 1);
+                        addInstanceToPattern(extended_pattern, instance, Utils.GAP_CHAR_INDEX, node_instance, edge_instance, edge_index, error, deletions + 1);
                     }
                 }
             }
@@ -646,7 +641,7 @@ public class CSBFinder {
                 curr_error = error;
                 exact_instance_count = ((InstanceNode)next_edge.getDest()).getCount_by_keys();
             } else {
-                if (ch != wildcard_char) {//Substitution - the chars are different, increment error
+                if (ch != Utils.WC_CHAR_INDEX) {//Substitution - the chars are different, increment error
                     curr_error = error + 1;
                 }
             }

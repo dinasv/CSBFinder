@@ -66,7 +66,7 @@ public class CLIController {
     }
 
     private static void printUsageAndExit(JCommander jcommander, int exitStatus){
-        jcommander.setProgramName("java -jar CSBFinder.jar");
+        jcommander.setProgramName("java -jar CSBFinderCore.jar");
         jcommander.usage();
         System.exit(exitStatus);
     }
@@ -136,7 +136,7 @@ public class CLIController {
     }
 
     /**
-     * Executes CSBFinder and prints colinear synteny blocks
+     * Executes CSBFinderCore and prints colinear synteny blocks
      *
      * @return
      * @throws Exception
@@ -163,27 +163,24 @@ public class CLIController {
 
             System.out.println("Extracting CSBs from " + number_of_genomes + " input sequences.");
 
-            CSBFinder CSBFinder = new CSBFinder(cla.max_error, cla.max_wildcards, cla.max_deletion, cla.max_insertion,
-                    cla.quorum1, cla.quorum2,
-                    cla.min_pattern_length, cla.max_pattern_length, utils.GAP_CHAR_INDEX, utils.WC_CHAR_INDEX,
-                    dataset_suffix_tree, pattern_tree, cla.mult_count, utils,
-                    cla.non_directons, cla.debug);
+            CSBFinderCore CSBFinderCore = new CSBFinderCore(cla,
+                    dataset_suffix_tree, pattern_tree, utils, cla.debug);
 
             utils.measureMemory();
 
             if (cla.input_patterns_file_name == null) {
                 System.out.println("Removing redundant CSBs");
-                logger.writeLogger("CSBs found: " + CSBFinder.getPatternsCount());
+                logger.writeLogger("CSBs found: " + CSBFinderCore.getPatternsCount());
 
-                CSBFinder.removeRedundantPatterns();
+                CSBFinderCore.removeRedundantPatterns();
                 if (cla.debug) {
                     utils.measureMemory();
-                    logger.writeLogger("CSBs left after removing redundant CSBs: " + CSBFinder.getPatternsCount());
+                    logger.writeLogger("CSBs left after removing redundant CSBs: " + CSBFinderCore.getPatternsCount());
                 }
 
             }
 
-            List<Pattern> patterns = CSBFinder.getPatterns();
+            List<Pattern> patterns = CSBFinderCore.getPatterns();
 
             for (Pattern pattern : patterns) {
                 pattern.calculateScore(utils, cla.max_insertion, cla.max_error, cla.max_deletion);

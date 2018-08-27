@@ -104,17 +104,13 @@ public class CSBFinderModel {
 
         System.out.println("Extracting CSBs from " + number_of_genomes + " input sequences.");
 
-        CSBFinder csbFinder = new CSBFinder(cla.max_error, cla.max_wildcards, cla.max_deletion, cla.max_insertion,
-                cla.quorum1, cla.quorum2,
-                cla.min_pattern_length, cla.max_pattern_length, utils.GAP_CHAR_INDEX, utils.WC_CHAR_INDEX,
-                dataset_suffix_tree, pattern_tree, cla.mult_count, utils,
-                cla.non_directons, cla.debug);
+        CSBFinderCore csbFinderCore = new CSBFinderCore(cla, dataset_suffix_tree, pattern_tree, utils, cla.debug);
 
         if (cla.input_patterns_file_name == null) {
-            csbFinder.removeRedundantPatterns();
+            csbFinderCore.removeRedundantPatterns();
         }
 
-        List<Pattern> patterns = csbFinder.getPatterns();
+        List<Pattern> patterns = csbFinderCore.getPatterns();
 
         for (Pattern pattern : patterns) {
             pattern.calculateScore(utils, cla.max_insertion, cla.max_error, cla.max_deletion);

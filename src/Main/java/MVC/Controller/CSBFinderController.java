@@ -55,10 +55,10 @@ public class CSBFinderController {
 
 //    public static void main(String[] args) {
 //        CSBFinderController controller = new CSBFinderController();
-//        controller.loadFile("E:\\Coding\\java\\CSBFinder\\input\\plasmid_genomes.fasta", true);
+//        controller.loadFile("E:\\Coding\\java\\CSBFinderCore\\input\\plasmid_genomes.fasta", true);
 //
 //        CSBFinderRequest request = new CSBFinderRequest();
-////        request.setCsb_pattern_file_name("e:\\Coding\\java\\CSBFinder\\input\\cog_info.txt");
+////        request.setCsb_pattern_file_name("e:\\Coding\\java\\CSBFinderCore\\input\\cog_info.txt");
 //        controller.findCSBs(request);
 //
 //
