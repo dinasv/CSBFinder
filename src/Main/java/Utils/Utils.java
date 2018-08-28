@@ -53,16 +53,16 @@ public class Utils {
 
     Map<String, Map<String, List<Gene>>> genomeToRepliconsMap;
 
+    private int max_genomes_size;
+
 
     public Utils(Map<String, COG> cog_info, MyLogger logger){
         genomeToRepliconsMap = new HashMap<>();
 
         this.logger = logger;
 
-        index_to_char = new ArrayList<String>();
-        char_to_index = new HashMap<String, Integer>();
-
         number_of_genomes = 0;
+        max_genomes_size = 0;
 
         genome_name_to_key = new HashMap<>();
         genome_key_to_name = new HashMap<>();
@@ -78,6 +78,13 @@ public class Utils {
 
         initiailMem = Runtime.getRuntime().totalMemory()-Runtime.getRuntime().freeMemory();
         currMem = initiailMem;
+        initAlphabet();
+
+    }
+
+    private void initAlphabet(){
+        index_to_char = new ArrayList<String>();
+        char_to_index = new HashMap<String, Integer>();
 
         //wild card
         char_to_index.put(WC_CHAR, WC_CHAR_INDEX);
@@ -90,10 +97,14 @@ public class Utils {
         //unkown cog
         char_to_index.put(UNK_CHAR, UNK_CHAR_INDEX);
         index_to_char.add(UNK_CHAR);
-        //if the sequence is not segmented to non_directons
+        //if the sequence is not segmented to directons
         char_to_index.put("X+", UNK_CHAR_INDEX);
         char_to_index.put("X-", UNK_CHAR_INDEX);
 
+    }
+
+    public int getMaxGenomesSize(){
+        return max_genomes_size;
     }
 
     public void measureMemory(){
@@ -244,7 +255,6 @@ public class Utils {
         String file_name = input_file_path;
 
         BufferedReader br = null;
-        int max_genomes_size = 0;
         try {
             br = new BufferedReader(new FileReader(file_name));
 
@@ -269,6 +279,9 @@ public class Utils {
 
                             length_sum += replicon_length;
                             genome_size += replicon_length;
+
+                            updateGenomeToRepliconsMap(curr_genome_name, replicon_id, replicon);
+
                         }
 
                         replicon = new Replicon(1);
@@ -307,18 +320,6 @@ public class Utils {
                             String strand = split_line[1];
                             Gene gene = new Gene(gene_family, strand);
                             replicon.add(gene);
-
-                            if (!genomeToRepliconsMap.containsKey(curr_genome_name)){
-                                genomeToRepliconsMap.put(curr_genome_name, new HashMap<>());
-                            }
-                            Map<String, List<Gene>> genomeRepliconsMap = genomeToRepliconsMap.get(curr_genome_name);
-
-                            if (!genomeRepliconsMap.containsKey(replicon_id)){
-                                genomeRepliconsMap.put(replicon_id, new ArrayList<>());
-                            }
-                            List<Gene> repliconGenesList = genomeRepliconsMap.get(replicon_id);
-
-                            repliconGenesList.add(gene);
                         }
                     }
 
@@ -330,13 +331,13 @@ public class Utils {
                 genome_size += replicon_length;
 
                 updateGenomes(curr_genome_name, genome_size, curr_genome_index);
+                updateGenomeToRepliconsMap(curr_genome_name, replicon_id, replicon);
 
                 if (genome_size > max_genomes_size){
                     max_genomes_size = genome_size;
                 }
 
                 dataset_length_sum = length_sum;
-
 
                 logger.writeLogger("Average genome size: " + length_sum / genome_key_to_name.size());
                 logger.writeLogger("Number of genomes " + genome_key_to_name.size());
@@ -367,6 +368,15 @@ public class Utils {
             System.out.println("File " + file_name + " was not found.");
         }
         return -1;
+    }
+
+    private void updateGenomeToRepliconsMap(String curr_genome_name, String replicon_id, Replicon replicon){
+        if (!genomeToRepliconsMap.containsKey(curr_genome_name)){
+            genomeToRepliconsMap.put(curr_genome_name, new HashMap<>());
+        }
+        Map<String, List<Gene>> genomeRepliconsMap = genomeToRepliconsMap.get(curr_genome_name);
+
+        genomeRepliconsMap.put(replicon_id, replicon.getGenes());
     }
 
     /**

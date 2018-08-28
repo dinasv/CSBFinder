@@ -365,8 +365,4 @@ public class Writer {
         printPattern(pattern, utils, null);
     }
 
-    public void setOutputFileType(OutputType outputType) {
-        this.output_file_type = outputType;
-    }
-
 }

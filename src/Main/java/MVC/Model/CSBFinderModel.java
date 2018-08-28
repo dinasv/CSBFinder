@@ -27,7 +27,6 @@ public class CSBFinderModel {
 
     private CommandLineArgs cla;
     private Utils utils;
-    private Writer writer;
     private GeneralizedSuffixTree dataset_suffix_tree;
     private List<Family> families;
 
@@ -45,9 +44,8 @@ public class CSBFinderModel {
     public void loadInputGenomesFile(String path) {
         this.init();
         dataset_suffix_tree = new GeneralizedSuffixTree();
-        number_of_genomes = utils.readAndBuildDatasetTree(path,
-                dataset_suffix_tree, cla.non_directons);
-//        number_of_genomes= utils.getGenomeToRepliconsMap().size();
+        number_of_genomes = utils.readAndBuildDatasetTree(path, dataset_suffix_tree, false);
+        //        number_of_genomes= utils.getGenomeToRepliconsMap().size();
 //        genomesLoadedListener.genomesLoadDone(new GenomesLoadEvent(utils.getGenomeToRepliconsMap()));
 
     }
@@ -86,7 +84,15 @@ public class CSBFinderModel {
     }
 
 
+    /**
+     * Need to load genomes first
+     */
     private void findCSBs() {
+
+        if (dataset_suffix_tree == null){
+            System.out.println("dataset_suffix_tree does not exist");
+            return;
+        }
 
         long startTime = System.nanoTime();
 
@@ -130,7 +136,7 @@ public class CSBFinderModel {
         csbFinderDoneListener.CSBFinderDoneOccurred(new CSBFinderDoneEvent(families));
     }
 
-    private Writer createWriter(boolean cog_info_exists){
+    private Writer createWriter(boolean cog_info_exists, CommandLineArgs.OutputType outputType){
         String parameters = "_ins" + cla.max_insertion + "_q" + cla.quorum2;
         String catalog_file_name = "Catalog_" + cla.dataset_name + parameters;
         String instances_file_name = catalog_file_name + "_instances";
@@ -138,7 +144,7 @@ public class CSBFinderModel {
 
         Writer writer = new Writer(cla.max_error, cla.max_deletion, cla.max_insertion, cla.debug, catalog_file_name,
                 instances_file_name,
-                include_families, cla.output_file_type, cog_info_exists, cla.non_directons, createOutputPath());
+                include_families, outputType, cog_info_exists, cla.non_directons, createOutputPath());
 
         return writer;
     }
@@ -157,9 +163,11 @@ public class CSBFinderModel {
 
     public void saveOutputFiles(String outputFileType) {
 
-        writer = createWriter(cla.cog_info_file_name != null && !"".equals(cla.cog_info_file_name));
+         Writer writer = createWriter(cla.cog_info_file_name != null && !"".equals(cla.cog_info_file_name),
+                CommandLineArgs.OutputType.valueOf(outputFileType));
 
-        writer.setOutputFileType(CommandLineArgs.OutputType.valueOf(outputFileType));
+        //System.out.println(outputFileType);
+        //writer.setOutputFileType(CommandLineArgs.OutputType.valueOf(outputFileType));
         System.out.println("Writing to files");
         for (Family family : families) {
             writer.printFilteredCSB(family.getPatterns().get(0), utils, family.getFamilyId());
