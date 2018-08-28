@@ -34,34 +34,22 @@ public class GenomePanel extends JPanel {
         scroll.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
         //scroll.getHorizontalScrollBar().setPreferredSize(new Dimension(0,0));
 
-
-        title = new JLabel("");
-        title.setBorder(new EmptyBorder(5, 2, 5, 2));
-        title.setFont(new Font(Font.SERIF, Font.BOLD, 18));
-
-        add(title, BorderLayout.NORTH);
         add(scroll);
 
         colorsUsed = new HashMap<>();
         colorsUsed.put(Utils.UNK_CHAR, Color.lightGray);
     }
 
-    public void displayInstances(String pattenId, Map<String,List<List<Gene>>> instances) {
+    public void displayInstances(String[] pattenCOGs, Map<String,List<List<Gene>>> instances) {
         container.removeAll();
-        setTitle(pattenId);
-        setData(instances);
+        setData(instances, pattenCOGs);
         container.revalidate();
         container.repaint();
 
     }
 
-    private void setTitle(String patternId) {
-        title.setText(CSB_PREFIX + patternId);
-    }
 
-    private void setData(Map<String,List<List<Gene>>> instances) {
-
-        JLabel genomeName;
+    private void setData(Map<String,List<List<Gene>>> instances, String[] pattenCOGs) {
 
         int colIndex = 0;
 
@@ -69,25 +57,44 @@ public class GenomePanel extends JPanel {
         Insets insetName = new Insets(0, 0, 0, 5);
         Insets insetList = new Insets(0, 0, 0, 15);
 
+        List<List<Gene>> patternGenes = new ArrayList<>();
+        List<Gene> patternGenesInner = new ArrayList<>();
+        patternGenes.add(patternGenesInner);
+        for (String cog: pattenCOGs) {
+            patternGenesInner.add(new Gene(cog, "+"));
+        }
+
+        JLabel genomeRowLabel = getGenomeRowLabelComponent("CSB");
+        colIndex = setGenomePanelRow(patternGenes, colIndex, insetName, insetList, genomeRowLabel, Color.LIGHT_GRAY);
+
         for (Map.Entry<String, List<List<Gene>>> entry: instances.entrySet()) {
-            genomeName = getGeneNameComponent(entry.getKey());
-            genomeName.setPreferredSize(new Dimension(GENOME_NAME_WIDTH, 25));
-            genomeName.setToolTipText(entry.getKey());
+            String genomeName = entry.getKey();
+            List<List<Gene>> instancesLists = entry.getValue();
 
-            JScrollPane instancesRow = getInstancesRow(entry.getValue());
-            int instanceRowWidth = scroll.getViewport().getSize().width - GENOME_NAME_WIDTH - 10;
-            instancesRow.setPreferredSize(new Dimension(instanceRowWidth, 35));
+            genomeRowLabel = getGenomeRowLabelComponent(genomeName);
+            colIndex = setGenomePanelRow(instancesLists, colIndex, insetName, insetList, genomeRowLabel, Color.white);
 
-            gc.gridx = 0; gc.gridy = colIndex; gc.weightx = 0; gc.anchor = GridBagConstraints.FIRST_LINE_START; gc.insets = insetName;
-            container.add(genomeName, gc);
-            gc.gridx = 1; gc.gridy = colIndex; gc.weightx = 2; gc.anchor = GridBagConstraints.FIRST_LINE_START; gc.insets = insetList;
-            JPanel p = new JPanel(new BorderLayout());
-            container.add(instancesRow, gc);
-            colIndex += 1;
         }
     }
 
-    private JScrollPane getInstancesRow(List<List<Gene>> instancesList) {
+    private int setGenomePanelRow(List<List<Gene>> instances, int colIndex, Insets insetName,
+                                  Insets insetList, JLabel genomeRowLabel, Color backgroundColor){
+
+        JScrollPane instancesRow = getInstancesRow(instances, backgroundColor);
+        int instanceRowWidth = scroll.getViewport().getSize().width - GENOME_NAME_WIDTH - 10;
+        instancesRow.setPreferredSize(new Dimension(instanceRowWidth, 35));
+
+        gc.gridx = 0; gc.gridy = colIndex; gc.weightx = 0; gc.anchor = GridBagConstraints.FIRST_LINE_START; gc.insets = insetName;
+        container.add(genomeRowLabel, gc);
+        gc.gridx = 1; gc.gridy = colIndex; gc.weightx = 2; gc.anchor = GridBagConstraints.FIRST_LINE_START; gc.insets = insetList;
+        JPanel p = new JPanel(new BorderLayout());
+        container.add(instancesRow, gc);
+        colIndex += 1;
+
+        return colIndex;
+    }
+
+    private JScrollPane getInstancesRow(List<List<Gene>> instancesList, Color backgroundColor) {
 
         int x = 0;
         int y = 0;
@@ -98,7 +105,7 @@ public class GenomePanel extends JPanel {
             x += shapesContainer.getContainerDimensions().getWidth() + CONTAINERS_DIST;
         }
 
-        ShapesPanel shapesPanel = new ShapesPanel(shapesContainerList, CONTAINERS_DIST);
+        ShapesPanel shapesPanel = new ShapesPanel(shapesContainerList, CONTAINERS_DIST, backgroundColor);
         JScrollPane scrollPane = new JScrollPane(shapesPanel);
         scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_NEVER);
         //scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
@@ -142,10 +149,11 @@ public class GenomePanel extends JPanel {
         return color;
     }
 
-    private JLabel getGeneNameComponent(String geneName) {
-        JLabel geneNameComponent = new JLabel(geneName);
-        geneNameComponent.setToolTipText(geneName);
-        return geneNameComponent;
+    private JLabel getGenomeRowLabelComponent(String label) {
+        JLabel genomeRowLabelComponent = new JLabel(label);
+        genomeRowLabelComponent.setToolTipText(label);
+        genomeRowLabelComponent.setPreferredSize(new Dimension(GENOME_NAME_WIDTH, 25));
+        return genomeRowLabelComponent;
     }
 
     private void setGCLayout() {

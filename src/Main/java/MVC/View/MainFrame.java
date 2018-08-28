@@ -209,9 +209,9 @@ public class MainFrame extends JFrame {
             @Override
             public void rowClickedOccurred(FamilyRowClickedEvent e) {
                 Pattern p = e.getPattern();
-                List<COG> cogInfo = controller.getCogInfo(Arrays.asList(p.getPatternArr()));
-                genomes.displayInstances(p.getPattern(), controller.getInstances(p));
-                summaryPanel.setCogInfo(cogInfo, genomes.getColorsUsed());
+                List<COG> patternCOGs = controller.getCogInfo(Arrays.asList(p.getPatternArr()));
+                genomes.displayInstances(p.getPatternArr(), controller.getInstances(p));
+                summaryPanel.setCogInfo(patternCOGs, genomes.getColorsUsed());
             }
         });
     }

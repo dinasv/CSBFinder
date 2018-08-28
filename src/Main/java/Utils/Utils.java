@@ -29,9 +29,9 @@ public class Utils {
     /**
      * accession number to tax key
      */
-    public Map<String, Integer> genome_name_to_key;
-    public Map<Integer, String> genome_key_to_name;
-    public Map<Integer, String> replicon_key_to_name;
+    public Map<String, Integer> genome_name_to_id;
+    public Map<Integer, String> genome_id_to_name;
+    public Map<Integer, String> replicon_id_to_name;
 
     public int dataset_length_sum ;
 
@@ -51,7 +51,7 @@ public class Utils {
 
     private MyLogger logger;
 
-    Map<String, Map<String, List<Gene>>> genomeToRepliconsMap;
+    Map<String, Map<String, Replicon>> genomeToRepliconsMap;
 
     private int max_genomes_size;
 
@@ -64,9 +64,9 @@ public class Utils {
         number_of_genomes = 0;
         max_genomes_size = 0;
 
-        genome_name_to_key = new HashMap<>();
-        genome_key_to_name = new HashMap<>();
-        replicon_key_to_name = new HashMap<>();
+        genome_name_to_id = new HashMap<>();
+        genome_id_to_name = new HashMap<>();
+        replicon_id_to_name = new HashMap<>();
 
         dataset_length_sum = 0;
 
@@ -184,10 +184,10 @@ public class Utils {
     private boolean updateGenomes(String curr_genome_name, int genome_size, int curr_genome_index){
 
         boolean is_updated = false;
-        if (!genome_name_to_key.containsKey(curr_genome_name)) {
+        if (!genome_name_to_id.containsKey(curr_genome_name)) {
             if (genome_size > 0 && curr_genome_index != -1) {
-                genome_key_to_name.put(curr_genome_index, curr_genome_name);
-                genome_name_to_key.put(curr_genome_name, curr_genome_index);
+                genome_id_to_name.put(curr_genome_index, curr_genome_name);
+                genome_name_to_id.put(curr_genome_name, curr_genome_index);
                 is_updated = true;
             }
         }
@@ -264,11 +264,11 @@ public class Utils {
             try {
                 String line = br.readLine();
 
-                String replicon_id = "";
+                String replicon_name = "";
                 int curr_genome_index = -1;
                 String curr_genome_name = "";
 
-                Replicon replicon = new Replicon(1);
+                Replicon replicon = new Replicon(1, -1);
 
                 while (line != null) {
                     if (line.startsWith(">")) {
@@ -280,17 +280,19 @@ public class Utils {
                             length_sum += replicon_length;
                             genome_size += replicon_length;
 
-                            updateGenomeToRepliconsMap(curr_genome_name, replicon_id, replicon);
+                            updateGenomeToRepliconsMap(curr_genome_name, replicon_name, replicon);
 
                         }
 
-                        replicon = new Replicon(1);
 
                         line = line.substring(1); //remove ">"
                         //e.g. Acaryochloris_marina_MBIC11017_uid58167|NC_009927
                         String[] word_desc = line.trim().split("\\|");
 
                         if (word_desc.length > 0) {
+                            Replicon.index ++;
+                            replicon = new Replicon(1, Replicon.index);
+
                             String next_genome_name = word_desc[0];
 
                             updateGenomes(curr_genome_name, genome_size, curr_genome_index);
@@ -305,11 +307,9 @@ public class Utils {
 
                             curr_genome_name = next_genome_name;
 
-                            Replicon.index ++;
-
                             if (word_desc.length > 1) {
-                                replicon_id = word_desc[1];
-                                replicon_key_to_name.put(Replicon.index, replicon_id);
+                                replicon_name = word_desc[1];
+                                replicon_id_to_name.put(Replicon.index, replicon_name);
                             }
 
                         }
@@ -331,7 +331,7 @@ public class Utils {
                 genome_size += replicon_length;
 
                 updateGenomes(curr_genome_name, genome_size, curr_genome_index);
-                updateGenomeToRepliconsMap(curr_genome_name, replicon_id, replicon);
+                updateGenomeToRepliconsMap(curr_genome_name, replicon_name, replicon);
 
                 if (genome_size > max_genomes_size){
                     max_genomes_size = genome_size;
@@ -339,11 +339,11 @@ public class Utils {
 
                 dataset_length_sum = length_sum;
 
-                logger.writeLogger("Average genome size: " + length_sum / genome_key_to_name.size());
-                logger.writeLogger("Number of genomes " + genome_key_to_name.size());
+                logger.writeLogger("Average genome size: " + length_sum / genome_id_to_name.size());
+                logger.writeLogger("Number of genomes " + genome_id_to_name.size());
                 logger.writeLogger("Number of cogs " + char_to_index.size());
 
-                number_of_genomes = genome_key_to_name.size();
+                number_of_genomes = genome_id_to_name.size();
                 if (number_of_genomes == 0){
                     return -1;
                 }else{
@@ -374,9 +374,9 @@ public class Utils {
         if (!genomeToRepliconsMap.containsKey(curr_genome_name)){
             genomeToRepliconsMap.put(curr_genome_name, new HashMap<>());
         }
-        Map<String, List<Gene>> genomeRepliconsMap = genomeToRepliconsMap.get(curr_genome_name);
+        Map<String, Replicon> genomeRepliconsMap = genomeToRepliconsMap.get(curr_genome_name);
 
-        genomeRepliconsMap.put(replicon_id, replicon.getGenes());
+        genomeRepliconsMap.put(replicon_id, replicon);
     }
 
     /**
@@ -470,7 +470,7 @@ public class Utils {
         return this.cog_info;
     }
 
-    public Map<String,Map<String,List<Gene>>> getGenomeToRepliconsMap() {
+    public Map<String, Map<String, Replicon>> getGenomeToRepliconsMap() {
         return this.genomeToRepliconsMap;
     }
 }

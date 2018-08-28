@@ -14,6 +14,7 @@ import Utils.COG;
 import Utils.Pattern;
 import Utils.Instance;
 import Utils.InstanceLocation;
+import Utils.Replicon;
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.ParameterException;
 
@@ -194,7 +195,7 @@ public class CSBFinderModel {
         return pattern_tree;
     }
 
-    public Map<String, Map<String, List<Gene>>> getGenomeRepliconsMap() {
+    public Map<String, Map<String, Replicon>> getGenomeRepliconsMap() {
         return utils.getGenomeToRepliconsMap();
     }
 
@@ -230,13 +231,13 @@ public class CSBFinderModel {
 
         for (Map.Entry<Integer, List<InstanceLocation>> entry : groupSameSeqInstances(pattern).entrySet()) {
 
-            String seq_name = utils.genome_key_to_name.get(entry.getKey());
+            String seq_name = utils.genome_id_to_name.get(entry.getKey());
 
             List<List<Gene>> genomeInstances = new ArrayList<>();
 
             List<InstanceLocation> instances_locations = entry.getValue();
             for (InstanceLocation instance_location : instances_locations){
-                String replicon_name = utils.replicon_key_to_name.get(instance_location.getRepliconId());
+                String replicon_name = utils.replicon_id_to_name.get(instance_location.getRepliconId());
                 List<Gene> genes = getInstanceFromCogList(seq_name, replicon_name, instance_location.getStartIndex(), instance_location.getEndIndex());
                 if (genes != null) {
                     genomeInstances.add(genes);
@@ -253,8 +254,8 @@ public class CSBFinderModel {
 
     private List<Gene> getInstanceFromCogList(String seq_name, String replicon_name, int startIndex, int endIndex) {
         List<Gene> instanceList = null;
-        Map<String, List<Gene>> genomeToRepliconsMap = utils.getGenomeToRepliconsMap().get(seq_name);
-        List<Gene> genomeToCogList = genomeToRepliconsMap.get(replicon_name);
+        Map<String, Replicon> genomeToRepliconsMap = utils.getGenomeToRepliconsMap().get(seq_name);
+        List<Gene> genomeToCogList = genomeToRepliconsMap.get(replicon_name).getGenes();
         if (genomeToCogList != null) {
             if (startIndex >= 0 && startIndex < genomeToCogList.size() &&
                     endIndex >= 0 && endIndex < genomeToCogList.size()) {

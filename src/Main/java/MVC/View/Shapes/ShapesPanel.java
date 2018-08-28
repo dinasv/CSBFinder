@@ -11,10 +11,11 @@ public class ShapesPanel extends JPanel{
 
     private List<Shape> shapes = new ArrayList<>();
 
-    public ShapesPanel(List<ShapesContainer> shapesContainers, int CONTAINERS_DIST) {
+    public ShapesPanel(List<ShapesContainer> shapesContainers, int CONTAINERS_DIST, Color backgroundColor) {
         shapes = new ArrayList<>();
 
-        setBackground(Color.WHITE);
+        setBackground(backgroundColor);
+
         int width = 0;
         int height = 0;
         if (shapesContainers.size() > 0){

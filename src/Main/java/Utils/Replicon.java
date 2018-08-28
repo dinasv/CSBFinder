@@ -13,6 +13,7 @@ import java.util.stream.Collectors;
  */
 public class Replicon {
 
+    private int id;
     protected List<Gene> genes;
     private int strand;
     private int start_index;
@@ -22,10 +23,15 @@ public class Replicon {
         genes = new ArrayList<>();
         strand = 0;
         start_index = 0;
+        id = -1;
+    }
+    public Replicon(int id){
+        this();
+        this.id = id;
     }
 
-    public Replicon(int strand){
-        this();
+    public Replicon(int strand, int id){
+        this(id);
         this.strand = strand;
     }
 
@@ -85,5 +91,9 @@ public class Replicon {
 
     public void setIndex(int index) {
         this.index = index;
+    }
+
+    public int getId() {
+        return id;
     }
 }
