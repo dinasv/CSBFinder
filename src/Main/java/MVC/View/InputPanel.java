@@ -156,17 +156,77 @@ public class InputPanel extends JPanel {
     }
 
     private void initLabels() {
-        quorumLabel = new JLabel("Quorum: ");
-        numOfInsertionsLabel = new JLabel("Insertions Allowed: ");
-        quorumWithoutInsertionsLabel = new JLabel("Quorum without insertions: ");
-        minCSBLengthLabel = new JLabel("CSB Min Length: ");
-        maxCSBLengthLabel = new JLabel("CSB Max Length: ");
-        datasetNameLabel = new JLabel("Dataset Name: ");
-        patternFilePathLabel = new JLabel("CSB Patterns File: ");
-        geneInfoFilePathLabel = new JLabel("Gene Orthology Info File: ");
-        bcountLabel = new JLabel("Count One Instance Per Sequence: ");
-        familyClusterThresholdLabel = new JLabel("Family Clustering Threshold: ");
-        clusterTypeLabel = new JLabel("Cluster By: ");
+
+        ImageIcon icon = createImageIcon("/question.png",
+                "question mark icon");
+
+        String label_name = "Quorum";
+        String desc = "Minimal number of input sequences that must contain a CSB instance.";
+        quorumLabel = initLabel(icon, label_name, desc);
+
+        label_name = "Insertions Allowed";
+        desc = "Maximal number of insertions allowed in a CSB instance.";
+        numOfInsertionsLabel = initLabel(icon, label_name, desc);
+
+        label_name = "Quorum without insertions";
+        desc = "Minimal number of input sequences that must contain a CSB instance with no insertions.";
+        quorumWithoutInsertionsLabel = initLabel(icon, label_name, desc);
+
+        label_name = "CSB Min Length";
+        desc = "Minimal length (number of genes) of a CSB.";
+        minCSBLengthLabel = initLabel(icon, label_name, desc);
+
+        label_name = "CSB Max Length";
+        desc = "Maximal length (number of gene) of a CSB.";
+        maxCSBLengthLabel = initLabel(icon, label_name, desc);
+
+        label_name = "Dataset Name";
+        desc = "Dataset name - will be reflected in the output file name.";
+        datasetNameLabel = initLabel(icon, label_name, desc);
+
+        label_name = "CSB Patterns File";
+        desc = "If this option is used, CSBs are no longer extracted from the input sequences. " +
+                "It specifies specific CSB patterns which the user is interested to find in the input sequences.";
+        patternFilePathLabel = initLabel(icon, label_name, desc);
+
+        label_name = "Gene Orthology Info File";
+        desc = "This file should contain functional description of orthology groups.";
+        geneInfoFilePathLabel = initLabel(icon, label_name, desc);
+
+        label_name = "Count One Instance Per Sequence";
+        desc = "If checked, CSB count indicates the number of input sequences with an instance, " +
+                "rather than the total number of instances.";
+        bcountLabel = initLabel(icon, label_name, desc);
+
+        label_name = "Family Clustering Threshold: ";
+        desc = "Threshold used in the process of clustering CSBs to families.";
+        familyClusterThresholdLabel = initLabel(icon, label_name, desc);
+
+        label_name = "Cluster CSBs By: ";
+        desc = "In the greedy CSB clustering to families, CSBs are sorted based on 'score' or 'length'.";
+        clusterTypeLabel = initLabel(icon, label_name, desc);
+
+    }
+
+    private JLabel initLabel(ImageIcon icon, String label_name, String desc){
+        JLabel label = new JLabel(label_name + ": ", icon, JLabel.LEFT);
+        label.setHorizontalTextPosition(SwingConstants.LEFT);
+        label.setToolTipText(desc);
+        ToolTipManager.sharedInstance().setDismissDelay(Integer.MAX_VALUE);
+        return label;
+    }
+
+    /** Returns an ImageIcon, or null if the path was invalid. */
+    protected ImageIcon createImageIcon(String path,
+                                        String description) {
+        java.net.URL imgURL = getClass().getResource(path);
+        System.out.println(getClass());
+        if (imgURL != null) {
+            return new ImageIcon(imgURL, description);
+        } else {
+            System.err.println("Couldn't find file: " + path);
+            return null;
+        }
     }
 
     private void initFields() {
