@@ -106,7 +106,7 @@ public class CLIController {
 
         if (cla.debug){
             utils.measureMemory();
-            long actualMemUsed = utils.currMem - utils.initiailMem;
+            long actualMemUsed = utils.currMem - utils.initialMem;
 
             System.out.println(actualMemUsed);
             logger.writeLogger("Genomes:" +utils.number_of_genomes + "," + actualMemUsed);

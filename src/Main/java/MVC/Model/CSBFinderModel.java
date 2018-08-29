@@ -305,4 +305,8 @@ public class CSBFinderModel {
     public int getNumberOfGenomes() {
         return number_of_genomes;
     }
+
+    public Map<String, Map<String, Replicon>> getGenomeMap() {
+        return utils.getGenomeToRepliconsMap();
+    }
 }

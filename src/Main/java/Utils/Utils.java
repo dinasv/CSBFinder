@@ -44,7 +44,7 @@ public class Utils {
 
     public Map<String, COG> cog_info;
 
-    public long initiailMem;
+    public long initialMem;
     public long currMem;
 
     private PatternScore pattern_score;
@@ -76,8 +76,8 @@ public class Utils {
 
         this.cog_info = cog_info;
 
-        initiailMem = Runtime.getRuntime().totalMemory()-Runtime.getRuntime().freeMemory();
-        currMem = initiailMem;
+        initialMem = Runtime.getRuntime().totalMemory()-Runtime.getRuntime().freeMemory();
+        currMem = initialMem;
         initAlphabet();
 
     }
@@ -112,7 +112,6 @@ public class Utils {
         if (currMem > this.currMem){
             this.currMem = currMem;
         }
-        //System.out.println(currMem-initiailMem);
     }
 
     private void countParalogsInSeqs(String[] directon, int curr_seq_index){

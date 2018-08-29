@@ -6,6 +6,7 @@ import MVC.View.MainFrame;
 import Utils.COG;
 import Utils.Pattern;
 import Utils.Gene;
+import Utils.Replicon;
 
 import java.util.List;
 import java.util.Map;
@@ -50,20 +51,10 @@ public class CSBFinderController {
 
     public Map<String, List<List<Gene>>> getInstances(Pattern pattern) { return model.getInstances(pattern); }
 
+    public Map<String, Map<String, Replicon>> getGenomeMap() { return model.getGenomeMap(); }
+
     public int getGenomesLoaded() {
         return model.getNumberOfGenomes();
     }
-
-//    public static void main(String[] args) {
-//        CSBFinderController controller = new CSBFinderController();
-//        controller.loadInputGenomesFile("E:\\Coding\\java\\CSBFinderCore\\input\\plasmid_genomes.fasta", true);
-//
-//        CSBFinderRequest request = new CSBFinderRequest();
-////        request.setCsb_pattern_file_name("e:\\Coding\\java\\CSBFinderCore\\input\\cog_info.txt");
-//        controller.findCSBs(request);
-//
-//
-//    }
-
 
 }

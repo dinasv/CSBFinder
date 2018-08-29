@@ -2,14 +2,12 @@ package MVC.View;
 
 import MVC.Common.CSBFinderRequest;
 import MVC.Controller.CSBFinderController;
+import MVC.View.Components.HiddenPanel;
 import MVC.View.Events.FamilyRowClickedEvent;
 import MVC.View.Events.LoadFileEvent;
 import MVC.View.Events.RunEvent;
 import MVC.View.Events.SaveOutputEvent;
-import MVC.View.Listeners.FamilyRowClickedListener;
-import MVC.View.Listeners.LoadFileListener;
-import MVC.View.Listeners.RunListener;
-import MVC.View.Listeners.SaveOutputListener;
+import MVC.View.Listeners.*;
 import CLI.CommandLineArgs;
 import Utils.COG;
 import Utils.Pattern;
@@ -20,7 +18,6 @@ import java.awt.*;
 import java.io.File;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 
 public class MainFrame extends JFrame {
 
@@ -29,6 +26,7 @@ public class MainFrame extends JFrame {
     private Toolbar toolbar;
     private GenomePanel genomes;
     private InputPanel inputs;
+    private HiddenPanel hiddenInputPanel;
 
     private SummaryPanel summaryPanel;
 
@@ -57,14 +55,27 @@ public class MainFrame extends JFrame {
         inputs = new InputPanel();
         genomes = new GenomePanel();
         summaryPanel = new SummaryPanel();
+        hiddenInputPanel = new HiddenPanel(inputs, HiddenPanel.HIDE);
+        hiddenInputPanel.setToggleCallBackListener(new ToggleCallBackListener() {
+            @Override
+            public void toggleOccurred() {
+                genomes.repaintGenomes();
+            }
+        });
 
         setEventListeners();
 
         add(toolbar, BorderLayout.NORTH);
-        add(inputs, BorderLayout.WEST);
-        add(genomes, BorderLayout.CENTER);
-        add(summaryPanel, BorderLayout.SOUTH);
-        inputs.setVisible(false);
+
+        JPanel top = new JPanel(new BorderLayout());
+        top.add(hiddenInputPanel, BorderLayout.WEST);
+        top.add(genomes, BorderLayout.CENTER);
+
+        JSplitPane split = new JSplitPane(JSplitPane.VERTICAL_SPLIT, true, top, summaryPanel);
+        split.setResizeWeight(0.5);
+        add(split, BorderLayout.CENTER);
+
+        hiddenInputPanel.setVisible(false);
     }
 
     private void setEventListeners() {
@@ -77,9 +88,6 @@ public class MainFrame extends JFrame {
         inputs.setRunListener(new RunListener() {
             public void runEventOccurred(RunEvent e) {
                 CSBFinderRequest request = e.getRequest();
-
-//                request.setQuorumWithoutInsertions(5);
-//                request.setGeneInfoFilePath("E:\\Coding\\Java\\CSBFinderCore\\input\\cog_info.txt");
 
                 SwingUtilities.invokeLater(new Runnable() {
                     @Override
@@ -143,7 +151,9 @@ public class MainFrame extends JFrame {
                             if (controller.getGenomesLoaded() == -1) {
                                 JOptionPane.showMessageDialog(MainFrame.this, "An error occurred while loading file");
                             } else {
-                                inputs.setVisible(true);
+//                                inputs.setVisible(true);
+                                hiddenInputPanel.setVisible(true);
+                                inputs.setGenomeData(controller.getGenomeMap());
                             }
                         }
                     };
@@ -200,10 +210,6 @@ public class MainFrame extends JFrame {
         });
     }
 
-//    public void displayInputPanel(int numOfGenomesLoaded) {
-//
-//    }
-
     private void setFamilyRowClickedListener() {
         summaryPanel.setFamilyRowClickedListener(new FamilyRowClickedListener() {
             @Override
@@ -215,11 +221,6 @@ public class MainFrame extends JFrame {
             }
         });
     }
-
-//    public void displayGenomesTable(Map<String,List<Gene>> genomeToGeneListMap) {
-//        //TODO: Implement genomes view
-//        genomes.setData(genomeToGeneListMap);
-//    }
 
     public void displayFamilyTable(List<Family> familyList) {
         toolbar.enableSaveFileBtn();

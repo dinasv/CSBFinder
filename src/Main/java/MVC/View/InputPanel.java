@@ -3,13 +3,16 @@ package MVC.View;
 import MVC.Common.CSBFinderRequest;
 import MVC.View.Events.RunEvent;
 import MVC.View.Listeners.RunListener;
+import Utils.Replicon;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
+import java.util.Comparator;
 import java.util.Hashtable;
+import java.util.Map;
 
 import static java.awt.GridBagConstraints.*;
 
@@ -30,6 +33,7 @@ public class InputPanel extends JPanel {
 
     private JList clusterTypeField;
     private JSpinner quorum;
+    private JSlider quorumSlider;
     private RunListener runListener;
     private JSpinner numOfInsertions;
     private JSpinner quorumWithoutInsertions;
@@ -51,7 +55,7 @@ public class InputPanel extends JPanel {
     private GridBagConstraints gc;
 
     public InputPanel() {
-        setMinimumSize(new Dimension(450, 800));
+//        setMinimumSize(new Dimension(450, 800));
 
         initLabels();
         initInputComponents();
@@ -109,6 +113,7 @@ public class InputPanel extends JPanel {
         clusterTypeField = new JList();
 
         quorum = new JSpinner();
+        quorumSlider = new JSlider();
 
         numOfInsertions = new JSpinner();
 
@@ -198,11 +203,11 @@ public class InputPanel extends JPanel {
                 "rather than the total number of instances.";
         bcountLabel = initLabel(icon, label_name, desc);
 
-        label_name = "Family Clustering Threshold: ";
+        label_name = "Family Clustering Threshold";
         desc = "Threshold used in the process of clustering CSBs to families.";
         familyClusterThresholdLabel = initLabel(icon, label_name, desc);
 
-        label_name = "Cluster CSBs By: ";
+        label_name = "Cluster CSBs By";
         desc = "In the greedy CSB clustering to families, CSBs are sorted based on 'score' or 'length'.";
         clusterTypeLabel = initLabel(icon, label_name, desc);
 
@@ -234,6 +239,9 @@ public class InputPanel extends JPanel {
         // Quorum
         quorum.setModel(new SpinnerNumberModel(1, 1, 2000, 1));
         ((JSpinner.DefaultEditor) quorum.getEditor()).getTextField().setColumns(3);
+        quorumSlider.setModel(new DefaultBoundedRangeModel(1, 0, 1, 2000));
+        quorum.addChangeListener(e -> quorumSlider.setValue((Integer) quorum.getValue()));
+        quorumSlider.addChangeListener(e -> quorum.setValue(quorumSlider.getValue()));
 
         // Number Of Insertions
         numOfInsertions.setModel(new SpinnerNumberModel(0, 0, 5, 1));
@@ -248,7 +256,7 @@ public class InputPanel extends JPanel {
 
         // CSB max length
         maxCSBLength.setModel(new SpinnerNumberModel(Integer.MAX_VALUE, 2, Integer.MAX_VALUE, 1));
-        ((JSpinner.DefaultEditor)maxCSBLength.getEditor()).getTextField().setColumns(8);
+        ((JSpinner.DefaultEditor)maxCSBLength.getEditor()).getTextField().setColumns(3);
 
         // dataset name
         datasetName.setText("dataset");
@@ -292,12 +300,13 @@ public class InputPanel extends JPanel {
 
         int y = 0;
 
-        addComponentToGC(0, y, 1, 0.2, insetLabel, geneInfoFilePathLabel, LINE_START);
-        addComponentToGC(1, y, 1, 0.2, insetField, geneInfoFilePath, LINE_START);
-        addComponentToGC(2, y++, 1, 0.2, insetField, loadGeneInfoBtn, LINE_START);
+        addComponentToGC(0, y, 1, 0.6, insetLabel, geneInfoFilePathLabel, LINE_START);
+        addComponentToGC(1, y, 1, 0.6, insetField, geneInfoFilePath, LINE_START);
+        addComponentToGC(2, y++, 1, 0.6, insetField, loadGeneInfoBtn, LINE_START);
 
-        addComponentToGC(0, y, 1, 0.1, insetLabel, quorumLabel, LINE_START);
-        addComponentToGC(1, y++, 1, 0.1, insetField, quorum, LINE_START);
+        addComponentToGC(0, y, 1, 0.2, insetLabel, quorumLabel, LINE_START);
+        addComponentToGC(1, y, 1, 0.2, insetField, quorumSlider, LINE_START);
+        addComponentToGC(2, y++, 1, 0.2, insetField, quorum, LINE_START);
 
         addComponentToGC(0, y, 1, 0.1, insetLabel, numOfInsertionsLabel, LINE_START);
         addComponentToGC(1, y++, 1, 0.1, insetField, numOfInsertions, LINE_START);
@@ -342,4 +351,18 @@ public class InputPanel extends JPanel {
         add(c , gc);
     }
 
+    public void setGenomeData(Map<String,Map<String,Replicon>> genomeMap) {
+        if (genomeMap != null && genomeMap.size() > 0) {
+            ((SpinnerNumberModel)quorum.getModel()).setMaximum(genomeMap.keySet().size());
+            quorumSlider.getModel().setMaximum(genomeMap.keySet().size());
+
+            Integer maxGenomeLen = genomeMap.values().stream()
+                    .map(Map::size)
+                    .max(Comparator.naturalOrder())
+                    .get();
+
+            ((SpinnerNumberModel)maxCSBLength.getModel()).setMaximum(maxGenomeLen);
+            maxCSBLength.setValue(maxGenomeLen);
+        }
+    }
 }

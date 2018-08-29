@@ -19,6 +19,7 @@ public class GenomePanel extends JPanel {
 
     private static final int CONTAINERS_DIST = 50;
     private static final int GENOME_NAME_WIDTH = 100;
+    private static final int INSTANCE_ROW_HEIGHT = 35;
     Random rnd = new Random();
 
     private static final String CSB_PREFIX = "Instances for CSB: ";
@@ -32,7 +33,6 @@ public class GenomePanel extends JPanel {
 
         scroll = new JScrollPane(container);
         scroll.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
-        //scroll.getHorizontalScrollBar().setPreferredSize(new Dimension(0,0));
 
         add(scroll);
 
@@ -45,7 +45,10 @@ public class GenomePanel extends JPanel {
         setData(instances, pattenCOGs);
         container.revalidate();
         container.repaint();
+    }
 
+    public void repaintGenomes() {
+        container.repaint();
     }
 
 
@@ -82,7 +85,7 @@ public class GenomePanel extends JPanel {
 
         JScrollPane instancesRow = getInstancesRow(instances, backgroundColor);
         int instanceRowWidth = scroll.getViewport().getSize().width - GENOME_NAME_WIDTH - 10;
-        instancesRow.setPreferredSize(new Dimension(instanceRowWidth, 35));
+        instancesRow.setPreferredSize(new Dimension(instanceRowWidth, INSTANCE_ROW_HEIGHT));
 
         gc.gridx = 0; gc.gridy = colIndex; gc.weightx = 0; gc.anchor = GridBagConstraints.FIRST_LINE_START; gc.insets = insetName;
         container.add(genomeRowLabel, gc);
