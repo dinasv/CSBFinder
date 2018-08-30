@@ -14,8 +14,8 @@ public class SummaryTabs extends JTabbedPane {
     public SummaryTabs() {
         familyPanel = new FamilyPanel();
         familyTopScorePanel = new FamilyPanel();
-        addTab("Families", familyPanel);
-        addTab("Top Score", familyTopScorePanel);
+        addTab("CSBs", familyPanel);
+        addTab("Top Scoring CSBs", familyTopScorePanel);
     }
 
     public void setFamilyData(List<Family> familyList) {
