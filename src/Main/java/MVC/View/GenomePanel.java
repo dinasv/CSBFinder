@@ -68,14 +68,16 @@ public class GenomePanel extends JPanel {
         }
 
         JLabel genomeRowLabel = getGenomeRowLabelComponent("CSB");
-        colIndex = setGenomePanelRow(patternGenes, colIndex, insetName, insetList, genomeRowLabel, Color.BLACK);
+        colIndex = setGenomePanelRow(patternGenes, colIndex, insetName, insetList, genomeRowLabel, Color.WHITE);
+
+        Color light_gray = new Color(238,238,238);
 
         for (Map.Entry<String, List<List<Gene>>> entry: instances.entrySet()) {
             String genomeName = entry.getKey();
             List<List<Gene>> instancesLists = entry.getValue();
 
             genomeRowLabel = getGenomeRowLabelComponent(genomeName);
-            colIndex = setGenomePanelRow(instancesLists, colIndex, insetName, insetList, genomeRowLabel, Color.white);
+            colIndex = setGenomePanelRow(instancesLists, colIndex, insetName, insetList, genomeRowLabel, light_gray);
 
         }
     }

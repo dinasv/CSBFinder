@@ -15,9 +15,9 @@ import Utils.COG;
 public class CSBSummaryPanel extends JPanel {
 
     JTextPane summary;
-    private static final String HEADER = "CSB Information";
+    //private static final String HEADER = "CSB Information";
     private static final String NEWLINE = "\n";
-    private static final String NO_COG_INFO_WARNNING = "Oops, No cog info found. Did you load the gene orthology info file?";
+    private static final String NO_COG_INFO_WARNNING = "Oops, No gene information was found. Did you load the gene orthology info file?";
 
     Highlighter highlighter;
 
@@ -34,12 +34,16 @@ public class CSBSummaryPanel extends JPanel {
 
         highlighter = summary.getHighlighter();
 
+        setBorder(BorderFactory.createCompoundBorder(
+                BorderFactory.createTitledBorder("Legend"),
+                BorderFactory.createEmptyBorder(5, 5, 5, 5)));
+
     }
 
 
     public void displaySummary(List<COG> info, Map<String, Color> colorsUsed) {
         StringBuilder sb = new StringBuilder();
-        sb.append(HEADER + NEWLINE);
+        //sb.append(HEADER + NEWLINE);
 
         if (info.size() == 0) {
             sb.append(NO_COG_INFO_WARNNING);
