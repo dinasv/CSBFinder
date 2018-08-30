@@ -46,8 +46,7 @@ public class CSBFinderModel {
         this.init();
         dataset_suffix_tree = new GeneralizedSuffixTree();
         number_of_genomes = utils.readAndBuildDatasetTree(path, dataset_suffix_tree, false);
-        //        number_of_genomes= utils.getGenomeToRepliconsMap().size();
-//        genomesLoadedListener.genomesLoadDone(new GenomesLoadEvent(utils.getGenomeToRepliconsMap()));
+
 
     }
 
@@ -78,7 +77,6 @@ public class CSBFinderModel {
     public void findCSBs(String[] args) {
         JCommander jcommander = parseArgs(args);
         if (jcommander != null){
-            //writer = createWriter(cla.cog_info_file_name != null && !"".equals(cla.cog_info_file_name));
 
             this.findCSBs();
         }
@@ -167,8 +165,6 @@ public class CSBFinderModel {
          Writer writer = createWriter(cla.cog_info_file_name != null && !"".equals(cla.cog_info_file_name),
                 CommandLineArgs.OutputType.valueOf(outputFileType));
 
-        //System.out.println(outputFileType);
-        //writer.setOutputFileType(CommandLineArgs.OutputType.valueOf(outputFileType));
         System.out.println("Writing to files");
         for (Family family : families) {
             writer.printFilteredCSB(family.getPatterns().get(0), utils, family.getFamilyId());
@@ -308,5 +304,9 @@ public class CSBFinderModel {
 
     public Map<String, Map<String, Replicon>> getGenomeMap() {
         return utils.getGenomeToRepliconsMap();
+    }
+
+    public int getMaxGenomeSize(){
+        return utils.getMaxGenomesSize();
     }
 }

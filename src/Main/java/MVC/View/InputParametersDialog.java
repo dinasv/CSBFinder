@@ -9,14 +9,17 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.util.Comparator;
 import java.util.Hashtable;
 import java.util.Map;
 
-import static java.awt.GridBagConstraints.*;
+import static java.awt.GridBagConstraints.FIRST_LINE_START;
+import static java.awt.GridBagConstraints.LINE_START;
 
-public class InputPanel extends JPanel {
+public class InputParametersDialog extends JDialog {
 
     private JLabel clusterTypeLabel;
     private JLabel quorumLabel;
@@ -55,8 +58,10 @@ public class InputPanel extends JPanel {
 
     private GridBagConstraints gc;
 
-    public InputPanel() {
+    public InputParametersDialog() {
 //        setMinimumSize(new Dimension(450, 800));
+
+        setTitle("Parameters");
 
         initLabels();
         initInputComponents();
@@ -75,9 +80,6 @@ public class InputPanel extends JPanel {
             }
         });
 
-        setBorder(BorderFactory.createCompoundBorder(
-                BorderFactory.createTitledBorder("Parameters"),
-                BorderFactory.createEmptyBorder(5, 5, 5, 5)));
 
         setLayout(new GridBagLayout());
 
@@ -357,19 +359,15 @@ public class InputPanel extends JPanel {
         add(c , gc);
     }
 
-    public void setGenomeData(Map<String,Map<String,Replicon>> genomeMap) {
-        if (genomeMap != null && genomeMap.size() > 0) {
-            ((SpinnerNumberModel)quorum.getModel()).setMaximum(genomeMap.keySet().size());
-            quorumSlider.getModel().setMaximum(genomeMap.keySet().size());
-            quorumWithoutInsertionsSlider.getModel().setMaximum(genomeMap.keySet().size());
+    public void setGenomeData(int numberOfGenomes, int maxGenomeSize) {
+        if (numberOfGenomes > 0) {
+            ((SpinnerNumberModel)quorum.getModel()).setMaximum(numberOfGenomes);
+            quorumSlider.getModel().setMaximum(numberOfGenomes);
+            quorumWithoutInsertionsSlider.getModel().setMaximum(numberOfGenomes);
 
-            Integer maxGenomeLen = genomeMap.values().stream()
-                    .map(Map::size)
-                    .max(Comparator.naturalOrder())
-                    .get();
-
-            ((SpinnerNumberModel)maxCSBLength.getModel()).setMaximum(maxGenomeLen);
-            maxCSBLength.setValue(maxGenomeLen);
+            ((SpinnerNumberModel)maxCSBLength.getModel()).setMaximum(maxGenomeSize);
+            maxCSBLength.setValue(maxGenomeSize);
         }
     }
+
 }

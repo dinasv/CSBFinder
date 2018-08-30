@@ -57,4 +57,14 @@ public class CSBFinderController {
         return model.getNumberOfGenomes();
     }
 
+    public int getMaxGenomeSize(){
+        return model.getMaxGenomeSize();
+    }
+
+    public int getNumberOfGenomes() {
+        return model.getNumberOfGenomes();
+    }
+
 }
+
+
