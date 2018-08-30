@@ -37,6 +37,7 @@ public class InputPanel extends JPanel {
     private RunListener runListener;
     private JSpinner numOfInsertions;
     private JSpinner quorumWithoutInsertions;
+    private JSlider quorumWithoutInsertionsSlider;
     private JSpinner minCSBLength;
     private JSpinner maxCSBLength;
     private JTextField datasetName;
@@ -118,6 +119,7 @@ public class InputPanel extends JPanel {
         numOfInsertions = new JSpinner();
 
         quorumWithoutInsertions = new JSpinner();
+        quorumWithoutInsertionsSlider = new JSlider();
 
         minCSBLength = new JSpinner();
 
@@ -225,7 +227,7 @@ public class InputPanel extends JPanel {
     protected ImageIcon createImageIcon(String path,
                                         String description) {
         java.net.URL imgURL = getClass().getResource(path);
-        System.out.println(getClass());
+
         if (imgURL != null) {
             return new ImageIcon(imgURL, description);
         } else {
@@ -248,8 +250,11 @@ public class InputPanel extends JPanel {
         ((JSpinner.DefaultEditor)numOfInsertions.getEditor()).getTextField().setColumns(3);
 
         // Quorum without insertions
-        quorumWithoutInsertions.setModel(new SpinnerNumberModel(1, 1, 5, 1));
+        quorumWithoutInsertions.setModel(new SpinnerNumberModel(1, 1, 2000, 1));
         ((JSpinner.DefaultEditor)quorumWithoutInsertions.getEditor()).getTextField().setColumns(3);
+        quorumWithoutInsertionsSlider.setModel(new DefaultBoundedRangeModel(1, 0, 1, 2000));
+        quorumWithoutInsertions.addChangeListener(e -> quorumWithoutInsertionsSlider.setValue((Integer) quorumWithoutInsertions.getValue()));
+        quorumWithoutInsertionsSlider.addChangeListener(e -> quorumWithoutInsertions.setValue(quorumWithoutInsertionsSlider.getValue()));
 
         // CSB min length
         minCSBLength.setModel(new SpinnerNumberModel(2, 2, 100, 1));
@@ -305,14 +310,15 @@ public class InputPanel extends JPanel {
         addComponentToGC(2, y++, 1, 0.6, insetField, loadGeneInfoBtn, LINE_START);
 
         addComponentToGC(0, y, 1, 0.2, insetLabel, quorumLabel, LINE_START);
-        addComponentToGC(1, y, 1, 0.2, insetField, quorumSlider, LINE_START);
-        addComponentToGC(2, y++, 1, 0.2, insetField, quorum, LINE_START);
+        addComponentToGC(2, y, 1, 0.2, insetField, quorum, LINE_START);
+        addComponentToGC(1, y++, 1, 0.2, insetField, quorumSlider, LINE_START);
 
         addComponentToGC(0, y, 1, 0.1, insetLabel, numOfInsertionsLabel, LINE_START);
         addComponentToGC(1, y++, 1, 0.1, insetField, numOfInsertions, LINE_START);
 
-        addComponentToGC(0, y, 1, 0.1, insetLabel, quorumWithoutInsertionsLabel, LINE_START);
-        addComponentToGC(1, y++, 1, 0.1, insetField, quorumWithoutInsertions, LINE_START);
+        addComponentToGC(0, y, 1, 0.2, insetLabel, quorumWithoutInsertionsLabel, LINE_START);
+        addComponentToGC(2, y, 1, 0.2, insetField, quorumWithoutInsertions, LINE_START);
+        addComponentToGC(1, y++, 1, 0.2, insetField, quorumWithoutInsertionsSlider, LINE_START);
 
         addComponentToGC(0, y, 1, 0.1, insetLabel, minCSBLengthLabel, LINE_START);
         addComponentToGC(1, y++, 1, 0.1, insetField, minCSBLength, LINE_START);
@@ -355,6 +361,7 @@ public class InputPanel extends JPanel {
         if (genomeMap != null && genomeMap.size() > 0) {
             ((SpinnerNumberModel)quorum.getModel()).setMaximum(genomeMap.keySet().size());
             quorumSlider.getModel().setMaximum(genomeMap.keySet().size());
+            quorumWithoutInsertionsSlider.getModel().setMaximum(genomeMap.keySet().size());
 
             Integer maxGenomeLen = genomeMap.values().stream()
                     .map(Map::size)

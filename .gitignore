@@ -27,3 +27,7 @@ target/**
 input/**
 CSBFinderCore.log.1
 CSBFinderCore.iml
+
+
+'.idea'
+'/.idea/vcs.xml'
