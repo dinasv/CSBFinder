@@ -31,6 +31,10 @@ public class MainFrame extends JFrame {
 
     public MainFrame(CSBFinderController controller) {
         super("CSB Finder");
+
+        setUIFont (new javax.swing.plaf.FontUIResource("Serif",Font.PLAIN,16));
+
+
         this.controller = controller;
 
         setLayout(new BorderLayout());
@@ -38,6 +42,18 @@ public class MainFrame extends JFrame {
         init();
 
         progressBar = new ProgressBar(this);
+
+
+    }
+
+    public static void setUIFont (javax.swing.plaf.FontUIResource f){
+        java.util.Enumeration keys = UIManager.getLookAndFeelDefaults().keys();
+        while (keys.hasMoreElements()) {
+            Object key = keys.nextElement();
+            Object value = UIManager.get (key);
+            if (value instanceof javax.swing.plaf.FontUIResource)
+                UIManager.put (key, f);
+        }
     }
 
     public void init() {
@@ -50,7 +66,6 @@ public class MainFrame extends JFrame {
     public void initComponents() {
 
         inputParamsDialog = new InputParametersDialog();
-        inputParamsDialog.pack();
 
         toolbar = new Toolbar();
         genomes = new GenomePanel();

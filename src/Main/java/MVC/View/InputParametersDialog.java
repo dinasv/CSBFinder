@@ -59,7 +59,6 @@ public class InputParametersDialog extends JDialog {
     private GridBagConstraints gc;
 
     public InputParametersDialog() {
-//        setMinimumSize(new Dimension(450, 800));
 
         setTitle("Parameters");
 
@@ -88,7 +87,7 @@ public class InputParametersDialog extends JDialog {
 
         initFields();
         addFieldsToGC();
-
+        pack();
     }
 
     private void initRequest(CSBFinderRequest request) {
@@ -267,15 +266,15 @@ public class InputParametersDialog extends JDialog {
 
         // dataset name
         datasetName.setText("dataset");
-        datasetName.setColumns(10);
+        datasetName.setColumns(20);
 
         // csb pattern file path
         patternFilePath.setText("optional");
-        patternFilePath.setColumns(15);
+        patternFilePath.setColumns(20);
 
         // gene family information file path
         geneInfoFilePath.setText("optional");
-        geneInfoFilePath.setColumns(15);
+        geneInfoFilePath.setColumns(20);
 
         // bcount
         bcount.setSelected(true);
@@ -302,8 +301,8 @@ public class InputParametersDialog extends JDialog {
     }
 
     private void addFieldsToGC() {
-        Insets insetLabel = new Insets(0, 0, 0, 5);
-        Insets insetField = new Insets(0, 0, 0, 0);
+        Insets insetLabel = new Insets(0, 10, 5, 5);
+        Insets insetField = new Insets(0, 0, 5, 5);
 
         int y = 0;
 
@@ -329,7 +328,7 @@ public class InputParametersDialog extends JDialog {
         addComponentToGC(1, y++, 1, 0.1, insetField, maxCSBLength, FIRST_LINE_START);
 
         addComponentToGC(0, y, 1, 0.1, insetLabel, datasetNameLabel, LINE_START);
-        addComponentToGC(1, y++, 1, 0.1, insetField, datasetName, LINE_START);
+        addComponentToGC(1, y++, 1, 0.2, insetField, datasetName, LINE_START);
 
         addComponentToGC(0, y, 1, 0.2, insetLabel, patternFilePathLabel, LINE_START);
         addComponentToGC(1, y, 1, 0.2, insetField, patternFilePath, LINE_START);
@@ -345,8 +344,8 @@ public class InputParametersDialog extends JDialog {
 
         addComponentToGC(0, y, 1, 0.2, insetLabel, clusterTypeLabel, FIRST_LINE_START);
         addComponentToGC(1, y++, 1, 0.2, insetField, clusterTypeField, FIRST_LINE_START);
-
-        addComponentToGC(1, y, 1, 2, insetField, run, FIRST_LINE_START);
+        addComponentToGC(1, y++, 1, 1, insetField, new JLabel(""), FIRST_LINE_START);
+        addComponentToGC(1, y, 1, 2, insetField, run, LINE_START);
     }
 
     private void addComponentToGC(int x, int y, double weightx, double weighty, Insets insets, Component c, int anchor) {

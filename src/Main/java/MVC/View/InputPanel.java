@@ -137,14 +137,14 @@ public class InputPanel extends JPanel {
 
         loadPatternBtn = new JButton("Load File");
         loadPatternBtn.addActionListener(e -> {
-            File f = chooseFile();
+            File f = choseFile();
             if (f != null && f.exists() && !f.isDirectory()) {
                 patternFilePath.setText(f.getPath());
             }
         });
         loadGeneInfoBtn = new JButton("Load File");
         loadGeneInfoBtn.addActionListener(e -> {
-            File f = chooseFile();
+            File f = choseFile();
             if (f != null && f.exists() && !f.isDirectory()) {
                 geneInfoFilePath.setText(f.getPath());
             }
@@ -152,7 +152,7 @@ public class InputPanel extends JPanel {
 
     }
 
-    private File chooseFile() {
+    private File choseFile() {
         File f = null;
         JFileChooser fc = new JFileChooser(System.getProperty("user.dir"));
         if (fc.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
