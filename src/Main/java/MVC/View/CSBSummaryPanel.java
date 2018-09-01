@@ -26,8 +26,7 @@ public class CSBSummaryPanel extends JPanel {
         summary = new JTextPane();
         summary.setEditable(false);
         summary.setFont(new Font("Serif", Font.PLAIN, 16));
-        //summary.setLineWrap(true);
-        //summary.setWrapStyleWord(true);
+
         JScrollPane scroll = new JScrollPane(summary);
         scroll.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
         add(scroll, BorderLayout.CENTER);

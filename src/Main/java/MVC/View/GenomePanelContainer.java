@@ -5,54 +5,53 @@ import Utils.Gene;
 import Utils.Utils;
 
 import javax.swing.*;
-import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.util.*;
 import java.util.List;
 
-public class GenomePanel extends JPanel {
+public class GenomePanelContainer  extends JPanel {
 
-    private JScrollPane scroll;
-    private GenomePanelContainer container;
-    //private GridBagConstraints gc;
+    private InstancesLabelsPanel labelsPanel;
+    private InstancesPanel instancesPanel;
 
-    //private static final int CONTAINERS_DIST = 50;
-    //private static final int GENOME_NAME_WIDTH = 100;
-    //private static final int INSTANCE_ROW_HEIGHT = 35;
-    //Random rnd = new Random();
+    GridBagConstraints gc;
 
-    //private static final String CSB_PREFIX = "Instances for CSB: ";
+    private final int ROW_HEIGHT = 34;
+    private final ShapeDimensions geneShapeDim = new ShapeDimensions(60, 15, 30);
 
-   // private  Map<String, Color> colorsUsed;
+    public GenomePanelContainer(){
 
-    public GenomePanel() {
-        //setGCLayout();
-        setLayout(new BorderLayout());
+        setLayout(new GridBagLayout());
+        setGCLayout();
 
-        container = new GenomePanelContainer();
-        scroll = new JScrollPane(container);
-        scroll.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+        labelsPanel = new InstancesLabelsPanel(ROW_HEIGHT);
+        instancesPanel = new InstancesPanel(ROW_HEIGHT, geneShapeDim);
 
-        add(scroll, BorderLayout.CENTER);
+        gc.gridx = 0; gc.gridy = 0; gc.weightx = 0.2; gc.anchor = GridBagConstraints.FIRST_LINE_START;
+        add(labelsPanel, gc);
+        gc.gridx = 1; gc.gridy = 0; gc.weightx = 0.8; gc.anchor = GridBagConstraints.FIRST_LINE_START;
+        add(instancesPanel, gc);
 
-
-
-        //colorsUsed = new HashMap<>();
-        //colorsUsed.put(Utils.UNK_CHAR, Color.lightGray);
+        /*
+        setOrientation(JSplitPane.HORIZONTAL_SPLIT);
+        setDividerSize(2);
+        setLeftComponent(labelsPanel);
+        setRightComponent(instancesPanel);
+        setResizeWeight(0.2);*/
     }
 
-    public void displayInstances(String[] pattenCOGs, Map<String,List<List<Gene>>> instances) {
-        //container.removeAll();
-        int scroll_width = scroll.getViewport().getSize().width;
-        container.displayInstances(pattenCOGs, instances, scroll_width);
-        container.revalidate();
-        //container.repaintGenomes();
-        container.repaint();
+    public void displayInstances(String[] pattenCOGs, Map<String,List<List<Gene>>> instances, int scrollWidth) {
+        //setData(instances, pattenCOGs, scrollWidth);
+        labelsPanel.displayInstancesLabels(instances);
+        instancesPanel.displayInstances(pattenCOGs,instances, scrollWidth-labelsPanel.getWidth());
+
+        revalidate();
+        repaint();
     }
 
 /*
-    private void setData(Map<String,List<List<Gene>>> instances, String[] pattenCOGs) {
+    private void setData(Map<String,List<List<Gene>>> instances, String[] pattenCOGs, int scrollWidth) {
 
         int colIndex = 0;
 
@@ -68,7 +67,8 @@ public class GenomePanel extends JPanel {
         }
 
         JLabel genomeRowLabel = getGenomeRowLabelComponent("CSB");
-        colIndex = setGenomePanelRow(patternGenes, colIndex, insetName, insetList, genomeRowLabel, Color.WHITE);
+        colIndex = setGenomePanelRow(patternGenes, colIndex, insetName, insetList, genomeRowLabel, Color.WHITE,
+                scrollWidth);
 
         Color light_gray = new Color(238,238,238);
 
@@ -77,32 +77,33 @@ public class GenomePanel extends JPanel {
             List<List<Gene>> instancesLists = entry.getValue();
 
             genomeRowLabel = getGenomeRowLabelComponent(genomeName);
-            colIndex = setGenomePanelRow(instancesLists, colIndex, insetName, insetList, genomeRowLabel, light_gray);
+            colIndex = setGenomePanelRow(instancesLists, colIndex, insetName, insetList, genomeRowLabel, light_gray,
+                    scrollWidth);
 
         }
-    }*/
-/*
+    }
+
     private int setGenomePanelRow(List<List<Gene>> instances, int colIndex, Insets insetName,
-                                  Insets insetList, JLabel genomeRowLabel, Color backgroundColor){
+                                  Insets insetList, JLabel genomeRowLabel, Color backgroundColor, int scrollWidth){
 
         JScrollPane instancesRow = getInstancesRow(instances, backgroundColor);
-        int instanceRowWidth = scroll.getViewport().getSize().width - GENOME_NAME_WIDTH - 10;
-        instancesRow.setPreferredSize(new Dimension(instanceRowWidth, INSTANCE_ROW_HEIGHT));
+
+        //scrollWidth -= GENOME_NAME_WIDTH - 10;
+        scrollWidth = 200;
+        instancesRow.setPreferredSize(new Dimension(scrollWidth, INSTANCE_ROW_HEIGHT));
 
         gc.gridx = 0; gc.gridy = colIndex; gc.weightx = 0; gc.anchor = GridBagConstraints.FIRST_LINE_START; gc.insets = insetName;
-        container.add(genomeRowLabel, gc);
-        gc.gridx = 1; gc.gridy = colIndex; gc.weightx = 2; gc.anchor = GridBagConstraints.FIRST_LINE_START; gc.insets = insetList;
-        JPanel p = new JPanel(new BorderLayout());
-        container.add(instancesRow, gc);
+        labelsPanel.add(genomeRowLabel, gc);
+        gcRight.gridx = 0; gcRight.gridy = colIndex; gcRight.weightx = 2; gcRight.anchor = GridBagConstraints.FIRST_LINE_START; gcRight.insets = insetList;
+        //JPanel p = new JPanel(new BorderLayout());
+        instancesPanel.add(instancesRow, gcRight);
         colIndex += 1;
 
         return colIndex;
     }
 
-    public void updateInstanceRowWidth(){
 
-    }*/
-/*
+
     private JScrollPane getInstancesRow(List<List<Gene>> instancesList, Color backgroundColor) {
 
         int x = 0;
@@ -163,13 +164,13 @@ public class GenomePanel extends JPanel {
         genomeRowLabelComponent.setToolTipText(label);
         genomeRowLabelComponent.setPreferredSize(new Dimension(GENOME_NAME_WIDTH, 25));
         return genomeRowLabelComponent;
-    }
+    }*/
 
     private void setGCLayout() {
         gc = new GridBagConstraints();
     }
-*/
+
     public Map<String,Color> getColorsUsed(){
-        return container.getColorsUsed();
+        return instancesPanel.getColorsUsed();
     }
 }
