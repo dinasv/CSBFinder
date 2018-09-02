@@ -14,14 +14,12 @@ public class InstancesLabelsPanel extends JPanel {
 
     private GridBagConstraints gc;
 
-    public static final int GENOME_NAME_WIDTH = 100;
+    public static final int GENOME_NAME_WIDTH = 300;
 
 
     public InstancesLabelsPanel() {
         setLayout(new GridBagLayout());
         setGCLayout();
-
-        //add(new JLabel("BlaBla"), BorderLayout.CENTER);
     }
 
     public void displayInstancesLabels(Map<String,List<InstanceInfo>> instances, int firstRowHeight, int rowHeight) {
