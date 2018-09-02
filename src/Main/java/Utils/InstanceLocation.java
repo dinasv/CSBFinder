@@ -1,9 +1,11 @@
 package Utils;
 
+import java.util.Comparator;
+
 /**
  *
  */
-public class InstanceLocation {
+public class InstanceLocation{
     private int replicon_id;
     private int strand;
     private int start_index;
@@ -63,4 +65,5 @@ public class InstanceLocation {
     public void setRepliconName(String repliconName) {
         this.repliconName = repliconName;
     }
+
 }

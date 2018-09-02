@@ -60,9 +60,7 @@ public class GeneShape implements Shape{
         if (strand.equals("-")){
             labelPositionX += dim.getArrowWidth();
         }
-        //LabelShape labelShape = new LabelShape(labelPositionX, y + dim.getArrowHeight()+5, label);
 
-        //labelShape.draw(g);
         g.drawString(label.getText(), labelPositionX, y + dim.getArrowHeight()+5);
     }
 

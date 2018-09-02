@@ -42,10 +42,17 @@ public class GenomePanelContainer  extends JPanel {
         setResizeWeight(0.2);*/
     }
 
-    public void displayInstances(String[] pattenCOGs, Map<String,List<InstanceInfo>> instances, int scrollWidth) {
+    public void displayInstances(String[] pattenCOGs, Map<String, Map<String,List<InstanceInfo>>> instances, int scrollWidth) {
 
-        instancesPanel.displayInstances(pattenCOGs,instances, scrollWidth-InstancesLabelsPanel.GENOME_NAME_WIDTH);
-        labelsPanel.displayInstancesLabels(instances, instancesPanel.getFirstRowHeight(), instancesPanel.getRowHeight());
+        List<String> genomeNames = new ArrayList<>();
+        List<Map<String,List<InstanceInfo>>> instancesList = new ArrayList<>();
+        for(Map.Entry<String, Map<String, List<InstanceInfo>>> entry: instances.entrySet()){
+            genomeNames.add(entry.getKey());
+            instancesList.add(entry.getValue());
+        }
+
+        instancesPanel.displayInstances(pattenCOGs, instancesList, scrollWidth-InstancesLabelsPanel.GENOME_NAME_WIDTH);
+        labelsPanel.displayInstancesLabels(genomeNames, instancesPanel.getFirstRowHeight(), instancesPanel.getRowHeight());
 
         revalidate();
         repaint();

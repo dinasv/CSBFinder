@@ -13,7 +13,7 @@ public class ShapesPanel extends JPanel{
     private int containers_dist;
     private int panelHeight;
 
-    public ShapesPanel(List<ShapesInstance> shapesInstanceList, int containers_dist, Color backgroundColor) {
+    public ShapesPanel(List<List<ShapesInstance>> shapesInstanceList, int containers_dist, Color backgroundColor) {
         this.containers_dist = containers_dist;
         shapes = new ArrayList<>();
 
@@ -22,39 +22,61 @@ public class ShapesPanel extends JPanel{
         //set preferred container size
         panelHeight = 0;
         if (shapesInstanceList.size() > 0) {
-            panelHeight = shapesInstanceList.get(0).getHeight();
+            List<ShapesInstance> repliconInstances = shapesInstanceList.get(0);
+            if (repliconInstances.size() > 0) {
+                panelHeight = repliconInstances.get(0).getHeight();
+            }
         }
 
         this.setPreferredPanelSize(shapesInstanceList);
 
         //add shapes
-        int counter = 0;
-        for (ShapesInstance shapesInstance : shapesInstanceList) {
-            counter ++;
+        int i = 0;
+        int x = 0;
+        int x1, x2, y1, y2;
 
-            addShape(shapesInstance);
+        for (List<ShapesInstance> repliconInstances : shapesInstanceList) {
+            i++;
+            int j = 0;
+            for (ShapesInstance shapesInstance : repliconInstances) {
+                j++;
 
-            if (counter < shapesInstanceList.size()) {
-                int x = shapesInstance.getX() +  shapesInstance.getWidth();
+                addShape(shapesInstance);
 
-                int x1 = x + (int) (containers_dist * 0.2);
-                int y1 = shapesInstance.getGeneEndY();
-                int x2 = x + containers_dist - (int) (containers_dist * 0.2);
-                int y2 = shapesInstance.getGeneY();
-                addDiagShape(x1, y1, x2, y2);
+                x = shapesInstance.getX() + shapesInstance.getWidth();
+
+                x1 = x + (int) (containers_dist * 0.2);
+                y1 = shapesInstance.getGeneEndY();
+                x2 = x + containers_dist - (int) (containers_dist * 0.2);
+                y2 = shapesInstance.getGeneY();
+
+                if (j < repliconInstances.size()) {
+                    addShape(new DiagLinesShape(x1, y1, x2, y2));
+                }
+            }
+            if (i < shapesInstanceList.size()){
+                x1 = x + (int) (containers_dist * 0.4);
+
+                addShape(new RectShape(x1, 0, 5, panelHeight, Color.black));
             }
         }
 
     }
 
-    private void setPreferredPanelSize(List<ShapesInstance> shapesInstanceList){
+    private void setPreferredPanelSize(List<List<ShapesInstance>> shapesInstanceList){
         int width = 0;
 
-        for (ShapesInstance shapesInstance : shapesInstanceList) {
-            width += shapesInstance.getWidth();
+        for (List<ShapesInstance> repliconInstances : shapesInstanceList) {
+
+            for (ShapesInstance shapesInstance: repliconInstances) {
+                width += shapesInstance.getWidth();
+            }
+            width += containers_dist * (repliconInstances.size());
+
         }
 
-        width += containers_dist * (shapesInstanceList.size() - 1);
+        width -= containers_dist/2;
+
         setPreferredSize(new Dimension(width, panelHeight));
     }
 
@@ -72,21 +94,6 @@ public class ShapesPanel extends JPanel{
         repaint();
     }
 
-    /*
-    private void addGeneShape(ShapeParams shapeParams) {
-        shapes.add(new GeneShape(shapeParams));
-        repaint();
-    }*/
-
-    private void addDiagShape(int x1, int y1, int x2, int y2){
-        shapes.add(new DiagLinesShape(x1, y1, x2, y2));
-        repaint();
-    }
-
-    private void addLabel(int x, int y, Label label){
-        shapes.add(new LabelShape(x, y, label));
-        repaint();
-    }
 
     public int getPanelHeight(){
         return panelHeight;

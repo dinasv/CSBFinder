@@ -22,7 +22,7 @@ public class InstancesLabelsPanel extends JPanel {
         setGCLayout();
     }
 
-    public void displayInstancesLabels(Map<String,List<InstanceInfo>> instances, int firstRowHeight, int rowHeight) {
+    public void displayInstancesLabels(List<String> instances, int firstRowHeight, int rowHeight) {
         removeAll();
 
         setData(instances, firstRowHeight, rowHeight);
@@ -32,7 +32,7 @@ public class InstancesLabelsPanel extends JPanel {
     }
 
 
-    private void setData(Map<String,List<InstanceInfo>> instances, int firstRowHeight, int rowHeight) {
+    private void setData(List<String> instances, int firstRowHeight, int rowHeight) {
 
         int colIndex = 0;
 
@@ -42,8 +42,7 @@ public class InstancesLabelsPanel extends JPanel {
         JLabel genomeRowLabel = getGenomeRowLabelComponent("CSB", firstRowHeight);
         colIndex = setLabelsRow(colIndex, insetName, genomeRowLabel);
 
-        for (Map.Entry<String, List<InstanceInfo>> entry: instances.entrySet()) {
-            String genomeName = entry.getKey();
+        for (String genomeName: instances) {
 
             genomeRowLabel = getGenomeRowLabelComponent(genomeName, rowHeight);
             colIndex = setLabelsRow(colIndex, insetName, genomeRowLabel);

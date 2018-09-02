@@ -44,7 +44,7 @@ public class InstancesPanel extends JPanel {
 
     }
 
-    public void displayInstances(String[] pattenCOGs, Map<String,List<InstanceInfo>> instances, int scrollWidth) {
+    public void displayInstances(String[] pattenCOGs, List<Map<String,List<InstanceInfo>>>  instances, int scrollWidth) {
         removeAll();
         setData(instances, pattenCOGs, scrollWidth);
         revalidate();
@@ -52,22 +52,20 @@ public class InstancesPanel extends JPanel {
     }
 
 
-    private void setData(Map<String,List<InstanceInfo>> instances, String[] pattenCOGs, int scrollWidth) {
+    private void setData(List<Map<String,List<InstanceInfo>>> instances, String[] pattenCOGs, int scrollWidth) {
 
         int colIndex = 0;
 
-        // For GridBagLayout
-        Insets insetList = new Insets(0, 0, 0, 15);
-
-        List<InstanceInfo> patternGenes = new ArrayList<>();
         List<Gene> patternGenesInner = new ArrayList<>();
         for (String cog: pattenCOGs) {
             patternGenesInner.add(new Gene(cog, "+"));
         }
 
-        List<ShapesInstance> shapesInstanceList = new ArrayList<>();
-        shapesInstanceList.add(getShapesCSB(patternGenesInner, 0, 0));
-        ShapesPanel instancesRowPanel = getInstancesRowPanel(shapesInstanceList,  Color.WHITE);
+        List<ShapesInstance> shapesInstanceInnerList = new ArrayList<>();
+        shapesInstanceInnerList.add(getShapesCSB(patternGenesInner, 0, 0));
+        List<List<ShapesInstance>> shapesInstanceOuterList = new ArrayList<>();
+        shapesInstanceOuterList.add(shapesInstanceInnerList);
+        ShapesPanel instancesRowPanel = getInstancesRowPanel(shapesInstanceOuterList,  Color.WHITE);
 
         if (instancesRowPanel != null) {
             firstRowHeight = instancesRowPanel.getPanelHeight() + 4;
@@ -77,11 +75,21 @@ public class InstancesPanel extends JPanel {
 
         Color light_gray = new Color(238,238,238);
 
-        for (Map.Entry<String, List<InstanceInfo>> entry: instances.entrySet()) {
-            List<InstanceInfo> instancesList = entry.getValue();
 
-            shapesInstanceList = getShapeInstanceList(instancesList);
-            instancesRowPanel = getInstancesRowPanel(shapesInstanceList, light_gray);
+        for (Map<String, List<InstanceInfo>> genomeInstances: instances) {
+            int x = 0;
+            int y = 0;
+            List<List<ShapesInstance>> genomeShapesInstances = new ArrayList<>();
+            for (Map.Entry<String, List<InstanceInfo>> repliconInstances : genomeInstances.entrySet()) {
+                List<InstanceInfo> instancesList = repliconInstances.getValue();
+
+                shapesInstanceInnerList = new ArrayList<>();
+                x = getShapeInstanceList(instancesList, shapesInstanceInnerList, x, y);
+
+                genomeShapesInstances.add(shapesInstanceInnerList);
+
+            }
+            instancesRowPanel = getInstancesRowPanel(genomeShapesInstances, light_gray);
             if (instancesRowPanel != null) {
                 rowHeight = instancesRowPanel.getPanelHeight() + 4;
             }
@@ -110,19 +118,18 @@ public class InstancesPanel extends JPanel {
     }
 
 
-    private List<ShapesInstance> getShapeInstanceList(List<InstanceInfo> instancesList){
-        int x = 0;
-        int y = 0;
-        List<ShapesInstance> shapesInstanceList = new ArrayList<>();
+    private int getShapeInstanceList(List<InstanceInfo> instancesList,
+                                                      List<ShapesInstance> shapesInstanceList, int x, int y){
+
         for (InstanceInfo instance : instancesList) {
             ShapesInstance shapesInstance = getShapesInstance(instance, x, y);
             shapesInstanceList.add(shapesInstance);
             x += shapesInstance.getWidth() + CONTAINERS_DIST;
         }
-        return shapesInstanceList;
+        return x;
     }
 
-    private ShapesPanel getInstancesRowPanel(List<ShapesInstance> shapesInstanceList, Color backgroundColor) {
+    private ShapesPanel getInstancesRowPanel(List<List<ShapesInstance>> shapesInstanceList, Color backgroundColor) {
 
         ShapesPanel shapesPanel = new ShapesPanel(shapesInstanceList, CONTAINERS_DIST, backgroundColor);
         MouseAdapter ma = new MouseAdapterScroller(shapesPanel);

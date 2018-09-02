@@ -221,28 +221,41 @@ public class CSBFinderModel {
         return cogInfo;
     }
 
-     public Map<String, List<InstanceInfo>> getInstances(Pattern pattern){
+     public Map<String, Map<String, List<InstanceInfo>>> getInstances(Pattern pattern){
 
-        Map<String, List<InstanceInfo>> instances = new HashMap<>();
+        Map<String, Map<String, List<InstanceInfo>>> instances = new HashMap<>();
+        Map<Integer, Map<Integer, List<InstanceLocation>>> sameSeqInstances = groupSameSeqInstances(pattern);
 
-        for (Map.Entry<Integer, List<InstanceLocation>> entry : groupSameSeqInstances(pattern).entrySet()) {
+        for (Map.Entry<Integer, Map<Integer, List<InstanceLocation>>> seq2replicons : sameSeqInstances.entrySet()) {
 
-            String seq_name = utils.genome_id_to_name.get(entry.getKey());
+            String seq_name = utils.genome_id_to_name.get(seq2replicons.getKey());
 
-            List<InstanceInfo> genomeInstances = new ArrayList<>();
+            Map<Integer, List<InstanceLocation>> repliconInstanceLocations = seq2replicons.getValue();
 
-            List<InstanceLocation> instances_locations = entry.getValue();
-            for (InstanceLocation instance_location : instances_locations){
-                String replicon_name = utils.replicon_id_to_name.get(instance_location.getRepliconId());
-                instance_location.setRepliconName(replicon_name);
-                List<Gene> genes = getInstanceFromCogList(seq_name, replicon_name, instance_location.getStartIndex(), instance_location.getEndIndex());
-                if (genes != null) {
-                    genomeInstances.add(new InstanceInfo(instance_location, genes));
+            Map<String, List<InstanceInfo>> repliconInstances = new HashMap<>();
+
+            for (Map.Entry<Integer, List<InstanceLocation>> replicon2locations : repliconInstanceLocations.entrySet()) {
+
+                List<InstanceInfo> instanceLocations = new ArrayList<>();
+
+                String replicon_name = utils.replicon_id_to_name.get(replicon2locations.getKey());
+                List<InstanceLocation> instances_locations = replicon2locations.getValue();
+
+                instances_locations.sort(Comparator.comparing(InstanceLocation::getActualStartIndex));
+
+                for (InstanceLocation instance_location : instances_locations) {
+                    instance_location.setRepliconName(replicon_name);
+                    List<Gene> genes = getInstanceFromCogList(seq_name, replicon_name, instance_location.getStartIndex(), instance_location.getEndIndex());
+                    if (genes != null) {
+                        instanceLocations.add(new InstanceInfo(instance_location, genes));
+                    }
+                }
+                if (instanceLocations.size() > 0) {
+                    repliconInstances.put(replicon_name, instanceLocations);
                 }
             }
-
-            if (genomeInstances.size() > 0) {
-                instances.put(seq_name, genomeInstances);
+            if (repliconInstances.size() > 0) {
+                instances.put(seq_name, repliconInstances);
             }
         }
 
@@ -278,8 +291,8 @@ public class CSBFinderModel {
      * @param pattern
      * @return
      */
-    private Map<Integer, List<InstanceLocation>> groupSameSeqInstances(Pattern pattern){
-        Map<Integer, List<InstanceLocation>> instance_seq_to_location = new HashMap<>();
+    private Map<Integer, Map<Integer, List<InstanceLocation>>> groupSameSeqInstances(Pattern pattern){
+        Map<Integer, Map<Integer, List<InstanceLocation>>> instance_seq_to_location = new HashMap<>();
         for (Instance instance : pattern.get_instances()) {
 
             int instance_length = instance.getLength();
@@ -287,12 +300,18 @@ public class CSBFinderModel {
                 int seq_key = entry.getKey();
 
                 if (!instance_seq_to_location.containsKey(seq_key)) {
-                    instance_seq_to_location.put(seq_key, new ArrayList<InstanceLocation>());
+                    instance_seq_to_location.put(seq_key, new HashMap<>());
                 }
-                List<InstanceLocation> instances_locations = instance_seq_to_location.get(seq_key);
-                for (InstanceLocation instance_location : entry.getValue()) {
-                    instance_location.setEndIndex(instance_length);
-                    instances_locations.add(instance_location);
+                Map<Integer, List<InstanceLocation>> instancesRepliconsMap = instance_seq_to_location.get(seq_key);
+
+                for (InstanceLocation instanceLocation : entry.getValue()) {
+                    instanceLocation.setEndIndex(instance_length);
+
+                    if (! instancesRepliconsMap.containsKey(instanceLocation.getRepliconId())){
+                        instancesRepliconsMap.put(instanceLocation.getRepliconId(), new ArrayList<>());
+                    }
+                    List<InstanceLocation> repliconLocations = instancesRepliconsMap.get(instanceLocation.getRepliconId());
+                    repliconLocations.add(instanceLocation);
                 }
             }
         }

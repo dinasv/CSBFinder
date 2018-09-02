@@ -3,18 +3,14 @@ package MVC.View;
 import MVC.Common.CSBFinderRequest;
 import MVC.View.Events.RunEvent;
 import MVC.View.Listeners.RunListener;
-import Utils.Replicon;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
+
 import java.io.File;
-import java.util.Comparator;
 import java.util.Hashtable;
-import java.util.Map;
 
 import static java.awt.GridBagConstraints.FIRST_LINE_START;
 import static java.awt.GridBagConstraints.LINE_START;

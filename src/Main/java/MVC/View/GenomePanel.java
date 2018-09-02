@@ -28,7 +28,7 @@ public class GenomePanel extends JPanel {
 
     }
 
-    public void displayInstances(String[] pattenCOGs, Map<String,List<InstanceInfo>> instances) {
+    public void displayInstances(String[] pattenCOGs, Map<String,Map<String,List<InstanceInfo>>> instances) {
         int scroll_width = scroll.getViewport().getSize().width;
         container.displayInstances(pattenCOGs, instances, scroll_width);
         container.revalidate();
