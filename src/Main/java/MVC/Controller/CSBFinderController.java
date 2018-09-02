@@ -49,7 +49,7 @@ public class CSBFinderController {
         return model.getCogInfo(cogs);
     }
 
-    public Map<String, List<List<Gene>>> getInstances(Pattern pattern) { return model.getInstances(pattern); }
+    public Map<String, List<InstanceInfo>> getInstances(Pattern pattern) { return model.getInstances(pattern); }
 
     public Map<String, Map<String, Replicon>> getGenomeMap() { return model.getGenomeMap(); }
 

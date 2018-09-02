@@ -10,45 +10,53 @@ import javax.swing.*;
 public class ShapesPanel extends JPanel{
 
     private List<Shape> shapes = new ArrayList<>();
+    private int containers_dist;
+    private int panelHeight;
 
-    public ShapesPanel(List<ShapesContainer> shapesContainers, int CONTAINERS_DIST, Color backgroundColor) {
+    public ShapesPanel(List<ShapesInstance> shapesInstanceList, int containers_dist, Color backgroundColor) {
+        this.containers_dist = containers_dist;
         shapes = new ArrayList<>();
 
         setBackground(backgroundColor);
 
-        int width = 0;
-        int height = 0;
-        if (shapesContainers.size() > 0){
-            height = (int)shapesContainers.get(0).getContainerDimensions().getHeight();
-            for (ShapesContainer shapesContainer: shapesContainers) {
-                width += shapesContainer.getContainerDimensions().getWidth();
-            }
+        //set preferred container size
+        panelHeight = 0;
+        if (shapesInstanceList.size() > 0) {
+            panelHeight = shapesInstanceList.get(0).getHeight();
         }
-        width += CONTAINERS_DIST*shapesContainers.size()-CONTAINERS_DIST;
-        setPreferredSize(new Dimension(width, height));
 
+        this.setPreferredPanelSize(shapesInstanceList);
+
+        //add shapes
         int counter = 0;
-        for (ShapesContainer shapesContainer: shapesContainers) {
+        for (ShapesInstance shapesInstance : shapesInstanceList) {
             counter ++;
 
-            for (ShapeParams shapeParams : shapesContainer.getShapeParamsList()) {
-                addGeneShape(shapeParams);
-            }
+            addShape(shapesInstance);
 
-            if (counter < shapesContainers.size()) {
-                int x = shapesContainer.getX() + (int) shapesContainer.getContainerDimensions().getWidth();
-                int y = shapesContainer.getY();
+            if (counter < shapesInstanceList.size()) {
+                int x = shapesInstance.getX() +  shapesInstance.getWidth();
 
-                int x1 = x + (int) (CONTAINERS_DIST * 0.2);
-                int y1 = y + (int) (shapesContainer.getContainerDimensions().getHeight() * 0.7);
-                int x2 = x + CONTAINERS_DIST - (int) (CONTAINERS_DIST * 0.2);
-                int y2 = y + (int) (shapesContainer.getContainerDimensions().getHeight() * 0.2);
+                int x1 = x + (int) (containers_dist * 0.2);
+                int y1 = shapesInstance.getGeneEndY();
+                int x2 = x + containers_dist - (int) (containers_dist * 0.2);
+                int y2 = shapesInstance.getGeneY();
                 addDiagShape(x1, y1, x2, y2);
             }
         }
 
     }
 
+    private void setPreferredPanelSize(List<ShapesInstance> shapesInstanceList){
+        int width = 0;
+
+        for (ShapesInstance shapesInstance : shapesInstanceList) {
+            width += shapesInstance.getWidth();
+        }
+
+        width += containers_dist * (shapesInstanceList.size() - 1);
+        setPreferredSize(new Dimension(width, panelHeight));
+    }
 
     @Override
     protected void paintComponent(Graphics g) {
@@ -56,16 +64,32 @@ public class ShapesPanel extends JPanel{
         for (Shape s : shapes) {
             s.draw(g);
         }
+
     }
 
-    public void addGeneShape(ShapeParams shapeParams) {
+    private void addShape(Shape shape){
+        shapes.add(shape);
+        repaint();
+    }
+
+    /*
+    private void addGeneShape(ShapeParams shapeParams) {
         shapes.add(new GeneShape(shapeParams));
         repaint();
-    }
+    }*/
 
-    public void addDiagShape(int x1, int y1, int x2, int y2){
+    private void addDiagShape(int x1, int y1, int x2, int y2){
         shapes.add(new DiagLinesShape(x1, y1, x2, y2));
         repaint();
+    }
+
+    private void addLabel(int x, int y, Label label){
+        shapes.add(new LabelShape(x, y, label));
+        repaint();
+    }
+
+    public int getPanelHeight(){
+        return panelHeight;
     }
 
 }

@@ -1,5 +1,6 @@
 package MVC.View;
 
+import MVC.Common.InstanceInfo;
 import MVC.View.Shapes.*;
 import Utils.Gene;
 import Utils.Utils;
@@ -17,7 +18,6 @@ public class GenomePanelContainer  extends JPanel {
 
     GridBagConstraints gc;
 
-    private final int ROW_HEIGHT = 34;
     private final ShapeDimensions geneShapeDim = new ShapeDimensions(60, 15, 30);
 
     public GenomePanelContainer(){
@@ -25,8 +25,9 @@ public class GenomePanelContainer  extends JPanel {
         setLayout(new GridBagLayout());
         setGCLayout();
 
-        labelsPanel = new InstancesLabelsPanel(ROW_HEIGHT);
-        instancesPanel = new InstancesPanel(ROW_HEIGHT, geneShapeDim);
+        instancesPanel = new InstancesPanel(geneShapeDim);
+
+        labelsPanel = new InstancesLabelsPanel();
 
         gc.gridx = 0; gc.gridy = 0; gc.weightx = 0.2; gc.anchor = GridBagConstraints.FIRST_LINE_START;
         add(labelsPanel, gc);
@@ -41,10 +42,11 @@ public class GenomePanelContainer  extends JPanel {
         setResizeWeight(0.2);*/
     }
 
-    public void displayInstances(String[] pattenCOGs, Map<String,List<List<Gene>>> instances, int scrollWidth) {
+    public void displayInstances(String[] pattenCOGs, Map<String,List<InstanceInfo>> instances, int scrollWidth) {
         //setData(instances, pattenCOGs, scrollWidth);
-        labelsPanel.displayInstancesLabels(instances);
-        instancesPanel.displayInstances(pattenCOGs,instances, scrollWidth-labelsPanel.getWidth());
+
+        instancesPanel.displayInstances(pattenCOGs,instances, scrollWidth-InstancesLabelsPanel.GENOME_NAME_WIDTH);
+        labelsPanel.displayInstancesLabels(instances, instancesPanel.getFirstRowHeight(), instancesPanel.getRowHeight());
 
         revalidate();
         repaint();
@@ -108,9 +110,9 @@ public class GenomePanelContainer  extends JPanel {
 
         int x = 0;
         int y = 0;
-        List<ShapesContainer> shapesContainerList = new ArrayList<>();
+        List<ShapesInstance> shapesContainerList = new ArrayList<>();
         for (List<Gene> instance : instancesList) {
-            ShapesContainer shapesContainer = getShapesContainer(instance, x, y);
+            ShapesInstance shapesContainer = getShapesContainer(instance, x, y);
             shapesContainerList.add(shapesContainer);
             x += shapesContainer.getContainerDimensions().getWidth() + CONTAINERS_DIST;
         }
@@ -129,7 +131,7 @@ public class GenomePanelContainer  extends JPanel {
 
     }
 
-    private ShapesContainer getShapesContainer(List<Gene> genes, int x, int y){
+    private ShapesInstance getShapesContainer(List<Gene> genes, int x, int y){
         List<ShapeParams> shapeParamsList = new ArrayList<>();
         for (Gene gene : genes) {
 
@@ -146,7 +148,7 @@ public class GenomePanelContainer  extends JPanel {
             shapeParamsList.add(shapeParams);
             colorsUsed.put(gene.getCog_id(), color);
         }
-        return new ShapesContainer(shapeParamsList, x, y);
+        return new ShapesInstance(shapeParamsList, x, y);
     }
 
     private Color getRandomColor(){

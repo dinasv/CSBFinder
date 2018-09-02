@@ -1,4 +1,4 @@
-package MVC.View;
+package MVC.View.Models;
 
 import Utils.Pattern;
 import PostProcess.Family;

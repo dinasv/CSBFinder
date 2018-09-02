@@ -221,22 +221,23 @@ public class CSBFinderModel {
         return cogInfo;
     }
 
-     public Map<String, List<List<Gene>>> getInstances(Pattern pattern){
+     public Map<String, List<InstanceInfo>> getInstances(Pattern pattern){
 
-        Map<String, List<List<Gene>>> instances = new HashMap<>();
+        Map<String, List<InstanceInfo>> instances = new HashMap<>();
 
         for (Map.Entry<Integer, List<InstanceLocation>> entry : groupSameSeqInstances(pattern).entrySet()) {
 
             String seq_name = utils.genome_id_to_name.get(entry.getKey());
 
-            List<List<Gene>> genomeInstances = new ArrayList<>();
+            List<InstanceInfo> genomeInstances = new ArrayList<>();
 
             List<InstanceLocation> instances_locations = entry.getValue();
             for (InstanceLocation instance_location : instances_locations){
                 String replicon_name = utils.replicon_id_to_name.get(instance_location.getRepliconId());
+                instance_location.setRepliconName(replicon_name);
                 List<Gene> genes = getInstanceFromCogList(seq_name, replicon_name, instance_location.getStartIndex(), instance_location.getEndIndex());
                 if (genes != null) {
-                    genomeInstances.add(genes);
+                    genomeInstances.add(new InstanceInfo(instance_location, genes));
                 }
             }
 

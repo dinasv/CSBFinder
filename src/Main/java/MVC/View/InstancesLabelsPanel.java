@@ -1,5 +1,6 @@
 package MVC.View;
 
+import MVC.Common.InstanceInfo;
 import MVC.View.Shapes.*;
 import Utils.Gene;
 
@@ -13,42 +14,40 @@ public class InstancesLabelsPanel extends JPanel {
 
     private GridBagConstraints gc;
 
-    private static final int GENOME_NAME_WIDTH = 100;
+    public static final int GENOME_NAME_WIDTH = 100;
 
-    private int rowHeight;
 
-    public InstancesLabelsPanel(int rowHeight) {
+    public InstancesLabelsPanel() {
         setLayout(new GridBagLayout());
         setGCLayout();
 
-        this.rowHeight = rowHeight;
         //add(new JLabel("BlaBla"), BorderLayout.CENTER);
     }
 
-    public void displayInstancesLabels(Map<String,List<List<Gene>>> instances) {
+    public void displayInstancesLabels(Map<String,List<InstanceInfo>> instances, int firstRowHeight, int rowHeight) {
         removeAll();
 
-        setData(instances);
+        setData(instances, firstRowHeight, rowHeight);
 
         revalidate();
         repaint();
     }
 
 
-    private void setData(Map<String,List<List<Gene>>> instances) {
+    private void setData(Map<String,List<InstanceInfo>> instances, int firstRowHeight, int rowHeight) {
 
         int colIndex = 0;
 
         // For GridBagLayout
         Insets insetName = new Insets(0, 0, 0, 5);
 
-        JLabel genomeRowLabel = getGenomeRowLabelComponent("CSB");
+        JLabel genomeRowLabel = getGenomeRowLabelComponent("CSB", firstRowHeight);
         colIndex = setLabelsRow(colIndex, insetName, genomeRowLabel);
 
-        for (Map.Entry<String, List<List<Gene>>> entry: instances.entrySet()) {
+        for (Map.Entry<String, List<InstanceInfo>> entry: instances.entrySet()) {
             String genomeName = entry.getKey();
 
-            genomeRowLabel = getGenomeRowLabelComponent(genomeName);
+            genomeRowLabel = getGenomeRowLabelComponent(genomeName, rowHeight);
             colIndex = setLabelsRow(colIndex, insetName, genomeRowLabel);
 
         }
@@ -65,7 +64,7 @@ public class InstancesLabelsPanel extends JPanel {
     }
 
 
-    private JLabel getGenomeRowLabelComponent(String label) {
+    private JLabel getGenomeRowLabelComponent(String label, int rowHeight) {
         JLabel genomeRowLabelComponent = new JLabel(label);
         genomeRowLabelComponent.setToolTipText(label);
         genomeRowLabelComponent.setPreferredSize(new Dimension(GENOME_NAME_WIDTH, rowHeight));

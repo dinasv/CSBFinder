@@ -1,65 +1,127 @@
 package MVC.View.Shapes;
 
+import Utils.Gene;
+
 import java.awt.*;
-import java.awt.geom.GeneralPath;
 
 public class GeneShape implements Shape{
 
     private int x, y;
 
-    private int rectWidth;
-    private int arrowWidth;
-    private int rectHeight;
-    private int arrowHeight;
+    private ShapeDimensions dim;
+
     private Color color;
     private Label label;
     private String strand;
 
-    public GeneShape(ShapeParams shapeParams) {
-            this.x = shapeParams.getX();
-            this.y = shapeParams.getY();
+    private int width;
+    private int height;
 
-            this.rectWidth = shapeParams.getShapeDimensions().getSquareWidth();
-            this.arrowWidth = shapeParams.getShapeDimensions().getArrowWidth();
-            this.rectHeight = shapeParams.getShapeDimensions().getSquareHeight();
-            this.color = shapeParams.getColor();
+    public GeneShape(int x, int y, Color color, ShapeDimensions dim, Gene gene) {
+            this.x = x;
+            this.y = y;
 
-            arrowHeight = rectHeight / 2;
+            this.dim = dim;
+            this.color = color;
 
-            this.label = shapeParams.getLabel();
-            this.strand = shapeParams.getStrand();
+            this.label = new Label(gene.getCog_id());
+            this.strand = gene.getStrand();
 
+            width = dim.getArrowWidth() + dim.getRectWidth();
+            height = dim.getRectHeight();
     }
 
     public void draw(Graphics g) {
 
         int rectStartX = x;
-        int arrowStartX = x + rectWidth;
-        int arrowEndX = x + rectWidth + arrowWidth;
+        int arrowStartX = x + dim.getRectWidth();
+        int arrowEndX = x + dim.getRectWidth() + dim.getArrowWidth();
 
         if (strand.equals("-")){
-            rectStartX = x + arrowWidth;
-            arrowStartX =  x + arrowWidth;
+            rectStartX = x + dim.getArrowWidth();
+            arrowStartX =  x + dim.getArrowWidth();
             arrowEndX = x;
         }
 
         // Draw gene
         int[] xPoints = {arrowStartX, arrowEndX, arrowStartX};
-        int[] yPoints = {y, y+ rectHeight /2, y+ rectHeight};
+        int[] yPoints = {y, y + dim.getRectHeight() /2, y + dim.getRectHeight()};
         g.setColor(color);
-        g.fillRect(rectStartX, y, rectWidth, rectHeight);
+        g.fillRect(rectStartX, y, dim.getRectWidth(), dim.getRectHeight());
         g.fillPolygon(xPoints, yPoints, 3);
 
         // Draw label
+
         g.setColor(label.getColor());
         g.setFont(label.getFont());
 
         int labelWidth = g.getFontMetrics().stringWidth(label.getText());
-        int labelPositionX = x + (rectWidth - labelWidth)/2;
+        int labelPositionX = x + (dim.getRectWidth() - labelWidth)/2;
         if (strand.equals("-")){
-            labelPositionX += arrowWidth;
+            labelPositionX += dim.getArrowWidth();
         }
-        g.drawString(label.getText(), labelPositionX, y+arrowHeight+5);
+        //LabelShape labelShape = new LabelShape(labelPositionX, y + dim.getArrowHeight()+5, label);
+
+        //labelShape.draw(g);
+        g.drawString(label.getText(), labelPositionX, y + dim.getArrowHeight()+5);
+    }
+
+    public int getWidth(){
+        return width;
+    }
+
+    public int getHeight(){
+        return height;
+    }
+
+    public int getX() {
+        return x;
+    }
+
+    public void setX(int x) {
+        this.x = x;
+    }
+
+    public int getY() {
+        return y;
+    }
+
+    public void setY(int y) {
+        this.y = y;
+    }
+
+
+
+    public Color getColor() {
+        return color;
+    }
+
+    public void setColor(Color color) {
+        this.color = color;
+    }
+
+    public ShapeDimensions getShapeDimensions() {
+        return dim;
+    }
+
+    public void setShapeDimensions(ShapeDimensions shapeDimensions) {
+        this.dim = shapeDimensions;
+    }
+
+    public Label getLabel() {
+        return label;
+    }
+
+    public void setLabel(Label label) {
+        this.label = label;
+    }
+
+    public String getStrand() {
+        return strand;
+    }
+
+    public void setStrand(String strand) {
+        this.strand = strand;
     }
 
 }

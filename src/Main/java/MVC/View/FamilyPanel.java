@@ -2,6 +2,7 @@ package MVC.View;
 
 import MVC.View.Events.FamilyRowClickedEvent;
 import MVC.View.Listeners.FamilyRowClickedListener;
+import MVC.View.Models.FamilyTableModel;
 import Utils.Pattern;
 import PostProcess.Family;
 

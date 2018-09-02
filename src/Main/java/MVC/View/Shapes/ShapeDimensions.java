@@ -5,27 +5,29 @@ package MVC.View.Shapes;
  */
 public class ShapeDimensions {
 
-    private int squareWidth;
+    private int rectWidth;
     private int arrowWidth;
-    private int squareHeight;
+    private int rectHeight;
+    private int arrowHeight;
 
-    public ShapeDimensions(int squareWidth, int arrowWidth, int squareHeight){
+    public ShapeDimensions(int rectWidth, int arrowWidth, int rectHeight){
 
-        this.squareWidth = squareWidth;
+        this.rectWidth = rectWidth;
         this.arrowWidth = arrowWidth;
-        this.squareHeight = squareHeight;
+        this.rectHeight = rectHeight;
+        arrowHeight = rectHeight / 2;
     }
 
     public ShapeDimensions(){
         this(100, 30, 60);
     }
 
-    public int getSquareWidth() {
-        return squareWidth;
+    public int getRectWidth() {
+        return rectWidth;
     }
 
-    public void setSquareWidth(int squareWidth) {
-        this.squareWidth = squareWidth;
+    public void setRectWidth(int rectWidth) {
+        this.rectWidth = rectWidth;
     }
 
     public int getArrowWidth() {
@@ -36,11 +38,19 @@ public class ShapeDimensions {
         this.arrowWidth = arrowWidth;
     }
 
-    public int getSquareHeight() {
-        return squareHeight;
+    public int getRectHeight() {
+        return rectHeight;
     }
 
-    public void setSquareHeight(int squareHeight) {
-        this.squareHeight = squareHeight;
+    public void setRectHeight(int rectHeight) {
+        this.rectHeight = rectHeight;
+    }
+
+    public int getArrowHeight() {
+        return arrowHeight;
+    }
+
+    public void setArrowHeight(int arrowHeight) {
+        this.arrowHeight = arrowHeight;
     }
 }
