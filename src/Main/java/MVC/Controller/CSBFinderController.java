@@ -37,6 +37,7 @@ public class CSBFinderController {
     }
 
     public void loadInputGenomesFile(String file_path) {
+
         this.model.loadInputGenomesFile(file_path);
     }
 

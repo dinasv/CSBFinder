@@ -233,7 +233,7 @@ public class InputParametersDialog extends JDialog {
         }
     }
 
-    private void initFields() {
+    public void initFields() {
 
         // Quorum
         quorum.setModel(new SpinnerNumberModel(1, 1, 2000, 1));

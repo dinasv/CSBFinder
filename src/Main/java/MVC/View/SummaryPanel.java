@@ -38,4 +38,9 @@ public class SummaryPanel extends JSplitPane {
     public void setCogInfo(List<COG> patternGenes, Collection<COG> insertedGenes, Map<String, Color> colorsUsed) {
         csbSummaryPanel.displaySummary(patternGenes, insertedGenes, colorsUsed);
     }
+
+    public void clearPanel(){
+        tabs.clearPanel();
+        csbSummaryPanel.clearPanel();
+    }
 }

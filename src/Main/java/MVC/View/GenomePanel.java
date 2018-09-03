@@ -35,6 +35,12 @@ public class GenomePanel extends JPanel {
         container.repaint();
     }
 
+    public void clearPanel(){
+        container.clearPanel();
+        container.revalidate();
+        container.repaint();
+    }
+
     public Map<String,Color> getColorsUsed(){
         return container.getColorsUsed();
     }

@@ -23,7 +23,6 @@ public class InstancesLabelsPanel extends JPanel {
     }
 
     public void displayInstancesLabels(List<String> instances, int firstRowHeight, int rowHeight) {
-        removeAll();
 
         setData(instances, firstRowHeight, rowHeight);
 
@@ -31,6 +30,9 @@ public class InstancesLabelsPanel extends JPanel {
         repaint();
     }
 
+    public void clearPanel(){
+        removeAll();
+    }
 
     private void setData(List<String> instances, int firstRowHeight, int rowHeight) {
 

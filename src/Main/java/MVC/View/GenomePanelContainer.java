@@ -58,6 +58,11 @@ public class GenomePanelContainer  extends JPanel {
         repaint();
     }
 
+    public void clearPanel(){
+        instancesPanel.clearPanel();
+        labelsPanel.clearPanel();
+    }
+
     private void setGCLayout() {
         gc = new GridBagConstraints();
     }

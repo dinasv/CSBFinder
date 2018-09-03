@@ -27,4 +27,9 @@ public class SummaryTabs extends JTabbedPane {
         familyPanel.setRowClickedListener(listener);
         familyTopScorePanel.setRowClickedListener(listener);
     }
+
+    public void clearPanel(){
+        familyPanel.clearPanel();
+        familyTopScorePanel.clearPanel();
+    }
 }

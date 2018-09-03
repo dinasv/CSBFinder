@@ -21,8 +21,8 @@ public class Toolbar extends JPanel {
 
     public Toolbar() {
         setBorder(BorderFactory.createEtchedBorder());
-        loadFile = new JButton("Load File");
-        saveFile =  new JButton("Save File");
+        loadFile = new JButton("Load Input Genomes");
+        saveFile =  new JButton("Save");
         saveFile.setEnabled(false);
         selectParams =  new JButton("Run");
         selectParams.setEnabled(false);
@@ -68,6 +68,9 @@ public class Toolbar extends JPanel {
 
     public void enableSaveFileBtn() {
         saveFile.setEnabled(true);
+    }
+    public void disableSaveFileBtn() {
+        saveFile.setEnabled(false);
     }
 
     public void enableSelectParamsBtn() {

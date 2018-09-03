@@ -32,10 +32,16 @@ public class FamilyTableModel extends AbstractTableModel {
             FAMILY_ID
     };
 
+
     private List<Pattern> data;
     private Map<String, Pattern> csbToPatternMap;
 
 
+    public FamilyTableModel(){
+        super();
+        data = new ArrayList<>();
+        csbToPatternMap = new HashMap<>();
+    }
     @Override
     public String getColumnName(int column) {
         return columns[column];
@@ -114,8 +120,9 @@ public class FamilyTableModel extends AbstractTableModel {
     }
 
     public void setData(List<Family> families) {
-        this.data = new ArrayList<>();
-        this.csbToPatternMap = new HashMap<>();
+        //this.data = new ArrayList<>();
+        //this.csbToPatternMap = new HashMap<>();
+        clearData();
 
         for (Family family: families) {
             family.getPatterns().forEach(pattern -> {
@@ -129,5 +136,10 @@ public class FamilyTableModel extends AbstractTableModel {
     public Pattern getPattern(String csbWithDelimiter) {
         String csb = String.join(" ", csbWithDelimiter.split(DELIMITER)) + " ";
         return csbToPatternMap.get(csb);
+    }
+
+    public void clearData(){
+        data.clear();
+        csbToPatternMap.clear();
     }
 }

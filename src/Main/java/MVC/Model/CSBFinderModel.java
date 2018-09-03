@@ -47,8 +47,6 @@ public class CSBFinderModel {
         this.init();
         dataset_suffix_tree = new GeneralizedSuffixTree();
         number_of_genomes = utils.readAndBuildDatasetTree(path, dataset_suffix_tree, false);
-
-
     }
 
     private JCommander parseArgs(String[] args){

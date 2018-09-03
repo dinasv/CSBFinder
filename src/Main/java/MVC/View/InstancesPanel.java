@@ -45,10 +45,13 @@ public class InstancesPanel extends JPanel {
     }
 
     public void displayInstances(String[] pattenCOGs, List<Map<String,List<InstanceInfo>>>  instances, int scrollWidth) {
-        removeAll();
         setData(instances, pattenCOGs, scrollWidth);
         revalidate();
         repaint();
+    }
+
+    public void clearPanel(){
+        removeAll();
     }
 
 

@@ -49,10 +49,15 @@ public class CSBSummaryPanel extends JPanel {
 
     }
 
+    public void clearPanel(){
+        summary.setText("");
+    }
+
 
     public void displaySummary(List<COG> patternGenes, Collection<COG> InsertedGenes, Map<String, Color> colorsUsed) {
 
-        summary.setText("");
+        clearPanel();
+
         StyledDocument doc = summary.getStyledDocument();
 
         if (patternGenes.size() == 0) {
@@ -118,11 +123,6 @@ public class CSBSummaryPanel extends JPanel {
 
             } catch (BadLocationException e) {
             }
-
-            //sb.append(title);
-            //sb.append(NEWLINE);
-            //sb.append(NEWLINE);
-
 
         }
     }

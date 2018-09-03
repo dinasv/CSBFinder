@@ -3,7 +3,6 @@ package MVC.View;
 import MVC.Common.CSBFinderRequest;
 import MVC.Common.InstanceInfo;
 import MVC.Controller.CSBFinderController;
-import MVC.View.Components.HiddenPanel;
 import MVC.View.Events.*;
 import MVC.View.Listeners.*;
 import CLI.CommandLineArgs;
@@ -66,6 +65,11 @@ public class MainFrame extends JFrame {
         this.setVisible(true);
     }
 
+    public void clearPanels(){
+        genomes.clearPanel();
+        summaryPanel.clearPanel();
+    }
+
     public void initComponents() {
 
         inputParamsDialog = new InputParametersDialog();
@@ -110,6 +114,7 @@ public class MainFrame extends JFrame {
 
                     @Override
                     protected Void doInBackground() throws Exception {
+                        clearPanels();
                         controller.findCSBs(request);
                         return null;
                     }
@@ -170,8 +175,13 @@ public class MainFrame extends JFrame {
 
                         @Override
                         protected void done() {
+                            clearPanels();
+                            inputParamsDialog.initFields();
+
+                            toolbar.disableSaveFileBtn();
+
                             progressBar.done("File Loaded Successfully");
-                            if (controller.getGenomesLoaded() == -1) {
+                            if (controller.getGenomesLoaded() <= 0) {
                                 JOptionPane.showMessageDialog(MainFrame.this, "An error occurred while loading file");
                             } else {
 
@@ -239,6 +249,7 @@ public class MainFrame extends JFrame {
             public void rowClickedOccurred(FamilyRowClickedEvent e) {
                 Pattern p = e.getPattern();
                 Map<String, Map<String, List<InstanceInfo>>> instances = controller.getInstances(p);
+                genomes.clearPanel();
                 genomes.displayInstances(p.getPatternArr(), instances);
 
                 List<COG> patternCOGs = controller.getCogInfo(Arrays.asList(p.getPatternArr()));

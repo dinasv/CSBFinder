@@ -65,4 +65,9 @@ public class FamilyPanel extends JPanel {
     public void setRowClickedListener(FamilyRowClickedListener rowClickedListener) {
         this.rowClickedListener = rowClickedListener;
     }
+
+    public void clearPanel(){
+        model.clearData();
+        model.fireTableDataChanged();
+    }
 }
