@@ -13,6 +13,8 @@ import Utils.COG;
 public class CSBSummaryPanel extends JPanel {
 
     JTextPane summary;
+    JScrollPane scroll;
+
     private static final String NEWLINE = "\n";
     private static final String NO_COG_INFO_WARNNING = "Oops, No gene information was found. Did you load the gene orthology info file?";
 
@@ -37,7 +39,7 @@ public class CSBSummaryPanel extends JPanel {
         StyleConstants.setFontSize(textStyle, 16);
 
 
-        JScrollPane scroll = new JScrollPane(summary);
+        scroll = new JScrollPane(summary);
         scroll.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
         add(scroll, BorderLayout.CENTER);
 
@@ -83,6 +85,7 @@ public class CSBSummaryPanel extends JPanel {
 
                 }
             }
+            summary.setCaretPosition(0);
         }
     }
 
