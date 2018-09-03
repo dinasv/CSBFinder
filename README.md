@@ -7,7 +7,7 @@
 -   [Output files](#output)
 -   [Sample input files](#sample)
 -   [License](#license)
--   [Author](#author)
+-   [Authors](#author)
 
 
 <a name='overview'>Overview</a>
@@ -325,11 +325,11 @@ Licensed under the Apache License, Version 2.0. See more details in [LICENSE](ht
  
  The User Interface uses an icon made by <a href="https://www.flaticon.com/authors/roundicons" title="Roundicons">Roundicons</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a>, licensed by <a href="http://creativecommons.org/licenses/by/3.0/" title="Creative Commons BY 3.0" target="_blank">CC 3.0 BY</a>
 
-<a name='author'>Author</a>
+<a name='author'>Authors</a>
 --------------
 Dina Svetlitsky
 
 dina.svetlitsky@gmail.com
 
-GUI:
+User Interface:  
 Alexander Lerman
