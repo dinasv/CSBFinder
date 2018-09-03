@@ -119,9 +119,12 @@ Optional:
 All input files must be located in a directory named 'input', in the same directory as the jar file. 
 
 <a name='input_dataset'> Input file containing input genome sequences </a>
+----------------------------
 A text file containing all input genomes modeled as strings, where each character is an orthology group ID that was assigned to a corresponding gene (for example, COG ID)
 - This is a Mandatory input file
-- Its name is indicated using the "-in" option
+- The path to this file is provided in:
+    - User Inteface: Load this file using the "Load Input Genomes" button
+    - Command Line: "-in" option
 
 This file should use the following format:
 ```
@@ -141,7 +144,7 @@ All replicons of the same genome should be consecutive, i.e.:
 >genomeB|replicon1
 ...
 ```
-> Genes that does not belong to any homology group, should be marked as 'X'
+> Genes that does not belong to any gene orthology group, should be marked as 'X'
 
 #### Example:
 ```
@@ -178,10 +181,13 @@ COG0600	+
 ....
 ```
 
-### Input file with functional information of homology group IDs 
-- Optional input file
-- Its name is indicated using the "-cog-info" option
-- Information from this file will be printed in the catalog output file, as the functional description of CSB genes 
+### Input file with functional information of gene orthology group IDs 
+Functional description of gene orthology groups will appear in the legend (User Interface) or in the output catalog file (when clicking on the "Save" button in the User Interface, or when executing via Command Line) 
+
+- This is an optional input file
+- The path to this file is provided in:
+    - User Interface: In the dialog opened after clicking on the "Run" button
+    - Command Line: "-cog-info" option
 
 This file should use the following format:
 ```
@@ -196,10 +202,12 @@ COG0320;Lipoate synthase;H;Coenzyme transport and metabolism;LipA;
 ...
 ```
 ### Input file containing CSB patterns
-- Optional input file
-- Its name is indicated using the "--patterns" or "-p" option
-- FASTA file
-- If this option is used, CSBs are no longer extracted from the input sequences. It specifies specific CSB patterns which the user is interested to find in the input sequences
+If this option is used, CSBs are no longer extracted from the input sequences. It specifies specific CSB patterns which the user is interested to find in the input sequences
+
+- This is an optional input text file
+- The path to this file is provided in:
+    - User Interface: In the dialog opened after clicking on the "Run" button
+    - Command Line: "--patterns" or "-p" option
 
 This file should use the following format:
 ```
@@ -220,7 +228,7 @@ COG3736-COG3504-COG2948
 
 <a name='output'>Output files</a>
 --------------
-Two output files will be written to a directory named "output"
+After clicking on the "Save" button in the User Interface, or after execution via Command Line: two output files will be written to a directory named "output"
 
 - **File 1: A Catalog of CSBs**: An excel file containing the discovered CSBs named "Catalog_[dataset name]\_ins[number of allowed insertions]\_q[quorum parameter].xlsx"   
     This file contains three sheets: 
@@ -282,20 +290,27 @@ The above zip file contains three files, located inside a folder named 'input':
 - chromosomal_genomes.fasta    
     _Chromosomal dataset_ - 1,485 genomes with at least one chromosome, plasmids were removed.
 - cog_info.txt   
-    Functional information of homology groups
+    Functional information ofgene  orthology groups
 
-**Sample execution of CSBFinder using the _Plasmid dataset_**
+**Sample execution of CSBFinder using the _Plasmid dataset_ via Command Line**
 ``` 
 java -jar CSBFinder.jar -in plasmid_genomes.fasta -q 10 -ins 1 -ds plasmids -cog-info cog_info.txt
 ```
 > On a laptop computer with Intel Core i7 processor and 8GB RAM, this execution should take a few seconds
 
-**Sample execution of CSBFinder using the _Chromosomal dataset_**
+**Sample execution of CSBFinder using the _Chromosomal dataset_ via Command Line**
 ``` 
 java -Xmx8g -jar CSBFinder.jar -in chromosomal_genomes.fasta -q 50 -ins 1 -ds chromosomes -cog-info cog_info.txt
 ```
 > On a laptop computer with Intel Core i7 processor and 8GB RAM, this execution should take less than 5 minutes
 
+**Sample execution of CSBFinder using the _Chromosomal dataset_ via the User Interface**
+The file _chromosomal_genomes.fasta_ contains ~1,500 genomes, hence CSBFinder needs more heap memory.
+When uploading a large dataset, it is recommended to execure CSBFinder.jar via Command Line in the following way:
+``` 
+java -Xmx8g -jar CSBFinder.jar
+```
+This command will launch the User Interface with more available memory
 
 <a name='license'>License</a>
 --------------
