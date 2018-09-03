@@ -286,13 +286,14 @@ Download the following zip file and extract its content to the same location as 
 
 The above zip file contains three files, located inside a folder named 'input':
 - plasmid_genomes.fasta   
-    _Plasmid dataset_ - 471 genomes with at least one plasmid, chromosomes were removed.
+    _Plasmid dataset_ - 471 prokaryotic genomes with at least one plasmid, chromosomes were removed.
 - chromosomal_genomes.fasta    
-    _Chromosomal dataset_ - 1,485 genomes with at least one chromosome, plasmids were removed.
+    _Chromosomal dataset_ - 1,485 prokaryotic genomes with at least one chromosome, plasmids were removed.
 - cog_info.txt   
     Functional information ofgene  orthology groups
 
 **Sample execution of CSBFinder using the _Plasmid dataset_ via Command Line**
+
 ``` 
 java -jar CSBFinder.jar -in plasmid_genomes.fasta -q 10 -ins 1 -ds plasmids -cog-info cog_info.txt
 ```
@@ -305,6 +306,7 @@ java -Xmx8g -jar CSBFinder.jar -in chromosomal_genomes.fasta -q 50 -ins 1 -ds ch
 > On a laptop computer with Intel Core i7 processor and 8GB RAM, this execution should take less than 5 minutes
 
 **Sample execution of CSBFinder using the _Chromosomal dataset_ via the User Interface**
+
 The file _chromosomal_genomes.fasta_ contains ~1,500 genomes, hence CSBFinder needs more heap memory.
 When uploading a large dataset, it is recommended to execure CSBFinder.jar via Command Line in the following way:
 ``` 
