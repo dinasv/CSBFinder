@@ -6,6 +6,7 @@ import Utils.COG;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
@@ -34,7 +35,7 @@ public class SummaryPanel extends JSplitPane {
         tabs.setFamilyRowClickedListener(listener);
     }
 
-    public void setCogInfo(List<COG> cogInfo, Map<String, Color> colorsUsed) {
-        csbSummaryPanel.displaySummary(cogInfo, colorsUsed);
+    public void setCogInfo(List<COG> patternGenes, Collection<COG> insertedGenes, Map<String, Color> colorsUsed) {
+        csbSummaryPanel.displaySummary(patternGenes, insertedGenes, colorsUsed);
     }
 }

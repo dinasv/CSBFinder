@@ -20,6 +20,7 @@ import com.beust.jcommander.ParameterException;
 
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class CSBFinderModel {
 
@@ -221,7 +222,30 @@ public class CSBFinderModel {
         return cogInfo;
     }
 
-     public Map<String, Map<String, List<InstanceInfo>>> getInstances(Pattern pattern){
+    public Set<COG> getInsertedGenes(Map<String, Map<String, List<InstanceInfo>>> instances, List<COG> patternGenes) {
+
+        Set<COG> insertedGenes = new HashSet<COG>();
+
+        if (cla.max_insertion > 0) {
+            Set<COG> patternGenesSet = new HashSet<>();
+            patternGenesSet.addAll(patternGenes);
+
+            for (Map<String, List<InstanceInfo>> instancesMap : instances.values()) {
+                for (List<InstanceInfo> instancesList : instancesMap.values()) {
+                    for (InstanceInfo instance : instancesList) {
+                        List<COG> instanceGenes = getCogInfo(instance.getGenes().stream().map(gene -> gene.getCog_id()).collect(Collectors.toList()));
+                        Set<COG> instanceGenesSet = new HashSet<>();
+                        instanceGenesSet.addAll(instanceGenes);
+                        instanceGenesSet.removeAll(patternGenesSet);
+                        insertedGenes.addAll(instanceGenesSet);
+                    }
+                }
+            }
+        }
+        return insertedGenes;
+    }
+
+    public Map<String, Map<String, List<InstanceInfo>>> getInstances(Pattern pattern){
 
         Map<String, Map<String, List<InstanceInfo>>> instances = new HashMap<>();
         Map<Integer, Map<Integer, List<InstanceLocation>>> sameSeqInstances = groupSameSeqInstances(pattern);

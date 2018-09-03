@@ -4,8 +4,10 @@ package Utils;
  * Represents a gene
  */
 public class Gene {
+
     private String cog_id;
     private String strand; //+ or -
+
     public Gene(String cog_id, String strand){
         this.cog_id = cog_id;
         this.strand = strand;

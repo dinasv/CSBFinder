@@ -38,12 +38,20 @@ public class Readers {
                                 for (int i = 0; i < functional_letters.length; i++) {
                                     functional_categories[i] = cog_line[3 + i];
                                 }
-                                COG cog = new COG(cog_id, cog_desc, functional_letters, functional_categories);
+                                String geneName = cog_line[cog_line.length -1];
+                                if (geneName.equals(functional_categories[functional_categories.length - 1])){
+                                    geneName = "";
+                                }
+                                COG cog = new COG(cog_id, cog_desc, functional_letters, functional_categories, geneName);
                                 cog_info.put(cog_id, cog);
                             }
 
                         }else{
-                            COG cog = new COG(cog_id, cog_desc, new String[0], new String[0]);
+                            String geneName = cog_line[cog_line.length -1];
+                            if (geneName.equals(cog_desc)){
+                                geneName = "";
+                            }
+                            COG cog = new COG(cog_id, cog_desc, geneName);
                             cog_info.put(cog_id, cog);
                         }
                     }

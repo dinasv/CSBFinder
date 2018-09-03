@@ -10,6 +10,7 @@ import Utils.Replicon;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 public class CSBFinderController {
 
@@ -47,6 +48,10 @@ public class CSBFinderController {
 
     public List<COG> getCogInfo(List<String> cogs) {
         return model.getCogInfo(cogs);
+    }
+
+    public Set<COG> getInsertedGenes(Map<String, Map<String, List<InstanceInfo>>> instances, List<COG> patternGenes){
+        return model.getInsertedGenes(instances, patternGenes);
     }
 
     public Map<String, Map<String, List<InstanceInfo>>> getInstances(Pattern pattern) { return model.getInstances(pattern); }

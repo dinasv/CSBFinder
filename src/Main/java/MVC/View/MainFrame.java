@@ -1,6 +1,7 @@
 package MVC.View;
 
 import MVC.Common.CSBFinderRequest;
+import MVC.Common.InstanceInfo;
 import MVC.Controller.CSBFinderController;
 import MVC.View.Components.HiddenPanel;
 import MVC.View.Events.*;
@@ -15,6 +16,8 @@ import java.awt.*;
 import java.io.File;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 public class MainFrame extends JFrame {
 
@@ -235,9 +238,12 @@ public class MainFrame extends JFrame {
             @Override
             public void rowClickedOccurred(FamilyRowClickedEvent e) {
                 Pattern p = e.getPattern();
+                Map<String, Map<String, List<InstanceInfo>>> instances = controller.getInstances(p);
+                genomes.displayInstances(p.getPatternArr(), instances);
+
                 List<COG> patternCOGs = controller.getCogInfo(Arrays.asList(p.getPatternArr()));
-                genomes.displayInstances(p.getPatternArr(), controller.getInstances(p));
-                summaryPanel.setCogInfo(patternCOGs, genomes.getColorsUsed());
+                Set<COG> insertedGenes = controller.getInsertedGenes(instances, patternCOGs);
+                summaryPanel.setCogInfo(patternCOGs, insertedGenes, genomes.getColorsUsed());
             }
         });
     }
