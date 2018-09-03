@@ -1,8 +1,8 @@
-# CSBFinderCore
+# CSBFinder
 
 -   [Overview](#overview)
 -   [Prerequisites](#prerequisites)
--   [Running CSBFinderCore](#running)
+-   [Running CSBFinder](#running)
 -   [Input files formats](#input)
 -   [Output files](#output)
 -   [Sample input files](#sample)
@@ -12,9 +12,12 @@
 
 <a name='overview'>Overview</a>
 --------
-CSBFinderCore is a standalone software tool, executed using command line, for the discovery, ranking and clustering of local colinear syntenic blocks (CSBs) identified in large genomic datasets.
+CSBFinder is a standalone Desktop java application with a graphical user interface, that can also be executed via command line.
 
-The input is a set of genomes and parameters **_k_** (number of allowed insertions) and **_q_** (the quorum parameter). The genomes are modeled as strings of homologous genes identifires, where genes belonging to the same homology group have identical IDs. A homology group is regarded as a 'gene' throughout the text. In our model, a CSB is a patterns of genes that appears as a substring of at least one of the input genomes, and has instances in at least **_q_** genomes, where each instance may vary from the CSB by at most **_k_** gene insertions. The genomes are mined to identify patterns that qualify as CSBs. The discovered CSBs are ranked according to a probabilistic score and clustered to families according to their gene content similarity.
+CSBFinder implements a novel methodology for the discovery, ranking, and taxonomic distribution analysis of colinear syntenic blocks (**CSBs**) - groups of genes that are consistently located close to each other, in the same order, across a wide range of taxa.
+CSBFinder incorporates an efficient algorithm that identifies CSBs in large genomic datasets. The discovored CSBs are ranked according to a probabilistic score and clusterd to families according to their gene content similarity.
+
+The input is a set of genomes and parameters **_k_** (number of allowed insertions) and **_q_** (the quorum parameter). The genomes are modeled as strings of orthology gene group identifires, where genes belonging to the same orthology group have identical IDs. Am orthology group is regarded as a 'gene' throughout the text. In our model, a CSB is a patterns of genes that appears as a substring of at least one of the input genomes, and has instances in at least **_q_** genomes, where each instance may vary from the CSB by at most **_k_** gene insertions. The genomes are mined to identify patterns that qualify as CSBs. The discovered CSBs are ranked according to a probabilistic score and clustered to families according to their gene content similarity.
 
 <a name='prerequisites'>Prerequisites</a>
 --------
@@ -22,22 +25,23 @@ The input is a set of genomes and parameters **_k_** (number of allowed insertio
 [Java Runtime Environment (JRE)](http://www.oracle.com/technetwork/java/javase/downloads/index.html)
 8 or higher.
 
-<a name='running'>Running CSBFinderCore</a>
+<a name='running'>Running CSBFinder</a>
 --------
-- Download the [latest release](https://github.com/dinasv/CSBFinderCore/releases) of CSBFinderCore.jar
-- You can use the link https://github.com/dinasv/CSBFinderCore/releases/download/v[VERSION]/CSBFinderCore.jar for direct download. For example, in linux:
+- Download the [latest release](https://github.com/dinasv/CSBFinder/releases) of CSBFinder.jar
+- You can use the link https://github.com/dinasv/CSBFinder/releases/download/v[VERSION]/CSBFinder.jar for direct download. For example, in linux:
     ```
-    wget https://github.com/dinasv/CSBFinderCore/releases/download/v0.2.1/CSBFinderCore.jar
+    wget https://github.com/dinasv/CSBFinder/releases/download/v0.3.0/CSBFinder.jar
     ```
     
+ 
 - In the terminal (linux) or cmd (windows) type:
     ``` 
-    java -jar CSBFinderCore.jar [options]
+    java -jar CSBFinder.jar [options]
     ```
-    > Note: When executing CSBFinderCore on a large dataset, add the option -Xmx8g (8g or more, depending on your RAM size).
+    > Note: When executing CSBFinder on a large dataset, add the option -Xmx8g (8g or more, depending on your RAM size).
     For example:
     ``` 
-    java -Xmx8g -jar CSBFinderCore.jar [options]
+    java -Xmx8g -jar CSBFinder.jar [options]
     ```
     
 
@@ -248,9 +252,9 @@ Two output files will be written to a directory named "output"
 <a name='sample'>Sample input files</a>   
 --------------------------------------
 
-Download the following zip file and extract its content to the same location as CSBFinderCore.jar:
+Download the following zip file and extract its content to the same location as CSBFinder.jar:
 
-> [Sample_input_files.zip](https://github.com/dinasv/CSBFinderCore/raw/master/input/Sample_input_files.zip)
+> [Sample_input_files.zip](https://github.com/dinasv/CSBFinder/raw/master/input/Sample_input_files.zip)
 
 The above zip file contains three files, located inside a folder named 'input':
 - plasmid_genomes.fasta   
@@ -260,15 +264,15 @@ The above zip file contains three files, located inside a folder named 'input':
 - cog_info.txt   
     Functional information of homology groups
 
-**Sample execution of CSBFinderCore using the _Plasmid dataset_**
+**Sample execution of CSBFinder using the _Plasmid dataset_**
 ``` 
-java -jar CSBFinderCore.jar -in plasmid_genomes.fasta -q 10 -ins 1 -ds plasmids -cog-info cog_info.txt
+java -jar CSBFinder.jar -in plasmid_genomes.fasta -q 10 -ins 1 -ds plasmids -cog-info cog_info.txt
 ```
 > On a laptop computer with Intel Core i7 processor and 8GB RAM, this execution should take a few seconds
 
-**Sample execution of CSBFinderCore using the _Chromosomal dataset_**
+**Sample execution of CSBFinder using the _Chromosomal dataset_**
 ``` 
-java -Xmx8g -jar CSBFinderCore.jar -in chromosomal_genomes.fasta -q 50 -ins 1 -ds chromosomes -cog-info cog_info.txt
+java -Xmx8g -jar CSBFinder.jar -in chromosomal_genomes.fasta -q 50 -ins 1 -ds chromosomes -cog-info cog_info.txt
 ```
 > On a laptop computer with Intel Core i7 processor and 8GB RAM, this execution should take less than 5 minutes
 
@@ -276,10 +280,13 @@ java -Xmx8g -jar CSBFinderCore.jar -in chromosomal_genomes.fasta -q 50 -ins 1 -d
 <a name='license'>License</a>
 --------------
 
-Licensed under the Apache License, Version 2.0. See more details in [LICENSE](https://github.com/dinasv/CSBFinderCore/blob/master/LICENSE) file
+Licensed under the Apache License, Version 2.0. See more details in [LICENSE](https://github.com/dinasv/CSBFinder/blob/master/LICENSE) file
 
 <a name='author'>Author</a>
 --------------
 Dina Svetlitsky
 
 dina.svetlitsky@gmail.com
+
+GUI:
+Alexander Lerman
