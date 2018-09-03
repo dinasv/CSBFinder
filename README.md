@@ -32,64 +32,85 @@ The input is a set of genomes and parameters **_k_** (number of allowed insertio
     ```
     wget https://github.com/dinasv/CSBFinder/releases/download/v0.3.0/CSBFinder.jar
     ```
-    
- 
+## User Interface
+Just click on the CSBFinder.jar file twice
+
+> Note: If you are going to use a very large input dataset, execute CSBFinder via command line without arguments, and add the Java option -Xmx[RAM size] (see below) 
+
+> [Sample input files](#sample) are provided below
+
+## Command Line 
 - In the terminal (linux) or cmd (windows) type:
     ``` 
     java -jar CSBFinder.jar [options]
     ```
-    > Note: When executing CSBFinder on a large dataset, add the option -Xmx8g (8g or more, depending on your RAM size).
+    > Note: If your input dataset is very large, add the argument -Xmx8g (8g or more, depending on your RAM size).
     For example:
     ``` 
     java -Xmx8g -jar CSBFinder.jar [options]
     ```
+    > Note: When running CSBFinder without command line arguments, the user interface will be launched.
     
 
 > [Sample input files](#sample) are provided below
 
 ### Options:
 Mandatory:
-- **-in**   
+- **-in** INSERTIONS
     Input file name with genome sequences, located in a directory named 'input'. See [Input files formats](#input) for more details.
-- **-q**   
-      Instance quorum with insertions. Minimal number of input sequences with a CSB instance.   
+- **-q** QUORUM
+      Quorum prarmeter. Minimal number of input sequences that must contain a CSB instance.   
       Default: 1
+      Min Value: 1
+      Max Value: Total input sequences
       
 Optional:     
-- **-ins**   
-      Maximal number of insertions allowed    
+- **-ins** INSERTIONS
+      Maximal number of insertions allowed in a CSB instance.
       Default: 0
-- **-qexact**
-      Instance quorum without insertions. Minimal number of input sequences with a CSB instance without insertions.   
+- **-qexact** EXACT_QUORUM
+      Quorum without insertions. Minimal number of input sequences that must contain a CSB instance with no insertions. 
       Default: 1
-- **-lmin**   
-      Minimal length of a CSB   
+      Min Value: 1
+      Max Value: Total input sequences
+- **-lmin** MIN_CSB_LENGTH
+      Minimal length (number of genes) of a CSB   
       Default: 2
-- **-lmax**
-      Maximal length of a CSB   
-      Default: 2147483647 (longest possible CSB in the dataset)
-- **--datasetname, -ds**   
-      Dataset name   
+      Min Value: 2
+      Max Value: Maximal sequence length
+- **-lmax** MAX_CSB_LENGTH
+      Maximal length (number of genes) of a CSB   
+      Default: Maximal sequence length
+      Min Value: 2
+      Max Value: Maximal sequence length
+- **--datasetname** DATASET_NAME ,**-ds** DATASET_NAME   
+      DATASET_NAME will be reflected in the output file name.
       Default: dataset1
-- **--patterns, -p**   
-      Input CSB patterns file name, located in a directory named 'input'. See [Input files formats](#input) for more details.
-- **-cog-info**   
-      Gene families information file name, located in a directory named 'input'. See [Input files formats](#input) for more details.
-- **-bcount**   
-      If true, count one instance per input sequence   
-      Default: true
-- **--threshold, -t**   
+- **--patterns, -p** PATTERNS_FILE_NAME
+      A name of a file, located in a directory named 'input', in the same directory as CSBFinder.jar.
+      If this option is used, CSBs are no longer extracted from the input sequences.  
+      The file should contain specific CSB patterns that the user is interested to find in the input sequences.  
+      See [Input files formats](#input) for more details.
+- **-cog-info** COG_INFO_FILE_NAME
+      A name of a file, located in a directory named 'input', in the same directory as CSBFinder.jar.
+      This file should contain functional description of orthology groups.
+      See [Input files formats](#input) for more details.
+- **-mult_count**   
+      If this option is provided, CSB count indicates the total number of instances (could be several instances in the same input sequence), rather than the number of input sequences with an instance.   
+- **--threshold, -t** THRESHOLD
       Threshold for family clustering   
       Default: 0.8
-- **-out**   
+      Min Value: 0
+      Max Value: 1
+- **-out** OUTPUT_FILE_TYPE
       Output file type   
       Default: XLSX   
       Possible Values: [TXT, XLSX]
-- **-clust-by**   
+- **-clust-by** CLUSTER_BY
       Cluster CSBs to families by: 'score' or 'length'  
       Default: SCORE   
       Possible Values: [LENGTH, SCORE]
-- **--help**   
+- , **-h**, **--help**
       Show usage
       
 <a name='input'>Input files formats</a>
