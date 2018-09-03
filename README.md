@@ -56,61 +56,61 @@ Just click on the CSBFinder.jar file twice
 
 ### Options:
 Mandatory:
-- **-in** INSERTIONS
-    Input file name with genome sequences, located in a directory named 'input'. See [Input files formats](#input) for more details.
-- **-q** QUORUM
+- **-in** INPUT_DATASET_FILE_NAME    
+    Input file name with genome sequences, located in a directory named 'input'. See [Input files formats](#input_dataset) for more details.
+- **-q** QUORUM     
       Quorum prarmeter. Minimal number of input sequences that must contain a CSB instance.   
       Default: 1
       Min Value: 1
       Max Value: Total input sequences
       
 Optional:     
-- **-ins** INSERTIONS
+- **-ins** INSERTIONS    
       Maximal number of insertions allowed in a CSB instance.
       Default: 0
-- **-qexact** EXACT_QUORUM
+- **-qexact** EXACT_QUORUM    
       Quorum without insertions. Minimal number of input sequences that must contain a CSB instance with no insertions. 
       Default: 1
       Min Value: 1
       Max Value: Total input sequences
-- **-lmin** MIN_CSB_LENGTH
+- **-lmin** MIN_CSB_LENGTH     
       Minimal length (number of genes) of a CSB   
       Default: 2
       Min Value: 2
       Max Value: Maximal sequence length
-- **-lmax** MAX_CSB_LENGTH
+- **-lmax** MAX_CSB_LENGTH    
       Maximal length (number of genes) of a CSB   
       Default: Maximal sequence length
       Min Value: 2
       Max Value: Maximal sequence length
-- **--datasetname** DATASET_NAME ,**-ds** DATASET_NAME   
-      DATASET_NAME will be reflected in the output file name.
+- **--datasetname** DATASET_NAME ,**-ds** DATASET_NAME       
+      DATASET_NAME will be reflected in the output file name.   
       Default: dataset1
-- **--patterns, -p** PATTERNS_FILE_NAME
-      A name of a file, located in a directory named 'input', in the same directory as CSBFinder.jar.
-      If this option is used, CSBs are no longer extracted from the input sequences.  
-      The file should contain specific CSB patterns that the user is interested to find in the input sequences.  
-      See [Input files formats](#input) for more details.
-- **-cog-info** COG_INFO_FILE_NAME
-      A name of a file, located in a directory named 'input', in the same directory as CSBFinder.jar.
-      This file should contain functional description of orthology groups.
-      See [Input files formats](#input) for more details.
-- **-mult_count**   
-      If this option is provided, CSB count indicates the total number of instances (could be several instances in the same input sequence), rather than the number of input sequences with an instance.   
-- **--threshold, -t** THRESHOLD
-      Threshold for family clustering   
-      Default: 0.8
-      Min Value: 0
-      Max Value: 1
-- **-out** OUTPUT_FILE_TYPE
+- **--patterns** PATTERNS_FILE_NAME, **-p** PATTERNS_FILE_NAME    
+      A name of a file, located in a directory named 'input', in the same directory as CSBFinder.jar.   
+      If this option is used, CSBs are no longer extracted from the input sequences.    
+      The file should contain specific CSB patterns that the user is interested to find in the input sequences.      
+      See [Input files formats](#input) for more details.    
+- **-cog-info** COG_INFO_FILE_NAME     
+      A name of a file, located in a directory named 'input', in the same directory as CSBFinder.jar.   
+      This file should contain functional description of orthology groups.    
+      See [Input files formats](#input) for more details.    
+- **-mult_count**    
+      If this option is provided, CSB count indicates the total number of instances (could be several instances in the same input sequence), rather than the number of input sequences with an instance.    
+- **--threshold** THRESHOLD, **-t** THRESHOLD   
+      Threshold for family clustering      
+      Default: 0.8    
+      Min Value: 0   
+      Max Value: 1    
+- **-out** OUTPUT_FILE_TYPE    
       Output file type   
       Default: XLSX   
       Possible Values: [TXT, XLSX]
-- **-clust-by** CLUSTER_BY
+- **-clust-by** CLUSTER_BY    
       Cluster CSBs to families by: 'score' or 'length'  
       Default: SCORE   
       Possible Values: [LENGTH, SCORE]
-- , **-h**, **--help**
+- , **-h**, **--help**     
       Show usage
       
 <a name='input'>Input files formats</a>
@@ -118,11 +118,10 @@ Optional:
 
 All input files must be located in a directory named 'input', in the same directory as the jar file. 
 
-### Input file containing input genome sequences
-- Mandatory input file
+<a name='input_dataset'> Input file containing input genome sequences </a>
+A text file containing all input genomes modeled as strings, where each character is an orthology group ID that was assigned to a corresponding gene (for example, COG ID)
+- This is a Mandatory input file
 - Its name is indicated using the "-in" option
-- Contains all input genomes modeled as strings, where each character is a homology group ID that contains the corresponding gene (for example, COG ID)
-- FASTA file
 
 This file should use the following format:
 ```
