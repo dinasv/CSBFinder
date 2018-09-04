@@ -22,10 +22,10 @@ CSBFinder incorporates an efficient algorithm that identifies CSBs in large geno
 The discovered CSBs are ranked according to a probabilistic score and clustered to families according to their gene 
 content similarity.
 
-## Workflow Description
+### Workflow Description
 The workflow of CSBFinder is given in the figure below.    
 
-A) The input to the workflow is a dataset of input genomes, where each genome is a sequence of gene orthology group
+**(A)** The input to the workflow is a dataset of input genomes, where each genome is a sequence of gene orthology group
 identifiers (genes belonging to the same orthology group have identical IDs). Each input genome is segmented to 'directons' - a directon is a maximal sequence of consecutive 
 genes located on the same DNA strand. The gene order in each directon follows the order in which the genes are
 transcribed in each genome (on either the forward or the reverse strand of the DNA).    
@@ -36,12 +36,12 @@ appears as a substring of at least one of the input genomes, and has instances i
 genomes, where each instance may vary from the CSB pattern by at most **_k_** gene insertions. 
 The workflow also accepts as input (optional) parameters specifying the minimal and maximal length of the sought CSBs.
 
-B) The genomes are mined to identify all patterns that qualify as CSBs according to the user-specified parameters
+**(B)** The genomes are mined to identify all patterns that qualify as CSBs according to the user-specified parameters
 mentioned above}. 
 
-C) All discovered CSBs are ranked according to a probabilistic score. 
+**(C)** All discovered CSBs are ranked according to a probabilistic score. 
 
-D) Finally, the CSBs are clustered to families according to their gene content similarity, and the rank of a family is
+**(D)** Finally, the CSBs are clustered to families according to their gene content similarity, and the rank of a family is
 determined by the score of its highest scoring CSB.
 
 ![CSBFinder workflow](https://github.com/dinasv/CSBFinder/blob/master/images/workflow.png "Workflow")
