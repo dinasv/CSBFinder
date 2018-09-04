@@ -27,19 +27,22 @@ The input is a set of genomes and parameters **_k_** (number of allowed insertio
 
 <a name='running'>Running CSBFinder</a>
 --------
+### Download the JAR file
 - Download the [latest release](https://github.com/dinasv/CSBFinder/releases) of CSBFinder.jar
 - You can use the link https://github.com/dinasv/CSBFinder/releases/download/v[VERSION]/CSBFinder.jar for direct download. For example, in linux:
     ```
     wget https://github.com/dinasv/CSBFinder/releases/download/v0.3.0/CSBFinder.jar
     ```
-## User Interface
+CSBFinder has a user interface, but can executed via command line as well. 
+
+### Running CSBFinder via User Interface
 Just click on the CSBFinder.jar file twice
 
 > Note: If you are going to use a very large input dataset, execute CSBFinder via command line without arguments, and add the Java option -Xmx[RAM size] (see below) 
 
 > [Sample input files](#sample) are provided below
 
-## Command Line 
+### Running CSBFinder via Command Line 
 - In the terminal (linux) or cmd (windows) type:
     ``` 
     java -jar CSBFinder.jar [options]
@@ -54,7 +57,7 @@ Just click on the CSBFinder.jar file twice
 
 > [Sample input files](#sample) are provided below
 
-### Options:
+#### Options:
 Mandatory:
 - **-in** INPUT_DATASET_FILE_NAME    
     Input file name with genome sequences, located in a directory named 'input'. See [Input files formats](#input_dataset) for more details.
