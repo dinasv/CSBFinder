@@ -3,6 +3,8 @@
 -   [Overview](#overview)
 -   [Prerequisites](#prerequisites)
 -   [Running CSBFinder](#running)
+    - [User Interface](#ui)
+    - [Command Line](#cms)
 -   [Input files formats](#input)
 -   [Output files](#output)
 -   [Sample input files](#sample)
@@ -62,7 +64,7 @@ determined by the score of its highest scoring CSB.
     ```
 CSBFinder has a user interface, but can executed via command line as well. 
 
-### Running CSBFinder via User Interface
+### <a name='ui'>Running CSBFinder via User Interface</a>
 Just click on the CSBFinder.jar file twice
 
 > Note: If you are going to use a very large input dataset, execute CSBFinder via command line without arguments,
