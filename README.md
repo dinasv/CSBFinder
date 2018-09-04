@@ -204,18 +204,22 @@ COG0600	+
 ```
 
 ### Input file with functional information of gene orthology group IDs 
+- This is an optional input file
+- The path to this file is provided in:
+    - User Interface: In the dialog opened after clicking on the "Run" button
+    - Command Line: "-cog-info" option
+#### COG information input file
 If you are using [COGs](https://www.ncbi.nlm.nih.gov/COG/) (Cluster of Orthologous Genes) as your 
 gene orthology group identifiers, you can use the file _cog_info.txt_ provided in the 
 [input](https://github.com/dinasv/CSBFinder/tree/master/input) directory.
 
 The functional description of gene orthology groups will appear in the legend (User Interface) 
-or in the output catalog file (when clicking on the "Save" button in the User Interface, or when executing via Command Line).
+or in the output catalog file (when clicking on the "Save" button in the User Interface, or when 
+executing via Command Line).
 
 You can also use a custom file of your own. See instructions below.
-- This is an optional input file
-- The path to this file is provided in:
-    - User Interface: In the dialog opened after clicking on the "Run" button
-    - Command Line: "-cog-info" option
+
+### Custom gene orthology group information input file
 
 This file should use the following format:
 ```
@@ -323,8 +327,9 @@ The above zip file contains three files, located inside a folder named 'input':
 - cog_info.txt   
     Functional information of gene orthology groups
 
-    
-**Sample execution of CSBFinder using the _Chromosomal dataset_ via the User Interface**
+### Execution of CSBFinder on the Chromosomal Dataset of 1,485 prokaryotic genomes
+  
+#### User Interface
 
 The file _chromosomal_genomes.fasta_ contains ~1,500 genomes, hence CSBFinder needs more heap memory.
 When uploading a large dataset.
@@ -332,21 +337,34 @@ You should execute CSBFinder.jar via Command Line in the following way:
 ``` 
 java -Xmx6g -jar CSBFinder.jar
 ```
-This command will launch the User Interface with more available memory.
+This command will launch the User Interface with more available memory (6GB), you can specify a 
+higher number depending on you RAM size.
 It may take a few minuted to load the input file.
 
-**Sample execution of CSBFinder using the _Plasmid dataset_ via Command Line**
+#### Command Line
+``` 
+java -Xmx6g -jar CSBFinder.jar -in chromosomal_genomes.fasta -q 50 -ins 1 -ds chromosomes -cog-info cog_info.txt
+```
+##### Input parameters
+- This line will execute CSBFinder.jar with maximal heap size (memory) of 6GB.   
+- The input genomes files is _chromosomal_genomes.fasta_ located in the input directory.  
+- The quorum parameter is set to 50 (i.e., each CSB must have instances in at least 50 input genomes).  
+- The number of allowed insertions in a CSB instance is one.  
+- The dataset name is _"chromosomes"_
+- The gene orthology input file is _cog_info.txt_ located in the input directory
 
+##### Output
+The output files will be now located in the output directory
+
+> On a laptop computer with Intel Core i7 processor and 8GB RAM, this execution should take less than 5 minutes
+
+### Execution of CSBFinder on the Plasmid Dataset of 471 prokaryotic genomes
+
+#### Command Line
 ``` 
 java -jar CSBFinder.jar -in plasmid_genomes.fasta -q 10 -ins 1 -ds plasmids -cog-info cog_info.txt
 ```
 > On a laptop computer with Intel Core i7 processor and 8GB RAM, this execution should take a few seconds
-
-**Sample execution of CSBFinder using the _Chromosomal dataset_ via Command Line**
-``` 
-java -Xmx6g -jar CSBFinder.jar -in chromosomal_genomes.fasta -q 50 -ins 1 -ds chromosomes -cog-info cog_info.txt
-```
-> On a laptop computer with Intel Core i7 processor and 8GB RAM, this execution should take less than 5 minutes
 
 
 
