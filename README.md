@@ -293,7 +293,7 @@ The above zip file contains three files, located inside a folder named 'input':
 - chromosomal_genomes.fasta    
     _Chromosomal dataset_ - 1,485 prokaryotic genomes with at least one chromosome, plasmids were removed.
 - cog_info.txt   
-    Functional information ofgene  orthology groups
+    Functional information of gene orthology groups
 
 **Sample execution of CSBFinder using the _Plasmid dataset_ via Command Line**
 
