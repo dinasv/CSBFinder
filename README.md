@@ -364,6 +364,15 @@ The output files will be now located in the output directory
 ``` 
 java -jar CSBFinder.jar -in plasmid_genomes.fasta -q 10 -ins 1 -ds plasmids -cog-info cog_info.txt
 ```
+##### Input parameters 
+- The input genomes files is _plasmid_genomes.fasta_ located in the input directory.  
+- The quorum parameter is set to 10 (i.e., each CSB must have instances in at least 10 input genomes).  
+- The number of allowed insertions in a CSB instance is one.  
+- The dataset name is _"plasmids"_
+- The gene orthology input file is _cog_info.txt_ located in the input directory
+
+##### Output
+The output files will be now located in the output directory
 > On a laptop computer with Intel Core i7 processor and 8GB RAM, this execution should take a few seconds
 
 
