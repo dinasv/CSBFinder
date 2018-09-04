@@ -32,7 +32,7 @@ public class MainFrame extends JFrame {
     private ProgressBar progressBar;
 
     public MainFrame(CSBFinderController controller) {
-        super("CSB Finder");
+        super("CSBFinder");
 
         setUIFont (new javax.swing.plaf.FontUIResource("Serif",Font.PLAIN,16));
 
