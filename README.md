@@ -4,7 +4,7 @@
 -   [Prerequisites](#prerequisites)
 -   [Running CSBFinder](#running)
     - [User Interface](#ui)
-    - [Command Line](#cms)
+    - [Command Line](#cmd)
 -   [Input files formats](#input)
 -   [Output files](#output)
 -   [Sample input files](#sample)
