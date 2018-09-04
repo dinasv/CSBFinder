@@ -49,7 +49,14 @@ CSBFinder has a user interface, but can executed via command line as well.
 ### Running CSBFinder via User Interface
 Just click on the CSBFinder.jar file twice
 
-> Note: If you are going to use a very large input dataset, execute CSBFinder via command line without arguments, and add the Java option -Xmx[RAM size] (see below) 
+> Note: If you are going to use a very large input dataset, execute CSBFinder via command line without arguments,
+ and add the Java option -Xmx[maximum size of the heap]  
+ For example:
+ ``` 
+     java -Xmx6g -jar CSBFinder.jar
+ ```
+ > It is recommended to use at least 6GB for a large dataset. You can specify a higher number, 
+ depending on you RAM size.  
 
 > [Sample input files](#sample) are provided below
 
@@ -197,9 +204,14 @@ COG0600	+
 ```
 
 ### Input file with functional information of gene orthology group IDs 
-Functional description of gene orthology groups will appear in the legend (User Interface) or in the output catalog file 
-(when clicking on the "Save" button in the User Interface, or when executing via Command Line).
+If you are using [COGs](https://www.ncbi.nlm.nih.gov/COG/) (Cluster of Orthologous Genes) as your 
+gene orthology group identifiers, you can use the file _cog_info.txt_ provided in the 
+[input](https://github.com/dinasv/CSBFinder/tree/master/input) directory.
 
+The functional description of gene orthology groups will appear in the legend (User Interface) 
+or in the output catalog file (when clicking on the "Save" button in the User Interface, or when executing via Command Line).
+
+You can also use a custom file of your own. See instructions below.
 - This is an optional input file
 - The path to this file is provided in:
     - User Interface: In the dialog opened after clicking on the "Run" button
