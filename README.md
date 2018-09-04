@@ -58,10 +58,11 @@ Just click on the CSBFinder.jar file twice
     ``` 
     java -jar CSBFinder.jar [options]
     ```
-    > Note: If your input dataset is very large, add the argument -Xmx8g (8g or more, depending on your RAM size).
+    > Note: If your input dataset is very large, add the argument -Xmx6g (6g might be enough, but you can specify a 
+    higher number, depending on your RAM size).
     For example:
     ``` 
-    java -Xmx8g -jar CSBFinder.jar [options]
+    java -Xmx6g -jar CSBFinder.jar [options]
     ```
     > Note: When running CSBFinder without command line arguments, the user interface will be launched.
     
@@ -158,7 +159,7 @@ All replicons of the same genome should be consecutive, i.e.:
 >genomeB|replicon1
 ...
 ```
-> Genes that does not belong to any gene orthology group, should be marked as 'X'
+> Genes that do not belong to any gene orthology group, should be marked as 'X'
 
 #### Example:
 ```
@@ -217,7 +218,8 @@ COG0320;Lipoate synthase;H;Coenzyme transport and metabolism;LipA;
 ...
 ```
 ### Input file containing CSB patterns
-If this option is used, CSBs are no longer extracted from the input sequences. It specifies specific CSB patterns which the user is interested to find in the input sequences
+If this file is provided, CSBs are no longer extracted from the input sequences. 
+This file shohuld contain specific CSB patterns which the user is interested to find in the input sequences.
 
 - This is an optional input text file
 - The path to this file is provided in:
@@ -316,7 +318,7 @@ The file _chromosomal_genomes.fasta_ contains ~1,500 genomes, hence CSBFinder ne
 When uploading a large dataset.
 You should execute CSBFinder.jar via Command Line in the following way:
 ``` 
-java -Xmx8g -jar CSBFinder.jar
+java -Xmx6g -jar CSBFinder.jar
 ```
 This command will launch the User Interface with more available memory.
 It may take a few minuted to load the input file.
@@ -330,7 +332,7 @@ java -jar CSBFinder.jar -in plasmid_genomes.fasta -q 10 -ins 1 -ds plasmids -cog
 
 **Sample execution of CSBFinder using the _Chromosomal dataset_ via Command Line**
 ``` 
-java -Xmx8g -jar CSBFinder.jar -in chromosomal_genomes.fasta -q 50 -ins 1 -ds chromosomes -cog-info cog_info.txt
+java -Xmx6g -jar CSBFinder.jar -in chromosomal_genomes.fasta -q 50 -ins 1 -ds chromosomes -cog-info cog_info.txt
 ```
 > On a laptop computer with Intel Core i7 processor and 8GB RAM, this execution should take less than 5 minutes
 
