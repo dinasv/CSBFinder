@@ -302,6 +302,11 @@ public class InputParametersDialog extends JDialog {
 
         int y = 0;
 
+        JLabel title = new JLabel("Basic Parameters:");
+        title.setFont(new Font("Serif", Font.BOLD, 20));
+
+        addComponentToGC(0, y++, 1, 0.6, insetLabel, title, LINE_START);
+
         addComponentToGC(0, y, 1, 0.6, insetLabel, geneInfoFilePathLabel, LINE_START);
         addComponentToGC(1, y, 1, 0.6, insetField, geneInfoFilePath, LINE_START);
         addComponentToGC(2, y++, 1, 0.6, insetField, loadGeneInfoBtn, LINE_START);
@@ -313,6 +318,13 @@ public class InputParametersDialog extends JDialog {
         addComponentToGC(0, y, 1, 0.1, insetLabel, numOfInsertionsLabel, LINE_START);
         addComponentToGC(1, y++, 1, 0.1, insetField, numOfInsertions, LINE_START);
 
+        title = new JLabel("Advanced parameters:");
+        title.setFont(new Font("Serif", Font.BOLD, 20));
+        addComponentToGC(0, y++, 1, 0.6, insetLabel, title, LINE_START);
+
+        addComponentToGC(0, y, 1, 0.1, insetLabel, datasetNameLabel, LINE_START);
+        addComponentToGC(1, y++, 1, 0.2, insetField, datasetName, LINE_START);
+
         addComponentToGC(0, y, 1, 0.2, insetLabel, quorumWithoutInsertionsLabel, LINE_START);
         addComponentToGC(2, y, 1, 0.2, insetField, quorumWithoutInsertions, LINE_START);
         addComponentToGC(1, y++, 1, 0.2, insetField, quorumWithoutInsertionsSlider, LINE_START);
@@ -322,9 +334,6 @@ public class InputParametersDialog extends JDialog {
 
         addComponentToGC(0, y, 1, 0.1, insetLabel, maxCSBLengthLabel, FIRST_LINE_START);
         addComponentToGC(1, y++, 1, 0.1, insetField, maxCSBLength, FIRST_LINE_START);
-
-        addComponentToGC(0, y, 1, 0.1, insetLabel, datasetNameLabel, LINE_START);
-        addComponentToGC(1, y++, 1, 0.2, insetField, datasetName, LINE_START);
 
         addComponentToGC(0, y, 1, 0.2, insetLabel, patternFilePathLabel, LINE_START);
         addComponentToGC(1, y, 1, 0.2, insetField, patternFilePath, LINE_START);
