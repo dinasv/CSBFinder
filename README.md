@@ -22,13 +22,27 @@ CSBFinder incorporates an efficient algorithm that identifies CSBs in large geno
 The discovered CSBs are ranked according to a probabilistic score and clustered to families according to their gene 
 content similarity.
 
-The input is a set of genomes and parameters **_k_** (number of allowed insertions) and **_q_** (the quorum parameter).
-The genomes are modeled as strings of orthology gene group identifiers, where genes belonging to the same orthology
-group have identical IDs. Am orthology group is regarded as a 'gene' throughout the text. In our model, a CSB is a 
-patterns of genes that appears as a substring of at least one of the input genomes, and has instances in
-at least **_q_** genomes, where each instance may vary from the CSB by at most **_k_** gene insertions. 
-The genomes are mined to identify patterns that qualify as CSBs. The discovered CSBs are ranked according to 
-a probabilistic score and clustered to families according to their gene content similarity.
+## Workflow Description
+The workflow of CSBFinder is given in the figure below.    
+
+A) The input to the workflow is a dataset of input genomes, where each genome is a sequence of gene orthology group
+identifiers (genes belonging to the same orthology group have identical IDs). Each input genome is segmented to 'directons' - a directon is a maximal sequence of consecutive 
+genes located on the same DNA strand. The gene order in each directon follows the order in which the genes are
+transcribed in each genome (on either the forward or the reverse strand of the DNA).    
+
+Additional input consists of user-specified parameters **_k_** (number of allowed insertions) and and **_q_** 
+(the quorum parameter). In our formulation, a CSB is a pattern that
+appears as a substring of at least one of the input genomes, and has instances in at least **_q_** of the input
+genomes, where each instance may vary from the CSB pattern by at most **_k_** gene insertions. 
+The workflow also accepts as input (optional) parameters specifying the minimal and maximal length of the sought CSBs.
+
+B) The genomes are mined to identify all patterns that qualify as CSBs according to the user-specified parameters
+mentioned above}. 
+
+C) All discovered CSBs are ranked according to a probabilistic score. 
+
+D) Finally, the CSBs are clustered to families according to their gene content similarity, and the rank of a family is
+determined by the score of its highest scoring CSB.
 
 ![CSBFinder workflow](https://github.com/dinasv/CSBFinder/blob/master/images/workflow.png "Workflow")
 
