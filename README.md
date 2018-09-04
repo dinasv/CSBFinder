@@ -38,20 +38,22 @@ a probabilistic score and clustered to families according to their gene content 
 
 <a name='running'>Running CSBFinder</a>
 --------
+### Download the JAR file
 - Download the [latest release](https://github.com/dinasv/CSBFinder/releases) of CSBFinder.jar
-- You can use the link https://github.com/dinasv/CSBFinder/releases/download/v[VERSION]/CSBFinder.jar 
-for direct download. For example, in linux:
+- You can use the link https://github.com/dinasv/CSBFinder/releases/download/v[VERSION]/CSBFinder.jar for direct download. For example, in linux:
     ```
-    wget https://github.com/dinasv/CSBFinder/releases/download/v0.3.0/CSBFinder.jar
+    wget https://github.com/dinasv/CSBFinder/releases/download/v0.3.1/CSBFinder.jar
     ```
-## User Interface
+CSBFinder has a user interface, but can executed via command line as well. 
+
+### Running CSBFinder via User Interface
 Just click on the CSBFinder.jar file twice
 
 > Note: If you are going to use a very large input dataset, execute CSBFinder via command line without arguments, and add the Java option -Xmx[RAM size] (see below) 
 
 > [Sample input files](#sample) are provided below
 
-## Command Line 
+### Running CSBFinder via Command Line 
 - In the terminal (linux) or cmd (windows) type:
     ``` 
     java -jar CSBFinder.jar [options]
@@ -66,7 +68,7 @@ Just click on the CSBFinder.jar file twice
 
 > [Sample input files](#sample) are provided below
 
-### Options:
+#### Options:
 Mandatory:
 - **-in** INPUT_DATASET_FILE_NAME    
     Input file name with genome sequences, located in a directory named 'input'. See [Input files formats](#input_dataset) for more details.
@@ -303,8 +305,21 @@ The above zip file contains three files, located inside a folder named 'input':
     _Plasmid dataset_ - 471 prokaryotic genomes with at least one plasmid, chromosomes were removed.
 - chromosomal_genomes.fasta    
     _Chromosomal dataset_ - 1,485 prokaryotic genomes with at least one chromosome, plasmids were removed.
+    > Important: this is a huge dataset. See instructions below, how to run CSBFinder with a large dataset
 - cog_info.txt   
     Functional information of gene orthology groups
+
+    
+**Sample execution of CSBFinder using the _Chromosomal dataset_ via the User Interface**
+
+The file _chromosomal_genomes.fasta_ contains ~1,500 genomes, hence CSBFinder needs more heap memory.
+When uploading a large dataset.
+You should execute CSBFinder.jar via Command Line in the following way:
+``` 
+java -Xmx8g -jar CSBFinder.jar
+```
+This command will launch the User Interface with more available memory.
+It may take a few minuted to load the input file.
 
 **Sample execution of CSBFinder using the _Plasmid dataset_ via Command Line**
 
@@ -319,14 +334,7 @@ java -Xmx8g -jar CSBFinder.jar -in chromosomal_genomes.fasta -q 50 -ins 1 -ds ch
 ```
 > On a laptop computer with Intel Core i7 processor and 8GB RAM, this execution should take less than 5 minutes
 
-**Sample execution of CSBFinder using the _Chromosomal dataset_ via the User Interface**
 
-The file _chromosomal_genomes.fasta_ contains ~1,500 genomes, hence CSBFinder needs more heap memory.
-When uploading a large dataset, it is recommended to execute CSBFinder.jar via Command Line in the following way:
-``` 
-java -Xmx8g -jar CSBFinder.jar
-```
-This command will launch the User Interface with more available memory
 
 <a name='license'>License</a>
 --------------
@@ -339,11 +347,11 @@ Licensed under the Apache License, Version 2.0. See more details in [LICENSE](ht
  
  The User Interface uses an icon made by <a href="https://www.flaticon.com/authors/roundicons" title="Roundicons">Roundicons</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a>, licensed by <a href="http://creativecommons.org/licenses/by/3.0/" title="Creative Commons BY 3.0" target="_blank">CC 3.0 BY</a>
 
-<a name='author'>Author</a>
+<a name='author'>Authors</a>
 --------------
 Dina Svetlitsky
 
 dina.svetlitsky@gmail.com
 
-GUI:
+User Interface:  
 Alexander Lerman
