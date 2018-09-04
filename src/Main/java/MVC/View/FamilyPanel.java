@@ -44,6 +44,7 @@ public class FamilyPanel extends JPanel {
     public void setData(List<Family> families) {
         model.setData(families);
         model.fireTableDataChanged();
+        table.setRowSelectionInterval(0,0);
     }
 
     public void setTopScoreData(List<Family> families) {
