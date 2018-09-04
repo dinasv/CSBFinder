@@ -31,7 +31,7 @@ The input is a set of genomes and parameters **_k_** (number of allowed insertio
 - Download the [latest release](https://github.com/dinasv/CSBFinder/releases) of CSBFinder.jar
 - You can use the link https://github.com/dinasv/CSBFinder/releases/download/v[VERSION]/CSBFinder.jar for direct download. For example, in linux:
     ```
-    wget https://github.com/dinasv/CSBFinder/releases/download/v0.3.0/CSBFinder.jar
+    wget https://github.com/dinasv/CSBFinder/releases/download/v0.3.1/CSBFinder.jar
     ```
 CSBFinder has a user interface, but can executed via command line as well. 
 
