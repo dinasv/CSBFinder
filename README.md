@@ -30,6 +30,8 @@ at least **_q_** genomes, where each instance may vary from the CSB by at most *
 The genomes are mined to identify patterns that qualify as CSBs. The discovered CSBs are ranked according to 
 a probabilistic score and clustered to families according to their gene content similarity.
 
+![CSBFinder workflow](https://github.com/dinasv/CSBFinder/blob/master/images/workflow.png "Workflow")
+
 <a name='prerequisites'>Prerequisites</a>
 --------
 
