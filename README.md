@@ -3,6 +3,7 @@
 -   [Overview](#overview)
 -   [Prerequisites](#prerequisites)
 -   [Running CSBFinder](#running)
+    - [Download](#download)
     - [User Interface](#ui)
     - [Command Line](#cmd)
 -   [Input files formats](#input)
@@ -56,7 +57,7 @@ determined by the score of its highest scoring CSB.
 
 <a name='running'>Running CSBFinder</a>
 --------
-### Download the JAR file
+### <a name='download'>Download the JAR file</a>
 - Download the [latest release](https://github.com/dinasv/CSBFinder/releases) of CSBFinder.jar
 - You can use the link https://github.com/dinasv/CSBFinder/releases/download/v[VERSION]/CSBFinder.jar for direct download. For example, in linux:
     ```
@@ -78,7 +79,7 @@ Just click on the CSBFinder.jar file twice
 
 > [Sample input files](#sample) are provided below
 
-### Running CSBFinder via Command Line 
+### <a name='cmd'>Running CSBFinder via Command Line </a>
 - In the terminal (linux) or cmd (windows) type:
     ``` 
     java -jar CSBFinder.jar [options]
