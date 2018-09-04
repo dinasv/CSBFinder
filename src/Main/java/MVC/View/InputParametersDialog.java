@@ -54,8 +54,11 @@ public class InputParametersDialog extends JDialog {
 
     private GridBagConstraints gc;
 
+    JFileChooser fc;
+
     public InputParametersDialog() {
 
+        fc = new JFileChooser(System.getProperty("user.dir"));
         setTitle("Parameters");
 
         initLabels();
@@ -151,7 +154,6 @@ public class InputParametersDialog extends JDialog {
 
     private File chooseFile() {
         File f = null;
-        JFileChooser fc = new JFileChooser(System.getProperty("user.dir"));
         if (fc.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
             f = fc.getSelectedFile();
         }

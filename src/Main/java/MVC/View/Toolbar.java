@@ -19,7 +19,12 @@ public class Toolbar extends JPanel {
     private SaveOutputListener saveOutputListener;
     private SelectParamsListener selectParamsListener;
 
+    private JFileChooser fc;
+
     public Toolbar() {
+
+        fc = new JFileChooser(System.getProperty("user.dir"));
+
         setBorder(BorderFactory.createEtchedBorder());
         loadFile = new JButton("Load Input Genomes");
         saveFile =  new JButton("Save");
@@ -34,7 +39,6 @@ public class Toolbar extends JPanel {
         add(saveFile);
 
         loadFile.addActionListener(e -> {
-            JFileChooser fc = new JFileChooser(System.getProperty("user.dir"));
             fc.addChoosableFileFilter(new GenomeFileChooser());
 
             int value = fc.showOpenDialog(this);
