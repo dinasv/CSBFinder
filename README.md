@@ -41,7 +41,7 @@ mentioned above}.
 
 **(C)** All discovered CSBs are ranked according to a probabilistic score. 
 
-**(D)** Finally, the CSBs are clustered to families according to their gene content similarity, and the rank of a family is
+**(D)** The CSBs are clustered to families according to their gene content similarity, and the rank of a family is
 determined by the score of its highest scoring CSB.
 
 ![CSBFinder workflow](https://github.com/dinasv/CSBFinder/blob/master/images/workflow.png "Workflow")
