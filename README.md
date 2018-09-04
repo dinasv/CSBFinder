@@ -7,6 +7,9 @@
     - [User Interface](#ui)
     - [Command Line](#cmd)
 -   [Input files formats](#input)
+    -   [Input genomes file](#input_dataset)
+    -   [Gene orthology group information file](#cog_info)
+    -   [Patterns file](#in_patterns)
 -   [Output files](#output)
 -   [Sample input files](#sample)
 -   [License](#license)
@@ -131,11 +134,11 @@ Optional:
       A name of a file, located in a directory named 'input', in the same directory as CSBFinder.jar.   
       If this option is used, CSBs are no longer extracted from the input sequences.    
       The file should contain specific CSB patterns that the user is interested to find in the input sequences.      
-      See [Input files formats](#input) for more details.    
+      See [Input files formats](#in_patterns) for more details.    
 - **-cog-info** COG_INFO_FILE_NAME     
       A name of a file, located in a directory named 'input', in the same directory as CSBFinder.jar.   
       This file should contain functional description of orthology groups.    
-      See [Input files formats](#input) for more details.    
+      See [Input files formats](#cog_info) for more details.    
 - **-mult_count**    
       If this option is provided, CSB count indicates the total number of instances (could be several instances in the same input sequence), rather than the number of input sequences with an instance.    
 - **--threshold** THRESHOLD, **-t** THRESHOLD   
@@ -222,7 +225,7 @@ COG0600	+
 ....
 ```
 
-### Input file with functional information of gene orthology group IDs 
+### <a name='cog_info'>Input file with functional information of gene orthology group IDs </a>
 - This is an optional input file
 - The path to this file is provided in:
     - User Interface: In the dialog opened after clicking on the "Run" button
@@ -252,7 +255,7 @@ COG0319;ssRNA-specific RNase YbeY, 16S rRNA maturation enzyme;J;Translation, rib
 COG0320;Lipoate synthase;H;Coenzyme transport and metabolism;LipA;
 ...
 ```
-### Input file containing CSB patterns
+### <a name='in_patterns'>Input file containing CSB patterns </a>
 If this file is provided, CSBs are no longer extracted from the input sequences. 
 This file shohuld contain specific CSB patterns which the user is interested to find in the input sequences.
 
