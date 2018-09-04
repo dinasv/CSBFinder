@@ -12,12 +12,23 @@
 
 <a name='overview'>Overview</a>
 --------
-CSBFinder is a standalone Desktop java application with a graphical user interface, that can also be executed via command line.
+CSBFinder is a standalone Desktop java application with a graphical user interface, 
+that can also be executed via command line.
 
-CSBFinder implements a novel methodology for the discovery, ranking, and taxonomic distribution analysis of colinear syntenic blocks (**CSBs**) - groups of genes that are consistently located close to each other, in the same order, across a wide range of taxa.
-CSBFinder incorporates an efficient algorithm that identifies CSBs in large genomic datasets. The discovored CSBs are ranked according to a probabilistic score and clusterd to families according to their gene content similarity.
+CSBFinder implements a novel methodology for the discovery, ranking, and taxonomic distribution analysis of 
+colinear syntenic blocks (**CSBs**) - groups of genes that are consistently located close to each other, 
+in the same order, across a wide range of taxa.
+CSBFinder incorporates an efficient algorithm that identifies CSBs in large genomic datasets. 
+The discovered CSBs are ranked according to a probabilistic score and clustered to families according to their gene 
+content similarity.
 
-The input is a set of genomes and parameters **_k_** (number of allowed insertions) and **_q_** (the quorum parameter). The genomes are modeled as strings of orthology gene group identifires, where genes belonging to the same orthology group have identical IDs. Am orthology group is regarded as a 'gene' throughout the text. In our model, a CSB is a patterns of genes that appears as a substring of at least one of the input genomes, and has instances in at least **_q_** genomes, where each instance may vary from the CSB by at most **_k_** gene insertions. The genomes are mined to identify patterns that qualify as CSBs. The discovered CSBs are ranked according to a probabilistic score and clustered to families according to their gene content similarity.
+The input is a set of genomes and parameters **_k_** (number of allowed insertions) and **_q_** (the quorum parameter).
+The genomes are modeled as strings of orthology gene group identifiers, where genes belonging to the same orthology
+group have identical IDs. Am orthology group is regarded as a 'gene' throughout the text. In our model, a CSB is a 
+patterns of genes that appears as a substring of at least one of the input genomes, and has instances in
+at least **_q_** genomes, where each instance may vary from the CSB by at most **_k_** gene insertions. 
+The genomes are mined to identify patterns that qualify as CSBs. The discovered CSBs are ranked according to 
+a probabilistic score and clustered to families according to their gene content similarity.
 
 <a name='prerequisites'>Prerequisites</a>
 --------
@@ -28,7 +39,8 @@ The input is a set of genomes and parameters **_k_** (number of allowed insertio
 <a name='running'>Running CSBFinder</a>
 --------
 - Download the [latest release](https://github.com/dinasv/CSBFinder/releases) of CSBFinder.jar
-- You can use the link https://github.com/dinasv/CSBFinder/releases/download/v[VERSION]/CSBFinder.jar for direct download. For example, in linux:
+- You can use the link https://github.com/dinasv/CSBFinder/releases/download/v[VERSION]/CSBFinder.jar 
+for direct download. For example, in linux:
     ```
     wget https://github.com/dinasv/CSBFinder/releases/download/v0.3.0/CSBFinder.jar
     ```
@@ -59,7 +71,7 @@ Mandatory:
 - **-in** INPUT_DATASET_FILE_NAME    
     Input file name with genome sequences, located in a directory named 'input'. See [Input files formats](#input_dataset) for more details.
 - **-q** QUORUM     
-      Quorum prarmeter. Minimal number of input sequences that must contain a CSB instance.   
+      The quorum parameter. Minimal number of input sequences that must contain a CSB instance.   
       Default: 1
       Min Value: 1
       Max Value: Total input sequences
@@ -121,9 +133,9 @@ All input files must be located in a directory named 'input', in the same direct
 <a name='input_dataset'> Input file containing input genome sequences </a>
 ----------------------------
 A text file containing all input genomes modeled as strings, where each character is an orthology group ID that was assigned to a corresponding gene (for example, COG ID)
-- This is a Mandatory input file
+- This is a mandatory input file
 - The path to this file is provided in:
-    - User Inteface: Load this file using the "Load Input Genomes" button
+    - User Interface: Load this file using the "Load Input Genomes" button
     - Command Line: "-in" option
 
 This file should use the following format:
@@ -182,7 +194,8 @@ COG0600	+
 ```
 
 ### Input file with functional information of gene orthology group IDs 
-Functional description of gene orthology groups will appear in the legend (User Interface) or in the output catalog file (when clicking on the "Save" button in the User Interface, or when executing via Command Line) 
+Functional description of gene orthology groups will appear in the legend (User Interface) or in the output catalog file 
+(when clicking on the "Save" button in the User Interface, or when executing via Command Line).
 
 - This is an optional input file
 - The path to this file is provided in:
@@ -236,10 +249,10 @@ After clicking on the "Save" button in the User Interface, or after execution vi
         - Each line describes a single CSB
             - ID: unique CSB ID
             - Length: number of characters in the CSB
-            - Score: a probabllistic ranking score, higher score indicates higher significance
-            - Instance count: number of input sequences with an insatnce
-            - Instance_Ratio: number of input sequences with an insatnce divided by the number of input sequences
-            - Exact_Instance_Count: number of input sequences with an instance that doesn't contain insertions
+            - Score: a probabilistic ranking score, higher score indicates higher significance
+            - Instance count: number of input sequences with an instance
+            - Instance_Ratio: number of input sequences with an instance divided by the number of input sequences
+            - Exact_Instance_Count: number of input sequences with an instance that does'nt contain insertions
             - CSB: a sequence of genes
             - Main_Category: if functional category was provided in the -cog-info file, this column contains the functional category of                             the majority of CSB gene families
             - Family_ID: CSBs with similar gene content will belong to the same family, indicated by a postive integer
@@ -254,7 +267,8 @@ After clicking on the "Save" button in the User Interface, or after execution vi
     - Each entry is composed of a header (CSB ID and genes), followed by lines describing the instances
     - Each line describes the locations of CSB instances in a specific input genome
     - There can be more than one instance in each genome
-    - Each instance that is present in a replicon (e.g. chromosome/plasmid), begins from a specific index and can have different lengths, depending on the number of insertions allowed in the instance
+    - Each instance that is present in a replicon (e.g. chromosome/plasmid), begins from a specific index and can have 
+    different lengths, depending on the number of insertions allowed in the instance
     - If a start index of an instance is *i*, an instance on the minus strand starts from index *i* and ends on index *i-(instance length)*
     - The index of the first gene in a replicon is 0 
     
@@ -290,7 +304,7 @@ The above zip file contains three files, located inside a folder named 'input':
 - chromosomal_genomes.fasta    
     _Chromosomal dataset_ - 1,485 prokaryotic genomes with at least one chromosome, plasmids were removed.
 - cog_info.txt   
-    Functional information ofgene  orthology groups
+    Functional information of gene orthology groups
 
 **Sample execution of CSBFinder using the _Plasmid dataset_ via Command Line**
 
@@ -308,7 +322,7 @@ java -Xmx8g -jar CSBFinder.jar -in chromosomal_genomes.fasta -q 50 -ins 1 -ds ch
 **Sample execution of CSBFinder using the _Chromosomal dataset_ via the User Interface**
 
 The file _chromosomal_genomes.fasta_ contains ~1,500 genomes, hence CSBFinder needs more heap memory.
-When uploading a large dataset, it is recommended to execure CSBFinder.jar via Command Line in the following way:
+When uploading a large dataset, it is recommended to execute CSBFinder.jar via Command Line in the following way:
 ``` 
 java -Xmx8g -jar CSBFinder.jar
 ```
