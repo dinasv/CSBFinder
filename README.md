@@ -13,7 +13,7 @@
 -   [Output files](#output)
 -   [Sample input files](#sample)
 -   [License](#license)
--   [Author](#author)
+-   [Authors](#author)
 
 
 <a name='overview'>Overview</a>
