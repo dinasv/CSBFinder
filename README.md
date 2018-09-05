@@ -396,20 +396,27 @@ The screenshot below shows a typical parameter setting.
 - The dataset name is _"Chromosomes"_
 - The gene orthology input file is the provided _cog_info.txt_ 
 
-![CSBFinder results screenshot](https://github.com/dinasv/CSBFinder/blob/master/images/screenshot_chromosmoal_dataset_params.PNG "CSBFinder Screenshot")
+![CSBFinder chromosomal dataset parames screenshot](https://github.com/dinasv/CSBFinder/blob/master/images/screenshot_chromosmoal_dataset_params.PNG "CSBFinder Chromosomal dataset parameters screenshot")
 
+Clicking on the "Run" button will launch the computation of CSBs, this may take a few minutes.
+ When the process is done, the results will be shown:
 
+![CSBFinder chromosomal dataset parames screenshot](https://github.com/dinasv/CSBFinder/blob/master/images/screenshot_chromosmoal_dataset_results.PNG "CSBFinder Chromosomal dataset results screenshot")
+
+##### Output
+Click on the "Save" button an  choose the required output format. The resulting files will be saved in the output 
+directory, in the same location as CSBFinder.jar
 
 #### Command Line
 ``` 
-java -Xmx6g -jar CSBFinder.jar -in chromosomal_genomes.fasta -q 50 -ins 1 -ds chromosomes -cog-info cog_info.txt
+java -Xmx6g -jar CSBFinder.jar -in chromosomal_genomes.fasta -q 50 -ins 1 -ds Chromosomes -cog-info cog_info.txt
 ```
 ##### Input parameters
 - This line will execute CSBFinder.jar with maximal heap size (memory) of 6GB.   
 - The input genomes files is _chromosomal_genomes.fasta_ located in the input directory.  
 - The quorum parameter is set to 50 (i.e., each CSB must have instances in at least 50 input genomes).  
 - The number of allowed insertions in a CSB instance is one.  
-- The dataset name is _"chromosomes"_
+- The dataset name is _"Chromosomes"_
 - The gene orthology input file is _cog_info.txt_ located in the input directory
 
 ##### Output
@@ -418,6 +425,29 @@ The output files will be now located in the output directory
 > On a laptop computer with Intel Core i7 processor and 8GB RAM, this execution should take less than 5 minutes
 
 ### Execution of CSBFinder on the Plasmid Dataset of 471 prokaryotic genomes
+
+#### User Interface 
+Upload the dataset by clicking on the "Load Input Genomes" button.
+
+##### Input Parameters
+Click on the "Run" button, and a dialog will open.
+
+The screenshot below shows a typical parameter setting.
+- The quorum parameter is set to 10 (i.e., each CSB must have instances in at least 50 input genomes).  
+- The number of allowed insertions in a CSB instance is one.  
+- The dataset name is _"Plasmids"_
+- The gene orthology input file is the provided _cog_info.txt_ 
+
+![CSBFinder plasmid dataset parames screenshot](https://github.com/dinasv/CSBFinder/blob/master/images/screenshot_plasmid_dataset_params.PNG "CSBFinder Plasmid dataset parameters screenshot")
+
+Clicking on the "Run" button will launch the computation of CSBs, this may take a few minutes.
+ When the process is done, the results will be shown:
+
+![CSBFinder plasmid dataset parames screenshot](https://github.com/dinasv/CSBFinder/blob/master/images/screenshot_plasmid_dataset_results.PNG "CSBFinder Plasmid dataset results screenshot")
+
+##### Output
+Click on the "Save" button an  choose the required output format. The resulting files will be saved in the output 
+directory, in the same location as CSBFinder.jar
 
 #### Command Line
 ``` 
