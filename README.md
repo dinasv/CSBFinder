@@ -69,7 +69,7 @@ determined by the score of its highest scoring CSB.
 CSBFinder has a user interface, but can executed via command line as well. 
 
 ### <a name='ui'>Running CSBFinder via User Interface</a>
-Just click on the CSBFinder.jar file twice
+Just double click on the CSBFinder.jar file
 
 > Note: If you are going to use a very large input dataset, execute CSBFinder via command line without arguments,
  and add the Java option -Xmx[maximum size of the heap]  
@@ -79,8 +79,30 @@ Just click on the CSBFinder.jar file twice
  ```
  > It is recommended to use at least 6GB for a large dataset. You can specify a higher number, 
  depending on you RAM size.  
+ 
+1. Upload your input genomes file, by clicking on "Load Input Genomes" in the top left. If your dataset is large, this
+make take a few minutes.
+    > [Sample input files](#sample) are provided below
 
-> [Sample input files](#sample) are provided below
+2. The "Run" button should be enabled. Click on this button to set the parameters.
+ 
+3. A dialog appears. Hover over the question mark icon next to each parameter, for an explanation of each parameter. 
+After setting the parameters, click on "Run". This can take a few minutes, depending on the size of the dataset and 
+on the parameters specified. 
+
+4. After the process is done, the lower panel will contain all the discovered CSBs. There is also an option to view 
+only top scoring CSBs (the highest scoring CSB from each family) by clicking on the appropriate tab.  
+Selecting a CSB will show all its instances in the different genomes, in the top panel.  
+If a gene orthology group information file was loaded, the panel in the lower right (legend) will show functional 
+information regarding the genes of the selected CSB, and genes that appear as insertions in the instances of the 
+selected CSB.  
+
+The following screenshot shows an example of a selected CSB and its instances in the different genomes. The results 
+were obtained by running CSBFinder on a dataset of ~1,500 prokaryotic genomes containing only chromosomes. The quorum 
+was set to 50 and the number of allowed insertions is 3.
+
+![CSBFinder workflow](https://github.com/dinasv/CSBFinder/blob/master/images/screenshot_results_example.PNG "Workflow")
+
 
 ### <a name='cmd'>Running CSBFinder via Command Line </a>
 - In the terminal (linux) or cmd (windows) type:
