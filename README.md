@@ -438,12 +438,12 @@ The screenshot below shows a typical parameter setting.
 - The dataset name is _"Plasmids"_
 - The gene orthology input file is the provided _cog_info.txt_ 
 
-![CSBFinder plasmid dataset parames screenshot](https://github.com/dinasv/CSBFinder/blob/master/images/screenshot_plasmid_dataset_params.PNG "CSBFinder Plasmid dataset parameters screenshot")
+![CSBFinder plasmid dataset parames screenshot](https://github.com/dinasv/CSBFinder/blob/master/images/screenshot_plasmid_dataset_params.png "CSBFinder Plasmid dataset parameters screenshot")
 
 Clicking on the "Run" button will launch the computation of CSBs, this may take a few minutes.
  When the process is done, the results will be shown:
 
-![CSBFinder plasmid dataset parames screenshot](https://github.com/dinasv/CSBFinder/blob/master/images/screenshot_plasmid_dataset_results.PNG "CSBFinder Plasmid dataset results screenshot")
+![CSBFinder plasmid dataset parames screenshot](https://github.com/dinasv/CSBFinder/blob/master/images/screenshot_plasmid_dataset_results.png "CSBFinder Plasmid dataset results screenshot")
 
 ##### Output
 Click on the "Save" button an  choose the required output format. The resulting files will be saved in the output 
