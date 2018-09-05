@@ -21,9 +21,8 @@ public class Toolbar extends JPanel {
 
     private JFileChooser fc;
 
-    public Toolbar() {
-
-        fc = new JFileChooser(System.getProperty("user.dir"));
+    public Toolbar(JFileChooser fc) {
+        this.fc = fc;
 
         setBorder(BorderFactory.createEtchedBorder());
         loadFile = new JButton("Load Input Genomes");

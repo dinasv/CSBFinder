@@ -31,11 +31,14 @@ public class MainFrame extends JFrame {
 
     private ProgressBar progressBar;
 
+    private JFileChooser fc;
+
     public MainFrame(CSBFinderController controller) {
         super("CSBFinder");
 
         setUIFont (new javax.swing.plaf.FontUIResource("Serif",Font.PLAIN,16));
 
+        fc = new JFileChooser(System.getProperty("user.dir"));
 
         this.controller = controller;
 
@@ -72,9 +75,9 @@ public class MainFrame extends JFrame {
 
     public void initComponents() {
 
-        inputParamsDialog = new InputParametersDialog();
+        inputParamsDialog = new InputParametersDialog(fc);
 
-        toolbar = new Toolbar();
+        toolbar = new Toolbar(fc);
         genomes = new GenomePanel();
         summaryPanel = new SummaryPanel();
 

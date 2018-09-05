@@ -56,9 +56,9 @@ public class InputParametersDialog extends JDialog {
 
     JFileChooser fc;
 
-    public InputParametersDialog() {
+    public InputParametersDialog(JFileChooser fc) {
 
-        fc = new JFileChooser(System.getProperty("user.dir"));
+        this.fc = fc;
         setTitle("Parameters");
 
         initLabels();
