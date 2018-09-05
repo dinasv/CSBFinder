@@ -101,7 +101,7 @@ The following screenshot shows an example of a selected CSB and its instances in
 were obtained by running CSBFinder on a dataset of ~1,500 prokaryotic genomes containing only chromosomes. The quorum 
 was set to 50 and the number of allowed insertions is 3.
 
-![CSBFinder workflow](https://github.com/dinasv/CSBFinder/blob/master/images/screenshot_results_example.PNG "Workflow")
+![CSBFinder results screenshot](https://github.com/dinasv/CSBFinder/blob/master/images/screenshot_results_example.PNG "CSBFinder Screenshot")
 
 
 ### <a name='cmd'>Running CSBFinder via Command Line </a>
@@ -384,6 +384,21 @@ java -Xmx6g -jar CSBFinder.jar
 This command will launch the User Interface with more available memory (6GB), you can specify a 
 higher number depending on you RAM size.
 It may take a few minuted to load the input file.
+
+Upload the dataset by clicking on the "Load Input Genomes" button.
+
+##### Input Parameters
+Click on the "Run" button, and a dialog will open.
+
+The screenshot below shows a typical parameter setting.
+- The quorum parameter is set to 50 (i.e., each CSB must have instances in at least 50 input genomes).  
+- The number of allowed insertions in a CSB instance is one.  
+- The dataset name is _"Chromosomes"_
+- The gene orthology input file is the provided _cog_info.txt_ 
+
+![CSBFinder results screenshot](https://github.com/dinasv/CSBFinder/blob/master/images/screenshot_chromosmoal_dataset_params.PNG "CSBFinder Screenshot")
+
+
 
 #### Command Line
 ``` 
