@@ -245,7 +245,7 @@ public class InputParametersDialog extends JDialog {
         quorumSlider.addChangeListener(e -> quorum.setValue(quorumSlider.getValue()));
 
         // Number Of Insertions
-        numOfInsertions.setModel(new SpinnerNumberModel(0, 0, 5, 1));
+        numOfInsertions.setModel(new SpinnerNumberModel(0, 0, 100, 1));
         ((JSpinner.DefaultEditor)numOfInsertions.getEditor()).getTextField().setColumns(3);
 
         // Quorum without insertions
@@ -256,7 +256,7 @@ public class InputParametersDialog extends JDialog {
         quorumWithoutInsertionsSlider.addChangeListener(e -> quorumWithoutInsertions.setValue(quorumWithoutInsertionsSlider.getValue()));
 
         // CSB min length
-        minCSBLength.setModel(new SpinnerNumberModel(2, 2, 100, 1));
+        minCSBLength.setModel(new SpinnerNumberModel(2, 2, Integer.MAX_VALUE, 1));
 
         // CSB max length
         maxCSBLength.setModel(new SpinnerNumberModel(Integer.MAX_VALUE, 2, Integer.MAX_VALUE, 1));
