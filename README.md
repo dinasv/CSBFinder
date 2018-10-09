@@ -66,7 +66,7 @@ determined by the score of its highest scoring CSB.
     ```
     wget https://github.com/dinasv/CSBFinder/releases/download/v0.3.1/CSBFinder.jar
     ```
-CSBFinder has a user interface, but can executed via command line as well. 
+CSBFinder has a user interface, but can be executed via the command line as well. 
 
 ### <a name='ui'>Running CSBFinder via User Interface</a>
 Just double click on the CSBFinder.jar file
@@ -246,6 +246,21 @@ COG0715	+
 COG0600	+
 ....
 ```
+
+
+#### Assigning genes to orthologous group identifiers
+
+You can annotate genes by any orthologous group identifiers. The IDs can be numbers or symbols, the only restriction it that
+each orthology group will have a unique ID.
+
+##### Examples
+1. The [STRING](https://string-db.org/cgi/download.pl?sessionId=Dmc2Jkurdd3b) database contains 
+[COG](https://www.ncbi.nlm.nih.gov/COG/) and [NOG](http://eggnogdb.embl.de/) annotations of many publicly 
+available genomes
+2. A newly sequenced genomes can be mapped to known orthology groups such as:
+    - COGs using [CDD](https://www.ncbi.nlm.nih.gov/Structure/bwrpsb/bwrpsb.cgi)
+    - NOGs using [eggNOG mapper](http://eggnogdb.embl.de/#/app/emapper)
+3. A tool such as [Proteinortho](https://www.bioinf.uni-leipzig.de/Software/proteinortho/) detects orthologous genes within different species. 
 
 ### <a name='cog_info'>Input file with functional information of gene orthology group IDs </a>
 - This is an optional input file
