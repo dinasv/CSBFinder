@@ -182,10 +182,11 @@ Optional:
 <a name='input'>Input files formats</a>
 --------------
 
-All input files must be located in a directory named 'input', in the same directory as the jar file. 
+When running using command line, all input files must be located in a directory named 'input', in the same directory 
+as the jar file. 
 
-<a name='input_dataset'> Input file containing input genome sequences </a>
-----------------------------
+### <a name='input_dataset'> Input file containing input genome sequences </a>
+
 A text file containing all input genomes modeled as strings, where each character is an orthology group ID that was assigned to a corresponding gene (for example, COG ID)
 - This is a mandatory input file
 - The path to this file is provided in:
