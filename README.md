@@ -258,7 +258,7 @@ each orthology group will have a unique ID.
 1. The [STRING](https://string-db.org/cgi/download.pl?sessionId=Dmc2Jkurdd3b) database contains 
 [COG](https://www.ncbi.nlm.nih.gov/COG/) and [NOG](http://eggnogdb.embl.de/) annotations of many publicly 
 available genomes
-2. A newly sequenced genomes can be mapped to known orthology groups such as:
+2. Newly sequenced genomes can be mapped to known orthology groups such as:
     - COGs using [CDD](https://www.ncbi.nlm.nih.gov/Structure/bwrpsb/bwrpsb.cgi)
     - NOGs using [eggNOG mapper](http://eggnogdb.embl.de/#/app/emapper)
 3. A tool such as [Proteinortho](https://www.bioinf.uni-leipzig.de/Software/proteinortho/) detects orthologous genes within different species. 
