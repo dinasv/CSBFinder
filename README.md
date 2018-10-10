@@ -262,6 +262,8 @@ available genomes
     - COGs using [CDD](https://www.ncbi.nlm.nih.gov/Structure/bwrpsb/bwrpsb.cgi)
     - NOGs using [eggNOG mapper](http://eggnogdb.embl.de/#/app/emapper)
 3. A tool such as [Proteinortho](https://www.bioinf.uni-leipzig.de/Software/proteinortho/) detects orthologous genes within different species. 
+4. The paper ["New Tools in Orthology Analysis: A Brief Review of Promising Perspectives" by Bruno T. L. Nichio et. al.](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC5674930/)
+reviews several current tools for gene orthology detection
 
 ### <a name='cog_info'>Input file with functional information of gene orthology group IDs </a>
 - This is an optional input file
