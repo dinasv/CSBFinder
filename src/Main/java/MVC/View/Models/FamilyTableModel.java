@@ -1,7 +1,7 @@
 package MVC.View.Models;
 
-import Utils.Pattern;
-import PostProcess.Family;
+import Genomes.Pattern;
+import Core.PostProcess.Family;
 
 import javax.swing.table.AbstractTableModel;
 import java.util.*;

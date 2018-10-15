@@ -3,10 +3,9 @@ package MVC.Controller;
 import MVC.Common.*;
 import MVC.Model.CSBFinderModel;
 import MVC.View.MainFrame;
-import Utils.COG;
-import Utils.Pattern;
-import Utils.Gene;
-import Utils.Replicon;
+import Genomes.COG;
+import Genomes.Pattern;
+import Genomes.Replicon;
 
 import java.util.List;
 import java.util.Map;
@@ -41,6 +40,10 @@ public class CSBFinderController {
         this.model.loadInputGenomesFile(file_path);
     }
 
+    public void buildDatasetTree(){
+        this.model.buildDatasetTree();
+    }
+
     public void saveOutputFiles(String outputFileType) { this.model.saveOutputFiles(outputFileType); }
 
     public void findCSBs(CSBFinderRequest request) {
@@ -69,6 +72,10 @@ public class CSBFinderController {
 
     public int getNumberOfGenomes() {
         return model.getNumberOfGenomes();
+    }
+
+    public String getUNKchar(){
+        return model.getUNKchar();
     }
 
 }

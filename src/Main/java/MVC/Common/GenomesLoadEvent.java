@@ -1,6 +1,6 @@
 package MVC.Common;
 
-import Utils.Gene;
+import Genomes.Gene;
 
 import java.util.List;
 import java.util.Map;

@@ -25,8 +25,8 @@ hs_err_pid*
 target/**
 .idea/**
 input/**
-CSBFinderCore.log.1
-CSBFinderCore.iml
+MainAlgorithm.log.1
+MainAlgorithm.iml
 
 
 '.idea'

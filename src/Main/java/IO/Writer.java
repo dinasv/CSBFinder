@@ -1,6 +1,6 @@
 package IO;
 
-import Utils.*;
+import Genomes.*;
 
 import java.io.*;
 import java.math.RoundingMode;
@@ -11,7 +11,7 @@ import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.xssf.streaming.SXSSFWorkbook;
 
-import CLI.CommandLineArgs.OutputType;
+import Core.Parameters.OutputType;
 
 import java.util.logging.Logger;
 
@@ -210,7 +210,7 @@ public class Writer {
         }
     }
 
-    private void printInstances(Pattern pattern, Utils utils){
+    private void printInstances(Pattern pattern, GenomesInfo gi){
 
         if (instances_file != null) {
 
@@ -218,12 +218,12 @@ public class Writer {
 
             for (Map.Entry<Integer, List<InstanceLocation>> entry : groupSameSeqInstances(pattern).entrySet()) {
 
-                String seq_name = utils.genome_id_to_name.get(entry.getKey());
+                String seq_name = gi.genome_id_to_name.get(entry.getKey());
                 instances_file.print(seq_name);
 
                 List<InstanceLocation> instances_locations = entry.getValue();
                 for (InstanceLocation instance_location : instances_locations){
-                    String replicon_name = utils.replicon_id_to_name.get(instance_location.getRepliconId());
+                    String replicon_name = gi.replicon_id_to_name.get(instance_location.getRepliconId());
 
                     instances_file.print("\t" + replicon_name + "|[" + instance_location.getStartIndex() + ","
                             + instance_location.getEndIndex() + "]");
@@ -265,19 +265,19 @@ public class Writer {
     /**
      * Prints a pattern with the highest score in its family to a different sheet
      * @param pattern
-     * @param utils
+     * @param gi
      * @param family_id
      */
-    public void printFilteredCSB(Pattern pattern, Utils utils, String family_id){
+    public void printFilteredCSB(Pattern pattern, GenomesInfo gi, String family_id){
         if(output_file_type == OutputType.XLSX){
             if (pattern != null) {
                 count_printed_filtered_patterns++;
-                printCSBLineToExcelSheet(filtered_patterns_sheet, pattern, count_printed_filtered_patterns, family_id, utils);
+                printCSBLineToExcelSheet(filtered_patterns_sheet, pattern, count_printed_filtered_patterns, family_id, gi);
             }
         }
     }
 
-    private void printCSBLineToExcelSheet(Sheet sheet, Pattern pattern, int row_num, String family_id, Utils utils){
+    private void printCSBLineToExcelSheet(Sheet sheet, Pattern pattern, int row_num, String family_id, GenomesInfo gi){
         Row row = sheet.createRow(row_num);
         int col = 0;
         row.createCell(col++).setCellValue(pattern.getPatternId());
@@ -289,10 +289,10 @@ public class Writer {
         }
         row.createCell(col++).setCellValue(pattern.getInstanceCount());
         row.createCell(col++).setCellValue(Double.valueOf(DF.format(pattern.getInstanceCount() /
-                (double) utils.number_of_genomes)));
+                (double) gi.getNumberOfGenomes())));
         row.createCell(col++).setCellValue(pattern.getExactInstanceCount());
         row.createCell(col++).setCellValue(String.join(DELIMITER, pattern.getPatternArr()));
-        if (utils.cog_info != null) {
+        if (gi.cog_info != null) {
             row.createCell(col++).setCellValue(pattern.getMainFunctionalCategory());
         }
         if (family_id != null){
@@ -300,7 +300,7 @@ public class Writer {
         }
     }
 
-    private int printPatternDescToExcelSheet(Sheet sheet, int row_num, Pattern pattern, Utils utils){
+    private int printPatternDescToExcelSheet(Sheet sheet, int row_num, Pattern pattern, GenomesInfo gi){
         Row row = sheet.createRow(row_num++);
         row.createCell(0).setCellValue("ID=");
         row.createCell(1).setCellValue(pattern.getPatternId());
@@ -314,7 +314,7 @@ public class Writer {
             if (non_directons){
                 cog = cog.substring(0, cog.length()-1);
             }
-            COG cog_obj = utils.cog_info.get(cog);
+            COG cog_obj = gi.cog_info.get(cog);
 
             row.createCell(0).setCellValue(cog);
             if (cog_obj!=null) {
@@ -326,21 +326,21 @@ public class Writer {
         return row_num+1;
     }
 
-    public void printPattern(Pattern pattern, Utils utils, String family_id){
+    public void printPattern(Pattern pattern, GenomesInfo gi, String family_id){
         if (pattern != null) {
             count_printed_patterns++;
             if(output_file_type == OutputType.XLSX) {
-                printCSBLineToExcelSheet(catalog_sheet, pattern, count_printed_patterns, family_id, utils);
+                printCSBLineToExcelSheet(catalog_sheet, pattern, count_printed_patterns, family_id, gi);
                 if (patterns_description_sheet != null) {
                     next_line_index_desc_sheet = printPatternDescToExcelSheet(patterns_description_sheet,
-                            next_line_index_desc_sheet, pattern, utils);
+                            next_line_index_desc_sheet, pattern, gi);
                 }
             }else if(output_file_type == OutputType.TXT){
                 String catalog_line = pattern.getPatternId() + "\t" + pattern.getLength() + "\t";
 
                 catalog_line += DF.format(pattern.getScore()) + "\t"
                         + pattern.getInstanceCount() + "\t"
-                        + DF.format(pattern.getInstanceCount() / (double) utils.number_of_genomes) + "\t"
+                        + DF.format(pattern.getInstanceCount() / (double) gi.getNumberOfGenomes()) + "\t"
                         + pattern.getExactInstanceCount() + "\t";
 
                 catalog_line += String.join(DELIMITER, pattern.getPatternArr()) + "\t";
@@ -356,13 +356,13 @@ public class Writer {
                     catalog_file.write(catalog_line + "\n");
                 }
             }
-            printInstances(pattern, utils);
+            printInstances(pattern, gi);
 
         }
     }
 
-    public void printPattern(Pattern pattern, Utils utils){
-        printPattern(pattern, utils, null);
+    public void printPattern(Pattern pattern, GenomesInfo gi){
+        printPattern(pattern, gi, null);
     }
 
 }

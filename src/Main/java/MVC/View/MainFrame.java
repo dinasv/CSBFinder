@@ -5,18 +5,18 @@ import MVC.Common.InstanceInfo;
 import MVC.Controller.CSBFinderController;
 import MVC.View.Events.*;
 import MVC.View.Listeners.*;
-import CLI.CommandLineArgs;
-import Utils.COG;
-import Utils.Pattern;
-import PostProcess.Family;
+import Core.Parameters;
+import MVC.View.Panels.GenomePanel;
+import MVC.View.Panels.SummaryPanel;
+import Genomes.COG;
+import Genomes.Pattern;
+import Core.PostProcess.Family;
 
 import javax.swing.*;
 import java.awt.*;
 import java.io.File;
-import java.util.Arrays;
+import java.util.*;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 public class MainFrame extends JFrame {
 
@@ -74,11 +74,13 @@ public class MainFrame extends JFrame {
     }
 
     public void initComponents() {
+        Map<String, Color> colorsUsed = new HashMap<>();
+        colorsUsed.put(controller.getUNKchar(), Color.lightGray);
 
         inputParamsDialog = new InputParametersDialog(fc);
 
         toolbar = new Toolbar(fc);
-        genomes = new GenomePanel();
+        genomes = new GenomePanel(colorsUsed);
         summaryPanel = new SummaryPanel();
 
         setEventListeners();
@@ -173,6 +175,7 @@ public class MainFrame extends JFrame {
                         @Override
                         protected Void doInBackground() throws Exception {
                             controller.loadInputGenomesFile(f.getPath());
+                            controller.buildDatasetTree();
                             return null;
                         }
 
@@ -206,8 +209,8 @@ public class MainFrame extends JFrame {
 
                 //JOptionPane option = new JOptionPane();
                 String[] ops = new String[] {
-                        String.valueOf(CommandLineArgs.OutputType.XLSX),
-                        String.valueOf(CommandLineArgs.OutputType.TXT) };
+                        String.valueOf(Parameters.OutputType.XLSX),
+                        String.valueOf(Parameters.OutputType.TXT) };
                 int type = JOptionPane.showOptionDialog(
                         MainFrame.this,
                         "Please choose the desired type for the output files",

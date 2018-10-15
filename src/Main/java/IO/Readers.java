@@ -1,6 +1,6 @@
 package IO;
 
-import Utils.COG;
+import Genomes.COG;
 
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;

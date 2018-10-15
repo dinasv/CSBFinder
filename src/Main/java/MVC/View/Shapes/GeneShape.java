@@ -1,6 +1,6 @@
 package MVC.View.Shapes;
 
-import Utils.Gene;
+import Genomes.Gene;
 
 import java.awt.*;
 

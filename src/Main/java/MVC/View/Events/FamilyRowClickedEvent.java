@@ -1,6 +1,6 @@
 package MVC.View.Events;
 
-import Utils.Pattern;
+import Genomes.Pattern;
 
 public class FamilyRowClickedEvent {
 

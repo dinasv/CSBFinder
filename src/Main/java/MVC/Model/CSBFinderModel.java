@@ -1,20 +1,14 @@
 package MVC.Model;
 
+import Genomes.*;
 import IO.MyLogger;
 import IO.Readers;
 import IO.Writer;
 import MVC.Common.*;
-import CLI.*;
-import PostProcess.Family;
-import PostProcess.FamilyClustering;
-import SuffixTrees.*;
-import Utils.Utils;
-import Utils.Gene;
-import Utils.COG;
-import Utils.Pattern;
-import Utils.Instance;
-import Utils.InstanceLocation;
-import Utils.Replicon;
+import Core.*;
+import Core.PostProcess.Family;
+import Core.PostProcess.FamilyClustering;
+import Core.SuffixTrees.*;
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.ParameterException;
 
@@ -27,32 +21,49 @@ public class CSBFinderModel {
     private GenomesLoadedListener genomesLoadedListener;
     private CSBFinderDoneListener csbFinderDoneListener;
 
-    private CommandLineArgs cla;
+    private Parameters cla;
     private Utils utils;
     private GeneralizedSuffixTree dataset_suffix_tree;
     private List<Family> families;
 
     private int number_of_genomes;
 
+    private GenomesInfo gi;
+
     public CSBFinderModel() {
 
     }
 
+    public String getUNKchar(){
+        return gi.UNK_CHAR;
+    }
+
     public MyLogger logger = new MyLogger("",true);
     public void init() {
+        gi = new GenomesInfo();
         this.utils = new Utils(null, logger);
     }
 
     public void loadInputGenomesFile(String path) {
         this.init();
+        GenomesReader reader = new GenomesReader(gi, logger);
+
+        //dataset_suffix_tree = new GeneralizedSuffixTree();
+        number_of_genomes = reader.readGenomes(path);
+        System.out.println("Loaded " + number_of_genomes + " genomes.");
+
+        //number_of_genomes = utils.readAndBuildDatasetTree(path, dataset_suffix_tree, false);
+    }
+
+    public void buildDatasetTree(){
         dataset_suffix_tree = new GeneralizedSuffixTree();
-        number_of_genomes = utils.readAndBuildDatasetTree(path, dataset_suffix_tree, false);
+        DatasetTreeBuilder.buildTree(dataset_suffix_tree, false, gi);
     }
 
     private JCommander parseArgs(String[] args){
         JCommander jcommander = null;
         try {
-            cla = new CommandLineArgs();
+            cla = new Parameters();
 
             jcommander = JCommander.newBuilder().addObject(cla).build();
             jcommander.parse(args);
@@ -100,27 +111,34 @@ public class CSBFinderModel {
             cog_info = Readers.read_cog_info_table(cla.cog_info_file_name);
         }
 
-        utils.setCogInfo(cog_info);
+        gi.setCogInfo(cog_info);
 
-        Trie pattern_tree = buildPatternsTree(utils);
+        Trie pattern_tree = buildPatternsTree();
 
         System.out.println("Extracting CSBs from " + number_of_genomes + " input sequences.");
 
-        CSBFinderCore csbFinderCore = new CSBFinderCore(cla, dataset_suffix_tree, pattern_tree, utils, cla.debug);
+        MainAlgorithm mainAlgorithm = new MainAlgorithm(cla, dataset_suffix_tree, pattern_tree, gi, utils, cla.debug);
 
         if (cla.input_patterns_file_name == null) {
-            csbFinderCore.removeRedundantPatterns();
+            mainAlgorithm.removeRedundantPatterns();
         }
 
-        List<Pattern> patterns = csbFinderCore.getPatterns();
+        PatternScore pattern_score = new PatternScore(gi.max_genome_size, number_of_genomes, gi.dataset_length_sum,
+                gi.cog_to_containing_genomes, gi.genome_to_cog_paralog_count);
+
+        List<Pattern> patterns = mainAlgorithm.getPatterns();
 
         for (Pattern pattern : patterns) {
-            pattern.calculateScore(utils, cla.max_insertion, cla.max_error, cla.max_deletion);
-            pattern.calculateMainFunctionalCategory(utils, cla.non_directons);
+            double score = Utils.computePatternScore(pattern_score, pattern.getPatternArr(), cla.max_insertion, cla.max_error,
+                    cla.max_deletion, pattern.getInstanceCount());
+            pattern.setScore(score);
+
+            //pattern.calculateScore(utils, cla.max_insertion, cla.max_error, cla.max_deletion);
+            pattern.calculateMainFunctionalCategory(gi, cla.non_directons);
         }
 
         System.out.println("Clustering to families");
-        families = FamilyClustering.Cluster(patterns, cla.threshold, cla.cluster_by, utils,
+        families = FamilyClustering.Cluster(patterns, cla.threshold, cla.cluster_by, gi,
                 cla.non_directons);
 
         long patternCount = 0;
@@ -134,7 +152,7 @@ public class CSBFinderModel {
         csbFinderDoneListener.CSBFinderDoneOccurred(new CSBFinderDoneEvent(families));
     }
 
-    private Writer createWriter(boolean cog_info_exists, CommandLineArgs.OutputType outputType){
+    private Writer createWriter(boolean cog_info_exists, Parameters.OutputType outputType){
         String parameters = "_ins" + cla.max_insertion + "_q" + cla.quorum2;
         String catalog_file_name = "Catalog_" + cla.dataset_name + parameters;
         String instances_file_name = catalog_file_name + "_instances";
@@ -162,19 +180,19 @@ public class CSBFinderModel {
     public void saveOutputFiles(String outputFileType) {
 
          Writer writer = createWriter(cla.cog_info_file_name != null && !"".equals(cla.cog_info_file_name),
-                CommandLineArgs.OutputType.valueOf(outputFileType));
+                Parameters.OutputType.valueOf(outputFileType));
 
         System.out.println("Writing to files");
         for (Family family : families) {
-            writer.printFilteredCSB(family.getPatterns().get(0), utils, family.getFamilyId());
+            writer.printFilteredCSB(family.getPatterns().get(0), gi, family.getFamilyId());
             for (Pattern pattern : family.getPatterns()) {
-                writer.printPattern(pattern, utils, family.getFamilyId());
+                writer.printPattern(pattern, gi, family.getFamilyId());
             }
         }
         writer.closeFiles();
     }
 
-    private Trie buildPatternsTree(Utils utils) {
+    private Trie buildPatternsTree() {
         Trie pattern_tree = null;
         if (cla.input_patterns_file_name != null) {
             //these arguments are not valid when input patterns are give
@@ -183,15 +201,11 @@ public class CSBFinderModel {
 
             pattern_tree = new Trie(TreeType.STATIC);
             String path = cla.input_patterns_file_name;
-            if (!utils.buildPatternsTreeFromFile(path, pattern_tree)){
+            if (!DatasetTreeBuilder.buildPatternsTreeFromFile(path, pattern_tree, gi)){
                 pattern_tree = null;//if tree building wasn't successful
             }
         }
         return pattern_tree;
-    }
-
-    public Map<String, Map<String, Replicon>> getGenomeRepliconsMap() {
-        return utils.getGenomeToRepliconsMap();
     }
 
     public List<Family> getFamilies() {
@@ -208,9 +222,9 @@ public class CSBFinderModel {
 
     public List<COG> getCogInfo(List<String> cogs) {
         List<COG> cogInfo = new ArrayList<COG>();
-        if (utils.getCogInfo() != null) {
+        if (gi.getCogInfo() != null) {
             cogs.forEach(cog -> {
-                COG c = utils.getCogInfo().get(cog);
+                COG c = gi.getCogInfo().get(cog);
                 if (c != null) {
                     cogInfo.add(c);
                 }
@@ -250,7 +264,7 @@ public class CSBFinderModel {
 
         for (Map.Entry<Integer, Map<Integer, List<InstanceLocation>>> seq2replicons : sameSeqInstances.entrySet()) {
 
-            String seq_name = utils.genome_id_to_name.get(seq2replicons.getKey());
+            String seq_name = gi.genome_id_to_name.get(seq2replicons.getKey());
 
             Map<Integer, List<InstanceLocation>> repliconInstanceLocations = seq2replicons.getValue();
 
@@ -260,7 +274,7 @@ public class CSBFinderModel {
 
                 List<InstanceInfo> instanceLocations = new ArrayList<>();
 
-                String replicon_name = utils.replicon_id_to_name.get(replicon2locations.getKey());
+                String replicon_name = gi.replicon_id_to_name.get(replicon2locations.getKey());
                 List<InstanceLocation> instances_locations = replicon2locations.getValue();
 
                 instances_locations.sort(Comparator.comparing(InstanceLocation::getActualStartIndex));
@@ -286,7 +300,7 @@ public class CSBFinderModel {
 
     private List<Gene> getInstanceFromCogList(String seq_name, String replicon_name, int startIndex, int endIndex) {
         List<Gene> instanceList = null;
-        Map<String, Replicon> genomeToRepliconsMap = utils.getGenomeToRepliconsMap().get(seq_name);
+        Map<String, Replicon> genomeToRepliconsMap = getGenomeMap().get(seq_name);
         List<Gene> genomeToCogList = genomeToRepliconsMap.get(replicon_name).getGenes();
         if (genomeToCogList != null) {
             if (startIndex >= 0 && startIndex < genomeToCogList.size() &&
@@ -345,10 +359,10 @@ public class CSBFinderModel {
     }
 
     public Map<String, Map<String, Replicon>> getGenomeMap() {
-        return utils.getGenomeToRepliconsMap();
+        return gi.getGenomeToRepliconsMap();
     }
 
     public int getMaxGenomeSize(){
-        return utils.getMaxGenomesSize();
+        return gi.getMaxGenomeSize();
     }
 }

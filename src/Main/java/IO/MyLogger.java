@@ -18,7 +18,7 @@ public class MyLogger {
             logger = java.util.logging.Logger.getLogger("MyLog");
             LogManager.getLogManager().reset();//disable logging information printed to screen
 
-            FileHandler fh = new FileHandler(path + "CSBFinderCore.log");
+            FileHandler fh = new FileHandler(path + "MainAlgorithm.log");
             logger.addHandler(fh);
             SimpleFormatter formatter = new SimpleFormatter();
             fh.setFormatter(formatter);
