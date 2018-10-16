@@ -1,5 +1,6 @@
 package Core;
 
+import Core.SuffixTrees.DatasetTreeBuilder;
 import IO.MyLogger;
 import IO.Readers;
 import IO.Writer;
@@ -103,7 +104,7 @@ public class Controller {
         pipeline();
 
         if (cla.debug){
-            utils.measureMemory();
+            MemoryUtils.measure();
             long actualMemUsed = utils.currMem - utils.initialMem;
 
             System.out.println(actualMemUsed);
@@ -156,7 +157,7 @@ public class Controller {
 
         DatasetTreeBuilder.buildTree(dataset_suffix_tree, cla.non_directons, gi);
 
-        utils.measureMemory();
+        MemoryUtils.measure();
 
         if (number_of_genomes != -1) {
 
@@ -167,7 +168,7 @@ public class Controller {
 
             MainAlgorithm MainAlgorithm = new MainAlgorithm(cla, dataset_suffix_tree, pattern_tree, gi, utils, cla.debug);
 
-            utils.measureMemory();
+            MemoryUtils.measure();
 
             if (cla.input_patterns_file_name == null) {
                 System.out.println("Removing redundant CSBs");
@@ -175,13 +176,13 @@ public class Controller {
 
                 MainAlgorithm.removeRedundantPatterns();
                 if (cla.debug) {
-                    utils.measureMemory();
+                    MemoryUtils.measure();
                     logger.writeLogger("CSBs left after removing redundant CSBs: " + MainAlgorithm.getPatternsCount());
                 }
 
             }
 
-            PatternScore pattern_score = new PatternScore(gi.max_genome_size, number_of_genomes, gi.dataset_length_sum,
+            PatternScore pattern_score = new PatternScore(gi.getMaxGenomeSize(), number_of_genomes, gi.getDatasetLengthSum(),
                     gi.cog_to_containing_genomes, gi.genome_to_cog_paralog_count);
 
             List<Pattern> patterns = MainAlgorithm.getPatterns();
@@ -193,13 +194,13 @@ public class Controller {
                 //pattern.calculateScore(gi, cla.max_insertion, cla.max_error, cla.max_deletion);
                 pattern.calculateMainFunctionalCategory(gi, cla.non_directons);
             }
-            utils.measureMemory();
+            MemoryUtils.measure();
 
             System.out.println("Clustering to families");
             List<Family> families = FamilyClustering.Cluster(patterns, cla.threshold, cla.cluster_by, gi,
                     cla.non_directons);
 
-            utils.measureMemory();
+            MemoryUtils.measure();
 
             System.out.println("Writing to files");
             for (Family family : families) {
@@ -208,7 +209,7 @@ public class Controller {
                     writer.printPattern(pattern, gi, family.getFamilyId());
                 }
             }
-            utils.measureMemory();
+            MemoryUtils.measure();
 
 
             writer.closeFiles();

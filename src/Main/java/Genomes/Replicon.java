@@ -7,10 +7,13 @@ import java.util.stream.Collectors;
 
 /**
  */
-public class Replicon extends GenomicSegmentClass{
+public class Replicon extends GenomicSegment {
 
-    public Replicon(int strand, int id){
+    private String name;
+
+    public Replicon(int strand, int id, String name){
         super(strand, id);
+        this.name = name;
     }
 
     private static String reverseStrand(String strand){
@@ -81,4 +84,7 @@ public class Replicon extends GenomicSegmentClass{
         return directons;
     }
 
+    public String getName() {
+        return name;
+    }
 }

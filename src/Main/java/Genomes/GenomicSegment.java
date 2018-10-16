@@ -1,31 +1,29 @@
 package Genomes;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  */
-public abstract class GenomicSegmentClass implements GenomicSegmentInterface{
+public abstract class GenomicSegment {
 
     private int id;
     protected List<Gene> genes;
     private int strand;
     private int start_index;
 
-    public GenomicSegmentClass(){
+    public GenomicSegment(){
         genes = new ArrayList<>();
         strand = 0;
         start_index = 0;
         id = -1;
     }
-    public GenomicSegmentClass(int id){
+    public GenomicSegment(int id){
         this();
         this.id = id;
     }
 
-    public GenomicSegmentClass(int strand, int id){
+    public GenomicSegment(int strand, int id){
         this(id);
         this.strand = strand;
     }
@@ -33,6 +31,7 @@ public abstract class GenomicSegmentClass implements GenomicSegmentInterface{
     public int size(){
         return genes.size();
     }
+
     public void add(Gene gene){
         genes.add(gene);
     }
@@ -61,5 +60,6 @@ public abstract class GenomicSegmentClass implements GenomicSegmentInterface{
         return id;
     }
 
+    public abstract String[] getGenesIDs();
 
 }

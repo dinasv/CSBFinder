@@ -1,7 +1,5 @@
 package Genomes;
 
-import IO.MyLogger;
-
 import java.util.*;
 
 /**
@@ -20,11 +18,11 @@ public class GenomesInfo {
     /**
      * Accession number to tax key
      */
-    public Map<String, Integer> genome_name_to_id;
-    public Map<Integer, String> genome_id_to_name;
-    public Map<Integer, String> replicon_id_to_name;
+    private Map<String, Integer> genome_name_to_id;
+    private Map<Integer, String> genome_id_to_name;
+    private Map<Integer, String> replicon_id_to_name;
 
-    public int dataset_length_sum ;
+    private int dataset_length_sum ;
 
     /**
      * for each cog, a set of genomes (indexes) in which the cog appears
@@ -35,14 +33,13 @@ public class GenomesInfo {
 
     public Map<String, COG> cog_info;
 
-    public Map<String, Map<String, Replicon>> genomeToRepliconsMap;
+    private Map<String, Genome> genomesMap;
 
-    public int max_genome_size;
+    private int max_genome_size;
 
     public GenomesInfo(){
-        genomeToRepliconsMap = new HashMap<>();
+        genomesMap = new HashMap<>();
 
-        //number_of_genomes = 0;
         max_genome_size = 0;
 
         genome_name_to_id = new HashMap<>();
@@ -55,13 +52,59 @@ public class GenomesInfo {
 
         genome_to_cog_paralog_count = new HashMap<>();
 
-        this.cog_info = cog_info;
+        this.cog_info = null;
 
         initAlphabet();
     }
 
     public int getNumberOfGenomes(){
-        return genome_id_to_name.size();
+        return genomesMap.size();
+    }
+
+    public int getNumberOfReplicons(){
+        return replicon_id_to_name.size();
+    }
+
+
+    public Genome addGenome(String genome_name){
+        Genome genome = genomesMap.get(genome_name);
+        if (genome == null){
+            int genome_id = genomesMap.size();
+            genome = new Genome(genome_name, genome_id);
+            genome_name_to_id.put(genome_name, genome_id);
+            genome_id_to_name.put(genome_id, genome_name);
+            genomesMap.put(genome_name, genome);
+        }
+
+        return genome;
+    }
+
+    public Collection<Genome> getGenomes(){
+        return genomesMap.values();
+    }
+
+    public Map<String, Genome> getGenomesMap() {
+        return this.genomesMap;
+    }
+
+    public String getGenomeName(int id){
+        return genome_id_to_name.get(id);
+    }
+
+    public int getGenomeId(String name){
+        return genome_name_to_id.get(name);
+    }
+
+    public String getRepliconName(int id){
+        return replicon_id_to_name.get(id);
+    }
+
+    public void addReplicon(Replicon replicon, Genome genome){
+        genome.addReplicon(replicon);
+        replicon_id_to_name.put(replicon.getId(), replicon.getName());
+
+        max_genome_size = genome.getGenomeSize() > max_genome_size ? genome.getGenomeSize() : max_genome_size;
+        dataset_length_sum += replicon.size();
     }
 
     private void initAlphabet(){
@@ -93,9 +136,7 @@ public class GenomesInfo {
         return this.cog_info;
     }
 
-    public Map<String, Map<String, Replicon>> getGenomeToRepliconsMap() {
-        return this.genomeToRepliconsMap;
-    }
+
 
     public int getMaxGenomeSize(){
         return max_genome_size;
@@ -123,5 +164,13 @@ public class GenomesInfo {
             }
             genomes.add(curr_seq_index);
         }
+    }
+
+    public int getDatasetLengthSum() {
+        return dataset_length_sum;
+    }
+
+    public void setDatasetLengthSum(int dataset_length_sum) {
+        this.dataset_length_sum = dataset_length_sum;
     }
 }

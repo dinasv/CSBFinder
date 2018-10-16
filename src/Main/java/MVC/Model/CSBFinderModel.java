@@ -123,7 +123,7 @@ public class CSBFinderModel {
             mainAlgorithm.removeRedundantPatterns();
         }
 
-        PatternScore pattern_score = new PatternScore(gi.max_genome_size, number_of_genomes, gi.dataset_length_sum,
+        PatternScore pattern_score = new PatternScore(gi.getMaxGenomeSize(), number_of_genomes, gi.getDatasetLengthSum(),
                 gi.cog_to_containing_genomes, gi.genome_to_cog_paralog_count);
 
         List<Pattern> patterns = mainAlgorithm.getPatterns();
@@ -264,7 +264,7 @@ public class CSBFinderModel {
 
         for (Map.Entry<Integer, Map<Integer, List<InstanceLocation>>> seq2replicons : sameSeqInstances.entrySet()) {
 
-            String seq_name = gi.genome_id_to_name.get(seq2replicons.getKey());
+            String seq_name = gi.getGenomeName(seq2replicons.getKey());
 
             Map<Integer, List<InstanceLocation>> repliconInstanceLocations = seq2replicons.getValue();
 
@@ -274,14 +274,15 @@ public class CSBFinderModel {
 
                 List<InstanceInfo> instanceLocations = new ArrayList<>();
 
-                String replicon_name = gi.replicon_id_to_name.get(replicon2locations.getKey());
+                int replicon_id = replicon2locations.getKey();
+                String replicon_name = gi.getRepliconName(replicon2locations.getKey());
                 List<InstanceLocation> instances_locations = replicon2locations.getValue();
 
                 instances_locations.sort(Comparator.comparing(InstanceLocation::getActualStartIndex));
 
                 for (InstanceLocation instance_location : instances_locations) {
                     instance_location.setRepliconName(replicon_name);
-                    List<Gene> genes = getInstanceFromCogList(seq_name, replicon_name, instance_location.getStartIndex(), instance_location.getEndIndex());
+                    List<Gene> genes = getInstanceFromCogList(seq_name, replicon_id, instance_location.getStartIndex(), instance_location.getEndIndex());
                     if (genes != null) {
                         instanceLocations.add(new InstanceInfo(instance_location, genes));
                     }
@@ -298,10 +299,10 @@ public class CSBFinderModel {
         return instances;
     }
 
-    private List<Gene> getInstanceFromCogList(String seq_name, String replicon_name, int startIndex, int endIndex) {
+    private List<Gene> getInstanceFromCogList(String seq_name, int replicon_id, int startIndex, int endIndex) {
         List<Gene> instanceList = null;
-        Map<String, Replicon> genomeToRepliconsMap = getGenomeMap().get(seq_name);
-        List<Gene> genomeToCogList = genomeToRepliconsMap.get(replicon_name).getGenes();
+        Genome genome = getGenomeMap().get(seq_name);
+        List<Gene> genomeToCogList = genome.getReplicon(replicon_id).getGenes();
         if (genomeToCogList != null) {
             if (startIndex >= 0 && startIndex < genomeToCogList.size() &&
                     endIndex >= 0 && endIndex < genomeToCogList.size()) {
@@ -358,8 +359,8 @@ public class CSBFinderModel {
         return number_of_genomes;
     }
 
-    public Map<String, Map<String, Replicon>> getGenomeMap() {
-        return gi.getGenomeToRepliconsMap();
+    public Map<String, Genome> getGenomeMap() {
+        return gi.getGenomesMap();
     }
 
     public int getMaxGenomeSize(){

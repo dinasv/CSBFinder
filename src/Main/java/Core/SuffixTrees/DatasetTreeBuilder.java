@@ -1,10 +1,10 @@
-package Genomes;
+package Core.SuffixTrees;
 
 import Core.SuffixTrees.GeneralizedSuffixTree;
 import Core.SuffixTrees.Trie;
+import Genomes.*;
 
 import java.io.BufferedReader;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.List;
@@ -94,7 +94,7 @@ public class DatasetTreeBuilder {
      * @param dataset_gst
      * @param curr_genome_index
      */
-    private static void putWordInDataTree(GenomicSegmentInterface genomicSegment, GeneralizedSuffixTree dataset_gst, int curr_genome_index, GenomesInfo gi){
+    private static void putWordInDataTree(GenomicSegment genomicSegment, GeneralizedSuffixTree dataset_gst, int curr_genome_index, GenomesInfo gi){
         String[] genes = genomicSegment.getGenesIDs();
         WordArray cog_word = createWordArray(genes, gi);
         InstanceLocation instance_info = new InstanceLocation(genomicSegment.getId(), genomicSegment.getStartIndex(),
@@ -113,7 +113,7 @@ public class DatasetTreeBuilder {
      * @return
      */
     private static int updateDataTree(boolean non_directons, Replicon replicon, GeneralizedSuffixTree dataset_gst,
-                               int curr_genome_index, GenomesInfo gi){
+                                      int curr_genome_index, GenomesInfo gi){
 
         int replicon_length = 0;
         if (non_directons) {
@@ -140,10 +140,10 @@ public class DatasetTreeBuilder {
     }
 
     public static void buildTree(GeneralizedSuffixTree dataset_gst, boolean non_directons, GenomesInfo gi){
-        for (Map.Entry<String, Map<String, Replicon>> entry : gi.genomeToRepliconsMap.entrySet()) {
-            String genome_name = entry.getKey();
-            int genome_index = gi.genome_name_to_id.get(genome_name);
-            for (Replicon replicon: entry.getValue().values()) {
+        for (Genome genome : gi.getGenomes()) {
+            //String genome_name = genome.getName();
+            int genome_index = genome.getId();
+            for (Replicon replicon: genome.getReplicons()) {
                 updateDataTree(non_directons, replicon, dataset_gst, genome_index, gi);
             }
         }

@@ -1,5 +1,6 @@
 package MVC.Controller;
 
+import Genomes.Genome;
 import MVC.Common.*;
 import MVC.Model.CSBFinderModel;
 import MVC.View.MainFrame;
@@ -60,7 +61,7 @@ public class CSBFinderController {
 
     public Map<String, Map<String, List<InstanceInfo>>> getInstances(Pattern pattern) { return model.getInstances(pattern); }
 
-    public Map<String, Map<String, Replicon>> getGenomeMap() { return model.getGenomeMap(); }
+    public Map<String, Genome> getGenomeMap() { return model.getGenomeMap(); }
 
     public int getGenomesLoaded() {
         return model.getNumberOfGenomes();

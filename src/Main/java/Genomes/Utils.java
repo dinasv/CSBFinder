@@ -54,7 +54,7 @@ public class Utils {
 
     private MyLogger logger;
 
-    Map<String, Map<String, Replicon>> genomeToRepliconsMap;
+    Map<String, Map<String, Replicon>> genomesMap;
 
     private int max_genome_size;*/
 
@@ -63,7 +63,7 @@ public class Utils {
 
     public Utils(Map<String, COG> cog_info, MyLogger logger){
         /*
-        genomeToRepliconsMap = new HashMap<>();
+        genomesMap = new HashMap<>();
 
         this.logger = logger;
 
@@ -319,10 +319,10 @@ public class Utils {
     }
 
     private void updateGenomeToRepliconsMap(String curr_genome_name, String replicon_id, Replicon replicon){
-        if (!genomeToRepliconsMap.containsKey(curr_genome_name)){
-            genomeToRepliconsMap.put(curr_genome_name, new HashMap<>());
+        if (!genomesMap.containsKey(curr_genome_name)){
+            genomesMap.put(curr_genome_name, new HashMap<>());
         }
-        Map<String, Replicon> genomeRepliconsMap = genomeToRepliconsMap.get(curr_genome_name);
+        Map<String, Replicon> genomeRepliconsMap = genomesMap.get(curr_genome_name);
 
         genomeRepliconsMap.put(replicon_id, replicon);
     }
@@ -413,8 +413,8 @@ public class Utils {
         return this.cog_info;
     }
 
-    public Map<String, Map<String, Replicon>> getGenomeToRepliconsMap() {
-        return this.genomeToRepliconsMap;
+    public Map<String, Map<String, Replicon>> getGenomesMap() {
+        return this.genomesMap;
     }
 */
 

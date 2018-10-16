@@ -463,7 +463,7 @@ public class MainAlgorithm {
                                 handlePattern(new_pattern, extended_pattern);
 
                                 if (debug && (getPatternsCount() % 5000 == 0) ){
-                                    utils.measureMemory();
+                                    MemoryUtils.measure();
                                 }
                             }
                         }

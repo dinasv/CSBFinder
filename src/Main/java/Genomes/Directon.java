@@ -8,7 +8,7 @@ import java.util.stream.Collectors;
 /**
  * Created by Dina on 27/06/2018.
  */
-public class Directon extends GenomicSegmentClass {
+public class Directon extends GenomicSegment {
 
     public Directon(int id){
         super(id);

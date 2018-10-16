@@ -218,12 +218,12 @@ public class Writer {
 
             for (Map.Entry<Integer, List<InstanceLocation>> entry : groupSameSeqInstances(pattern).entrySet()) {
 
-                String seq_name = gi.genome_id_to_name.get(entry.getKey());
+                String seq_name = gi.getGenomeName(entry.getKey());
                 instances_file.print(seq_name);
 
                 List<InstanceLocation> instances_locations = entry.getValue();
                 for (InstanceLocation instance_location : instances_locations){
-                    String replicon_name = gi.replicon_id_to_name.get(instance_location.getRepliconId());
+                    String replicon_name = gi.getRepliconName(instance_location.getRepliconId());
 
                     instances_file.print("\t" + replicon_name + "|[" + instance_location.getStartIndex() + ","
                             + instance_location.getEndIndex() + "]");
