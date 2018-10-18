@@ -1,5 +1,7 @@
 package Genomes;
 
+import Core.CogInfo;
+
 import java.util.*;
 
 /**
@@ -44,6 +46,10 @@ public class Pattern {
         reverse_pattern_arr = reverseComplimentPattern(pattern_arr);
     }
 
+    public Pattern(int pattern_id, String pattern, String[] pattern_arr){
+        this(pattern_id, pattern, pattern_arr, pattern_arr.length, null, null, 0);
+    }
+
     public void setPatternId(int pattern_id){
         this.pattern_id = pattern_id;
     }
@@ -79,11 +85,6 @@ public class Pattern {
         return exact_instance_count;
     }
 
-    /*
-    public void calculateScore(Utils utils, int max_insertion, int max_error, int max_deletion){
-
-        score = utils.computePatternScore(pattern_arr, max_insertion, max_error, max_deletion, instance_count);
-    }*/
 
     public double getScore(){
         return score;
@@ -93,8 +94,8 @@ public class Pattern {
         this.score = score;
     }
 
-    public void calculateMainFunctionalCategory(GenomesInfo gi, boolean non_directons){
-        if (gi.cog_info != null) {
+    public void calculateMainFunctionalCategory(CogInfo cogInfo, boolean non_directons){
+        if (main_functional_category.length() ==0 && cogInfo.cogInfoExists()) {
 
             Map<String, Integer> functional_letter_count = new HashMap<>();
             Map<String, String> functional_letter_to_desc = new HashMap<>();
@@ -102,7 +103,7 @@ public class Pattern {
                 if (non_directons){
                     cog_id = cog_id.substring(0, cog_id.length()-1);
                 }
-                COG cog = gi.cog_info.get(cog_id);
+                COG cog = cogInfo.getCog(cog_id);
                 if (cog != null) {
                     String[] functional_letters = cog.getFunctional_letters();
                     String[] functional_categories = cog.getFunctional_categories();

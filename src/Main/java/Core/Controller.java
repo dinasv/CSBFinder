@@ -1,14 +1,9 @@
 package Core;
 
-import Core.SuffixTrees.DatasetTreeBuilder;
 import IO.MyLogger;
 import IO.Readers;
 import IO.Writer;
 import Core.PostProcess.Family;
-import Core.PostProcess.FamilyClustering;
-import Core.SuffixTrees.GeneralizedSuffixTree;
-import Core.SuffixTrees.TreeType;
-import Core.SuffixTrees.Trie;
 import Genomes.*;
 
 import java.text.SimpleDateFormat;
@@ -20,49 +15,34 @@ import com.beust.jcommander.ParameterException;
 
 public class Controller {
 
-    private Parameters cla;
+    private Parameters params;
     private MyLogger logger;
     private String output_path;
     private Writer writer;
-    private Utils utils;
     private String INPUT_PATH = "input/";
 
 
     public Controller(String [ ] args){
         JCommander jcommander = null;
         try {
-            cla = new Parameters();
+            params = new Parameters();
 
-            jcommander = JCommander.newBuilder().addObject(cla).build();
+            jcommander = JCommander.newBuilder().addObject(params).build();
             jcommander.parse(args);
-            if (cla.help){
+            if (params.help){
                 printUsageAndExit(jcommander, 0);
             }
 
         }catch (ParameterException e){
             System.err.println(e.getMessage());
 
-            jcommander = JCommander.newBuilder().addObject(cla).build();
+            jcommander = JCommander.newBuilder().addObject(params).build();
             printUsageAndExit(jcommander, 1);
         }
 
         output_path = createOutputPath();
-        logger = new MyLogger(output_path, cla.debug);
+        logger = new MyLogger("output/", params.debug);
 
-        boolean cog_info_exists = (cla.cog_info_file_name != null);
-        writer = createWriter(cog_info_exists);
-
-        Map<String, COG> cog_info = null;
-
-        if (cog_info_exists) {
-            cog_info = Readers.read_cog_info_table(INPUT_PATH + cla.cog_info_file_name);
-        }
-
-        utils = new Utils(cog_info, logger);
-
-        if (cla.min_pattern_length < 2) {
-            cla.min_pattern_length = 2 + cla.max_error;
-        }
 
         run();
     }
@@ -75,14 +55,14 @@ public class Controller {
 
 
     private Writer createWriter(boolean cog_info_exists){
-        String parameters = "_ins" + cla.max_insertion + "_q" + cla.quorum2;
-        String catalog_file_name = "Catalog_" + cla.dataset_name + parameters;
+        String parameters = "_ins" + params.max_insertion + "_q" + params.quorum2;
+        String catalog_file_name = "Catalog_" + params.dataset_name + parameters;
         String instances_file_name = catalog_file_name + "_instances";
         boolean include_families = true;
 
-        Writer writer = new Writer(cla.max_error, cla.max_deletion, cla.max_insertion, cla.debug, catalog_file_name,
+        Writer writer = new Writer(params.max_error, params.max_deletion, params.max_insertion, params.debug, catalog_file_name,
                 instances_file_name,
-                include_families, cla.output_file_type, cog_info_exists, cla.non_directons, output_path);
+                include_families, params.output_file_type, cog_info_exists, params.non_directons, output_path);
 
         return writer;
     }
@@ -103,11 +83,11 @@ public class Controller {
 
         pipeline();
 
-        if (cla.debug){
+        if (params.debug){
             MemoryUtils.measure();
-            long actualMemUsed = utils.currMem - utils.initialMem;
+            long actualMemUsed = MemoryUtils.getActualMaxUsedMemory();
 
-            System.out.println(actualMemUsed);
+            System.out.println("Memory used: " + actualMemUsed);
             logger.writeLogger("Memory used: " + actualMemUsed);
 
         }
@@ -116,22 +96,19 @@ public class Controller {
 
     /**
      * Read patterns from a file if a file is given, and put them in a suffix trie
-     * @return the Trie with the patterns, null if patterns file not given ot building the tree was unsuccessful
+     * @return
      */
-    private Trie buildPatternsTree(GenomesInfo gi) {
-        Trie pattern_tree = null;
-        if (cla.input_patterns_file_name != null) {
+    private List<Pattern> readPatternsFromFile() {
+        List<Pattern> patterns = null;
+        if (params.input_patterns_file_name != null) {
             //these arguments are not valid when input patterns are give
-            cla.min_pattern_length = 2;
-            cla.max_pattern_length = Integer.MAX_VALUE;
+            params.min_pattern_length = 2;
+            params.max_pattern_length = Integer.MAX_VALUE;
 
-            pattern_tree = new Trie(TreeType.STATIC);
-            String path = INPUT_PATH + cla.input_patterns_file_name;
-            if (!DatasetTreeBuilder.buildPatternsTreeFromFile(path, pattern_tree, gi)){
-                pattern_tree = null;//if tree building wasn't successful
-            }
+            String path = INPUT_PATH + params.input_patterns_file_name;
+            patterns = Readers.readPatternsFromFile(path);
         }
-        return pattern_tree;
+        return patterns;
     }
 
     /**
@@ -145,68 +122,54 @@ public class Controller {
 
         long startTime = System.nanoTime();
 
-        GeneralizedSuffixTree dataset_suffix_tree = new GeneralizedSuffixTree();
-
         logger.writeLogger("Building Data tree");
         System.out.println("Building Data tree");
 
+        //read genomes
         GenomesInfo gi = new GenomesInfo();
-        GenomesReader reader = new GenomesReader(gi, logger);
-        String genomes_file_path = INPUT_PATH+cla.input_file_name;
-        int number_of_genomes = reader.readGenomes(genomes_file_path);
+        String genomes_file_path = INPUT_PATH + params.input_file_name;
+        int number_of_genomes = Readers.readGenomes(genomes_file_path, gi);
 
-        DatasetTreeBuilder.buildTree(dataset_suffix_tree, cla.non_directons, gi);
+
+        //cog info
+        Map<String, COG> cog_info = null;
+        boolean cog_info_exists = (params.cog_info_file_name != null);
+        if (cog_info_exists) {
+            cog_info = Readers.read_cog_info_table(INPUT_PATH + params.cog_info_file_name);
+        }
+
+        CogInfo cogInfo = new CogInfo();
+        cogInfo.setCogInfo(cog_info);
+        //gi.setCogInfo(cog_info);
+
 
         MemoryUtils.measure();
 
         if (number_of_genomes != -1) {
 
-            //read patterns from a file if a file is given, and put them in a suffix trie
-            Trie pattern_tree = buildPatternsTree(gi);
+            CSBFinderWorkflow workflow = new CSBFinderWorkflow(gi);
+
+            //read patterns from a file if a file is given
+            List<Pattern> patternsFromFile = readPatternsFromFile();
+            List<Family> families;
+
+            if (patternsFromFile != null){
+                families = workflow.run(params, patternsFromFile);
+            }else{
+                families = workflow.run(params);
+            }
+
 
             System.out.println("Extracting CSBs from " + number_of_genomes + " input sequences.");
 
-            MainAlgorithm MainAlgorithm = new MainAlgorithm(cla, dataset_suffix_tree, pattern_tree, gi, utils, cla.debug);
-
-            MemoryUtils.measure();
-
-            if (cla.input_patterns_file_name == null) {
-                System.out.println("Removing redundant CSBs");
-                logger.writeLogger("CSBs found: " + MainAlgorithm.getPatternsCount());
-
-                MainAlgorithm.removeRedundantPatterns();
-                if (cla.debug) {
-                    MemoryUtils.measure();
-                    logger.writeLogger("CSBs left after removing redundant CSBs: " + MainAlgorithm.getPatternsCount());
-                }
-
-            }
-
-            PatternScore pattern_score = new PatternScore(gi.getMaxGenomeSize(), number_of_genomes, gi.getDatasetLengthSum(),
-                    gi.cog_to_containing_genomes, gi.genome_to_cog_paralog_count);
-
-            List<Pattern> patterns = MainAlgorithm.getPatterns();
-
-            for (Pattern pattern : patterns) {
-                double score = utils.computePatternScore(pattern_score, pattern.getPatternArr(), cla.max_insertion, cla.max_error,
-                        cla.max_deletion, pattern.getInstanceCount());
-                pattern.setScore(score);
-                //pattern.calculateScore(gi, cla.max_insertion, cla.max_error, cla.max_deletion);
-                pattern.calculateMainFunctionalCategory(gi, cla.non_directons);
-            }
-            MemoryUtils.measure();
-
-            System.out.println("Clustering to families");
-            List<Family> families = FamilyClustering.Cluster(patterns, cla.threshold, cla.cluster_by, gi,
-                    cla.non_directons);
-
-            MemoryUtils.measure();
 
             System.out.println("Writing to files");
+            writer = createWriter(cog_info_exists);
+
             for (Family family : families) {
-                writer.printFilteredCSB(family.getPatterns().get(0), gi, family.getFamilyId());
+                writer.printTopScoringPattern(family.getPatterns().get(0), gi, family.getFamilyId(), cogInfo);
                 for (Pattern pattern : family.getPatterns()) {
-                    writer.printPattern(pattern, gi, family.getFamilyId());
+                    writer.printPattern(pattern, gi, family.getFamilyId(), cogInfo);
                 }
             }
             MemoryUtils.measure();
@@ -222,8 +185,9 @@ public class Controller {
             System.out.println("Took " + estimatedTime + " seconds");
 
         }else{
-            System.out.println("Could not read input sequences");
-            logger.writeLogger("Could not read input sequences");
+            String msg = "Could not read input sequences";
+            System.out.println(msg);
+            logger.writeLogger(msg);
             System.exit(1);
         }
     }

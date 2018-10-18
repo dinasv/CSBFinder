@@ -42,32 +42,29 @@ public class MainAlgorithm {
 
     int total_chars_in_data;
     GenomesInfo gi;
-    Utils utils;
 
     /**
      *
-     * @param cla args
+     * @param params args
      * @param data_t GST representing all input sequences
      * @param pattern_trie
      * @param gi Information regarding the input genomes (sequences)
-     * @param debug
      */
-    public MainAlgorithm(Parameters cla, GeneralizedSuffixTree data_t, Trie pattern_trie, GenomesInfo gi, Utils utils,
-                         boolean debug){
+    public MainAlgorithm(Parameters params, GeneralizedSuffixTree data_t, Trie pattern_trie, GenomesInfo gi){
 
         // args
-        this.max_error = cla.max_error;
-        this.max_wildcards = cla.max_wildcards;
-        this.max_deletion = cla.max_deletion;
-        this.max_insertion = cla.max_insertion;
-        q1 = cla.quorum1;
-        q2 = cla.quorum2;
-        this.non_directons = cla.non_directons;
-        this.min_pattern_length = cla.min_pattern_length;
-        this.max_pattern_length = cla.max_pattern_length;
-        this.mult_count = cla.mult_count;
+        this.max_error = params.max_error;
+        this.max_wildcards = params.max_wildcards;
+        this.max_deletion = params.max_deletion;
+        this.max_insertion = params.max_insertion;
+        q1 = params.quorum1;
+        q2 = params.quorum2;
+        this.non_directons = params.non_directons;
+        this.min_pattern_length = params.min_pattern_length;
+        this.max_pattern_length = params.max_pattern_length;
+        this.mult_count = params.mult_count;
 
-        this.utils = utils;
+        //this.utils = utils;
 
         data_tree = data_t;
 
@@ -75,7 +72,7 @@ public class MainAlgorithm {
         this.gi = gi;
         last_pattern_key = 0;
 
-        this.debug = debug;
+        this.debug = params.debug;
 
         count_nodes_in_pattern_tree = 0;
         count_nodes_in_data_tree = 0;

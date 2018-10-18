@@ -41,9 +41,10 @@ public class CSBFinderController {
         this.model.loadInputGenomesFile(file_path);
     }
 
+    /*
     public void buildDatasetTree(){
         this.model.buildDatasetTree();
-    }
+    }*/
 
     public void saveOutputFiles(String outputFileType) { this.model.saveOutputFiles(outputFileType); }
 

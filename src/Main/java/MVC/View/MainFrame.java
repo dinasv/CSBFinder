@@ -175,7 +175,6 @@ public class MainFrame extends JFrame {
                         @Override
                         protected Void doInBackground() throws Exception {
                             controller.loadInputGenomesFile(f.getPath());
-                            controller.buildDatasetTree();
                             return null;
                         }
 

@@ -31,7 +31,6 @@ public class GenomesInfo {
 
     public Map<Integer, Map<String, Integer>> genome_to_cog_paralog_count;
 
-    public Map<String, COG> cog_info;
 
     private Map<String, Genome> genomesMap;
 
@@ -52,10 +51,10 @@ public class GenomesInfo {
 
         genome_to_cog_paralog_count = new HashMap<>();
 
-        this.cog_info = null;
-
         initAlphabet();
     }
+
+
 
     public int getNumberOfGenomes(){
         return genomesMap.size();
@@ -127,16 +126,6 @@ public class GenomesInfo {
         char_to_index.put("X-", UNK_CHAR_INDEX);
 
     }
-
-    public void setCogInfo(Map<String, COG> cog_info) {
-        this.cog_info = cog_info;
-    }
-
-    public Map<String, COG> getCogInfo() {
-        return this.cog_info;
-    }
-
-
 
     public int getMaxGenomeSize(){
         return max_genome_size;

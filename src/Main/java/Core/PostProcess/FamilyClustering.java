@@ -5,8 +5,6 @@ import Genomes.Pattern;
 
 import java.util.*;
 
-import Genomes.Utils;
-
 import Core.Parameters.ClusterBy;
 
 /**

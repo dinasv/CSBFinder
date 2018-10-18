@@ -1,5 +1,6 @@
 package IO;
 
+import Core.CogInfo;
 import Genomes.*;
 
 import java.io.*;
@@ -76,13 +77,7 @@ public class Writer {
         init(catalog_file_name, instances_file_name, include_families, output_path);
 
     }
-/*
-    public void writeLogger(String msg){
-        if (debug && logger != null){
-            logger.info(msg);
-        }
-    }
-*/
+
     private void init(String catalog_file_name, String instances_file_name, boolean include_families,
                       String output_path){
 
@@ -268,16 +263,18 @@ public class Writer {
      * @param gi
      * @param family_id
      */
-    public void printFilteredCSB(Pattern pattern, GenomesInfo gi, String family_id){
+    public void printTopScoringPattern(Pattern pattern, GenomesInfo gi, String family_id, CogInfo cogInfo){
         if(output_file_type == OutputType.XLSX){
             if (pattern != null) {
+                pattern.calculateMainFunctionalCategory(cogInfo, false);
+
                 count_printed_filtered_patterns++;
-                printCSBLineToExcelSheet(filtered_patterns_sheet, pattern, count_printed_filtered_patterns, family_id, gi);
+                printCSBLineToExcelSheet(filtered_patterns_sheet, pattern, count_printed_filtered_patterns, family_id, gi, cogInfo);
             }
         }
     }
 
-    private void printCSBLineToExcelSheet(Sheet sheet, Pattern pattern, int row_num, String family_id, GenomesInfo gi){
+    private void printCSBLineToExcelSheet(Sheet sheet, Pattern pattern, int row_num, String family_id, GenomesInfo gi, CogInfo cogInfo){
         Row row = sheet.createRow(row_num);
         int col = 0;
         row.createCell(col++).setCellValue(pattern.getPatternId());
@@ -292,7 +289,7 @@ public class Writer {
                 (double) gi.getNumberOfGenomes())));
         row.createCell(col++).setCellValue(pattern.getExactInstanceCount());
         row.createCell(col++).setCellValue(String.join(DELIMITER, pattern.getPatternArr()));
-        if (gi.cog_info != null) {
+        if (cogInfo.cogInfoExists()) {
             row.createCell(col++).setCellValue(pattern.getMainFunctionalCategory());
         }
         if (family_id != null){
@@ -300,7 +297,7 @@ public class Writer {
         }
     }
 
-    private int printPatternDescToExcelSheet(Sheet sheet, int row_num, Pattern pattern, GenomesInfo gi){
+    private int printPatternDescToExcelSheet(Sheet sheet, int row_num, Pattern pattern, GenomesInfo gi, CogInfo cogInfo){
         Row row = sheet.createRow(row_num++);
         row.createCell(0).setCellValue("ID=");
         row.createCell(1).setCellValue(pattern.getPatternId());
@@ -314,7 +311,7 @@ public class Writer {
             if (non_directons){
                 cog = cog.substring(0, cog.length()-1);
             }
-            COG cog_obj = gi.cog_info.get(cog);
+            COG cog_obj = cogInfo.getCog(cog);
 
             row.createCell(0).setCellValue(cog);
             if (cog_obj!=null) {
@@ -326,14 +323,16 @@ public class Writer {
         return row_num+1;
     }
 
-    public void printPattern(Pattern pattern, GenomesInfo gi, String family_id){
+    public void printPattern(Pattern pattern, GenomesInfo gi, String family_id, CogInfo cogInfo){
         if (pattern != null) {
+            pattern.calculateMainFunctionalCategory(cogInfo, false);
+
             count_printed_patterns++;
             if(output_file_type == OutputType.XLSX) {
-                printCSBLineToExcelSheet(catalog_sheet, pattern, count_printed_patterns, family_id, gi);
+                printCSBLineToExcelSheet(catalog_sheet, pattern, count_printed_patterns, family_id, gi, cogInfo);
                 if (patterns_description_sheet != null) {
                     next_line_index_desc_sheet = printPatternDescToExcelSheet(patterns_description_sheet,
-                            next_line_index_desc_sheet, pattern, gi);
+                            next_line_index_desc_sheet, pattern, gi, cogInfo);
                 }
             }else if(output_file_type == OutputType.TXT){
                 String catalog_line = pattern.getPatternId() + "\t" + pattern.getLength() + "\t";
@@ -361,8 +360,8 @@ public class Writer {
         }
     }
 
-    public void printPattern(Pattern pattern, GenomesInfo gi){
-        printPattern(pattern, gi, null);
+    public void printPattern(Pattern pattern, GenomesInfo gi, CogInfo cogInfo){
+        printPattern(pattern, gi, null, cogInfo);
     }
 
 }

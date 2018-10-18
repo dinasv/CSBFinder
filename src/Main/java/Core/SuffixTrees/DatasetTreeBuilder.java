@@ -16,49 +16,15 @@ public class DatasetTreeBuilder {
 
     /**
      * Builds a Trie of patterns, given in a file.
-     * @param input_patterns_file_name path to input file containing patterns
      * @param pattern_tree the patterns are inserted to this GST
      * @return True if succesful, False if exception occurred
      */
-    public static boolean buildPatternsTreeFromFile(String input_patterns_file_name, Trie pattern_tree, GenomesInfo gi) {
+    public static void buildPatternsTree(List<Pattern> patterns, Trie pattern_tree, GenomesInfo gi) {
 
-        try {
-            BufferedReader br = new BufferedReader(new FileReader(input_patterns_file_name));
-
-            String line = br.readLine();
-
-            int pattern_id = 0;
-            while (line != null) {
-                if (line.charAt(0) == '>'){
-                    try {
-                        pattern_id = Integer.parseInt(line.substring(1));
-                    }catch (NumberFormatException e){
-                        System.out.println("Pattern id should be an integer, found " + line);
-                        return false;
-                    }
-                }else {
-                    String[] pattern = line.split("-");
-
-                    if (pattern.length > 1) {
-                        WordArray word = createWordArray(pattern, gi);
-                        pattern_tree.put(word, pattern_id, gi.UNK_CHAR_INDEX);
-                    }
-                }
-                line = br.readLine();
-            }
-
-            try {
-                br.close();
-            } catch (IOException e) {
-                System.out.println("A problem occurred while reading file " +input_patterns_file_name);
-                return false;
-            }
-
-        } catch (IOException e) {
-            System.out.println("A problem occurred while reading file " +input_patterns_file_name);
-            return false;
+        for (Pattern pattern: patterns){
+            WordArray word = createWordArray(pattern.getPatternArr(), gi);
+            pattern_tree.put(word, pattern.getPatternId(), gi.UNK_CHAR_INDEX);
         }
-        return true;
     }
 
 

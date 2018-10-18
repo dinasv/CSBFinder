@@ -7,8 +7,6 @@ import IO.Writer;
 import MVC.Common.*;
 import Core.*;
 import Core.PostProcess.Family;
-import Core.PostProcess.FamilyClustering;
-import Core.SuffixTrees.*;
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.ParameterException;
 
@@ -21,17 +19,17 @@ public class CSBFinderModel {
     private GenomesLoadedListener genomesLoadedListener;
     private CSBFinderDoneListener csbFinderDoneListener;
 
-    private Parameters cla;
-    private Utils utils;
-    private GeneralizedSuffixTree dataset_suffix_tree;
+    private Parameters params;
+    //private GeneralizedSuffixTree dataset_suffix_tree;
+    private CSBFinderWorkflow workflow;
     private List<Family> families;
 
     private int number_of_genomes;
 
     private GenomesInfo gi;
+    CogInfo cogInfo;
 
     public CSBFinderModel() {
-
     }
 
     public String getUNKchar(){
@@ -39,33 +37,24 @@ public class CSBFinderModel {
     }
 
     public MyLogger logger = new MyLogger("",true);
-    public void init() {
-        gi = new GenomesInfo();
-        this.utils = new Utils(null, logger);
-    }
+
 
     public void loadInputGenomesFile(String path) {
-        this.init();
-        GenomesReader reader = new GenomesReader(gi, logger);
-
-        //dataset_suffix_tree = new GeneralizedSuffixTree();
-        number_of_genomes = reader.readGenomes(path);
+        cogInfo = new CogInfo();
+        gi = new GenomesInfo();
+        number_of_genomes = Readers.readGenomes(path, gi);
         System.out.println("Loaded " + number_of_genomes + " genomes.");
+        workflow = new CSBFinderWorkflow(gi);
 
-        //number_of_genomes = utils.readAndBuildDatasetTree(path, dataset_suffix_tree, false);
     }
 
-    public void buildDatasetTree(){
-        dataset_suffix_tree = new GeneralizedSuffixTree();
-        DatasetTreeBuilder.buildTree(dataset_suffix_tree, false, gi);
-    }
 
     private JCommander parseArgs(String[] args){
-        JCommander jcommander = null;
+        JCommander jcommander;
         try {
-            cla = new Parameters();
+            params = new Parameters();
 
-            jcommander = JCommander.newBuilder().addObject(cla).build();
+            jcommander = JCommander.newBuilder().addObject(params).build();
             jcommander.parse(args);
             return jcommander;
 
@@ -73,8 +62,6 @@ public class CSBFinderModel {
             System.err.println(e.getMessage());
 
             return null;
-            //jcommander = JCommander.newBuilder().addObject(cla).build();
-//            printUsageAndExit(jcommander, 1);
         }
     }
 
@@ -98,69 +85,50 @@ public class CSBFinderModel {
      */
     private void findCSBs() {
 
-        if (dataset_suffix_tree == null){
-            System.out.println("dataset_suffix_tree does not exist");
+        if (gi == null || gi.getNumberOfGenomes() == 0){
+            System.out.println("Need to read genomes first.");
+            return;
+        }else if(workflow == null){
+            System.out.println("CSBFinder workflow was not created yet.");
             return;
         }
 
         long startTime = System.nanoTime();
 
         Map<String, COG> cog_info = null;
-        boolean cog_info_exists = (cla.cog_info_file_name != null);
+        boolean cog_info_exists = (params.cog_info_file_name != null);
         if (cog_info_exists) {
-            cog_info = Readers.read_cog_info_table(cla.cog_info_file_name);
+            cog_info = Readers.read_cog_info_table(params.cog_info_file_name);
         }
+        cogInfo.setCogInfo(cog_info);
 
-        gi.setCogInfo(cog_info);
 
-        Trie pattern_tree = buildPatternsTree();
+        List<Pattern> patternsFromFile = readPatternsFromFile();
 
         System.out.println("Extracting CSBs from " + number_of_genomes + " input sequences.");
 
-        MainAlgorithm mainAlgorithm = new MainAlgorithm(cla, dataset_suffix_tree, pattern_tree, gi, utils, cla.debug);
-
-        if (cla.input_patterns_file_name == null) {
-            mainAlgorithm.removeRedundantPatterns();
+        if (patternsFromFile != null){
+            families = workflow.run(params, patternsFromFile);
+        }else{
+            families = workflow.run(params);
         }
 
-        PatternScore pattern_score = new PatternScore(gi.getMaxGenomeSize(), number_of_genomes, gi.getDatasetLengthSum(),
-                gi.cog_to_containing_genomes, gi.genome_to_cog_paralog_count);
 
-        List<Pattern> patterns = mainAlgorithm.getPatterns();
-
-        for (Pattern pattern : patterns) {
-            double score = Utils.computePatternScore(pattern_score, pattern.getPatternArr(), cla.max_insertion, cla.max_error,
-                    cla.max_deletion, pattern.getInstanceCount());
-            pattern.setScore(score);
-
-            //pattern.calculateScore(utils, cla.max_insertion, cla.max_error, cla.max_deletion);
-            pattern.calculateMainFunctionalCategory(gi, cla.non_directons);
-        }
-
-        System.out.println("Clustering to families");
-        families = FamilyClustering.Cluster(patterns, cla.threshold, cla.cluster_by, gi,
-                cla.non_directons);
-
-        long patternCount = 0;
-        for (Family family : families) {
-            patternCount += family.getPatterns().stream().filter(pattern -> pattern != null).count();
-        }
-
-        System.out.println(patternCount + " CSBs found");
+        System.out.println(workflow.getPatternsCount() + " CSBs found");
         System.out.println("Took " + String.valueOf((System.nanoTime() - startTime) / Math.pow(10, 9)) + " seconds");
 
         csbFinderDoneListener.CSBFinderDoneOccurred(new CSBFinderDoneEvent(families));
     }
 
     private Writer createWriter(boolean cog_info_exists, Parameters.OutputType outputType){
-        String parameters = "_ins" + cla.max_insertion + "_q" + cla.quorum2;
-        String catalog_file_name = "Catalog_" + cla.dataset_name + parameters;
+        String parameters = "_ins" + params.max_insertion + "_q" + params.quorum2;
+        String catalog_file_name = "Catalog_" + params.dataset_name + parameters;
         String instances_file_name = catalog_file_name + "_instances";
         boolean include_families = true;
 
-        Writer writer = new Writer(cla.max_error, cla.max_deletion, cla.max_insertion, cla.debug, catalog_file_name,
+        Writer writer = new Writer(params.max_error, params.max_deletion, params.max_insertion, params.debug, catalog_file_name,
                 instances_file_name,
-                include_families, outputType, cog_info_exists, cla.non_directons, createOutputPath());
+                include_families, outputType, cog_info_exists, params.non_directons, createOutputPath());
 
         return writer;
     }
@@ -179,34 +147,37 @@ public class CSBFinderModel {
 
     public void saveOutputFiles(String outputFileType) {
 
-         Writer writer = createWriter(cla.cog_info_file_name != null && !"".equals(cla.cog_info_file_name),
+         Writer writer = createWriter(params.cog_info_file_name != null && !"".equals(params.cog_info_file_name),
                 Parameters.OutputType.valueOf(outputFileType));
 
         System.out.println("Writing to files");
         for (Family family : families) {
-            writer.printFilteredCSB(family.getPatterns().get(0), gi, family.getFamilyId());
+            writer.printTopScoringPattern(family.getPatterns().get(0), gi, family.getFamilyId(), cogInfo);
             for (Pattern pattern : family.getPatterns()) {
-                writer.printPattern(pattern, gi, family.getFamilyId());
+                writer.printPattern(pattern, gi, family.getFamilyId(), cogInfo);
             }
         }
         writer.closeFiles();
     }
 
-    private Trie buildPatternsTree() {
-        Trie pattern_tree = null;
-        if (cla.input_patterns_file_name != null) {
+    /**
+     * Read patterns from a file if a file is given, and put them in a suffix trie
+     * @return
+     */
+    private List<Pattern> readPatternsFromFile() {
+        List<Pattern> patterns = null;
+        if (params.input_patterns_file_name != null) {
             //these arguments are not valid when input patterns are give
-            cla.min_pattern_length = 2;
-            cla.max_pattern_length = Integer.MAX_VALUE;
+            params.min_pattern_length = 2;
+            params.max_pattern_length = Integer.MAX_VALUE;
 
-            pattern_tree = new Trie(TreeType.STATIC);
-            String path = cla.input_patterns_file_name;
-            if (!DatasetTreeBuilder.buildPatternsTreeFromFile(path, pattern_tree, gi)){
-                pattern_tree = null;//if tree building wasn't successful
-            }
+            String path = params.input_patterns_file_name;
+            patterns = Readers.readPatternsFromFile(path);
         }
-        return pattern_tree;
+        return patterns;
     }
+
+
 
     public List<Family> getFamilies() {
         return families;
@@ -221,24 +192,24 @@ public class CSBFinderModel {
     }
 
     public List<COG> getCogInfo(List<String> cogs) {
-        List<COG> cogInfo = new ArrayList<COG>();
-        if (gi.getCogInfo() != null) {
+        List<COG> currCogInfo = new ArrayList<COG>();
+        if (cogInfo.cogInfoExists()) {
             cogs.forEach(cog -> {
-                COG c = gi.getCogInfo().get(cog);
+                COG c = cogInfo.getCog(cog);
                 if (c != null) {
-                    cogInfo.add(c);
+                    currCogInfo.add(c);
                 }
             });
         }
 
-        return cogInfo;
+        return currCogInfo;
     }
 
     public Set<COG> getInsertedGenes(Map<String, Map<String, List<InstanceInfo>>> instances, List<COG> patternGenes) {
 
         Set<COG> insertedGenes = new HashSet<COG>();
 
-        if (cla.max_insertion > 0) {
+        if (params.max_insertion > 0) {
             Set<COG> patternGenesSet = new HashSet<>();
             patternGenesSet.addAll(patternGenes);
 

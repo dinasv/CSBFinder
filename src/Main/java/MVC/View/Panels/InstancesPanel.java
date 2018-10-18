@@ -4,7 +4,6 @@ import MVC.Common.InstanceInfo;
 import MVC.View.Shapes.*;
 import MVC.View.Shapes.Label;
 import Genomes.Gene;
-import Genomes.Utils;
 
 import javax.swing.*;
 import java.awt.*;

@@ -178,4 +178,13 @@ public class PatternScore {
         return Beta.regularizedBeta(p, k, n-k+1);
     }
 
+    public static double computePatternScore(PatternScore pattern_score, String[] pattern_chars, int max_insertions,
+                                             int max_error, int max_deletions, int pattern_occs_keys_size){
+
+        if (pattern_score != null){
+            return pattern_score.computePatternScore(pattern_chars, max_insertions, pattern_occs_keys_size);
+        }
+        return -1;
+    }
+
 }
