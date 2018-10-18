@@ -15,47 +15,47 @@ public class Pattern {
     /**
      * Each cell contains the COG id, e.g. [COG1234, COG5234]
      */
-    private String[] pattern_arr;
-    private String[] reverse_pattern_arr;
+    private String[] patternArr;
+    private String[] reversePatternArr;
 
-    private int pattern_id;
-    private int instance_count;
+    private int patternId;
+    private int instanceCount;
 
     private int length;
     private List<Instance> instances;
 
-    private int exact_instance_count;
+    private int exactInstanceCount;
 
     private double score;
 
-    private String main_functional_category;
+    private String mainFunctionalCategory;
 
     private String familyId;
 
-    public Pattern(int pattern_id, String pattern, String[] pattern_arr, int length, Set<Integer> seq_keys,
-                   List<Instance> instances, int exact_instance_count){
-        this.pattern_id = pattern_id;
+    public Pattern(int patternId, String pattern, String[] patternArr, int length, Set<Integer> seq_keys,
+                   List<Instance> instances, int exactInstanceCount){
+        this.patternId = patternId;
         this.pattern = pattern;
-        this.pattern_arr = pattern_arr;
+        this.patternArr = patternArr;
         this.length = length;
         this.instances = instances;
-        instance_count = seq_keys.size();
-        this.exact_instance_count = exact_instance_count;
+        instanceCount = seq_keys.size();
+        this.exactInstanceCount = exactInstanceCount;
         score = 0;
-        main_functional_category = "";
-        reverse_pattern_arr = reverseComplimentPattern(pattern_arr);
+        mainFunctionalCategory = "";
+        reversePatternArr = reverseComplimentPattern(patternArr);
     }
 
-    public Pattern(int pattern_id, String pattern, String[] pattern_arr){
-        this(pattern_id, pattern, pattern_arr, pattern_arr.length, null, null, 0);
+    public Pattern(int patternId, String pattern, String[] patternArr){
+        this(patternId, pattern, patternArr, patternArr.length, null, null, 0);
     }
 
     public void setPatternId(int pattern_id){
-        this.pattern_id = pattern_id;
+        this.patternId = pattern_id;
     }
 
     public int getPatternId(){
-        return pattern_id;
+        return patternId;
     }
 
     public List<Instance> get_instances(){
@@ -74,15 +74,15 @@ public class Pattern {
     }
 
     public int getInstanceCount(){
-        return instance_count;
+        return instanceCount;
     }
 
     public String[] getPatternArr() {
-        return pattern_arr;
+        return patternArr;
     }
 
     public int getExactInstanceCount() {
-        return exact_instance_count;
+        return exactInstanceCount;
     }
 
 
@@ -95,18 +95,18 @@ public class Pattern {
     }
 
     public void calculateMainFunctionalCategory(CogInfo cogInfo, boolean non_directons){
-        if (main_functional_category.length() ==0 && cogInfo.cogInfoExists()) {
+        if (mainFunctionalCategory.length() ==0 && cogInfo.cogInfoExists()) {
 
             Map<String, Integer> functional_letter_count = new HashMap<>();
             Map<String, String> functional_letter_to_desc = new HashMap<>();
-            for (String cog_id : pattern_arr) {
+            for (String cog_id : patternArr) {
                 if (non_directons){
                     cog_id = cog_id.substring(0, cog_id.length()-1);
                 }
                 COG cog = cogInfo.getCog(cog_id);
                 if (cog != null) {
-                    String[] functional_letters = cog.getFunctional_letters();
-                    String[] functional_categories = cog.getFunctional_categories();
+                    String[] functional_letters = cog.getFunctionalLetters();
+                    String[] functional_categories = cog.getFunctionalCategories();
                     for (int i = 0; i < functional_letters.length; i++) {
                         String letter = functional_letters[i];
                         if (!functional_letter_count.containsKey(letter)) {
@@ -136,12 +136,12 @@ public class Pattern {
                 }
             }
 
-            main_functional_category = main_categories;
+            mainFunctionalCategory = main_categories;
         }
     }
 
     public String getMainFunctionalCategory() {
-        return main_functional_category;
+        return mainFunctionalCategory;
     }
 
     private static String reverseStrand(String strand){
@@ -166,7 +166,7 @@ public class Pattern {
     }
 
     public String[] getReversePatternArr() {
-        return reverse_pattern_arr;
+        return reversePatternArr;
     }
 
     public String getFamilyId() {

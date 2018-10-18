@@ -10,11 +10,11 @@ import javax.swing.*;
 public class ShapesPanel extends JPanel{
 
     private List<Shape> shapes = new ArrayList<>();
-    private int containers_dist;
+    private int containersDist;
     private int panelHeight;
 
-    public ShapesPanel(List<List<ShapesInstance>> shapesInstanceList, int containers_dist, Color backgroundColor) {
-        this.containers_dist = containers_dist;
+    public ShapesPanel(List<List<ShapesInstance>> shapesInstanceList, int containersDist, Color backgroundColor) {
+        this.containersDist = containersDist;
         shapes = new ArrayList<>();
 
         setBackground(backgroundColor);
@@ -45,9 +45,9 @@ public class ShapesPanel extends JPanel{
 
                 x = shapesInstance.getX() + shapesInstance.getWidth();
 
-                x1 = x + (int) (containers_dist * 0.2);
+                x1 = x + (int) (containersDist * 0.2);
                 y1 = shapesInstance.getGeneEndY();
-                x2 = x + containers_dist - (int) (containers_dist * 0.2);
+                x2 = x + containersDist - (int) (containersDist * 0.2);
                 y2 = shapesInstance.getGeneY();
 
                 if (j < repliconInstances.size()) {
@@ -55,7 +55,7 @@ public class ShapesPanel extends JPanel{
                 }
             }
             if (i < shapesInstanceList.size()){
-                x1 = x + (int) (containers_dist * 0.4);
+                x1 = x + (int) (containersDist * 0.4);
 
                 addShape(new RectShape(x1, 0, 5, panelHeight, Color.black));
             }
@@ -71,11 +71,11 @@ public class ShapesPanel extends JPanel{
             for (ShapesInstance shapesInstance: repliconInstances) {
                 width += shapesInstance.getWidth();
             }
-            width += containers_dist * (repliconInstances.size());
+            width += containersDist * (repliconInstances.size());
 
         }
 
-        width -= containers_dist/2;
+        width -= containersDist /2;
 
         setPreferredSize(new Dimension(width, panelHeight));
     }

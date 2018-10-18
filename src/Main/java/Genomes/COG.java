@@ -5,50 +5,50 @@ package Genomes;
  */
 public class COG{
 
-    private String cog_id;
-    private String cog_desc;
-    private String[] functional_letters;
-    private String[] functional_categories;
+    private String cogId;
+    private String cogDesc;
+    private String[] functionalLetters;
+    private String[] functionalCategories;
     private String geneName;
 
-    public COG(String cog_id, String cog_desc, String geneName){
-        this(cog_id, cog_desc, new String[0], new String[0], geneName);
+    public COG(String cogId, String cogDesc, String geneName){
+        this(cogId, cogDesc, new String[0], new String[0], geneName);
 
     }
 
-    public COG(String cog_id, String cog_desc, String[] functional_letters, String[] functional_categories){
-        this(cog_id, cog_desc, functional_letters, functional_categories, "");
+    public COG(String cogId, String cogDesc, String[] functionalLetters, String[] functionalCategories){
+        this(cogId, cogDesc, functionalLetters, functionalCategories, "");
     }
-    public COG(String cog_id, String cog_desc, String[] functional_letters, String[] functional_categories,
+    public COG(String cogId, String cogDesc, String[] functionalLetters, String[] functionalCategories,
                String geneName) {
 
-        this.cog_id = cog_id;
-        this.cog_desc = cog_desc;
+        this.cogId = cogId;
+        this.cogDesc = cogDesc;
         this.geneName = geneName;
-        this.functional_letters = functional_letters;
-        this.functional_categories = functional_categories;
+        this.functionalLetters = functionalLetters;
+        this.functionalCategories = functionalCategories;
     }
 
-    public COG(COG other, String cog_desc){
-        this.cog_id = cog_id;
-        this.cog_desc = cog_desc;
+    public COG(COG other, String cogDesc){
+        this.cogId = cogId;
+        this.cogDesc = cogDesc;
     }
 
     public String getCogID(){
-        return cog_id;
+        return cogId;
     }
 
-    public String getCog_desc(){
-        return cog_desc;
+    public String getCogDesc(){
+        return cogDesc;
     }
 
 
-    public String[] getFunctional_categories(){
-        return functional_categories;
+    public String[] getFunctionalCategories(){
+        return functionalCategories;
     }
 
-    public String[] getFunctional_letters(){
-        return functional_letters;
+    public String[] getFunctionalLetters(){
+        return functionalLetters;
     }
 
 

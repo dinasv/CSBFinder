@@ -91,7 +91,7 @@ public class FamilyClustering {
     private static Set<Integer> get_genes_set(String[] genes, GenomesInfo gi){
         Set<Integer> gene_set = new HashSet<>();
         for (String cog: genes) {
-            int cog_index = gi.char_to_index.get(cog);
+            int cog_index = gi.charToIndex.get(cog);
             gene_set.add(cog_index);
         }
         return gene_set;

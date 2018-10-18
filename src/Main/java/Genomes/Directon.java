@@ -15,7 +15,7 @@ public class Directon extends GenomicSegment {
     }
     public List<Gene> removeXFromEnd(String UNK_CHAR){
         int i = size()-1;
-        while (i>=0 && genes.get(i).getCog_id().equals(UNK_CHAR)){
+        while (i>=0 && genes.get(i).getCogId().equals(UNK_CHAR)){
             i--;
         }
         genes = new ArrayList<Gene>(genes.subList(0, i+1));
@@ -36,7 +36,7 @@ public class Directon extends GenomicSegment {
     }
 
     public String[] getGenesIDs(){
-        return genes.stream().map(gene_obj -> gene_obj.getCog_id())
+        return genes.stream().map(gene_obj -> gene_obj.getCogId())
                 .collect(Collectors.toList())
                 .toArray(new String[genes.size()]);
     }

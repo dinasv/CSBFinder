@@ -9,13 +9,13 @@ import java.util.Map;
 public class Genome {
     private String name;
     private int id;
-    private int genome_size;
+    private int genomeSize;
     private Map<Integer, Replicon> replicons;
 
     public Genome(String name, int id){
         this.name = name;
         this.id = id;
-        genome_size = 0;
+        genomeSize = 0;
         replicons = new HashMap<>();
     }
 
@@ -25,7 +25,7 @@ public class Genome {
 
     public void addReplicon(Replicon replicon){
         replicons.put(replicon.getId(), replicon);
-        genome_size += replicon.size();
+        genomeSize += replicon.size();
     }
 
     public Collection<Replicon> getReplicons(){
@@ -45,6 +45,6 @@ public class Genome {
     }
 
     public int getGenomeSize() {
-        return genome_size;
+        return genomeSize;
     }
 }

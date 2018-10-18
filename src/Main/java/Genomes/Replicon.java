@@ -32,11 +32,11 @@ public class Replicon extends GenomicSegment {
 
     public String[] getGenesIDs(){
         if (getStrand() == 1) {
-            return genes.stream().map(gene -> gene.getCog_id() + gene.getStrand())
+            return genes.stream().map(gene -> gene.getCogId() + gene.getStrand())
                     .collect(Collectors.toList())
                     .toArray(new String[genes.size()]);
         }else{
-            return genes.stream().map(gene -> gene.getCog_id() + reverseStrand(gene.getStrand()))
+            return genes.stream().map(gene -> gene.getCogId() + reverseStrand(gene.getStrand()))
                     .collect(Collectors.toList())
                     .toArray(new String[genes.size()]);
         }
@@ -55,7 +55,7 @@ public class Replicon extends GenomicSegment {
             boolean end_directon = (gene_index == size()-1) ||
                     !(gene.getStrand().equals(getGenes().get(gene_index+1).getStrand()));
             if (directon.size() == 0) {
-                if (!gene.getCog_id().equals(UNK_CHAR) && !end_directon) {
+                if (!gene.getCogId().equals(UNK_CHAR) && !end_directon) {
                     directon.add(gene);
                 }
             } else {

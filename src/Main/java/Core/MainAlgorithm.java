@@ -18,29 +18,29 @@ public class MainAlgorithm {
     public static long count_nodes_in_pattern_tree;
     public static long count_nodes_in_data_tree;
 
-    private int max_error;
-    private int max_wildcards;
-    private int max_deletion;
-    private int max_insertion;
+    private int maxError;
+    private int maxWildcards;
+    private int maxDeletion;
+    private int maxInsertion;
     private int q1;
     private int q2;
-    private int min_pattern_length;
-    private int max_pattern_length;
+    private int minPatternLength;
+    private int maxPatternLength;
 
-    private GeneralizedSuffixTree data_tree;
+    private GeneralizedSuffixTree dataTree;
 
     //contains all extracted patterns
     private Map<String, Pattern> patterns;
 
-    private boolean mult_count;
+    private boolean multCount;
 
-    private int last_pattern_key;
+    private int lastPatternKey;
 
-    private boolean non_directons;
+    private boolean nonDirectons;
 
     private boolean debug;
 
-    int total_chars_in_data;
+    int totalCharsInData;
     GenomesInfo gi;
 
     /**
@@ -53,24 +53,24 @@ public class MainAlgorithm {
     public MainAlgorithm(Parameters params, GeneralizedSuffixTree data_t, Trie pattern_trie, GenomesInfo gi){
 
         // args
-        this.max_error = params.max_error;
-        this.max_wildcards = params.max_wildcards;
-        this.max_deletion = params.max_deletion;
-        this.max_insertion = params.max_insertion;
+        this.maxError = params.maxError;
+        this.maxWildcards = params.maxWildcards;
+        this.maxDeletion = params.maxDeletion;
+        this.maxInsertion = params.maxInsertion;
         q1 = params.quorum1;
         q2 = params.quorum2;
-        this.non_directons = params.non_directons;
-        this.min_pattern_length = params.min_pattern_length;
-        this.max_pattern_length = params.max_pattern_length;
-        this.mult_count = params.mult_count;
+        this.nonDirectons = params.nonDirectons;
+        this.minPatternLength = params.minPatternLength;
+        this.maxPatternLength = params.maxPatternLength;
+        this.multCount = params.multCount;
 
         //this.utils = utils;
 
-        data_tree = data_t;
+        dataTree = data_t;
 
-        total_chars_in_data = -1;
+        totalCharsInData = -1;
         this.gi = gi;
-        last_pattern_key = 0;
+        lastPatternKey = 0;
 
         this.debug = params.debug;
 
@@ -82,7 +82,7 @@ public class MainAlgorithm {
         PatternNode pattern_tree_root;
         if (pattern_trie == null){//all patterns will be extracted from the data tree
             pattern_tree_root = new PatternNode(TreeType.VIRTUAL);
-            pattern_tree_root.setKey(++last_pattern_key);
+            pattern_tree_root.setKey(++lastPatternKey);
         }else {//if we were given patterns as input
             pattern_tree_root = pattern_trie.getRoot();
         }
@@ -99,15 +99,15 @@ public class MainAlgorithm {
      */
     private void findPatterns(PatternNode pattern_node) {
 
-        data_tree.computeCount();
-        total_chars_in_data = ((InstanceNode) data_tree.getRoot()).getCount_by_indexes();
+        dataTree.computeCount();
+        totalCharsInData = ((InstanceNode) dataTree.getRoot()).getCountByIndexes();
 
-        InstanceNode data_tree_root = (InstanceNode) data_tree.getRoot();
+        InstanceNode data_tree_root = (InstanceNode) dataTree.getRoot();
         //the instance of an empty string is the root of the data tree
         Instance empty_instance = new Instance(data_tree_root, null, -1, 0, 0);
         count_nodes_in_data_tree ++;
 
-        pattern_node.addInstance(empty_instance, max_insertion);
+        pattern_node.addInstance(empty_instance, maxInsertion);
         if (pattern_node.getType()== TreeType.VIRTUAL){
             spellPatternsVirtually(pattern_node, data_tree_root, -1, null, "",
                     0, 0);
@@ -158,7 +158,7 @@ public class MainAlgorithm {
             }
 
             //remove reverse compliments
-            if (non_directons){
+            if (nonDirectons){
                 String pattern_str = String.join(DELIMITER, pattern_arr) + DELIMITER;
                 String reversed_pattern_str = String.join(DELIMITER, pattern.getReversePatternArr()) + DELIMITER;
                 Pattern reversed_pattern = patterns.get(reversed_pattern_str);
@@ -205,7 +205,7 @@ public class MainAlgorithm {
      * @return the extended str
      */
     private String appendChar(String str, int ch) {
-        String cog = gi.index_to_char.get(ch);
+        String cog = gi.indexToChar.get(ch);
         //System.out.println(cog);
         String extended_string = str + cog + DELIMITER;
         extended_string.intern();
@@ -225,14 +225,14 @@ public class MainAlgorithm {
      * @return The maximal number of different string indexes that one of the extended patterns by a char appear in
      */
     private int spellPatterns(PatternNode pattern_node, String pattern, int pattern_length, int pattern_wildcard_count) {
-        if (pattern_wildcard_count < max_wildcards && pattern_node.getType().equals("enumeration")) {
+        if (pattern_wildcard_count < maxWildcards && pattern_node.getType().equals("enumeration")) {
             //add to pattern_node an edge with "_", pointing to a new node that will save the instances
             addWildcardEdge(pattern_node, true);
         }
 
         List<Instance> instances = pattern_node.getInstances();
 
-        Map<Integer, PatternNode> target_nodes = pattern_node.getTarget_nodes();
+        Map<Integer, PatternNode> target_nodes = pattern_node.getTargetNodes();
 
         //the maximal number of different instances, of one of the extended patterns
         int max_num_of_diff_instances = -1;
@@ -241,7 +241,7 @@ public class MainAlgorithm {
         PatternNode target_node;
         for (Map.Entry<Integer, PatternNode> entry : target_nodes.entrySet()) {
             int alpha = entry.getKey();
-            String alpha_ch = gi.index_to_char.get(alpha);
+            String alpha_ch = gi.indexToChar.get(alpha);
             target_node = entry.getValue();
 
             //go over edges that are not wild cards
@@ -258,7 +258,7 @@ public class MainAlgorithm {
         }
 
         //handle wild card edge
-        if (pattern_node.getType().equals("pattern") || pattern_wildcard_count < max_wildcards) {
+        if (pattern_node.getType().equals("pattern") || pattern_wildcard_count < maxWildcards) {
             target_node = pattern_node.getTargetNode(gi.WC_CHAR_INDEX);
             if (target_node != null) {
                 num_of_diff_instance = extendPattern(gi.WC_CHAR_INDEX, -1, null, null,
@@ -319,11 +319,11 @@ public class MainAlgorithm {
 
             for (Map.Entry<Integer, Edge> entry : data_node_edges.entrySet()) {
                 int alpha = entry.getKey();
-                String alpha_ch = gi.index_to_char.get(alpha);
+                String alpha_ch = gi.indexToChar.get(alpha);
                 data_edge = entry.getValue();
                 InstanceNode data_tree_target_node = (InstanceNode) data_edge.getDest();
 
-                if (data_tree_target_node.getCount_by_keys() >= q1) {
+                if (data_tree_target_node.getCountByKeys() >= q1) {
 
                     if (alpha == gi.UNK_CHAR_INDEX) {
                         if (q1 == 0 && !pattern.startsWith("X")) {
@@ -333,7 +333,7 @@ public class MainAlgorithm {
                     } else {
 
                         target_node = new PatternNode(TreeType.VIRTUAL);
-                        target_node.setKey(++last_pattern_key);
+                        target_node.setKey(++lastPatternKey);
 
                         num_of_diff_instances = extendPattern(alpha, data_edge_index + 1, data_node, data_edge,
                                 wildcard_count, pattern, target_node, pattern_node, instances, pattern_length);
@@ -350,11 +350,11 @@ public class MainAlgorithm {
 
             InstanceNode data_tree_target_node = (InstanceNode) data_edge.getDest();
 
-            if (data_tree_target_node.getCount_by_keys() >= q1) {
+            if (data_tree_target_node.getCountByKeys() >= q1) {
                 if (alpha != gi.UNK_CHAR_INDEX) {
 
                     target_node = new PatternNode(TreeType.VIRTUAL);
-                    target_node.setKey(++last_pattern_key);
+                    target_node.setKey(++lastPatternKey);
 
                     num_of_diff_instances = extendPattern(alpha, data_edge_index + 1, data_node, data_edge,
                             wildcard_count, pattern, target_node, pattern_node, instances, pattern_length);
@@ -404,7 +404,7 @@ public class MainAlgorithm {
         }
 
         extended_pattern_node.setSubstring(extended_pattern);
-        extended_pattern_node.setSubstring_length(extended_pattern_length);
+        extended_pattern_node.setSubstringLength(extended_pattern_length);
 
         int exact_instances_count = 0;
         //go over all instances of the pattern
@@ -414,17 +414,17 @@ public class MainAlgorithm {
                 exact_instances_count = curr_exact_instance_count;
             }
         }
-        extended_pattern_node.setExact_instance_count(exact_instances_count);
+        extended_pattern_node.setExactInstanceCount(exact_instances_count);
 
         int diff_instances_count;
-        if (mult_count){
+        if (multCount){
             diff_instances_count = extended_pattern_node.getInstanceIndexCount();
         }else {
             diff_instances_count = extended_pattern_node.getInstanceKeysSize();
         }
 
         if (exact_instances_count >= q1 && diff_instances_count >= q2 &&
-                (extended_pattern_length - wildcard_count <= max_pattern_length)) {
+                (extended_pattern_length - wildcard_count <= maxPatternLength)) {
 
             TreeType type = extended_pattern_node.getType();
             int ret;
@@ -435,13 +435,13 @@ public class MainAlgorithm {
                 ret = spellPatterns(extended_pattern_node, extended_pattern, extended_pattern_length, wildcard_count);
             }
 
-            if (extended_pattern_length - wildcard_count >= min_pattern_length) {
+            if (extended_pattern_length - wildcard_count >= minPatternLength) {
                 if (type == TreeType.STATIC) {
                     if (extended_pattern_node.getPatternKey()>0) {
                         Pattern new_pattern = new Pattern(extended_pattern_node.getPatternKey(), extended_pattern,
                                 extended_pattern.split(DELIMITER), extended_pattern_length,
                                 extended_pattern_node.getInstanceKeys(), extended_pattern_node.getInstances(),
-                                extended_pattern_node.getExact_instance_count());
+                                extended_pattern_node.getExactInstanceCount());
 
                         handlePattern(new_pattern, extended_pattern);
 
@@ -455,7 +455,7 @@ public class MainAlgorithm {
                                 Pattern new_pattern = new Pattern(extended_pattern_node.getPatternKey(), extended_pattern,
                                         extended_pattern.split(DELIMITER), extended_pattern_length,
                                         extended_pattern_node.getInstanceKeys(), extended_pattern_node.getInstances(),
-                                        extended_pattern_node.getExact_instance_count());
+                                        extended_pattern_node.getExactInstanceCount());
 
                                 handlePattern(new_pattern, extended_pattern);
 
@@ -511,21 +511,21 @@ public class MainAlgorithm {
                 exact_instance_count = addAllInstanceEdges(false, instance, instance_edges, deletions, error, node_instance,
                         edge_index, ch, extended_pattern);
                 //extend instance by deletions char
-                if (deletions < max_deletion) {
+                if (deletions < maxDeletion) {
                     addInstanceToPattern(extended_pattern, instance, gi.GAP_CHAR_INDEX, node_instance, edge_instance, edge_index,
                             error, deletions + 1);
                 }
             } else {
-                if (insertions < max_insertion && instance.getLength() > 0){
+                if (insertions < maxInsertion && instance.getLength() > 0){
                     addAllInstanceEdges(true, instance, instance_edges, deletions, error, node_instance,
                             edge_index, ch, extended_pattern);
                 }
-                if (error < max_error) {
+                if (error < maxError) {
                     //go over all outgoing edges
                     exact_instance_count = addAllInstanceEdges(false, instance, instance_edges, deletions,
                             error, node_instance, edge_index, ch, extended_pattern);
                     //extend instance by deletions char
-                    if (deletions < max_deletion) {
+                    if (deletions < maxDeletion) {
                         addInstanceToPattern(extended_pattern, instance, gi.GAP_CHAR_INDEX, node_instance, edge_instance, edge_index,
                                 error, deletions + 1);
                     }
@@ -535,7 +535,7 @@ public class MainAlgorithm {
                     next_node_instance = node_instance;
                     //Exists an edge_instance starting with ch, add it to instances
                     if (next_edge_instance != null) {
-                        exact_instance_count = ((InstanceNode)next_edge_instance.getDest()).getCount_by_keys();
+                        exact_instance_count = ((InstanceNode)next_edge_instance.getDest()).getCountByKeys();
                         //The label contains only 1 char, go to next node_instance
                         if (next_edge_instance.getLabel().get_length() == 1) {
                             next_node_instance = (InstanceNode) next_edge_instance.getDest();
@@ -546,7 +546,7 @@ public class MainAlgorithm {
                                 next_edge_index, error, deletions);
                     } else {
                         //extend instance by deletions char
-                        if (deletions < max_deletion) {
+                        if (deletions < maxDeletion) {
                             addInstanceToPattern(extended_pattern, instance, gi.GAP_CHAR_INDEX, node_instance, edge_instance,
                                     edge_index, error, deletions + 1);
                         }
@@ -566,7 +566,7 @@ public class MainAlgorithm {
                 next_edge_index = -1;
             }
 
-            if (insertions < max_insertion && instance.getLength() > 0){
+            if (insertions < maxInsertion && instance.getLength() > 0){
                 if (next_ch != ch) {
                     String extended_instance_string = appendChar(instance.getSubstring(), next_ch);
                     Instance next_instance = new Instance(next_node_instance, next_edge_instance, next_edge_index,
@@ -580,7 +580,7 @@ public class MainAlgorithm {
 
             //if the char is equal add anyway
             if (next_ch == ch) {
-                exact_instance_count = ((InstanceNode)edge_instance.getDest()).getCount_by_keys();
+                exact_instance_count = ((InstanceNode)edge_instance.getDest()).getCountByKeys();
                 addInstanceToPattern(extended_pattern, instance, next_ch, next_node_instance, next_edge_instance, next_edge_index, error,
                         deletions);
             } else {
@@ -588,12 +588,12 @@ public class MainAlgorithm {
                     addInstanceToPattern(extended_pattern, instance, next_ch, next_node_instance, next_edge_instance, next_edge_index, error,
                             deletions);
                 } else {
-                    if (error < max_error) {//check if the error is not maximal, to add not equal char
+                    if (error < maxError) {//check if the error is not maximal, to add not equal char
                         addInstanceToPattern(extended_pattern, instance, next_ch, next_node_instance, next_edge_instance, next_edge_index,
                                 error + 1, deletions);
                     }
                     //extend instance by deletions char
-                    if (deletions < max_deletion) {
+                    if (deletions < maxDeletion) {
                         addInstanceToPattern(extended_pattern, instance, gi.GAP_CHAR_INDEX, node_instance, edge_instance, edge_index, error, deletions + 1);
                     }
                 }
@@ -634,7 +634,7 @@ public class MainAlgorithm {
 
             if (ch == next_ch) {
                 curr_error = error;
-                exact_instance_count = ((InstanceNode)next_edge.getDest()).getCount_by_keys();
+                exact_instance_count = ((InstanceNode)next_edge.getDest()).getCountByKeys();
             } else {
                 if (ch != gi.WC_CHAR_INDEX) {//Substitution - the chars are different, increment error
                     curr_error = error + 1;
@@ -683,7 +683,7 @@ public class MainAlgorithm {
         String extended_instance_string = appendChar(instance.getSubstring(), next_ch);
         Instance next_instance = new Instance(next_node, next_edge, next_edge_index, next_error, next_deletions,
                 instance.getInsertionIndexes(), extended_instance_string, instance.getLength()+1);
-        extended_pattern.addInstance(next_instance, max_insertion);
+        extended_pattern.addInstance(next_instance, maxInsertion);
 
         count_nodes_in_data_tree++;
     }

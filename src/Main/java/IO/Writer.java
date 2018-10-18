@@ -19,60 +19,60 @@ import java.util.logging.Logger;
 /**
  * Created by Dina on 19/05/2017.
  * Writes the output files:
- *      catalog_file: CSBs catalog
- *      instances_file: The strings in which each CSB has an instance
+ *      catalogFile: CSBs catalog
+ *      instancesFile: The strings in which each CSB has an instance
  */
 public class Writer {
     //output files
-    private FileOutputStream catalog_file_xls;
-    private PrintWriter catalog_file;
-    private PrintWriter instances_file;
+    private FileOutputStream catalogFileXls;
+    private PrintWriter catalogFile;
+    private PrintWriter instancesFile;
 
-    private SXSSFWorkbook catalog_workbook;
-    private Sheet catalog_sheet;
-    private Sheet filtered_patterns_sheet;
-    private Sheet patterns_description_sheet;
-    private String catalog_path;
-    private String catalog_instances_path;
+    private SXSSFWorkbook catalogWorkbook;
+    private Sheet catalogSheet;
+    private Sheet filteredPatternsSheet;
+    private Sheet patternsDescriptionSheet;
+    private String catalogPath;
+    private String catalogInstancesPath;
 
-    private int max_error;
-    private int max_deletion;
-    private int max_insertion;
-    private int count_printed_patterns;
-    private int count_printed_filtered_patterns;
-    private int next_line_index_desc_sheet;
-    private boolean cog_info_exists;
+    private int maxError;
+    private int maxDeletion;
+    private int maxInsertion;
+    private int countPrintedPatterns;
+    private int countPrintedFilteredPatterns;
+    private int nextLineIndexDescSheet;
+    private boolean cogInfoExists;
     private boolean debug;
-    private boolean non_directons;
+    private boolean nonDirectons;
 
     private static final String DELIMITER = "|";
     private static final DecimalFormat DF = new DecimalFormat("#.####");
 
-    private OutputType output_file_type;
+    private OutputType outputType;
 
     public Logger logger = null;
 
-    public Writer(int max_error, int max_deletion, int max_insertion, boolean debug, String catalog_file_name,
-                  String instances_file_name, boolean include_families, OutputType output_file_type,
-                  boolean cog_info_exists, boolean non_directons, String output_path){
+    public Writer(int maxError, int maxDeletion, int maxInsertion, boolean debug, String catalog_file_name,
+                  String instances_file_name, boolean include_families, OutputType outputType,
+                  boolean cogInfoExists, boolean nonDirectons, String output_path){
 
         DF.setRoundingMode(RoundingMode.HALF_UP);
 
-        this.max_error = max_error;
-        this.max_deletion = max_deletion;
-        this.max_insertion = max_insertion;
+        this.maxError = maxError;
+        this.maxDeletion = maxDeletion;
+        this.maxInsertion = maxInsertion;
         this.debug = debug;
-        count_printed_patterns = 0;
-        count_printed_filtered_patterns = 0;
-        next_line_index_desc_sheet = 0;
+        countPrintedPatterns = 0;
+        countPrintedFilteredPatterns = 0;
+        nextLineIndexDescSheet = 0;
 
-        this.output_file_type = output_file_type;
-        this.cog_info_exists = cog_info_exists;
-        this.non_directons = non_directons;
+        this.outputType = outputType;
+        this.cogInfoExists = cogInfoExists;
+        this.nonDirectons = nonDirectons;
 
-        catalog_sheet = null;
-        filtered_patterns_sheet = null;
-        patterns_description_sheet = null;
+        catalogSheet = null;
+        filteredPatternsSheet = null;
+        patternsDescriptionSheet = null;
 
         init(catalog_file_name, instances_file_name, include_families, output_path);
 
@@ -81,8 +81,8 @@ public class Writer {
     private void init(String catalog_file_name, String instances_file_name, boolean include_families,
                       String output_path){
 
-        catalog_path = output_path + catalog_file_name;
-        catalog_instances_path = output_path +instances_file_name;
+        catalogPath = output_path + catalog_file_name;
+        catalogInstancesPath = output_path +instances_file_name;
         createOutputFiles();
         createHeaders(include_families);
     }
@@ -102,21 +102,21 @@ public class Writer {
 
     private void createOutputFiles() {
 
-        if (output_file_type == OutputType.TXT) {
-            catalog_path += ".txt";
-            catalog_file = createOutputPrintWriter(catalog_path);
-        } else if (output_file_type == OutputType.XLSX) {
-            catalog_path += ".xlsx";
+        if (outputType == OutputType.TXT) {
+            catalogPath += ".txt";
+            catalogFile = createOutputPrintWriter(catalogPath);
+        } else if (outputType == OutputType.XLSX) {
+            catalogPath += ".xlsx";
             try {
-                catalog_file_xls = new FileOutputStream(catalog_path);
+                catalogFileXls = new FileOutputStream(catalogPath);
             } catch (Exception e) {
-                System.out.println("Cannot create file " + catalog_path + ". Close the file first.");
+                System.out.println("Cannot create file " + catalogPath + ". Close the file first.");
                 System.exit(1);
             }
         }
 
-        catalog_instances_path += ".fasta";
-        instances_file = createOutputPrintWriter(catalog_instances_path);
+        catalogInstancesPath += ".fasta";
+        instancesFile = createOutputPrintWriter(catalogInstancesPath);
     }
 
     public static void createOutputDirectory(String path){
@@ -132,27 +132,27 @@ public class Writer {
     private void createHeaders(boolean include_families){
 
         String header = "ID\tLength\tScore\tInstance_Count\tInstance_Ratio\tExact_Instance_Count\tCSB";
-        if (cog_info_exists){
+        if (cogInfoExists){
             header += "\tMain_Category";
         }
         if (include_families){
             header += "\tFamily_ID";
         }
 
-        if (output_file_type == OutputType.TXT) {
-            if (catalog_file != null) {
-                catalog_file.write(header + "\n");
+        if (outputType == OutputType.TXT) {
+            if (catalogFile != null) {
+                catalogFile.write(header + "\n");
             }
-        }else if(output_file_type == OutputType.XLSX) {
-            catalog_workbook = new SXSSFWorkbook(10);
-            catalog_sheet = catalog_workbook.createSheet("Catalog");
-            writeHeaderToSheet(header, catalog_sheet);
+        }else if(outputType == OutputType.XLSX) {
+            catalogWorkbook = new SXSSFWorkbook(10);
+            catalogSheet = catalogWorkbook.createSheet("Catalog");
+            writeHeaderToSheet(header, catalogSheet);
             if (include_families) {
-                filtered_patterns_sheet = catalog_workbook.createSheet("Filtered CSBs");
-                writeHeaderToSheet(header, filtered_patterns_sheet);
+                filteredPatternsSheet = catalogWorkbook.createSheet("Filtered CSBs");
+                writeHeaderToSheet(header, filteredPatternsSheet);
             }
-            if (cog_info_exists){
-                patterns_description_sheet = catalog_workbook.createSheet("CSBs description");
+            if (cogInfoExists){
+                patternsDescriptionSheet = catalogWorkbook.createSheet("CSBs description");
             }
         }
 
@@ -167,38 +167,38 @@ public class Writer {
     }
 
     public int getCountPrintedPatterns(){
-        return count_printed_patterns;
+        return countPrintedPatterns;
     }
 
     public void closeFiles(){
 
-        if (output_file_type == OutputType.TXT) {
-            if (catalog_file != null) {
-                catalog_file.close();
+        if (outputType == OutputType.TXT) {
+            if (catalogFile != null) {
+                catalogFile.close();
             }
-        }else if(output_file_type == OutputType.XLSX){
+        }else if(outputType == OutputType.XLSX){
             try {
-                catalog_workbook.write(catalog_file_xls);
-                catalog_file_xls.close();
+                catalogWorkbook.write(catalogFileXls);
+                catalogFileXls.close();
                 if (debug){
-                    File file = new File(catalog_path);
+                    File file = new File(catalogPath);
                     if(file.delete()){
-                        System.out.println(catalog_path + " deleted");
+                        System.out.println(catalogPath + " deleted");
                     }
                 }
             } catch (Exception e) {
-                System.out.println("A problem occurred while trying to write to file "+catalog_path);
+                System.out.println("A problem occurred while trying to write to file "+ catalogPath);
                 System.exit(1);
             }
         }
-        if (instances_file != null) {
-            instances_file.close();
+        if (instancesFile != null) {
+            instancesFile.close();
             if (debug){
-                File file = new File(catalog_instances_path);
+                File file = new File(catalogInstancesPath);
                 if(file.delete()){
-                    System.out.println(catalog_instances_path + " deleted");
+                    System.out.println(catalogInstancesPath + " deleted");
                 }else{
-                    System.out.println(catalog_instances_path + " not deleted");
+                    System.out.println(catalogInstancesPath + " not deleted");
 
                 }
             }
@@ -207,24 +207,24 @@ public class Writer {
 
     private void printInstances(Pattern pattern, GenomesInfo gi){
 
-        if (instances_file != null) {
+        if (instancesFile != null) {
 
-            instances_file.println(">" + pattern.getPatternId() + "\t" + pattern.getPattern());
+            instancesFile.println(">" + pattern.getPatternId() + "\t" + pattern.getPattern());
 
             for (Map.Entry<Integer, List<InstanceLocation>> entry : groupSameSeqInstances(pattern).entrySet()) {
 
                 String seq_name = gi.getGenomeName(entry.getKey());
-                instances_file.print(seq_name);
+                instancesFile.print(seq_name);
 
                 List<InstanceLocation> instances_locations = entry.getValue();
                 for (InstanceLocation instance_location : instances_locations){
                     String replicon_name = gi.getRepliconName(instance_location.getRepliconId());
 
-                    instances_file.print("\t" + replicon_name + "|[" + instance_location.getStartIndex() + ","
+                    instancesFile.print("\t" + replicon_name + "|[" + instance_location.getStartIndex() + ","
                             + instance_location.getEndIndex() + "]");
                 }
 
-                instances_file.print("\n");
+                instancesFile.print("\n");
             }
 
         }
@@ -264,12 +264,12 @@ public class Writer {
      * @param family_id
      */
     public void printTopScoringPattern(Pattern pattern, GenomesInfo gi, String family_id, CogInfo cogInfo){
-        if(output_file_type == OutputType.XLSX){
+        if(outputType == OutputType.XLSX){
             if (pattern != null) {
                 pattern.calculateMainFunctionalCategory(cogInfo, false);
 
-                count_printed_filtered_patterns++;
-                printCSBLineToExcelSheet(filtered_patterns_sheet, pattern, count_printed_filtered_patterns, family_id, gi, cogInfo);
+                countPrintedFilteredPatterns++;
+                printCSBLineToExcelSheet(filteredPatternsSheet, pattern, countPrintedFilteredPatterns, family_id, gi, cogInfo);
             }
         }
     }
@@ -308,14 +308,14 @@ public class Writer {
 
         for (String cog : pattern.getPatternArr()){
             row = sheet.createRow(row_num++);
-            if (non_directons){
+            if (nonDirectons){
                 cog = cog.substring(0, cog.length()-1);
             }
             COG cog_obj = cogInfo.getCog(cog);
 
             row.createCell(0).setCellValue(cog);
             if (cog_obj!=null) {
-                row.createCell(1).setCellValue(cog_obj.getCog_desc());
+                row.createCell(1).setCellValue(cog_obj.getCogDesc());
             }else{
                 row.createCell(1).setCellValue("-");
             }
@@ -327,14 +327,14 @@ public class Writer {
         if (pattern != null) {
             pattern.calculateMainFunctionalCategory(cogInfo, false);
 
-            count_printed_patterns++;
-            if(output_file_type == OutputType.XLSX) {
-                printCSBLineToExcelSheet(catalog_sheet, pattern, count_printed_patterns, family_id, gi, cogInfo);
-                if (patterns_description_sheet != null) {
-                    next_line_index_desc_sheet = printPatternDescToExcelSheet(patterns_description_sheet,
-                            next_line_index_desc_sheet, pattern, gi, cogInfo);
+            countPrintedPatterns++;
+            if(outputType == OutputType.XLSX) {
+                printCSBLineToExcelSheet(catalogSheet, pattern, countPrintedPatterns, family_id, gi, cogInfo);
+                if (patternsDescriptionSheet != null) {
+                    nextLineIndexDescSheet = printPatternDescToExcelSheet(patternsDescriptionSheet,
+                            nextLineIndexDescSheet, pattern, gi, cogInfo);
                 }
-            }else if(output_file_type == OutputType.TXT){
+            }else if(outputType == OutputType.TXT){
                 String catalog_line = pattern.getPatternId() + "\t" + pattern.getLength() + "\t";
 
                 catalog_line += DF.format(pattern.getScore()) + "\t"
@@ -344,15 +344,15 @@ public class Writer {
 
                 catalog_line += String.join(DELIMITER, pattern.getPatternArr()) + "\t";
 
-                if (cog_info_exists) {
+                if (cogInfoExists) {
                     catalog_line += pattern.getMainFunctionalCategory() + "\t";
                 }
                 if (family_id != null){
                     catalog_line += family_id;
                 }
 
-                if (catalog_file != null) {
-                    catalog_file.write(catalog_line + "\n");
+                if (catalogFile != null) {
+                    catalogFile.write(catalog_line + "\n");
                 }
             }
             printInstances(pattern, gi);

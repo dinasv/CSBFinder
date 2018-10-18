@@ -24,7 +24,7 @@ public class CSBFinderModel {
     private CSBFinderWorkflow workflow;
     private List<Family> families;
 
-    private int number_of_genomes;
+    private int numberOfGenomes;
 
     private GenomesInfo gi;
     CogInfo cogInfo;
@@ -42,8 +42,8 @@ public class CSBFinderModel {
     public void loadInputGenomesFile(String path) {
         cogInfo = new CogInfo();
         gi = new GenomesInfo();
-        number_of_genomes = Readers.readGenomes(path, gi);
-        System.out.println("Loaded " + number_of_genomes + " genomes.");
+        numberOfGenomes = Readers.readGenomes(path, gi);
+        System.out.println("Loaded " + numberOfGenomes + " genomes.");
         workflow = new CSBFinderWorkflow(gi);
 
     }
@@ -96,16 +96,16 @@ public class CSBFinderModel {
         long startTime = System.nanoTime();
 
         Map<String, COG> cog_info = null;
-        boolean cog_info_exists = (params.cog_info_file_name != null);
+        boolean cog_info_exists = (params.cogInfoFileName != null);
         if (cog_info_exists) {
-            cog_info = Readers.read_cog_info_table(params.cog_info_file_name);
+            cog_info = Readers.read_cog_info_table(params.cogInfoFileName);
         }
         cogInfo.setCogInfo(cog_info);
 
 
         List<Pattern> patternsFromFile = readPatternsFromFile();
 
-        System.out.println("Extracting CSBs from " + number_of_genomes + " input sequences.");
+        System.out.println("Extracting CSBs from " + numberOfGenomes + " input sequences.");
 
         if (patternsFromFile != null){
             families = workflow.run(params, patternsFromFile);
@@ -121,14 +121,14 @@ public class CSBFinderModel {
     }
 
     private Writer createWriter(boolean cog_info_exists, Parameters.OutputType outputType){
-        String parameters = "_ins" + params.max_insertion + "_q" + params.quorum2;
-        String catalog_file_name = "Catalog_" + params.dataset_name + parameters;
+        String parameters = "_ins" + params.maxInsertion + "_q" + params.quorum2;
+        String catalog_file_name = "Catalog_" + params.datasetName + parameters;
         String instances_file_name = catalog_file_name + "_instances";
         boolean include_families = true;
 
-        Writer writer = new Writer(params.max_error, params.max_deletion, params.max_insertion, params.debug, catalog_file_name,
+        Writer writer = new Writer(params.maxError, params.maxDeletion, params.maxInsertion, params.debug, catalog_file_name,
                 instances_file_name,
-                include_families, outputType, cog_info_exists, params.non_directons, createOutputPath());
+                include_families, outputType, cog_info_exists, params.nonDirectons, createOutputPath());
 
         return writer;
     }
@@ -147,7 +147,7 @@ public class CSBFinderModel {
 
     public void saveOutputFiles(String outputFileType) {
 
-         Writer writer = createWriter(params.cog_info_file_name != null && !"".equals(params.cog_info_file_name),
+         Writer writer = createWriter(params.cogInfoFileName != null && !"".equals(params.cogInfoFileName),
                 Parameters.OutputType.valueOf(outputFileType));
 
         System.out.println("Writing to files");
@@ -166,12 +166,12 @@ public class CSBFinderModel {
      */
     private List<Pattern> readPatternsFromFile() {
         List<Pattern> patterns = null;
-        if (params.input_patterns_file_name != null) {
+        if (params.inputPatternsFileName != null) {
             //these arguments are not valid when input patterns are give
-            params.min_pattern_length = 2;
-            params.max_pattern_length = Integer.MAX_VALUE;
+            params.minPatternLength = 2;
+            params.maxPatternLength = Integer.MAX_VALUE;
 
-            String path = params.input_patterns_file_name;
+            String path = params.inputPatternsFileName;
             patterns = Readers.readPatternsFromFile(path);
         }
         return patterns;
@@ -209,14 +209,14 @@ public class CSBFinderModel {
 
         Set<COG> insertedGenes = new HashSet<COG>();
 
-        if (params.max_insertion > 0) {
+        if (params.maxInsertion > 0) {
             Set<COG> patternGenesSet = new HashSet<>();
             patternGenesSet.addAll(patternGenes);
 
             for (Map<String, List<InstanceInfo>> instancesMap : instances.values()) {
                 for (List<InstanceInfo> instancesList : instancesMap.values()) {
                     for (InstanceInfo instance : instancesList) {
-                        List<COG> instanceGenes = getCogInfo(instance.getGenes().stream().map(gene -> gene.getCog_id()).collect(Collectors.toList()));
+                        List<COG> instanceGenes = getCogInfo(instance.getGenes().stream().map(gene -> gene.getCogId()).collect(Collectors.toList()));
                         Set<COG> instanceGenesSet = new HashSet<>();
                         instanceGenesSet.addAll(instanceGenes);
                         instanceGenesSet.removeAll(patternGenesSet);
@@ -327,7 +327,7 @@ public class CSBFinderModel {
     }
 
     public int getNumberOfGenomes() {
-        return number_of_genomes;
+        return numberOfGenomes;
     }
 
     public Map<String, Genome> getGenomeMap() {

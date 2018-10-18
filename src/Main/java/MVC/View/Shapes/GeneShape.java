@@ -24,7 +24,7 @@ public class GeneShape implements Shape{
             this.dim = dim;
             this.color = color;
 
-            this.label = new Label(gene.getCog_id());
+            this.label = new Label(gene.getCogId());
             this.strand = gene.getStrand();
 
             width = dim.getArrowWidth() + dim.getRectWidth();

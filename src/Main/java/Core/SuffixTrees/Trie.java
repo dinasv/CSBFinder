@@ -13,7 +13,7 @@ public class Trie {
     public final PatternNode root;
     private boolean debug;
     private TreeType type;
-    private int last_key;
+    private int lastKey;
     private int UNK_CHAR_INDEX;
 
     public Trie(TreeType type){
@@ -22,7 +22,7 @@ public class Trie {
         debug = false;
         this.type = type;
 
-        last_key = 0;
+        lastKey = 0;
     }
 
     public PatternNode getRoot(){
@@ -59,7 +59,7 @@ public class Trie {
                     curr_node = addNode(str_char, curr_node);
 
                     if (type == TreeType.VIRTUAL && curr_node.getPatternKey() <= 0) {
-                        curr_node.setKey(++last_key);
+                        curr_node.setKey(++lastKey);
                     }
                 }
             }
@@ -91,7 +91,7 @@ public class Trie {
                 curr_node = target_node;
 
                 if (type == TreeType.VIRTUAL && curr_node.getPatternKey() <= 0){
-                    curr_node.setKey(++last_key);
+                    curr_node.setKey(++lastKey);
                 }
 
                 //advance the node
@@ -114,7 +114,7 @@ public class Trie {
                 curr_node = next_node;
 
                 if (type == TreeType.VIRTUAL && curr_node.getPatternKey() <= 0){
-                    curr_node.setKey(++last_key);
+                    curr_node.setKey(++lastKey);
                 }
 
                 if (extended_str_node != null) {

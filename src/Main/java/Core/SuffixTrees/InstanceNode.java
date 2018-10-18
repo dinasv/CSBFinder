@@ -24,8 +24,8 @@ public class InstanceNode extends SuffixNode {
      *
      * This must be calculated explicitly using computeAndCacheCount
      */
-    private int count_by_keys = -1;
-    private int count_by_indexes = -1;
+    private int countByKeys = -1;
+    private int countByIndexes = -1;
     /**
      * All the <em>different</em> results that are stored in this
      * node and in underlying ones (i.e. nodes that can be reached through paths
@@ -96,17 +96,17 @@ public class InstanceNode extends SuffixNode {
      * @return the number of results
      */
     protected int computeAndCacheCount() {
-        if (count_by_keys == -1) {
+        if (countByKeys == -1) {
             computeAndCacheCountRecursive();
         }
-        return count_by_keys;
+        return countByKeys;
     }
 
     private Map<Integer, List<InstanceLocation>> computeAndCacheCountRecursive() {
-        count_by_keys = 0;
-        count_by_indexes = 0;
+        countByKeys = 0;
+        countByIndexes = 0;
         //add all data_indexes to results
-        count_by_indexes += multimapAddAll(results, data);
+        countByIndexes += multimapAddAll(results, data);
 
         Map<Integer, Edge> edges = getEdges();
         for (Map.Entry<Integer, Edge> entry : edges.entrySet()) {
@@ -114,10 +114,10 @@ public class InstanceNode extends SuffixNode {
             InstanceNode destNode = (InstanceNode)e.getDest();
             Map<Integer, List<InstanceLocation>> dest_data_indexes = destNode.computeAndCacheCountRecursive();
 
-            count_by_indexes += multimapAddAll(results, dest_data_indexes);
+            countByIndexes += multimapAddAll(results, dest_data_indexes);
 
         }
-        count_by_keys = results.size();
+        countByKeys = results.size();
         return results;
     }
 
@@ -149,23 +149,23 @@ public class InstanceNode extends SuffixNode {
      * computeAndCacheCount first
      * wasn't updated
      */
-    public int getCount_by_keys() throws IllegalStateException {
-        if (-1 == count_by_keys) {
-            throw new IllegalStateException("getCount_by_keys() shouldn't be called without calling computeAndCacheCount() first");
+    public int getCountByKeys() throws IllegalStateException {
+        if (-1 == countByKeys) {
+            throw new IllegalStateException("getCountByKeys() shouldn't be called without calling computeAndCacheCount() first");
         }
 
-        return count_by_keys;
+        return countByKeys;
     }
 
-    public int getCount_by_indexes() throws IllegalStateException {
-        if (-1 == count_by_keys) {
-            throw new IllegalStateException("getCount_by_keys() shouldn't be called without calling computeAndCacheCount() first");
+    public int getCountByIndexes() throws IllegalStateException {
+        if (-1 == countByKeys) {
+            throw new IllegalStateException("getCountByKeys() shouldn't be called without calling computeAndCacheCount() first");
         }
 
-        return count_by_indexes;
+        return countByIndexes;
     }
     public Map<Integer, List<InstanceLocation>> getResults(){
-        if (-1 == count_by_keys) {
+        if (-1 == countByKeys) {
             throw new IllegalStateException("getResults() shouldn't be called without calling computeCount() first");
         }
 

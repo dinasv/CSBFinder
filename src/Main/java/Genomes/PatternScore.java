@@ -17,47 +17,47 @@ public class PatternScore {
     /**
      * Array used for memoization, as each patterns with the same length have the same basic q_val
      */
-    double[] q_vals;
+    double[] pValues;
     /**
      * Total number of input genomes
      */
-    int number_of_genomes;
-    int avg_genome_size;
+    int numberOfGenomes;
+    int avgGenomeSize;
 
     /**
      * for each cog, a set of genomes (bac_index) in which the cog appears
      */
-    public Map<String, Set<Integer>> cog_to_containing_genomes;
+    public Map<String, Set<Integer>> cogToContainingGenomes;
 
-    public Map<Integer, Map<String, Integer>> genome_to_cog_paralog_count;
+    public Map<Integer, Map<String, Integer>> genomeToCogParalogCount;
 
-    public PatternScore(int max_genome_size, int number_of_genomes, int dataset_length_sum,
-                        Map<String, Set<Integer>> cog_to_containing_genomes,
-                        Map<Integer, Map<String, Integer>> genome_to_cog_paralog_count){
+    public PatternScore(int max_genome_size, int numberOfGenomes, int dataset_length_sum,
+                        Map<String, Set<Integer>> cogToContainingGenomes,
+                        Map<Integer, Map<String, Integer>> genomeToCogParalogCount){
 
-        q_vals = new double[max_genome_size+1];
-        this.number_of_genomes = number_of_genomes;
-        this.cog_to_containing_genomes = cog_to_containing_genomes;
-        this.genome_to_cog_paralog_count = genome_to_cog_paralog_count;
+        pValues = new double[max_genome_size+1];
+        this.numberOfGenomes = numberOfGenomes;
+        this.cogToContainingGenomes = cogToContainingGenomes;
+        this.genomeToCogParalogCount = genomeToCogParalogCount;
 
-        avg_genome_size = 1;
-        if (number_of_genomes > 0 ) {
-            avg_genome_size = dataset_length_sum / number_of_genomes;
+        avgGenomeSize = 1;
+        if (numberOfGenomes > 0 ) {
+            avgGenomeSize = dataset_length_sum / numberOfGenomes;
         }
     }
 
     public double computePatternScore(String[] pattern_chars, int max_insertions, int pattern_occs_keys_size){
 
-        Set<Integer> intersection_of_genomes_with_pattern_chars = new HashSet<>(cog_to_containing_genomes.get(pattern_chars[0]));
+        Set<Integer> intersection_of_genomes_with_pattern_chars = new HashSet<>(cogToContainingGenomes.get(pattern_chars[0]));
         for (int i = 1; i < pattern_chars.length; i++) {
-            intersection_of_genomes_with_pattern_chars.retainAll(cog_to_containing_genomes.get(pattern_chars[i]));
+            intersection_of_genomes_with_pattern_chars.retainAll(cogToContainingGenomes.get(pattern_chars[i]));
         }
 
         int paralog_count_product_sum = 0;
         int paralog_count_product;
         for (int seq_key: intersection_of_genomes_with_pattern_chars) {
 
-            Map<String, Integer> curr_seq_paralog_count = genome_to_cog_paralog_count.get(seq_key);
+            Map<String, Integer> curr_seq_paralog_count = genomeToCogParalogCount.get(seq_key);
             paralog_count_product = 1;
             for (String cog : pattern_chars) {
                 int curr_cog_paralog_count = curr_seq_paralog_count.get(cog);
@@ -81,8 +81,8 @@ public class PatternScore {
      * @return ranking score
      */
     private double pval_cross_genome(int w, int k, int h, int g){
-        int G = number_of_genomes;
-        int n = avg_genome_size;
+        int G = numberOfGenomes;
+        int n = avgGenomeSize;
         double result = 0;
 
         double q = q_homologs(n, w, k, h);
@@ -152,14 +152,14 @@ public class PatternScore {
 
     private double q_insert(int n, int w, int k){
         double result = 0;
-        if (q_vals[w] != 0){
-            result = q_vals[w];
+        if (pValues[w] != 0){
+            result = pValues[w];
         }else {
             for (int i = 0; i < k + 1; i++) {
                 long numerator = (n - w - i + 1) * binomialCoefficient(w+i-2, w-2);
                 result += divide_by_product(numerator, n - w + 1, n);
             }
-            q_vals[w] = result;
+            pValues[w] = result;
         }
         return result;
     }

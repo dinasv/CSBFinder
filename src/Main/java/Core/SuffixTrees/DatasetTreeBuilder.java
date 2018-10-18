@@ -1,14 +1,8 @@
 package Core.SuffixTrees;
 
-import Core.SuffixTrees.GeneralizedSuffixTree;
-import Core.SuffixTrees.Trie;
 import Genomes.*;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.IOException;
 import java.util.List;
-import java.util.Map;
 
 /**
  */
@@ -29,7 +23,7 @@ public class DatasetTreeBuilder {
 
 
     /**
-     * Converts an array of strings to wordArray, using char_to_index
+     * Converts an array of strings to wordArray, using charToIndex
      * @param str contains the characters comprising this str
      * @return WordArray representing this str
      */
@@ -38,12 +32,12 @@ public class DatasetTreeBuilder {
         int i = 0;
         for(String ch: str){
             int char_index = -1;
-            if (gi.char_to_index.containsKey(ch)) {
-                char_index = gi.char_to_index.get(ch);
+            if (gi.charToIndex.containsKey(ch)) {
+                char_index = gi.charToIndex.get(ch);
             } else {
-                char_index = gi.index_to_char.size();
-                gi.index_to_char.add(ch);
-                gi.char_to_index.put(ch, char_index);
+                char_index = gi.indexToChar.size();
+                gi.indexToChar.add(ch);
+                gi.charToIndex.put(ch, char_index);
             }
 
             word[i] = char_index;

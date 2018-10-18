@@ -11,27 +11,27 @@ import java.util.*;
  */
 public class Family {
 
-    private String family_id;
+    private String familyId;
     //members of the family
     private List<Pattern> patterns;
     //contains the union of all characters of all family members
-    private HashSet<Integer> char_set;
+    private HashSet<Integer> charSet;
     /**
      * Score of the highest scoring member.
      * Updated after calling  {@link #sortPatternsAndSetScore() sortPatternsAndSetScore} method
      */
     private double score;
     private GenomesInfo gi;
-    private boolean non_directons;
+    private boolean nonDirectons;
 
-    public Family(String family_id, Pattern first_pattern, GenomesInfo gi, boolean non_directons){
+    public Family(String familyId, Pattern first_pattern, GenomesInfo gi, boolean nonDirectons){
         this.gi = gi;
         score = -1;
-        this.family_id = family_id;
+        this.familyId = familyId;
         patterns = new ArrayList<>();
         patterns.add(first_pattern);
-        char_set = new HashSet<>();
-        this.non_directons = non_directons;
+        charSet = new HashSet<>();
+        this.nonDirectons = nonDirectons;
         addCharsToCharsSet(first_pattern);
     }
 
@@ -39,25 +39,25 @@ public class Family {
         patterns = new ArrayList<>(family.getPatterns());
         score = family.score;
         gi = family.gi;
-        family_id = family.family_id;
+        familyId = family.familyId;
     }
 
     private void addCharsToCharsSet(Pattern pattern){
         addCharsToCharsSet(pattern.getPatternArr());
-        if (non_directons){
+        if (nonDirectons){
             addCharsToCharsSet(pattern.getReversePatternArr());
         }
     }
 
     private void addCharsToCharsSet(String[] pattern_arr){
         for (String cog: pattern_arr) {
-            int cog_index = gi.char_to_index.get(cog);
-            char_set.add(cog_index);
+            int cog_index = gi.charToIndex.get(cog);
+            charSet.add(cog_index);
         }
     }
 
     public HashSet<Integer> getGeneSet(){
-        return char_set;
+        return charSet;
     }
 
     public void addPattern(Pattern pattern){
@@ -66,7 +66,7 @@ public class Family {
     }
 
     public String getFamilyId(){
-        return family_id;
+        return familyId;
     }
 
     public double getScore(){

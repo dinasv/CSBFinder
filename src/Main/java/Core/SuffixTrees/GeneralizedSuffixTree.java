@@ -111,7 +111,7 @@ public class GeneralizedSuffixTree  implements Serializable{
             return new ResultInfo(Collections.EMPTY_LIST, 0);
         }
 
-        return new ResultInfo(tmpNode.getData(to), tmpNode.getCount_by_keys());
+        return new ResultInfo(tmpNode.getData(to), tmpNode.getCountByKeys());
     }*/
 
     /**
@@ -304,7 +304,7 @@ public class GeneralizedSuffixTree  implements Serializable{
                     //e.setLabel(e.getLabel().substring(remainder.length())); --ORIGINAL CODE--
 
                     WordArray e_label_substr = getSubstring(e_label, remainder.get_length(), e_label.get_length());
-                    //String label_str = e_label_substr.to_string(bitset_to_cog, index_to_char);
+                    //String label_str = e_label_substr.to_string(bitset_to_cog, indexToChar);
 
                     e.setLabel( e_label_substr );
                     newNode.addEdge(e_label_substr.get_index(0), e);

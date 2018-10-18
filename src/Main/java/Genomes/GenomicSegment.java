@@ -10,12 +10,12 @@ public abstract class GenomicSegment {
     private int id;
     protected List<Gene> genes;
     private int strand;
-    private int start_index;
+    private int startIndex;
 
     public GenomicSegment(){
         genes = new ArrayList<>();
         strand = 0;
-        start_index = 0;
+        startIndex = 0;
         id = -1;
     }
     public GenomicSegment(int id){
@@ -45,11 +45,11 @@ public abstract class GenomicSegment {
     }
 
     public int getStartIndex() {
-        return start_index;
+        return startIndex;
     }
 
     public void setStartIndex(int start_index) {
-        this.start_index = start_index;
+        this.startIndex = start_index;
     }
 
     public List<Gene> getGenes(){

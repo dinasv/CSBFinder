@@ -109,9 +109,9 @@ public class CSBSummaryPanel extends JPanel {
 
                         StringBuilder sb = new StringBuilder();
                         sb.append(" ");
-                        sb.append(String.join("/", cog.getFunctional_categories()));
+                        sb.append(String.join("/", cog.getFunctionalCategories()));
                         sb.append(" | ");
-                        sb.append(cog.getCog_desc());
+                        sb.append(cog.getCogDesc());
                         sb.append(" | ");
                         sb.append(cog.getGeneName());
 

@@ -8,19 +8,19 @@ import java.util.*;
  * Represents a node in the pattern tree
  */
 public class PatternNode {
-    private Map<Integer, PatternNode> target_nodes;
+    private Map<Integer, PatternNode> targetNodes;
     /**
      * Contains the key of the string concatenation from the root
      */
-    private int pattern_key;
+    private int patternKey;
 
-    private int copy_count;
+    private int copyCount;
 
     private TreeType type;
 
     private PatternNode suffix;
 
-    private int substring_length;
+    private int substringLength;
 
     /**
      * The concat of labels from root to this node
@@ -31,76 +31,76 @@ public class PatternNode {
     /**
      * Saves instances of the pattern that starts in the root and ends in this node
      */
-    private List<Instance> Instances;
+    private List<Instance> instances;
     /**
      * Saves all different keys of strings that the pattern has an instance in.
      * (union of getResult from all instance nodes)
      */
-    private Set InstanceKeys;
+    private Set instanceKeys;
     /**
      * Saves number of instances of the pattern (including multiple instances in the same input string)
      */
     private int instanceIndexCount;
 
-    private double p_val;
+    private double pVal;
 
-    private int exact_instance_count;
+    private int exactInstanceCount;
 
     public PatternNode(TreeType type){
-        target_nodes = new HashMap<Integer, PatternNode>();
+        targetNodes = new HashMap<Integer, PatternNode>();
         suffix = null;
 
-        pattern_key = -1;
-        copy_count = 0;
+        patternKey = -1;
+        copyCount = 0;
         this.type = type;
 
-        Instances = new ArrayList<Instance>();
-        InstanceKeys = new HashSet();
+        instances = new ArrayList<Instance>();
+        instanceKeys = new HashSet();
         instanceIndexCount = 0;
 
         substring = "";
-        substring_length = 0;
+        substringLength = 0;
 
-        p_val = 0;
-        exact_instance_count = 0;
+        pVal = 0;
+        exactInstanceCount = 0;
     }
 
     public PatternNode(PatternNode other){
         substring = other.getSubstring();
-        substring_length = other.getSubstring_length();
-        pattern_key = other.getPatternKey();
-        copy_count = other.getCopy_count()+1;
+        substringLength = other.getSubstringLength();
+        patternKey = other.getPatternKey();
+        copyCount = other.getCopyCount()+1;
         type = other.type;
         suffix = other.getSuffix();
 
-        Instances = new ArrayList<Instance>();
-        InstanceKeys = new HashSet();
+        instances = new ArrayList<Instance>();
+        instanceKeys = new HashSet();
 
-        p_val = 0;
-        exact_instance_count = 0;
+        pVal = 0;
+        exactInstanceCount = 0;
 
-        Map<Integer, PatternNode> other_target_nodes = other.getTarget_nodes();
-        target_nodes = new HashMap<Integer, PatternNode>(other_target_nodes.size());
-        target_nodes.putAll(other_target_nodes);
+        Map<Integer, PatternNode> other_target_nodes = other.getTargetNodes();
+        targetNodes = new HashMap<Integer, PatternNode>(other_target_nodes.size());
+        targetNodes.putAll(other_target_nodes);
     }
 
-    public Map<Integer, PatternNode> getTarget_nodes(){
-        return target_nodes;
+    public Map<Integer, PatternNode> getTargetNodes(){
+        return targetNodes;
     }
-    public int getSubstring_length() {
-        return substring_length;
+    public int getSubstringLength() {
+        return substringLength;
     }
 
-    public void setSubstring_length(int substring_length) {
-        this.substring_length = substring_length;
+    public void setSubstringLength(int substringLength) {
+        this.substringLength = substringLength;
     }
 
     public void addTargetNode(int ch, PatternNode node){
-        target_nodes.put(ch, node);
+        targetNodes.put(ch, node);
     }
 
     public PatternNode getTargetNode(int ch){
-        return target_nodes.get(ch);
+        return targetNodes.get(ch);
     }
     public PatternNode getSuffix() {
         return suffix;
@@ -119,20 +119,20 @@ public class PatternNode {
     }
 
     public int getPatternKey(){
-        return pattern_key;
+        return patternKey;
     }
 
     public void setKey(int key){
-        pattern_key = key;
+        patternKey = key;
     }
 
-    public int getCopy_count(){
-        return copy_count;
+    public int getCopyCount(){
+        return copyCount;
     }
 
     public void addInstance(Instance instance, int max_insertion){
 
-        Instances.add(instance);
+        instances.add(instance);
         InstanceNode instance_node;
         if (instance.getEdge() == null) {
             instance_node = instance.getNodeInstance();
@@ -141,23 +141,23 @@ public class PatternNode {
             instance_node = (InstanceNode)instance.getEdge().getDest();
             addOccKeys(instance_node.getResults().keySet());
         }
-        incrementInstanceCount(instance_node.getCount_by_indexes());
+        incrementInstanceCount(instance_node.getCountByIndexes());
     }
 
     public List<Instance> getInstances(){
-        return Instances;
+        return instances;
     }
 
     public void addOccKeys(Set<Integer> keys){
-        InstanceKeys.addAll(keys);
+        instanceKeys.addAll(keys);
     }
 
     public int getInstanceKeysSize(){
-        return InstanceKeys.size();
+        return instanceKeys.size();
     }
 
     public Set<Integer> getInstanceKeys(){
-        return InstanceKeys;
+        return instanceKeys;
     }
 
     public int getInstanceIndexCount(){
@@ -175,19 +175,19 @@ public class PatternNode {
         return substring;
     }
 
-    public double getP_val() {
-        return p_val;
+    public double getpVal() {
+        return pVal;
     }
 
-    public void setP_val(double p_val) {
-        this.p_val = p_val;
+    public void setpVal(double pVal) {
+        this.pVal = pVal;
     }
 
-    public int getExact_instance_count() {
-        return exact_instance_count;
+    public int getExactInstanceCount() {
+        return exactInstanceCount;
     }
 
-    public void setExact_instance_count(int exact_occs_conut) {
-        this.exact_instance_count = exact_occs_conut;
+    public void setExactInstanceCount(int exact_occs_conut) {
+        this.exactInstanceCount = exact_occs_conut;
     }
 }

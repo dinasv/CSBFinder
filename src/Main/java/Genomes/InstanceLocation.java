@@ -4,23 +4,23 @@ package Genomes;
  *
  */
 public class InstanceLocation{
-    private int replicon_id;
+    private int repliconId;
     private int strand;
-    private int start_index;
-    private int end_index;
+    private int startIndex;
+    private int endIndex;
     private String repliconName;
 
 
-    public InstanceLocation(int replicon_id, int start_index, int strand){
-        this.replicon_id = replicon_id;
+    public InstanceLocation(int repliconId, int startIndex, int strand){
+        this.repliconId = repliconId;
         this.strand = strand;
-        this.start_index = start_index;
-        end_index = -1;
+        this.startIndex = startIndex;
+        endIndex = -1;
         repliconName = "";
     }
 
     public int getRepliconId() {
-        return replicon_id;
+        return repliconId;
     }
 
     public int getStrand() {
@@ -28,32 +28,32 @@ public class InstanceLocation{
     }
 
     public int getStartIndex() {
-        return start_index;
+        return startIndex;
     }
 
     public int getActualStartIndex() {
         if (strand == -1){
-            return end_index;
+            return endIndex;
         }
-        return start_index;
+        return startIndex;
     }
 
 
     public int getEndIndex() {
-        return end_index;
+        return endIndex;
     }
 
     public int getActualEndIndex() {
         if (strand == -1){
-            return start_index;
+            return startIndex;
         }
-        return end_index;
+        return endIndex;
     }
 
     public void setEndIndex(int instance_length) {
         instance_length -= 1;
         instance_length *= strand;
-        end_index = start_index + instance_length;
+        endIndex = startIndex + instance_length;
     }
 
     public String getRepliconName() {

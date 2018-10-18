@@ -5,8 +5,8 @@ import java.util.*;
 /**
  */
 public class GenomesInfo {
-    public List<String> index_to_char;
-    public Map<String, Integer> char_to_index;
+    public List<String> indexToChar;
+    public Map<String, Integer> charToIndex;
 
     public static final int WC_CHAR_INDEX = 0;
     public static final String WC_CHAR = "*";
@@ -18,38 +18,38 @@ public class GenomesInfo {
     /**
      * Accession number to tax key
      */
-    private Map<String, Integer> genome_name_to_id;
-    private Map<Integer, String> genome_id_to_name;
-    private Map<Integer, String> replicon_id_to_name;
+    private Map<String, Integer> genomeNameToId;
+    private Map<Integer, String> genomeIdToName;
+    private Map<Integer, String> repliconIdToName;
 
-    private int dataset_length_sum ;
+    private int datasetLengthSum;
 
     /**
      * for each cog, a set of genomes (indexes) in which the cog appears
      */
-    public Map<String, Set<Integer>> cog_to_containing_genomes;
+    public Map<String, Set<Integer>> cogToContainingGenomes;
 
-    public Map<Integer, Map<String, Integer>> genome_to_cog_paralog_count;
+    public Map<Integer, Map<String, Integer>> genomeToCogParalogCount;
 
 
     private Map<String, Genome> genomesMap;
 
-    private int max_genome_size;
+    private int maxGenomeSize;
 
     public GenomesInfo(){
         genomesMap = new HashMap<>();
 
-        max_genome_size = 0;
+        maxGenomeSize = 0;
 
-        genome_name_to_id = new HashMap<>();
-        genome_id_to_name = new HashMap<>();
-        replicon_id_to_name = new HashMap<>();
+        genomeNameToId = new HashMap<>();
+        genomeIdToName = new HashMap<>();
+        repliconIdToName = new HashMap<>();
 
-        dataset_length_sum = 0;
+        datasetLengthSum = 0;
 
-        cog_to_containing_genomes = new HashMap<>();
+        cogToContainingGenomes = new HashMap<>();
 
-        genome_to_cog_paralog_count = new HashMap<>();
+        genomeToCogParalogCount = new HashMap<>();
 
         initAlphabet();
     }
@@ -61,7 +61,7 @@ public class GenomesInfo {
     }
 
     public int getNumberOfReplicons(){
-        return replicon_id_to_name.size();
+        return repliconIdToName.size();
     }
 
 
@@ -70,8 +70,8 @@ public class GenomesInfo {
         if (genome == null){
             int genome_id = genomesMap.size();
             genome = new Genome(genome_name, genome_id);
-            genome_name_to_id.put(genome_name, genome_id);
-            genome_id_to_name.put(genome_id, genome_name);
+            genomeNameToId.put(genome_name, genome_id);
+            genomeIdToName.put(genome_id, genome_name);
             genomesMap.put(genome_name, genome);
         }
 
@@ -87,57 +87,57 @@ public class GenomesInfo {
     }
 
     public String getGenomeName(int id){
-        return genome_id_to_name.get(id);
+        return genomeIdToName.get(id);
     }
 
     public int getGenomeId(String name){
-        return genome_name_to_id.get(name);
+        return genomeNameToId.get(name);
     }
 
     public String getRepliconName(int id){
-        return replicon_id_to_name.get(id);
+        return repliconIdToName.get(id);
     }
 
     public void addReplicon(Replicon replicon, Genome genome){
         genome.addReplicon(replicon);
-        replicon_id_to_name.put(replicon.getId(), replicon.getName());
+        repliconIdToName.put(replicon.getId(), replicon.getName());
 
-        max_genome_size = genome.getGenomeSize() > max_genome_size ? genome.getGenomeSize() : max_genome_size;
-        dataset_length_sum += replicon.size();
+        maxGenomeSize = genome.getGenomeSize() > maxGenomeSize ? genome.getGenomeSize() : maxGenomeSize;
+        datasetLengthSum += replicon.size();
     }
 
     private void initAlphabet(){
-        index_to_char = new ArrayList<String>();
-        char_to_index = new HashMap<String, Integer>();
+        indexToChar = new ArrayList<String>();
+        charToIndex = new HashMap<String, Integer>();
 
         //wild card
-        char_to_index.put(WC_CHAR, WC_CHAR_INDEX);
-        index_to_char.add(WC_CHAR);
+        charToIndex.put(WC_CHAR, WC_CHAR_INDEX);
+        indexToChar.add(WC_CHAR);
 
         //gap
-        char_to_index.put(GAP_CHAR, GAP_CHAR_INDEX);
-        index_to_char.add(GAP_CHAR);
+        charToIndex.put(GAP_CHAR, GAP_CHAR_INDEX);
+        indexToChar.add(GAP_CHAR);
 
         //unkown cog
-        char_to_index.put(UNK_CHAR, UNK_CHAR_INDEX);
-        index_to_char.add(UNK_CHAR);
+        charToIndex.put(UNK_CHAR, UNK_CHAR_INDEX);
+        indexToChar.add(UNK_CHAR);
         //if the sequence is not segmented to directons
-        char_to_index.put("X+", UNK_CHAR_INDEX);
-        char_to_index.put("X-", UNK_CHAR_INDEX);
+        charToIndex.put("X+", UNK_CHAR_INDEX);
+        charToIndex.put("X-", UNK_CHAR_INDEX);
 
     }
 
     public int getMaxGenomeSize(){
-        return max_genome_size;
+        return maxGenomeSize;
     }
 
     public void countParalogsInSeqs(String[] directon, int curr_seq_index){
         for (String gene : directon) {
 
-            Map<String, Integer> curr_genome_paralogs_count = genome_to_cog_paralog_count.get(curr_seq_index);
+            Map<String, Integer> curr_genome_paralogs_count = genomeToCogParalogCount.get(curr_seq_index);
             if (curr_genome_paralogs_count == null) {
                 curr_genome_paralogs_count = new HashMap<>();
-                genome_to_cog_paralog_count.put(curr_seq_index, curr_genome_paralogs_count);
+                genomeToCogParalogCount.put(curr_seq_index, curr_genome_paralogs_count);
             }
 
             int curr_cog_paralog_count = 1;
@@ -146,20 +146,20 @@ public class GenomesInfo {
             }
             curr_genome_paralogs_count.put(gene, curr_cog_paralog_count);
 
-            Set<Integer> genomes = cog_to_containing_genomes.get(gene);
+            Set<Integer> genomes = cogToContainingGenomes.get(gene);
             if (genomes == null) {
                 genomes = new HashSet<>();
-                cog_to_containing_genomes.put(gene, genomes);
+                cogToContainingGenomes.put(gene, genomes);
             }
             genomes.add(curr_seq_index);
         }
     }
 
     public int getDatasetLengthSum() {
-        return dataset_length_sum;
+        return datasetLengthSum;
     }
 
     public void setDatasetLengthSum(int dataset_length_sum) {
-        this.dataset_length_sum = dataset_length_sum;
+        this.datasetLengthSum = dataset_length_sum;
     }
 }

@@ -42,7 +42,7 @@ public class Parameters {
     }
 
     @Parameter(names={"-in"}, description = "Input file name", required = true, order = 0)
-    public String input_file_name = "";
+    public String inputFileName = "";
 
     @Parameter(names={"-q"}, description = "Instance quorum with insertions", required = true,
             validateWith = PositiveInteger.class, order = 1)
@@ -54,47 +54,47 @@ public class Parameters {
 
     @Parameter(names={"-ins"}, description = "Maximal number of insertions allowed"
             ,validateWith = Parameters.PositiveInteger.class, order = 2)
-    public int max_insertion = 0;
+    public int maxInsertion = 0;
 
     @Parameter(names={"-lmin"}, description = "Minimal length of a CSB"
             , validateWith = Parameters.PositiveInteger2.class, order = 4)
-    public int min_pattern_length = 2;
+    public int minPatternLength = 2;
 
     @Parameter(names={"-lmax"}, description = "Maximal length of a CSB"
             , validateWith = Parameters.PositiveInteger2.class, order = 5)
-    public int max_pattern_length = Integer.MAX_VALUE;
+    public int maxPatternLength = Integer.MAX_VALUE;
 
     @Parameter(names={"-mult-count"}, description = "Count multiple instances per input string, not just one",
             order = 9)
-    public boolean mult_count = false;
+    public boolean multCount = false;
 
     @Parameter(names={"--datasetname", "-ds"}, description = "Dataset name", order = 6)
-    public String dataset_name = "dataset1";
+    public String datasetName = "dataset1";
 
     @Parameter(names={"--patterns", "-p"}, description = "Input patterns file name", order = 7)
-    public String input_patterns_file_name = null;
+    public String inputPatternsFileName = null;
 
     @Parameter(names={"-cog-info"}, description = "Gene families info file name", order = 8)
-    public String cog_info_file_name = null;
+    public String cogInfoFileName = null;
 
     @Parameter(names={"--threshold", "-t"}, description = "Threshold for family clustering", order = 10)
     public double threshold = 0.8;
 
     @Parameter(names={"-out"}, description = "Output file type", order = 11)
-    public OutputType output_file_type = OutputType.XLSX;
+    public OutputType outputFileType = OutputType.XLSX;
 
     @Parameter(names={"-clust-by"}, description = "Cluster CSBs to families by: 'score' or 'length'", order = 12)
-    public ClusterBy cluster_by = ClusterBy.SCORE;
+    public ClusterBy clusterBy = ClusterBy.SCORE;
 
     @Parameter(names={"-non-directons"}, description = "If true, segment input sequences directons", order = 13)
-    public boolean non_directons = false;
+    public boolean nonDirectons = false;
 
     @Parameter(names={"--mismatch", "-err"}, description = "Maximal number of mismatches allowed", hidden = true)
-    public int max_error = 0;
+    public int maxError = 0;
     @Parameter(names={"--deletion", "-del"}, description = "Maximal number of deletions allowed", hidden = true)
-    public int max_deletion = 0;
+    public int maxDeletion = 0;
     @Parameter(names={"--wildcard", "-wc"}, description = "Maximal number of wildcards allowed", hidden = true)
-    public int max_wildcards = 0;
+    public int maxWildcards = 0;
 
     @Parameter(names = "-debug", description = "Debug mode", hidden = true)
     public boolean debug = false;

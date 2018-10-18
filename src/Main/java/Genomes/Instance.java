@@ -9,11 +9,11 @@ import java.util.Map;
 
 /**
  * The motif instance starts from the root and ends in tha concat of lables to node instanceNode + the label on the edge
- * that starts with ch and ends in edge_index
+ * that starts with ch and ends in edgeIndex
  */
 public class Instance implements Comparable<Instance>{
     /**
-     * The motif instance starts from the root and ends in node instanceNode + edge label until edge_index
+     * The motif instance starts from the root and ends in node instanceNode + edge label until edgeIndex
      */
     private InstanceNode instanceNode;
     /**
@@ -21,16 +21,16 @@ public class Instance implements Comparable<Instance>{
      */
     private Edge edge;
     /**
-     * The instance ends at edge_index (concat of strings from root to node instanceNode + label[0:edge_index], edge_index
-     * included) if edge_index = -1 than it ends in the node instanceNode
+     * The instance ends at edgeIndex (concat of strings from root to node instanceNode + label[0:edgeIndex], edgeIndex
+     * included) if edgeIndex = -1 than it ends in the node instanceNode
      */
-    private int edge_index;
+    private int edgeIndex;
     //The error between motif and the Instance
     private int error;
     //number of deletions in the Instance (gap chars)
     private int deletions;
 
-    private List<Integer> insertion_indexes;
+    private List<Integer> insertionIndexes;
 
     private String substring;
     private int length;
@@ -44,23 +44,23 @@ public class Instance implements Comparable<Instance>{
      *
      * This must be calculated explicitly using computeAndCacheCount
      */
-    private Map<Integer, List<InstanceLocation>> instance_locations;
+    private Map<Integer, List<InstanceLocation>> instanceLocations;
 
 
-    public Instance(InstanceNode instanceNode, Edge e, int edge_index, int error, int deletions, List<Integer> insertion_indexes, String substring, int length){
+    public Instance(InstanceNode instanceNode, Edge e, int edgeIndex, int error, int deletions, List<Integer> insertionIndexes, String substring, int length){
         this.instanceNode = instanceNode;
         this.edge = e;
-        this.edge_index = edge_index;
+        this.edgeIndex = edgeIndex;
         this.error = error;
         this.deletions = deletions;
         this.substring = substring;
         this.length = length;
-        this.insertion_indexes = new ArrayList<>();
-        this.insertion_indexes.addAll(insertion_indexes);
+        this.insertionIndexes = new ArrayList<>();
+        this.insertionIndexes.addAll(insertionIndexes);
     }
 
-    public Instance(InstanceNode instanceNode, Edge e, int edge_index, int error, int deletions){
-        this(instanceNode, e, edge_index, error, deletions, new ArrayList<>(), "", 0);
+    public Instance(InstanceNode instanceNode, Edge e, int edgeIndex, int error, int deletions){
+        this(instanceNode, e, edgeIndex, error, deletions, new ArrayList<>(), "", 0);
     }
 
     public Instance(int deletions, String substring){
@@ -85,7 +85,7 @@ public class Instance implements Comparable<Instance>{
     }
 
     public int getEdgeIndex(){
-        return edge_index;
+        return edgeIndex;
     }
 
     public void setSubstring(String substring){
@@ -97,11 +97,11 @@ public class Instance implements Comparable<Instance>{
     }
 
     public void addInsertionIndex(int index){
-        insertion_indexes.add(index);
+        insertionIndexes.add(index);
     }
 
     public void addAllInsertionIndexes(List<Integer> indexes){
-        insertion_indexes.addAll(indexes);
+        insertionIndexes.addAll(indexes);
     }
 
     @Override
@@ -116,18 +116,18 @@ public class Instance implements Comparable<Instance>{
             instance_node_this = (InstanceNode) edge.getDest();
         }
 
-        return instance_node_other.getCount_by_keys() - instance_node_this.getCount_by_keys();
+        return instance_node_other.getCountByKeys() - instance_node_this.getCountByKeys();
     }
     @Override
     public boolean equals(Object other) {
         if (other == null) return false;
         if (other == this) return true;
         if (!(other instanceof Instance)) return false;
-        return ((Instance) other).getNodeInstance().getCount_by_keys() == instanceNode.getCount_by_keys();
+        return ((Instance) other).getNodeInstance().getCountByKeys() == instanceNode.getCountByKeys();
     }
 
     public int getInsertions() {
-        return insertion_indexes.size();
+        return insertionIndexes.size();
     }
 
     public int getLength() {
@@ -139,7 +139,7 @@ public class Instance implements Comparable<Instance>{
     }
 
     public List<Integer> getInsertionIndexes(){
-        return insertion_indexes;
+        return insertionIndexes;
     }
 
     public Map<Integer, List<InstanceLocation>> getInstanceLocations() {

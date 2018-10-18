@@ -17,7 +17,7 @@ public class Controller {
 
     private Parameters params;
     private MyLogger logger;
-    private String output_path;
+    private String outputPath;
     private Writer writer;
     private String INPUT_PATH = "input/";
 
@@ -40,7 +40,7 @@ public class Controller {
             printUsageAndExit(jcommander, 1);
         }
 
-        output_path = createOutputPath();
+        outputPath = createOutputPath();
         logger = new MyLogger("output/", params.debug);
 
 
@@ -55,14 +55,14 @@ public class Controller {
 
 
     private Writer createWriter(boolean cog_info_exists){
-        String parameters = "_ins" + params.max_insertion + "_q" + params.quorum2;
-        String catalog_file_name = "Catalog_" + params.dataset_name + parameters;
+        String parameters = "_ins" + params.maxInsertion + "_q" + params.quorum2;
+        String catalog_file_name = "Catalog_" + params.datasetName + parameters;
         String instances_file_name = catalog_file_name + "_instances";
         boolean include_families = true;
 
-        Writer writer = new Writer(params.max_error, params.max_deletion, params.max_insertion, params.debug, catalog_file_name,
+        Writer writer = new Writer(params.maxError, params.maxDeletion, params.maxInsertion, params.debug, catalog_file_name,
                 instances_file_name,
-                include_families, params.output_file_type, cog_info_exists, params.non_directons, output_path);
+                include_families, params.outputFileType, cog_info_exists, params.nonDirectons, outputPath);
 
         return writer;
     }
@@ -100,12 +100,12 @@ public class Controller {
      */
     private List<Pattern> readPatternsFromFile() {
         List<Pattern> patterns = null;
-        if (params.input_patterns_file_name != null) {
+        if (params.inputPatternsFileName != null) {
             //these arguments are not valid when input patterns are give
-            params.min_pattern_length = 2;
-            params.max_pattern_length = Integer.MAX_VALUE;
+            params.minPatternLength = 2;
+            params.maxPatternLength = Integer.MAX_VALUE;
 
-            String path = INPUT_PATH + params.input_patterns_file_name;
+            String path = INPUT_PATH + params.inputPatternsFileName;
             patterns = Readers.readPatternsFromFile(path);
         }
         return patterns;
@@ -127,15 +127,15 @@ public class Controller {
 
         //read genomes
         GenomesInfo gi = new GenomesInfo();
-        String genomes_file_path = INPUT_PATH + params.input_file_name;
+        String genomes_file_path = INPUT_PATH + params.inputFileName;
         int number_of_genomes = Readers.readGenomes(genomes_file_path, gi);
 
 
         //cog info
         Map<String, COG> cog_info = null;
-        boolean cog_info_exists = (params.cog_info_file_name != null);
+        boolean cog_info_exists = (params.cogInfoFileName != null);
         if (cog_info_exists) {
-            cog_info = Readers.read_cog_info_table(INPUT_PATH + params.cog_info_file_name);
+            cog_info = Readers.read_cog_info_table(INPUT_PATH + params.cogInfoFileName);
         }
 
         CogInfo cogInfo = new CogInfo();

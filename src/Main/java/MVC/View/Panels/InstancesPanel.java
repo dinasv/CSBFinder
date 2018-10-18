@@ -162,15 +162,15 @@ public class InstancesPanel extends JPanel {
 
             Color color;
 
-            if (colorsUsed.containsKey(gene.getCog_id())){
-                color = colorsUsed.get(gene.getCog_id());
+            if (colorsUsed.containsKey(gene.getCogId())){
+                color = colorsUsed.get(gene.getCogId());
             }else {
                 color = getRandomColor();
             }
             GeneShape geneShape = new GeneShape(x, y, color, geneShapeDim, gene);
 
             geneShapesList.add(geneShape);
-            colorsUsed.put(gene.getCog_id(), color);
+            colorsUsed.put(gene.getCogId(), color);
         }
         return geneShapesList;
     }

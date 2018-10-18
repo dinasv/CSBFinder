@@ -25,7 +25,7 @@ public class SuffixNode{
      */
     private String substring;
 
-    private int substring_length;
+    private int substringLength;
 
     public void addEdge(int ch, Edge e) {
         edges.put(ch, e);
@@ -44,8 +44,8 @@ public class SuffixNode{
         return substring;
     }
 
-    public int getSubstring_length() {
-        return substring_length;
+    public int getSubstringLength() {
+        return substringLength;
     }
 
     public SuffixNode(){
@@ -54,7 +54,7 @@ public class SuffixNode{
 
         edges = new HashMap<Integer, Edge>();
         substring = "";
-        substring_length = 0;
+        substringLength = 0;
     }
     /**
      * Creates a copy of thie node, deep copies edges
@@ -63,7 +63,7 @@ public class SuffixNode{
     public SuffixNode(SuffixNode other) {
         suffix = other.getSuffix();
         substring = other.getSubstring();
-        substring_length = other.getSubstring_length();
+        substringLength = other.getSubstringLength();
 
         Map<Integer, Edge> other_edges = other.getEdges();
         edges = new HashMap<Integer, Edge>(other_edges.size());

@@ -5,16 +5,16 @@ package Genomes;
  */
 public class Gene {
 
-    private String cog_id;
+    private String cogId;
     private String strand; //+ or -
 
-    public Gene(String cog_id, String strand){
-        this.cog_id = cog_id;
+    public Gene(String cogId, String strand){
+        this.cogId = cogId;
         this.strand = strand;
     }
 
-    public String getCog_id() {
-        return cog_id;
+    public String getCogId() {
+        return cogId;
     }
 
     public String getStrand() {
@@ -22,6 +22,6 @@ public class Gene {
     }
 
     public String toString(){
-        return cog_id+strand;
+        return cogId +strand;
     }
 }
