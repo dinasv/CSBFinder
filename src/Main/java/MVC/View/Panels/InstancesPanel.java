@@ -1,5 +1,6 @@
 package MVC.View.Panels;
 
+import Core.Genomes.Strand;
 import MVC.Common.InstanceInfo;
 import MVC.View.Shapes.*;
 import MVC.View.Shapes.Label;
@@ -59,7 +60,7 @@ public class InstancesPanel extends JPanel {
 
         List<Gene> patternGenesInner = new ArrayList<>();
         for (String cog: pattenCOGs) {
-            patternGenesInner.add(new Gene(cog, "+"));
+            patternGenesInner.add(new Gene(cog, Strand.FORWARD));
         }
 
         List<ShapesInstance> shapesInstanceInnerList = new ArrayList<>();

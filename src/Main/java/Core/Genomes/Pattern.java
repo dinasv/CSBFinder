@@ -94,13 +94,13 @@ public class Pattern {
         this.score = score;
     }
 
-    public void calculateMainFunctionalCategory(CogInfo cogInfo, boolean non_directons){
+    public void calculateMainFunctionalCategory(CogInfo cogInfo, boolean nonDirectons){
         if (mainFunctionalCategory.length() ==0 && cogInfo.cogInfoExists()) {
 
             Map<String, Integer> functional_letter_count = new HashMap<>();
             Map<String, String> functional_letter_to_desc = new HashMap<>();
             for (String cog_id : patternArr) {
-                if (non_directons){
+                if (nonDirectons){
                     cog_id = cog_id.substring(0, cog_id.length()-1);
                 }
                 COG cog = cogInfo.getCog(cog_id);

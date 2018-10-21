@@ -6,9 +6,9 @@ package Core.Genomes;
 public class Gene {
 
     private String cogId;
-    private String strand; //+ or -
+    private Strand strand; //+ or -
 
-    public Gene(String cogId, String strand){
+    public Gene(String cogId, Strand strand){
         this.cogId = cogId;
         this.strand = strand;
     }
@@ -17,7 +17,7 @@ public class Gene {
         return cogId;
     }
 
-    public String getStrand() {
+    public Strand getStrand() {
         return strand;
     }
 

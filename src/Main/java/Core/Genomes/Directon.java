@@ -25,10 +25,10 @@ public class Directon extends GenomicSegment {
 
     public void setStrand() {
         if (genes.size() > 0 ){
-            int strand = genes.get(0).getStrand().equals("-") ? -1 : 1;
+            Strand strand = genes.get(0).getStrand();
 
             super.setStrand(strand);
-            if (strand == -1) {
+            if (strand == Strand.REVERSE) {
                 Collections.reverse(genes);
                 setStartIndex(getStartIndex() + size() - 1);
             }

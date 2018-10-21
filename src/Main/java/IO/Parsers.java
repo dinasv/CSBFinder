@@ -1,15 +1,13 @@
 package IO;
 
 import Core.Genomes.*;
+import org.apache.xmlbeans.impl.piccolo.io.FileFormatException;
 
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 
 public class Parsers {
@@ -55,90 +53,165 @@ public class Parsers {
         return patterns;
     }
 
+
+
     /**
-     * Parse line containing a gene and its strand separated by TAB
-     * A strand must by + or -
+     * Parse {@code rawLine} containing a gene and its strand separated by TAB, and create {@link Gene}.
+     * A strand must be "+" or "-"
      *
      * Format: [gene id][TAB][strand]
      *
      * Valid examples:
      * COG1234[TAB]+
      * abc[TAB]-
-     * @param line
+     * @param rawLine
+     * @param lineNumber of {@code rawLine} in {@code filePath}
+     * @param filePath
+     */
+    private static Gene parseGeneLine(String rawLine, int lineNumber, String filePath) {
+
+        Objects.requireNonNull(rawLine, "rawLine is null");
+        Objects.requireNonNull(filePath,"filePath is null");
+
+        String[] splitLine = rawLine.trim().split("\t");
+        if (splitLine.length < 2){
+            throw new IllegalArgumentException(errorMessage("[gene id][TAB][strand]", rawLine,lineNumber, filePath));
+        }
+
+        String geneId = splitLine[0];
+        String rawStrand = splitLine[1];
+
+        Strand strand = determineStrand(rawStrand);
+        if (strand == Strand.INVALID){
+            throw new IllegalArgumentException(errorMessage("strand to be + or -",
+                    rawStrand, lineNumber, filePath));
+        }
+
+        return new Gene(geneId, strand);
+    }
+
+    /**
+     * Parse rawTitle containing a genome name and a replicon name
+     * replicon name must be unique
+     *
+     * Format: [genome name]|[replicon name]
+     *
+     * Valid examples:
+     * Acaryochloris_marina_MBIC11017_uid58167|NC_009927
+     *
+     * @param rawTitle
      * @param replicon
      */
-    private static void parseGeneLine(String line, Replicon replicon) {
-        String[] split_line = line.trim().split("\t");
-        if (split_line.length > 1) {
-            String gene_family = split_line[0];
-            String strand = split_line[1];
-            Gene gene = new Gene(gene_family, strand);
-            replicon.add(gene);
+    private static String[] parseGenomeTitle(String rawTitle, int lineNumber, String filePath) {
+
+        Objects.requireNonNull(rawTitle, "rawTitle is null");
+        Objects.requireNonNull(filePath,"filePath is null");
+
+        String rawTitleSuffix = rawTitle.substring(1); //remove ">"
+        String[] title = rawTitleSuffix.trim().split("\\|");
+        if (title.length < 2){
+            throw new IllegalArgumentException(errorMessage(">[Genome name][TAB][Replicon id]",
+                    rawTitle, lineNumber, filePath));
         }
+
+        return title;
+    }
+
+    private static Strand determineStrand(String rawStrand){
+
+        Strand strand;
+
+        switch (rawStrand){
+            case "+":
+                strand = Strand.FORWARD;
+                break;
+            case "-":
+                strand = Strand.REVERSE;
+                break;
+            default:
+                strand = Strand.INVALID;
+                break;
+        }
+
+        return strand;
+    }
+
+    private static String errorMessage(String expected, String recieved, int lineNumber, String path){
+        return String.format("Expected %s, got %s in file %s line %d", expected, recieved, path, lineNumber);
+    }
+
+    private static Genome getNewOrExistingGenome(GenomesInfo genomesInfo, String currGenomeName){
+        Genome genome;
+        if (genomesInfo.genomeExists(currGenomeName)) {
+            genome = genomesInfo.getGenome(currGenomeName);
+        }else{
+            genome = new Genome(currGenomeName, genomesInfo.getNumberOfGenomes());
+        }
+
+        return genome;
     }
 
     /**
      * @param input_file_path path to input file with input sequences
      * @return number of input sequences
      */
-    public static int parseGenomesFile(String input_file_path, GenomesInfo genomesInfo) {
+    public static int parseGenomesFile(String filePath, GenomesInfo genomesInfo) {
 
-        if (genomesInfo == null || input_file_path == null){
+        if (genomesInfo == null || filePath == null){
             throw new IllegalArgumentException();
         }
 
-        String file_name = input_file_path;
-        int lineCounter = 0;
+        int lineNumber = 0;
 
-        try (BufferedReader br = new BufferedReader(new FileReader(file_name))){
+        try (BufferedReader br = new BufferedReader(new FileReader(filePath))){
 
             String rawLine = br.readLine();
 
-            String replicon_name;
-            String curr_genome_name = "";
+            String repliconName;
+            String currGenomeName = "";
 
-            Genome genome;
-            Replicon replicon = new Replicon(1, -1, "");
+            Genome genome = new Genome();
+            Replicon replicon = new Replicon(Strand.FORWARD, -1, "");
 
             while (rawLine != null) {
-                lineCounter++;
+                lineNumber++;
 
                 if (rawLine.startsWith(">")) {
 
                     if (replicon.size() > 0) {
-                        genome = genomesInfo.addGenome(curr_genome_name);
-                        genomesInfo.addReplicon(replicon, genome);
+
+                        genome.addReplicon(replicon);
+
+                        genomesInfo.addGenome(genome);
+                        genomesInfo.addReplicon(replicon);
+
                     }
 
-                    //get genome and replicon name
-                    rawLine = rawLine.substring(1); //remove ">"
-                    //e.g. Acaryochloris_marina_MBIC11017_uid58167|NC_009927
-                    String[] title = rawLine.trim().split("\\|");
+                    String[] title = parseGenomeTitle(rawLine, lineNumber, filePath);
 
-                    if (title.length > 0) {
-                        curr_genome_name = title[0];
+                    currGenomeName = title[0];
+                    repliconName = title[1];
 
-                        replicon_name = "";
-                        if (title.length > 1) {
-                            replicon_name = title[1];
-                        }
+                    genome = getNewOrExistingGenome(genomesInfo, currGenomeName);
+                    replicon = new Replicon(Strand.FORWARD, genomesInfo.getNumberOfReplicons(), repliconName);
 
-                        replicon = new Replicon(1, genomesInfo.getNumberOfReplicons(), replicon_name);
-                    }
                 } else {
-                    parseGeneLine(rawLine, replicon);
+                    Gene gene = parseGeneLine(rawLine, lineNumber, filePath);
+                    replicon.add(gene);
                 }
 
                 rawLine = br.readLine();
             }
 
-            genome = genomesInfo.addGenome(curr_genome_name);
-            genomesInfo.addReplicon(replicon, genome);
+            genome.addReplicon(replicon);
+
+            genomesInfo.addGenome(genome);
+            genomesInfo.addReplicon(replicon);
 
         } catch (FileNotFoundException e) {
-            System.err.println("File " + file_name + " was not found.");
+            System.err.println("File " + filePath + " was not found.");
         } catch (IOException e) {
-            System.err.println("An exception occurred while reading " + file_name);
+            System.err.println("An exception occurred while reading " + filePath);
             return -1;
         }
 

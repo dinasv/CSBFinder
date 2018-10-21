@@ -9,12 +9,12 @@ public abstract class GenomicSegment {
 
     private int id;
     protected List<Gene> genes;
-    private int strand;
+    private Strand strand;
     private int startIndex;
 
     public GenomicSegment(){
         genes = new ArrayList<>();
-        strand = 0;
+        strand = Strand.INVALID;
         startIndex = 0;
         id = -1;
     }
@@ -23,7 +23,7 @@ public abstract class GenomicSegment {
         this.id = id;
     }
 
-    public GenomicSegment(int strand, int id){
+    public GenomicSegment(Strand strand, int id){
         this(id);
         this.strand = strand;
     }
@@ -36,11 +36,11 @@ public abstract class GenomicSegment {
         genes.add(gene);
     }
 
-    public int getStrand() {
+    public Strand getStrand() {
         return strand;
     }
 
-    public void setStrand(int strand) {
+    public void setStrand(Strand strand) {
         this.strand = strand;
     }
 

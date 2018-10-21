@@ -25,7 +25,7 @@ public class Toolbar extends JPanel {
         this.fc = fc;
 
         setBorder(BorderFactory.createEtchedBorder());
-        loadFile = new JButton("Load Input Core.Genomes");
+        loadFile = new JButton("Load Core.Genomes");
         saveFile =  new JButton("Save");
         saveFile.setEnabled(false);
         selectParams =  new JButton("Run");

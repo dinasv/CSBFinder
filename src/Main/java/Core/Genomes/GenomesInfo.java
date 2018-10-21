@@ -64,18 +64,22 @@ public class GenomesInfo {
         return repliconIdToName.size();
     }
 
+    public boolean genomeExists(String genomeId){
+        return genomesMap.get(genomeId) != null;
+    }
 
-    public Genome addGenome(String genome_name){
-        Genome genome = genomesMap.get(genome_name);
-        if (genome == null){
-            int genome_id = genomesMap.size();
-            genome = new Genome(genome_name, genome_id);
-            genomeNameToId.put(genome_name, genome_id);
-            genomeIdToName.put(genome_id, genome_name);
-            genomesMap.put(genome_name, genome);
-        }
+    public void addGenome(Genome genome){
 
-        return genome;
+        genomeNameToId.put(genome.getName(), genome.getId());
+        genomeIdToName.put(genome.getId(), genome.getName());
+        genomesMap.put(genome.getName(), genome);
+
+        maxGenomeSize = genome.getGenomeSize() > maxGenomeSize ? genome.getGenomeSize() : maxGenomeSize;
+
+    }
+
+    public Genome getGenome(String genomeId){
+        return genomesMap.get(genomeId);
     }
 
     public Collection<Genome> getGenomes(){
@@ -98,11 +102,10 @@ public class GenomesInfo {
         return repliconIdToName.get(id);
     }
 
-    public void addReplicon(Replicon replicon, Genome genome){
-        genome.addReplicon(replicon);
+    public void addReplicon(Replicon replicon){
+
         repliconIdToName.put(replicon.getId(), replicon.getName());
 
-        maxGenomeSize = genome.getGenomeSize() > maxGenomeSize ? genome.getGenomeSize() : maxGenomeSize;
         datasetLengthSum += replicon.size();
     }
 

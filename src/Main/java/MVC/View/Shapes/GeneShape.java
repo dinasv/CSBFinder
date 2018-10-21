@@ -1,6 +1,7 @@
 package MVC.View.Shapes;
 
 import Core.Genomes.Gene;
+import Core.Genomes.Strand;
 
 import java.awt.*;
 
@@ -12,7 +13,7 @@ public class GeneShape implements Shape{
 
     private Color color;
     private Label label;
-    private String strand;
+    private Strand strand;
 
     private int width;
     private int height;
@@ -37,7 +38,7 @@ public class GeneShape implements Shape{
         int arrowStartX = x + dim.getRectWidth();
         int arrowEndX = x + dim.getRectWidth() + dim.getArrowWidth();
 
-        if (strand.equals("-")){
+        if (strand == Strand.REVERSE){
             rectStartX = x + dim.getArrowWidth();
             arrowStartX =  x + dim.getArrowWidth();
             arrowEndX = x;
@@ -57,7 +58,7 @@ public class GeneShape implements Shape{
 
         int labelWidth = g.getFontMetrics().stringWidth(label.getText());
         int labelPositionX = x + (dim.getRectWidth() - labelWidth)/2;
-        if (strand.equals("-")){
+        if (strand == Strand.REVERSE){
             labelPositionX += dim.getArrowWidth();
         }
 
@@ -114,11 +115,11 @@ public class GeneShape implements Shape{
         this.label = label;
     }
 
-    public String getStrand() {
+    public Strand getStrand() {
         return strand;
     }
 
-    public void setStrand(String strand) {
+    public void setStrand(Strand strand) {
         this.strand = strand;
     }
 

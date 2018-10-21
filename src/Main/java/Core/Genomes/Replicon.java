@@ -11,32 +11,35 @@ public class Replicon extends GenomicSegment {
 
     private String name;
 
-    public Replicon(int strand, int id, String name){
+    public Replicon(){
+    }
+
+    public Replicon(Strand strand, int id, String name){
         super(strand, id);
         this.name = name;
     }
 
-    private static String reverseStrand(String strand){
-        return strand.equals("-") ? "+" : "-";
+    private static Strand reverseStrand(Strand strand){
+        return strand == Strand.REVERSE ? Strand.FORWARD : Strand.REVERSE;
     }
 
     public void reverse(){
         Collections.reverse(genes);
-        setStrand(getStrand() * -1);
+        setStrand(getStrand() == Strand.FORWARD ? Strand.REVERSE : Strand.FORWARD);
 
         int start_index = getStartIndex();
-        start_index = getStrand() == -1 ? start_index + size() - 1 : start_index - size() + 1;
+        start_index = getStrand() == Strand.REVERSE ? start_index + size() - 1 : start_index - size() + 1;
         setStartIndex(start_index);
     }
 
 
     public String[] getGenesIDs(){
-        if (getStrand() == 1) {
-            return genes.stream().map(gene -> gene.getCogId() + gene.getStrand())
+        if (getStrand() == Strand.FORWARD) {
+            return genes.stream().map(gene -> gene.getCogId() + gene.getStrand().toString())
                     .collect(Collectors.toList())
                     .toArray(new String[genes.size()]);
         }else{
-            return genes.stream().map(gene -> gene.getCogId() + reverseStrand(gene.getStrand()))
+            return genes.stream().map(gene -> gene.getCogId() + reverseStrand(gene.getStrand()).toString())
                     .collect(Collectors.toList())
                     .toArray(new String[genes.size()]);
         }
@@ -51,7 +54,7 @@ public class Replicon extends GenomicSegment {
 
         int gene_index = 0;
         for (Gene gene : getGenes()) {
-            //end directon if it is the last gene in the regulon, or if next gene is on different strand
+            //end directon if it is the last gene in the replicon, or if next gene is on different strand
             boolean end_directon = (gene_index == size()-1) ||
                     !(gene.getStrand().equals(getGenes().get(gene_index+1).getStrand()));
             if (directon.size() == 0) {

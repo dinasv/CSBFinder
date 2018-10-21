@@ -5,13 +5,13 @@ package Core.Genomes;
  */
 public class InstanceLocation{
     private int repliconId;
-    private int strand;
+    private Strand strand;
     private int startIndex;
     private int endIndex;
     private String repliconName;
 
 
-    public InstanceLocation(int repliconId, int startIndex, int strand){
+    public InstanceLocation(int repliconId, int startIndex, Strand strand){
         this.repliconId = repliconId;
         this.strand = strand;
         this.startIndex = startIndex;
@@ -23,7 +23,7 @@ public class InstanceLocation{
         return repliconId;
     }
 
-    public int getStrand() {
+    public Strand getStrand() {
         return strand;
     }
 
@@ -32,7 +32,7 @@ public class InstanceLocation{
     }
 
     public int getActualStartIndex() {
-        if (strand == -1){
+        if (strand == Strand.REVERSE){
             return endIndex;
         }
         return startIndex;
@@ -44,7 +44,7 @@ public class InstanceLocation{
     }
 
     public int getActualEndIndex() {
-        if (strand == -1){
+        if (strand == Strand.REVERSE){
             return startIndex;
         }
         return endIndex;
@@ -52,7 +52,7 @@ public class InstanceLocation{
 
     public void setEndIndex(int instance_length) {
         instance_length -= 1;
-        instance_length *= strand;
+        instance_length *= strand.strand;
         endIndex = startIndex + instance_length;
     }
 

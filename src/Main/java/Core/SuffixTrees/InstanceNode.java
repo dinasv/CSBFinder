@@ -1,6 +1,7 @@
 package Core.SuffixTrees;
 
 import Core.Genomes.InstanceLocation;
+import Core.Genomes.Strand;
 
 import java.util.*;
 
@@ -71,10 +72,10 @@ public class InstanceNode extends SuffixNode {
         InstanceNode iter = node.getSuffix();
         if (iter != null) {
             while (iter.getSuffix() != null) {
-                int strand = instance_info.getStrand();
+                Strand strand = instance_info.getStrand();
                 int start_index = instance_info.getStartIndex();
                 int replicon_id = instance_info.getRepliconId();
-                instance_info = new InstanceLocation(replicon_id, start_index + strand,   strand);
+                instance_info = new InstanceLocation(replicon_id, start_index + strand.strand,   strand);
 
                 List<InstanceLocation> key_indexes = iter.data.get(key);
                 if (key_indexes == null){
