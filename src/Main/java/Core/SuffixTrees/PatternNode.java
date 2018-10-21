@@ -1,6 +1,6 @@
 package Core.SuffixTrees;
 
-import Genomes.Instance;
+import Core.Genomes.Instance;
 
 import java.util.*;
 

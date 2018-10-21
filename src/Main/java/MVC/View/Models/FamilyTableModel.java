@@ -1,6 +1,6 @@
 package MVC.View.Models;
 
-import Genomes.Pattern;
+import Core.Genomes.Pattern;
 import Core.PostProcess.Family;
 
 import javax.swing.table.AbstractTableModel;

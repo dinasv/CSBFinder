@@ -1,4 +1,4 @@
-package Genomes;
+package Core.Genomes;
 
 import java.util.ArrayList;
 import java.util.List;

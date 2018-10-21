@@ -1,4 +1,4 @@
-package Genomes;
+package Core.Genomes;
 
 /**
  *

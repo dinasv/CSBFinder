@@ -1,12 +1,11 @@
 package MVC.Controller;
 
-import Genomes.Genome;
+import Core.Genomes.Genome;
 import MVC.Common.*;
 import MVC.Model.CSBFinderModel;
 import MVC.View.MainFrame;
-import Genomes.COG;
-import Genomes.Pattern;
-import Genomes.Replicon;
+import Core.Genomes.COG;
+import Core.Genomes.Pattern;
 
 import java.util.List;
 import java.util.Map;

@@ -3,7 +3,7 @@ package MVC.View.Panels;
 import MVC.View.Events.FamilyRowClickedEvent;
 import MVC.View.Listeners.FamilyRowClickedListener;
 import MVC.View.Models.FamilyTableModel;
-import Genomes.Pattern;
+import Core.Genomes.Pattern;
 import Core.PostProcess.Family;
 
 import javax.swing.*;

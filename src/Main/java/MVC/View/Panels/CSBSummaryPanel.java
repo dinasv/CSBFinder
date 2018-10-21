@@ -6,7 +6,7 @@ import java.awt.*;
 import java.util.*;
 import java.util.List;
 
-import Genomes.COG;
+import Core.Genomes.COG;
 
 
 public class CSBSummaryPanel extends JPanel {

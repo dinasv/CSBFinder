@@ -2,7 +2,7 @@ package MVC.View.Panels;
 
 import MVC.View.Listeners.FamilyRowClickedListener;
 import Core.PostProcess.Family;
-import Genomes.COG;
+import Core.Genomes.COG;
 
 import javax.swing.*;
 import java.awt.*;

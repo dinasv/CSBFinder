@@ -1,7 +1,7 @@
 package MVC.Common;
 
-import Genomes.Gene;
-import Genomes.InstanceLocation;
+import Core.Genomes.Gene;
+import Core.Genomes.InstanceLocation;
 
 import java.util.List;
 

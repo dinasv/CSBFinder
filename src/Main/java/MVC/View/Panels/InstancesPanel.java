@@ -3,7 +3,7 @@ package MVC.View.Panels;
 import MVC.Common.InstanceInfo;
 import MVC.View.Shapes.*;
 import MVC.View.Shapes.Label;
-import Genomes.Gene;
+import Core.Genomes.Gene;
 
 import javax.swing.*;
 import java.awt.*;

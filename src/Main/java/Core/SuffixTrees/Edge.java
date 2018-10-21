@@ -1,6 +1,6 @@
 package Core.SuffixTrees;
 
-import Genomes.WordArray;
+import Core.Genomes.WordArray;
 
 import java.io.Serializable;
 

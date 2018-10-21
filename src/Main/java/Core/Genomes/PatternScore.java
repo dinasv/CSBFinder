@@ -1,4 +1,4 @@
-package Genomes;
+package Core.Genomes;
 
 import org.apache.commons.math3.special.Beta;
 

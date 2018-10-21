@@ -1,7 +1,6 @@
 package IO;
 
-import Core.SuffixTrees.Trie;
-import Genomes.*;
+import Core.Genomes.*;
 
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
@@ -13,9 +12,9 @@ import java.util.List;
 import java.util.Map;
 
 
-public class Readers {
+public class Parsers {
 
-    public static List<Pattern> readPatternsFromFile(String input_patterns_file_name) {
+    public static List<Pattern> parsePatternsFile(String input_patterns_file_name) {
 
         List<Pattern> patterns = new ArrayList<>();
         try {
@@ -56,7 +55,19 @@ public class Readers {
         return patterns;
     }
 
-    private static void readGene(String line, Replicon replicon) {
+    /**
+     * Parse line containing a gene and its strand separated by TAB
+     * A strand must by + or -
+     *
+     * Format: [gene id][TAB][strand]
+     *
+     * Valid examples:
+     * COG1234[TAB]+
+     * abc[TAB]-
+     * @param line
+     * @param replicon
+     */
+    private static void parseGeneLine(String line, Replicon replicon) {
         String[] split_line = line.trim().split("\t");
         if (split_line.length > 1) {
             String gene_family = split_line[0];
@@ -70,15 +81,18 @@ public class Readers {
      * @param input_file_path path to input file with input sequences
      * @return number of input sequences
      */
-    public static int readGenomes(String input_file_path, GenomesInfo gi) {
+    public static int parseGenomesFile(String input_file_path, GenomesInfo genomesInfo) {
+
+        if (genomesInfo == null || input_file_path == null){
+            throw new IllegalArgumentException();
+        }
 
         String file_name = input_file_path;
+        int lineCounter = 0;
 
-        BufferedReader br = null;
-        try {
-            br = new BufferedReader(new FileReader(file_name));
+        try (BufferedReader br = new BufferedReader(new FileReader(file_name))){
 
-            String line = br.readLine();
+            String rawLine = br.readLine();
 
             String replicon_name;
             String curr_genome_name = "";
@@ -86,18 +100,20 @@ public class Readers {
             Genome genome;
             Replicon replicon = new Replicon(1, -1, "");
 
-            while (line != null) {
-                if (line.startsWith(">")) {
+            while (rawLine != null) {
+                lineCounter++;
+
+                if (rawLine.startsWith(">")) {
 
                     if (replicon.size() > 0) {
-                        genome = gi.addGenome(curr_genome_name);
-                        gi.addReplicon(replicon, genome);
+                        genome = genomesInfo.addGenome(curr_genome_name);
+                        genomesInfo.addReplicon(replicon, genome);
                     }
 
                     //get genome and replicon name
-                    line = line.substring(1); //remove ">"
+                    rawLine = rawLine.substring(1); //remove ">"
                     //e.g. Acaryochloris_marina_MBIC11017_uid58167|NC_009927
-                    String[] title = line.trim().split("\\|");
+                    String[] title = rawLine.trim().split("\\|");
 
                     if (title.length > 0) {
                         curr_genome_name = title[0];
@@ -107,33 +123,26 @@ public class Readers {
                             replicon_name = title[1];
                         }
 
-                        replicon = new Replicon(1, gi.getNumberOfReplicons(), replicon_name);
+                        replicon = new Replicon(1, genomesInfo.getNumberOfReplicons(), replicon_name);
                     }
                 } else {
-                    readGene(line, replicon);
+                    parseGeneLine(rawLine, replicon);
                 }
 
-                line = br.readLine();
+                rawLine = br.readLine();
             }
 
-            genome = gi.addGenome(curr_genome_name);
-            gi.addReplicon(replicon, genome);
+            genome = genomesInfo.addGenome(curr_genome_name);
+            genomesInfo.addReplicon(replicon, genome);
 
         } catch (FileNotFoundException e) {
             System.err.println("File " + file_name + " was not found.");
         } catch (IOException e) {
             System.err.println("An exception occurred while reading " + file_name);
             return -1;
-        } finally {
-            try {
-                br.close();
-            } catch (IOException e) {
-                System.err.println("Cannot close file " + file_name);
-                return -1;
-            }
         }
 
-        return gi.getNumberOfGenomes();
+        return genomesInfo.getNumberOfGenomes();
 
     }
 

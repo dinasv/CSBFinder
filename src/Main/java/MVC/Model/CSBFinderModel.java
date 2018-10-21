@@ -1,8 +1,8 @@
 package MVC.Model;
 
-import Genomes.*;
+import Core.Genomes.*;
 import IO.MyLogger;
-import IO.Readers;
+import IO.Parsers;
 import IO.Writer;
 import MVC.Common.*;
 import Core.*;
@@ -42,7 +42,7 @@ public class CSBFinderModel {
     public void loadInputGenomesFile(String path) {
         cogInfo = new CogInfo();
         gi = new GenomesInfo();
-        numberOfGenomes = Readers.readGenomes(path, gi);
+        numberOfGenomes = Parsers.parseGenomesFile(path, gi);
         System.out.println("Loaded " + numberOfGenomes + " genomes.");
         workflow = new CSBFinderWorkflow(gi);
 
@@ -98,7 +98,7 @@ public class CSBFinderModel {
         Map<String, COG> cog_info = null;
         boolean cog_info_exists = (params.cogInfoFileName != null);
         if (cog_info_exists) {
-            cog_info = Readers.read_cog_info_table(params.cogInfoFileName);
+            cog_info = Parsers.read_cog_info_table(params.cogInfoFileName);
         }
         cogInfo.setCogInfo(cog_info);
 
@@ -172,7 +172,7 @@ public class CSBFinderModel {
             params.maxPatternLength = Integer.MAX_VALUE;
 
             String path = params.inputPatternsFileName;
-            patterns = Readers.readPatternsFromFile(path);
+            patterns = Parsers.parsePatternsFile(path);
         }
         return patterns;
     }

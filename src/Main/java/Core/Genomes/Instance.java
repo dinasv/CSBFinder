@@ -1,4 +1,4 @@
-package Genomes;
+package Core.Genomes;
 
 import Core.SuffixTrees.InstanceNode;
 import Core.SuffixTrees.Edge;

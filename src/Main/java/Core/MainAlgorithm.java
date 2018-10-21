@@ -1,10 +1,10 @@
 package Core;
 
-import Genomes.WordArray;
+import Core.Genomes.WordArray;
 import Core.SuffixTrees.*;
 
 import java.util.*;
-import Genomes.*;
+import Core.Genomes.*;
 
 /**
  * Suffix Tree based algorithm for CSB pattern discovery

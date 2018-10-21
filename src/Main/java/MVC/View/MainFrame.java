@@ -8,8 +8,8 @@ import MVC.View.Listeners.*;
 import Core.Parameters;
 import MVC.View.Panels.GenomePanel;
 import MVC.View.Panels.SummaryPanel;
-import Genomes.COG;
-import Genomes.Pattern;
+import Core.Genomes.COG;
+import Core.Genomes.Pattern;
 import Core.PostProcess.Family;
 
 import javax.swing.*;

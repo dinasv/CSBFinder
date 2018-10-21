@@ -1,7 +1,7 @@
 package IO;
 
 import Core.CogInfo;
-import Genomes.*;
+import Core.Genomes.*;
 
 import java.io.*;
 import java.math.RoundingMode;

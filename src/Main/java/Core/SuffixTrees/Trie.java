@@ -1,5 +1,5 @@
 package Core.SuffixTrees;
-import Genomes.WordArray;
+import Core.Genomes.WordArray;
 
 /**
  * Represents a Generalized Trie - each edge has only 1 char

@@ -3,7 +3,7 @@ package MVC.View.Panels;
 import MVC.Common.CSBFinderRequest;
 import MVC.View.Events.RunEvent;
 import MVC.View.Listeners.RunListener;
-import Genomes.Replicon;
+import Core.Genomes.Replicon;
 
 import javax.swing.*;
 import java.awt.*;

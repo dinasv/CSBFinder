@@ -1,6 +1,6 @@
 package Core;
 
-import Genomes.COG;
+import Core.Genomes.COG;
 
 import java.util.Map;
 

@@ -1,7 +1,7 @@
 package Core.SuffixTrees;
 
-import Genomes.InstanceLocation;
-import Genomes.WordArray;
+import Core.Genomes.InstanceLocation;
+import Core.Genomes.WordArray;
 
 import java.io.Serializable;
 

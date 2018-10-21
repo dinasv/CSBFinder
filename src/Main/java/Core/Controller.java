@@ -1,10 +1,10 @@
 package Core;
 
 import IO.MyLogger;
-import IO.Readers;
+import IO.Parsers;
 import IO.Writer;
 import Core.PostProcess.Family;
-import Genomes.*;
+import Core.Genomes.*;
 
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -106,7 +106,7 @@ public class Controller {
             params.maxPatternLength = Integer.MAX_VALUE;
 
             String path = INPUT_PATH + params.inputPatternsFileName;
-            patterns = Readers.readPatternsFromFile(path);
+            patterns = Parsers.parsePatternsFile(path);
         }
         return patterns;
     }
@@ -128,14 +128,14 @@ public class Controller {
         //read genomes
         GenomesInfo gi = new GenomesInfo();
         String genomes_file_path = INPUT_PATH + params.inputFileName;
-        int number_of_genomes = Readers.readGenomes(genomes_file_path, gi);
+        int number_of_genomes = Parsers.parseGenomesFile(genomes_file_path, gi);
 
 
         //cog info
         Map<String, COG> cog_info = null;
         boolean cog_info_exists = (params.cogInfoFileName != null);
         if (cog_info_exists) {
-            cog_info = Readers.read_cog_info_table(INPUT_PATH + params.cogInfoFileName);
+            cog_info = Parsers.read_cog_info_table(INPUT_PATH + params.cogInfoFileName);
         }
 
         CogInfo cogInfo = new CogInfo();

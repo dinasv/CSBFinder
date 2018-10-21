@@ -6,9 +6,9 @@ import Core.SuffixTrees.DatasetTreeBuilder;
 import Core.SuffixTrees.GeneralizedSuffixTree;
 import Core.SuffixTrees.TreeType;
 import Core.SuffixTrees.Trie;
-import Genomes.GenomesInfo;
-import Genomes.Pattern;
-import Genomes.PatternScore;
+import Core.Genomes.GenomesInfo;
+import Core.Genomes.Pattern;
+import Core.Genomes.PatternScore;
 
 import java.util.List;
 
