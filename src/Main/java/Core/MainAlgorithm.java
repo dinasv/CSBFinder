@@ -160,7 +160,7 @@ public class MainAlgorithm {
             //remove reverse compliments
             if (nonDirectons){
                 String pattern_str = String.join(DELIMITER, pattern_arr) + DELIMITER;
-                String reversed_pattern_str = String.join(DELIMITER, pattern.getReversePatternArr()) + DELIMITER;
+                String reversed_pattern_str = String.join(DELIMITER, pattern.getReverseComplimentPatternArr()) + DELIMITER;
                 Pattern reversed_pattern = patterns.get(reversed_pattern_str);
                 if (reversed_pattern != null && !patterns_to_remove.contains(pattern_str)){
                     patterns_to_remove.add(reversed_pattern_str);

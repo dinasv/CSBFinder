@@ -45,7 +45,7 @@ public class Family {
     private void addCharsToCharsSet(Pattern pattern){
         addCharsToCharsSet(pattern.getPatternArr());
         if (nonDirectons){
-            addCharsToCharsSet(pattern.getReversePatternArr());
+            addCharsToCharsSet(pattern.getReverseComplimentPatternArr());
         }
     }
 

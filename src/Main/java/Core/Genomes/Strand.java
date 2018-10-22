@@ -6,10 +6,10 @@ public enum Strand {
 
     FORWARD(1), REVERSE(-1), INVALID(0);
 
-    final public int strand;
+    final public int numericValue;
 
-    Strand(int strand){
-        this.strand = strand;
+    Strand(int numericValue){
+        this.numericValue = numericValue;
     }
 
     public String toString() {

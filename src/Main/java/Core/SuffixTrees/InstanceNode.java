@@ -12,7 +12,7 @@ public class InstanceNode extends SuffixNode {
 
     /**
      * Save for every string key in data, the position of the suffix of that string that ends at this node
-     * sequence_id : {(replicon_id|start_index|strand)}
+     * sequence_id : {(replicon_id|start_index|numericValue)}
      */
     private Map<Integer, List<InstanceLocation>> data;
 
@@ -54,35 +54,39 @@ public class InstanceNode extends SuffixNode {
     /**
      * Add position of the suffix (the starting index) of the string "key"
      */
-    void addDataIndex(int key, InstanceLocation instance_info) {
+    void addDataIndex(int key, InstanceLocation instanceLocation) {
 
         List<InstanceLocation> key_indexes = data.get(key);
         if (key_indexes == null){
             key_indexes = new ArrayList<InstanceLocation>();
         }
-        key_indexes.add(instance_info);
+        key_indexes.add(instanceLocation);
         data.put(key, key_indexes);
 
         // add this reference to all the suffixes as well
-        addIndexToSuffix(this, key, instance_info);
+        addIndexToSuffix(this, key, instanceLocation);
 
     }
 
-    private void addIndexToSuffix(InstanceNode node, int key, InstanceLocation instance_info){
+    private void addIndexToSuffix(InstanceNode node, int key, InstanceLocation instanceLocation){
         InstanceNode iter = node.getSuffix();
         if (iter != null) {
             while (iter.getSuffix() != null) {
-                Strand strand = instance_info.getStrand();
-                int start_index = instance_info.getStartIndex();
-                int replicon_id = instance_info.getRepliconId();
-                instance_info = new InstanceLocation(replicon_id, start_index + strand.strand,   strand);
+                Strand strand = instanceLocation.getStrand();
+                int startIndex = instanceLocation.getStartIndex();
+                int endIndex = instanceLocation.getEndIndex();
+
+                int repliconId = instanceLocation.getRepliconId();
+                instanceLocation = new InstanceLocation(repliconId, startIndex + strand.numericValue, endIndex,
+                                        strand);
+
 
                 List<InstanceLocation> key_indexes = iter.data.get(key);
                 if (key_indexes == null){
                     key_indexes = new ArrayList<InstanceLocation>();
                     iter.data.put(key, key_indexes);
                 }
-                key_indexes.add(instance_info);
+                key_indexes.add(instanceLocation);
 
                 iter = iter.getSuffix();
             }

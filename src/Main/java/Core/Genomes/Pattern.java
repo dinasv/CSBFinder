@@ -16,7 +16,7 @@ public class Pattern {
      * Each cell contains the COG id, e.g. [COG1234, COG5234]
      */
     private String[] patternArr;
-    private String[] reversePatternArr;
+    private String[] reverseComplimentPatternArr;
 
     private int patternId;
     private int instanceCount;
@@ -34,6 +34,7 @@ public class Pattern {
 
     public Pattern(int patternId, String pattern, String[] patternArr, int length, Set<Integer> seq_keys,
                    List<Instance> instances, int exactInstanceCount){
+
         this.patternId = patternId;
         this.pattern = pattern;
         this.patternArr = patternArr;
@@ -43,7 +44,8 @@ public class Pattern {
         this.exactInstanceCount = exactInstanceCount;
         score = 0;
         mainFunctionalCategory = "";
-        reversePatternArr = reverseComplimentPattern(patternArr);
+        reverseComplimentPatternArr = reverseComplimentPattern(patternArr);
+
     }
 
     public Pattern(int patternId, String pattern, String[] patternArr){
@@ -165,8 +167,8 @@ public class Pattern {
         return reversed_pattern;
     }
 
-    public String[] getReversePatternArr() {
-        return reversePatternArr;
+    public String[] getReverseComplimentPatternArr() {
+        return reverseComplimentPatternArr;
     }
 
     public String getFamilyId() {

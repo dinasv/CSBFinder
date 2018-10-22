@@ -170,7 +170,7 @@ public class GeneralizedSuffixTree  implements Serializable{
      * @param key the key of the genome
      * @param instanceInfo info regarding the location of this word
      */
-    public void put(WordArray str, int key, InstanceLocation instance_info) {
+    public void put(WordArray str, int key, InstanceLocation instanceLocation) {
 
         // reset activeLeaf
         activeLeaf = root;
@@ -211,7 +211,8 @@ public class GeneralizedSuffixTree  implements Serializable{
 
         //add recursively the key and indexes to the nodes corresponding to this string
 
-        ((InstanceNode)fullStringNode).addDataIndex(key, instance_info);
+        if (fullStringNode instanceof InstanceNode)
+            ((InstanceNode)fullStringNode).addDataIndex(key, instanceLocation);
 
 
     }

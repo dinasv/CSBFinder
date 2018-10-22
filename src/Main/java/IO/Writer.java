@@ -220,8 +220,8 @@ public class Writer {
                 for (InstanceLocation instance_location : instances_locations){
                     String replicon_name = gi.getRepliconName(instance_location.getRepliconId());
 
-                    instancesFile.print("\t" + replicon_name + "|[" + instance_location.getStartIndex() + ","
-                            + instance_location.getEndIndex() + "]");
+                    instancesFile.print("\t" + replicon_name + "|[" + instance_location.getActualStartIndex() + ","
+                            + instance_location.getActualEndIndex() + "]");
                 }
 
                 instancesFile.print("\n");
@@ -248,7 +248,8 @@ public class Writer {
                 }
                 List<InstanceLocation> instances_locations = instance_seq_to_location.get(seq_key);
                 for (InstanceLocation instance_location : entry.getValue()) {
-                    instance_location.setEndIndex(instance_length);
+                    //instance_location.setEndIndexUsingLength(instance_length);
+                    instance_location.changeInstanceLength(instance_length);
                     instances_locations.add(instance_location);
                 }
             }

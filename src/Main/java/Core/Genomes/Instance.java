@@ -25,7 +25,7 @@ public class Instance implements Comparable<Instance>{
      * included) if edgeIndex = -1 than it ends in the node instanceNode
      */
     private int edgeIndex;
-    //The error between motif and the Instance
+    //The error between Pattern and the Instance
     private int error;
     //number of deletions in the Instance (gap chars)
     private int deletions;
@@ -44,7 +44,7 @@ public class Instance implements Comparable<Instance>{
      *
      * This must be calculated explicitly using computeAndCacheCount
      */
-    private Map<Integer, List<InstanceLocation>> instanceLocations;
+    //private Map<Integer, List<InstanceLocation>> instanceLocations;
 
 
     public Instance(InstanceNode instanceNode, Edge e, int edgeIndex, int error, int deletions, List<Integer> insertionIndexes, String substring, int length){

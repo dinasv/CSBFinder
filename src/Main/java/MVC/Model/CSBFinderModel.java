@@ -254,11 +254,12 @@ public class CSBFinderModel {
                 String replicon_name = gi.getRepliconName(replicon2locations.getKey());
                 List<InstanceLocation> instances_locations = replicon2locations.getValue();
 
-                instances_locations.sort(Comparator.comparing(InstanceLocation::getStartIndex));
+                instances_locations.sort(Comparator.comparing(InstanceLocation::getActualStartIndex));
 
                 for (InstanceLocation instance_location : instances_locations) {
                     instance_location.setRepliconName(replicon_name);
-                    List<Gene> genes = getInstanceFromCogList(seq_name, replicon_id, instance_location.getStartIndex(), instance_location.getEndIndex());
+                    List<Gene> genes = getInstanceFromCogList(seq_name, replicon_id, instance_location.getActualStartIndex(),
+                            instance_location.getActualEndIndex());
                     if (genes != null) {
                         instanceLocations.add(new InstanceInfo(instance_location, genes));
                     }
@@ -281,13 +282,13 @@ public class CSBFinderModel {
         List<Gene> genomeToCogList = genome.getReplicon(replicon_id).getGenes();
         if (genomeToCogList != null) {
             if (startIndex >= 0 && startIndex < genomeToCogList.size() &&
-                    endIndex >= 0 && endIndex < genomeToCogList.size()) {
-                if (startIndex >= endIndex) {
+                    endIndex >= 0 && endIndex <= genomeToCogList.size()) {
+                /*if (startIndex >= endIndex) {
                     int tmp = startIndex;
                     startIndex = endIndex;
                     endIndex = tmp;
-                }
-                instanceList = genomeToCogList.subList(startIndex, endIndex+1);
+                }*/
+                instanceList = genomeToCogList.subList(startIndex, endIndex);
             } else {
 //                writer.writeLogger(String.format("WARNING: replicon is out of bound in sequence %s, start: %s,length: %s",
 //                        seq_name, startIndex, instanceLength));
@@ -318,7 +319,7 @@ public class CSBFinderModel {
                 Map<Integer, List<InstanceLocation>> instancesRepliconsMap = instance_seq_to_location.get(seq_key);
 
                 for (InstanceLocation instanceLocation : entry.getValue()) {
-                    instanceLocation.setEndIndex(instance_length);
+                    instanceLocation.changeInstanceLength(instance_length);
 
                     if (! instancesRepliconsMap.containsKey(instanceLocation.getRepliconId())){
                         instancesRepliconsMap.put(instanceLocation.getRepliconId(), new ArrayList<>());

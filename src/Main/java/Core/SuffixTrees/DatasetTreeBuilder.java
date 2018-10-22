@@ -59,9 +59,12 @@ public class DatasetTreeBuilder {
 
         String[] genes = genomicSegment.getGenesIDs();
         WordArray cog_word = createWordArray(genes, genomesInfo);
-        InstanceLocation instance_info = new InstanceLocation(genomicSegment.getId(), genomicSegment.getStartIndex(),
-                genomicSegment.getStrand());
-        datasetTree.put(cog_word, currGenomeIndex, instance_info);
+        InstanceLocation instanceLocation = new InstanceLocation(genomicSegment.getId(), genomicSegment.getStartIndex(),
+                genomicSegment.getStartIndex() + genomicSegment.size(), genomicSegment.getStrand());
+        if (genomicSegment.getStrand() == Strand.REVERSE){
+            instanceLocation.switchStartEndIndex();
+        }
+        datasetTree.put(cog_word, currGenomeIndex, instanceLocation);
 
         genomesInfo.countParalogsInSeqs(genes, currGenomeIndex);
     }

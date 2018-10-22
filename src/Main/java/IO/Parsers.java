@@ -55,10 +55,10 @@ public class Parsers {
 
 
     /**
-     * Parse {@code rawLine} containing a gene and its strand separated by TAB, and create {@link Genomes.Gene}.
-     * A strand must be "+" or "-"
+     * Parse {@code rawLine} containing a gene and its numericValue separated by TAB, and create {@link Genomes.Gene}.
+     * A numericValue must be "+" or "-"
      * <p>
-     * Format: [gene id][TAB][strand]
+     * Format: [gene id][TAB][numericValue]
      * <p>
      * Valid examples:
      * COG1234[TAB]+
@@ -75,7 +75,7 @@ public class Parsers {
 
         String[] splitLine = rawLine.trim().split("\t");
         if (splitLine.length < 2) {
-            throw new IllegalArgumentException(errorMessage("[gene id][TAB][strand]", rawLine, lineNumber, filePath));
+            throw new IllegalArgumentException(errorMessage("[gene id][TAB][numericValue]", rawLine, lineNumber, filePath));
         }
 
         String geneId = splitLine[0];
@@ -83,7 +83,7 @@ public class Parsers {
 
         Strand strand = determineStrand(rawStrand);
         if (strand == Strand.INVALID) {
-            throw new IllegalArgumentException(errorMessage("strand to be + or -",
+            throw new IllegalArgumentException(errorMessage("numericValue to be + or -",
                     rawStrand, lineNumber, filePath));
         }
 
