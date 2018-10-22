@@ -30,7 +30,7 @@ public class Directon extends GenomicSegment {
             super.setStrand(strand);
             if (strand == Strand.REVERSE) {
                 Collections.reverse(genes);
-                setStartIndex(getStartIndex() + size() - 1);
+                //setStartIndex(getStartIndex() + size() - 1);
             }
         }
     }

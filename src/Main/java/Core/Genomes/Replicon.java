@@ -52,23 +52,23 @@ public class Replicon extends GenomicSegment {
 
         Directon directon = new Directon(getId());
 
-        int gene_index = 0;
+        int geneIndex = 0;
         for (Gene gene : getGenes()) {
             //end directon if it is the last gene in the replicon, or if next gene is on different strand
-            boolean end_directon = (gene_index == size()-1) ||
-                    !(gene.getStrand().equals(getGenes().get(gene_index+1).getStrand()));
+            boolean endDirecton = (geneIndex == size()-1) ||
+                    !(gene.getStrand().equals(getGenes().get(geneIndex+1).getStrand()));
             if (directon.size() == 0) {
-                if (!gene.getCogId().equals(UNK_CHAR) && !end_directon) {
+                if (!gene.getCogId().equals(UNK_CHAR) && !endDirecton) {
                     directon.add(gene);
                 }
             } else {
                 directon.add(gene);
 
-                if (end_directon){//directon.size()>0
+                if (endDirecton){//directon.size()>0
 
                     if (directon.size() > 1) {
 
-                        directon.setStartIndex(gene_index-directon.size()+1);
+                        directon.setStartIndex(geneIndex-directon.size()+1);
 
                         directon.removeXFromEnd(UNK_CHAR);
                         if (directon.size() > 1) {
@@ -81,7 +81,7 @@ public class Replicon extends GenomicSegment {
                     directon = new Directon(getId());
                 }
             }
-            gene_index ++;
+            geneIndex ++;
         }
 
         return directons;

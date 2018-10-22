@@ -4,6 +4,7 @@ package Core.Genomes;
  *
  */
 public class InstanceLocation{
+
     private int repliconId;
     private Strand strand;
     private int startIndex;
@@ -31,28 +32,11 @@ public class InstanceLocation{
         return startIndex;
     }
 
-    public int getActualStartIndex() {
-        if (strand == Strand.REVERSE){
-            return endIndex;
-        }
-        return startIndex;
-    }
-
-
     public int getEndIndex() {
         return endIndex;
     }
 
-    public int getActualEndIndex() {
-        if (strand == Strand.REVERSE){
-            return startIndex;
-        }
-        return endIndex;
-    }
-
     public void setEndIndex(int instance_length) {
-        instance_length -= 1;
-        instance_length *= strand.strand;
         endIndex = startIndex + instance_length;
     }
 

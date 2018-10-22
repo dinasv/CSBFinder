@@ -254,7 +254,7 @@ public class CSBFinderModel {
                 String replicon_name = gi.getRepliconName(replicon2locations.getKey());
                 List<InstanceLocation> instances_locations = replicon2locations.getValue();
 
-                instances_locations.sort(Comparator.comparing(InstanceLocation::getActualStartIndex));
+                instances_locations.sort(Comparator.comparing(InstanceLocation::getStartIndex));
 
                 for (InstanceLocation instance_location : instances_locations) {
                     instance_location.setRepliconName(replicon_name);

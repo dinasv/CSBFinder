@@ -49,40 +49,42 @@ public class DatasetTreeBuilder {
 
 
     /**
-     * Turns a genomicSegment (replicon or directon) into an array of genes and puts in in the @dataset_gst
+     * Turns a genomicSegment (replicon or directon) into an array of genes and puts in in the @datasetTree
      * @param genomicSegment
-     * @param dataset_gst
-     * @param curr_genome_index
+     * @param datasetTree
+     * @param currGenomeIndex
      */
-    private static void putWordInDataTree(GenomicSegment genomicSegment, GeneralizedSuffixTree dataset_gst, int curr_genome_index, GenomesInfo gi){
+    private static void putWordInDataTree(GenomicSegment genomicSegment, GeneralizedSuffixTree datasetTree,
+                                          int currGenomeIndex, GenomesInfo genomesInfo){
+
         String[] genes = genomicSegment.getGenesIDs();
-        WordArray cog_word = createWordArray(genes, gi);
+        WordArray cog_word = createWordArray(genes, genomesInfo);
         InstanceLocation instance_info = new InstanceLocation(genomicSegment.getId(), genomicSegment.getStartIndex(),
                 genomicSegment.getStrand());
-        dataset_gst.put(cog_word, curr_genome_index, instance_info);
+        datasetTree.put(cog_word, currGenomeIndex, instance_info);
 
-        gi.countParalogsInSeqs(genes, curr_genome_index);
+        genomesInfo.countParalogsInSeqs(genes, currGenomeIndex);
     }
 
     /**
      * Insert replicon, or split the replicon to directons and then insert
-     * @param non_directons
+     * @param nonDirectons
      * @param replicon
-     * @param dataset_gst
-     * @param curr_genome_index
+     * @param datasetTree
+     * @param currGenomeIndex
      * @return
      */
-    private static int updateDataTree(boolean non_directons, Replicon replicon, GeneralizedSuffixTree dataset_gst,
-                                      int curr_genome_index, GenomesInfo gi){
+    private static int updateDataTree(boolean nonDirectons, Replicon replicon, GeneralizedSuffixTree datasetTree,
+                                      int currGenomeIndex, GenomesInfo gi){
 
         int replicon_length = 0;
-        if (non_directons) {
+        if (nonDirectons) {
 
-            putWordInDataTree(replicon, dataset_gst, curr_genome_index, gi);
+            putWordInDataTree(replicon, datasetTree, currGenomeIndex, gi);
 
             //reverse replicon
             replicon.reverse();
-            putWordInDataTree(replicon, dataset_gst, curr_genome_index, gi);
+            putWordInDataTree(replicon, datasetTree, currGenomeIndex, gi);
 
             replicon_length += replicon.size() * 2;
 
@@ -92,7 +94,7 @@ public class DatasetTreeBuilder {
 
             for (Directon directon: directons){
                 replicon_length += directon.size();
-                putWordInDataTree(directon, dataset_gst, curr_genome_index, gi);
+                putWordInDataTree(directon, datasetTree, currGenomeIndex, gi);
             }
 
         }
