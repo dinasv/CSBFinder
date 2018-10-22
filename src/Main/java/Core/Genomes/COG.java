@@ -1,5 +1,7 @@
 package Core.Genomes;
 
+import java.util.Arrays;
+
 /**
  * Contains details about the COG
  */
@@ -11,27 +13,24 @@ public class COG{
     private String[] functionalCategories;
     private String geneName;
 
-    public COG(String cogId, String cogDesc, String geneName){
-        this(cogId, cogDesc, new String[0], new String[0], geneName);
-
-    }
-
-    public COG(String cogId, String cogDesc, String[] functionalLetters, String[] functionalCategories){
-        this(cogId, cogDesc, functionalLetters, functionalCategories, "");
-    }
-    public COG(String cogId, String cogDesc, String[] functionalLetters, String[] functionalCategories,
-               String geneName) {
-
+    public COG(String cogId, String cogDesc) {
         this.cogId = cogId;
         this.cogDesc = cogDesc;
-        this.geneName = geneName;
-        this.functionalLetters = functionalLetters;
-        this.functionalCategories = functionalCategories;
+
+        functionalLetters = new String[0];
+        functionalCategories = new String[0];
+        geneName = "";
     }
 
     public COG(COG other, String cogDesc){
         this.cogId = cogId;
         this.cogDesc = cogDesc;
+    }
+    public String getCogId() {
+        return cogId;
+    }
+    public void setFunctionalLetters(String[] functionalLetters){
+        this.functionalLetters = functionalLetters;
     }
 
     public String getCogID(){
@@ -42,7 +41,6 @@ public class COG{
         return cogDesc;
     }
 
-
     public String[] getFunctionalCategories(){
         return functionalCategories;
     }
@@ -51,8 +49,26 @@ public class COG{
         return functionalLetters;
     }
 
-
     public String getGeneName() {
         return geneName;
+    }
+
+    public void setGeneName(String geneName) {
+        this.geneName = geneName;
+    }
+
+    public void setFunctionalCategories(String[] functionalCategories) {
+        this.functionalCategories = functionalCategories;
+    }
+
+    @Override
+    public String toString() {
+        return "COG{" +
+                "cogId='" + cogId + '\'' +
+                ", cogDesc='" + cogDesc + '\'' +
+                ", functionalLetters=" + Arrays.toString(functionalLetters) +
+                ", functionalCategories=" + Arrays.toString(functionalCategories) +
+                ", geneName='" + geneName + '\'' +
+                '}';
     }
 }

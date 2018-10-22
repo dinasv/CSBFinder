@@ -6,6 +6,7 @@ import IO.Writer;
 import Core.PostProcess.Family;
 import Core.Genomes.*;
 
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -128,14 +129,20 @@ public class Controller {
         //read genomes
         GenomesInfo gi = new GenomesInfo();
         String genomes_file_path = INPUT_PATH + params.inputFileName;
-        int number_of_genomes = Parsers.parseGenomesFile(genomes_file_path, gi);
 
+        int number_of_genomes = -1;
+        try {
+            number_of_genomes = Parsers.parseGenomesFile(genomes_file_path, gi);
+        }catch (IOException e){
+            System.out.println("Input genome file is not valid. " + e.getMessage());
+            return;
+        }
 
         //cog info
         Map<String, COG> cog_info = null;
         boolean cog_info_exists = (params.cogInfoFileName != null);
         if (cog_info_exists) {
-            cog_info = Parsers.read_cog_info_table(INPUT_PATH + params.cogInfoFileName);
+            cog_info = Parsers.parseCogInfoTable(INPUT_PATH + params.cogInfoFileName);
         }
 
         CogInfo cogInfo = new CogInfo();

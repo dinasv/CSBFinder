@@ -54,16 +54,16 @@ public class Parsers {
     }
 
 
-
     /**
-     * Parse {@code rawLine} containing a gene and its strand separated by TAB, and create {@link Gene}.
+     * Parse {@code rawLine} containing a gene and its strand separated by TAB, and create {@link Genomes.Gene}.
      * A strand must be "+" or "-"
-     *
+     * <p>
      * Format: [gene id][TAB][strand]
-     *
+     * <p>
      * Valid examples:
      * COG1234[TAB]+
      * abc[TAB]-
+     *
      * @param rawLine
      * @param lineNumber of {@code rawLine} in {@code filePath}
      * @param filePath
@@ -71,18 +71,18 @@ public class Parsers {
     private static Gene parseGeneLine(String rawLine, int lineNumber, String filePath) {
 
         Objects.requireNonNull(rawLine, "rawLine is null");
-        Objects.requireNonNull(filePath,"filePath is null");
+        Objects.requireNonNull(filePath, "filePath is null");
 
         String[] splitLine = rawLine.trim().split("\t");
-        if (splitLine.length < 2){
-            throw new IllegalArgumentException(errorMessage("[gene id][TAB][strand]", rawLine,lineNumber, filePath));
+        if (splitLine.length < 2) {
+            throw new IllegalArgumentException(errorMessage("[gene id][TAB][strand]", rawLine, lineNumber, filePath));
         }
 
         String geneId = splitLine[0];
         String rawStrand = splitLine[1];
 
         Strand strand = determineStrand(rawStrand);
-        if (strand == Strand.INVALID){
+        if (strand == Strand.INVALID) {
             throw new IllegalArgumentException(errorMessage("strand to be + or -",
                     rawStrand, lineNumber, filePath));
         }
@@ -93,9 +93,9 @@ public class Parsers {
     /**
      * Parse rawTitle containing a genome name and a replicon name
      * replicon name must be unique
-     *
+     * <p>
      * Format: [genome name]|[replicon name]
-     *
+     * <p>
      * Valid examples:
      * Acaryochloris_marina_MBIC11017_uid58167|NC_009927
      *
@@ -105,11 +105,11 @@ public class Parsers {
     private static String[] parseGenomeTitle(String rawTitle, int lineNumber, String filePath) {
 
         Objects.requireNonNull(rawTitle, "rawTitle is null");
-        Objects.requireNonNull(filePath,"filePath is null");
+        Objects.requireNonNull(filePath, "filePath is null");
 
         String rawTitleSuffix = rawTitle.substring(1); //remove ">"
         String[] title = rawTitleSuffix.trim().split("\\|");
-        if (title.length < 2){
+        if (title.length < 2) {
             throw new IllegalArgumentException(errorMessage(">[Genome name][TAB][Replicon id]",
                     rawTitle, lineNumber, filePath));
         }
@@ -117,11 +117,11 @@ public class Parsers {
         return title;
     }
 
-    private static Strand determineStrand(String rawStrand){
+    private static Strand determineStrand(String rawStrand) {
 
         Strand strand;
 
-        switch (rawStrand){
+        switch (rawStrand) {
             case "+":
                 strand = Strand.FORWARD;
                 break;
@@ -136,15 +136,15 @@ public class Parsers {
         return strand;
     }
 
-    private static String errorMessage(String expected, String recieved, int lineNumber, String path){
+    private static String errorMessage(String expected, String recieved, int lineNumber, String path) {
         return String.format("Expected %s, got %s in file %s line %d", expected, recieved, path, lineNumber);
     }
 
-    private static Genome getNewOrExistingGenome(GenomesInfo genomesInfo, String currGenomeName){
+    private static Genome getNewOrExistingGenome(GenomesInfo genomesInfo, String currGenomeName) {
         Genome genome;
         if (genomesInfo.genomeExists(currGenomeName)) {
             genome = genomesInfo.getGenome(currGenomeName);
-        }else{
+        } else {
             genome = new Genome(currGenomeName, genomesInfo.getNumberOfGenomes());
         }
 
@@ -155,15 +155,15 @@ public class Parsers {
      * @param input_file_path path to input file with input sequences
      * @return number of input sequences
      */
-    public static int parseGenomesFile(String filePath, GenomesInfo genomesInfo) {
+    public static int parseGenomesFile(String filePath, GenomesInfo genomesInfo) throws IOException {
 
-        if (genomesInfo == null || filePath == null){
+        if (genomesInfo == null || filePath == null) {
             throw new IllegalArgumentException();
         }
 
         int lineNumber = 0;
 
-        try (BufferedReader br = new BufferedReader(new FileReader(filePath))){
+        try (BufferedReader br = new BufferedReader(new FileReader(filePath))) {
 
             String rawLine = br.readLine();
 
@@ -209,10 +209,9 @@ public class Parsers {
             genomesInfo.addReplicon(replicon);
 
         } catch (FileNotFoundException e) {
-            System.err.println("File " + filePath + " was not found.");
+            throw new FileNotFoundException("File " + filePath + " was not found.");
         } catch (IOException e) {
-            System.err.println("An exception occurred while reading " + filePath);
-            return -1;
+            throw new IOException("An exception occurred while reading " + filePath);
         }
 
         return genomesInfo.getNumberOfGenomes();
@@ -220,63 +219,89 @@ public class Parsers {
     }
 
     /**
-     * Read COG_INFO_TABLE.txt and fill cog_info. For each cog that is used in our data,
-     * save information of functional category
+     * Parse {@code cogInfoFilePath} containg functional information of the genes in the input genomes
+     * For each cog that is used in our data, save information of the functional category
+     * <p>
+     * Format of a line in the file:
+     * [COG ID];[COG description];[Functional letter X],[Functional letter Y],...;[Description of X];[Description of Y];...;[Gene ID]
+     * <p>
+     * Optional: Functional letters and their description, Gene ID
+     * <p>
+     * Valid examples:
+     * COG0001;Glutamate-1-semialdehyde aminotransferase;H;Coenzyme transport and metabolism;HemL;
+     * COG0129;Dihydroxyacid dehydratase/phosphogluconate dehydratase;E,G;Amino acid transport and metabolism;Carbohydrate transport and metabolism;IlvD;
+     * COG0001;Glutamate-1-semialdehyde aminotransferase;
+     * COG0001;Glutamate-1-semialdehyde aminotransferase;HemL;
      *
      * @throws FileNotFoundException
      */
-    public static Map<String, COG> read_cog_info_table(String cog_info_file_name) {
-        Map<String, COG> cog_info = new HashMap<>();
+    public static Map<String, COG> parseCogInfoTable(String cogInfoFilePath) {
+        Map<String, COG> cogInfo = new HashMap<>();
 
-        BufferedReader br = null;
-        try {
-            br = new BufferedReader(new FileReader(cog_info_file_name));
+        try (BufferedReader br = new BufferedReader(new FileReader(cogInfoFilePath))) {
+
             String line = br.readLine();
+            int lineNumber = 0;
+
             while (line != null) {
+                lineNumber++;
 
-                String[] cog_line = line.split(";");
-                if (cog_line.length > 1) {
-                    String cog_id = cog_line[0];
-                    String cog_desc = cog_line[1];
-                    if (cog_line.length > 2) {
-                        String[] functional_letters = cog_line[2].split(",");
-                        String[] functional_categories = new String[functional_letters.length];
-                        if (cog_line.length > 3 + functional_letters.length) {
-                            for (int i = 0; i < functional_letters.length; i++) {
-                                functional_categories[i] = cog_line[3 + i];
-                            }
-                            String geneName = cog_line[cog_line.length - 1];
-                            if (geneName.equals(functional_categories[functional_categories.length - 1])) {
-                                geneName = "";
-                            }
-                            COG cog = new COG(cog_id, cog_desc, functional_letters, functional_categories, geneName);
-                            cog_info.put(cog_id, cog);
-                        }
-
-                    } else {
-                        String geneName = cog_line[cog_line.length - 1];
-                        if (geneName.equals(cog_desc)) {
-                            geneName = "";
-                        }
-                        COG cog = new COG(cog_id, cog_desc, geneName);
-                        cog_info.put(cog_id, cog);
-                    }
+                String[] cogLine = line.split(";");
+                if (cogLine.length < 2) {
+                    throw new IllegalArgumentException(errorMessage("[COG ID];[COG description];",
+                            line, lineNumber, cogInfoFilePath));
                 }
+
+                String cog_id = cogLine[0];
+                String cog_desc = cogLine[1];
+
+                COG cog = new COG(cog_id, cog_desc);
+
+                if (cogLine.length == 3) {
+
+                    String geneName = cogLine[2];
+                    cog.setGeneName(geneName);
+
+                }else if (cogLine.length > 3){
+
+                    String[] functionalLetters = cogLine[2].split(",");
+
+                    if (cogLine.length < 3 + functionalLetters.length) {
+                        throw new IllegalArgumentException(errorMessage(
+                                String.format("%d functional category descriptions", functionalLetters.length),
+                                String.format("%d in line %s", cogLine.length-3, line), lineNumber, cogInfoFilePath));
+                    }
+
+                    String[] functional_categories = getFunctionalCategories(functionalLetters.length, 3, cogLine);
+
+                    String geneName = "";
+                    int valuesParsedSoFar = 2 + functionalLetters.length*2;
+                    if (cogLine.length == valuesParsedSoFar + 1){
+                        geneName = cogLine[valuesParsedSoFar];
+                    }
+
+                    cog.setGeneName(geneName);
+                    cog.setFunctionalCategories(functional_categories);
+                    cog.setFunctionalLetters(functionalLetters);
+                }
+
+                cogInfo.put(cog_id, cog);
+
                 line = br.readLine();
             }
-            br.close();
-
         } catch (IOException e) {
-            System.out.println("File " + cog_info_file_name + " was not found");
-        } finally {
-            try {
-                if (br != null) {
-                    br.close();
-                }
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+            System.out.println("File " + cogInfoFilePath + " was not found");
         }
-        return cog_info;
+        return cogInfo;
+    }
+
+    private static String[] getFunctionalCategories(int numberOfFunctionalLetters, int startIndex, String[] cogLine){
+        String[] functionalCategories = new String[numberOfFunctionalLetters];
+
+        for (int i = 0; i < numberOfFunctionalLetters; i++) {
+            functionalCategories[i] = cogLine[startIndex + i];
+        }
+
+        return functionalCategories;
     }
 }

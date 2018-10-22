@@ -10,6 +10,7 @@ import Core.PostProcess.Family;
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.ParameterException;
 
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -42,7 +43,11 @@ public class CSBFinderModel {
     public void loadInputGenomesFile(String path) {
         cogInfo = new CogInfo();
         gi = new GenomesInfo();
-        numberOfGenomes = Parsers.parseGenomesFile(path, gi);
+        try {
+            numberOfGenomes = Parsers.parseGenomesFile(path, gi);
+        }catch(IOException e){
+            //TODO: show error message
+        }
         System.out.println("Loaded " + numberOfGenomes + " genomes.");
         workflow = new CSBFinderWorkflow(gi);
 
@@ -98,7 +103,7 @@ public class CSBFinderModel {
         Map<String, COG> cog_info = null;
         boolean cog_info_exists = (params.cogInfoFileName != null);
         if (cog_info_exists) {
-            cog_info = Parsers.read_cog_info_table(params.cogInfoFileName);
+            cog_info = Parsers.parseCogInfoTable(params.cogInfoFileName);
         }
         cogInfo.setCogInfo(cog_info);
 
