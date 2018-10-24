@@ -3,6 +3,7 @@ package Core.Genomes;
 import Core.CogInfo;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * Represents a pattern consisting of characters
@@ -32,24 +33,26 @@ public class Pattern {
 
     private String familyId;
 
-    public Pattern(int patternId, String pattern, String[] patternArr, int length, Set<Integer> seq_keys,
-                   List<Instance> instances, int exactInstanceCount){
+    private Map<Integer, PatternLocationsInGenome> genomeToInstanceLocations;
+
+    public Pattern(int patternId, String pattern, String[] patternArr, int instanceCount, int exactInstanceCount){
 
         this.patternId = patternId;
         this.pattern = pattern;
         this.patternArr = patternArr;
-        this.length = length;
+        this.length = patternArr.length;
         this.instances = instances;
-        instanceCount = seq_keys.size();
+        this.instanceCount = instanceCount;
         this.exactInstanceCount = exactInstanceCount;
         score = 0;
         mainFunctionalCategory = "";
         reverseComplimentPatternArr = reverseComplimentPattern(patternArr);
 
+        genomeToInstanceLocations = new HashMap<>();
     }
 
     public Pattern(int patternId, String pattern, String[] patternArr){
-        this(patternId, pattern, patternArr, patternArr.length, null, null, 0);
+        this(patternId, pattern, patternArr, 0, 0);
     }
 
     public void setPatternId(int pattern_id){
@@ -60,8 +63,33 @@ public class Pattern {
         return patternId;
     }
 
-    public List<Instance> get_instances(){
-        return instances;
+    public void addInstanceLocations(List<Instance> instances){
+
+        for (Instance instance: instances){
+            Collection<List<InstanceLocation>> instanceLocations = instance.getInstanceLocations().values();
+
+            List<InstanceLocation> flatinstanceLocations = instanceLocations.stream()
+                                                            .flatMap(List::stream)
+                                                            .collect(Collectors.toList());
+
+            for (InstanceLocation instanceLocation: flatinstanceLocations){
+
+                InstanceLocation patternLocation = new InstanceLocation(instanceLocation);
+                patternLocation.setInstanceLength(instance.getLength());
+
+                PatternLocationsInGenome patternLocations = genomeToInstanceLocations.get(patternLocation.getGenomeId());
+                if (patternLocations == null){
+                    patternLocations = new PatternLocationsInGenome();
+                }
+                patternLocations.addLocation(patternLocation);
+                genomeToInstanceLocations.put(patternLocation.getGenomeId(), patternLocations);
+            }
+        }
+    }
+
+
+    public Map<Integer, PatternLocationsInGenome> getPatternLocations(){
+        return genomeToInstanceLocations;
     }
 
     public int getLength(){
@@ -86,7 +114,6 @@ public class Pattern {
     public int getExactInstanceCount() {
         return exactInstanceCount;
     }
-
 
     public double getScore(){
         return score;

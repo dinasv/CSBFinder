@@ -211,17 +211,19 @@ public class Writer {
 
             instancesFile.println(">" + pattern.getPatternId() + "\t" + pattern.getPattern());
 
-            for (Map.Entry<Integer, List<InstanceLocation>> entry : groupSameSeqInstances(pattern).entrySet()) {
+            for (Map.Entry<Integer, PatternLocationsInGenome> entry : pattern.getPatternLocations().entrySet()) {
 
-                String seq_name = gi.getGenomeName(entry.getKey());
-                instancesFile.print(seq_name);
+                String genomeName = gi.getGenomeName(entry.getKey());
+                instancesFile.print(genomeName);
 
-                List<InstanceLocation> instances_locations = entry.getValue();
-                for (InstanceLocation instance_location : instances_locations){
-                    String replicon_name = gi.getRepliconName(instance_location.getRepliconId());
+                PatternLocationsInGenome patternLocationsInGenome = entry.getValue();
+                for (List<InstanceLocation> instanceLocationsInReplicon : patternLocationsInGenome.getSortedLocations().values()){
+                    for (InstanceLocation instanceLocation: instanceLocationsInReplicon) {
+                        String replicon_name = gi.getRepliconName(instanceLocation.getRepliconId());
 
-                    instancesFile.print("\t" + replicon_name + "|[" + instance_location.getActualStartIndex() + ","
-                            + instance_location.getActualEndIndex() + "]");
+                        instancesFile.print("\t" + replicon_name + "|[" + instanceLocation.getActualStartIndex() + ","
+                                + instanceLocation.getActualEndIndex() + "]");
+                    }
                 }
 
                 instancesFile.print("\n");
@@ -235,27 +237,28 @@ public class Writer {
      * @param pattern
      * @return
      */
+    /*
     private Map<Integer, List<InstanceLocation>> groupSameSeqInstances(Pattern pattern){
-        Map<Integer, List<InstanceLocation>> instance_seq_to_location = new HashMap<>();
-        for (Instance instance : pattern.get_instances()) {
+        Map<Integer, List<InstanceLocation>> instanceSeqToLocation = new HashMap<>();
+        for (Instance instance : pattern.getInstances()) {
 
             int instance_length = instance.getLength();
             for (Map.Entry<Integer, List<InstanceLocation>> entry : instance.getInstanceLocations().entrySet()) {
                 int seq_key = entry.getKey();
 
-                if (!instance_seq_to_location.containsKey(seq_key)) {
-                    instance_seq_to_location.put(seq_key, new ArrayList<InstanceLocation>());
+                if (!instanceSeqToLocation.containsKey(seq_key)) {
+                    instanceSeqToLocation.put(seq_key, new ArrayList<InstanceLocation>());
                 }
-                List<InstanceLocation> instances_locations = instance_seq_to_location.get(seq_key);
+                List<InstanceLocation> instances_locations = instanceSeqToLocation.get(seq_key);
                 for (InstanceLocation instance_location : entry.getValue()) {
                     //instance_location.setEndIndexUsingLength(instance_length);
-                    instance_location.changeInstanceLength(instance_length);
+                    instance_location.setInstanceLength(instance_length);
                     instances_locations.add(instance_location);
                 }
             }
         }
-        return instance_seq_to_location;
-    }
+        return instanceSeqToLocation;
+    }*/
 
 
     /**

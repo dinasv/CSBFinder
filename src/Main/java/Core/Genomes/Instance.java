@@ -13,7 +13,7 @@ import java.util.Map;
  */
 public class Instance implements Comparable<Instance>{
     /**
-     * The motif instance starts from the root and ends in node instanceNode + edge label until edgeIndex
+     * The pattern instance starts from the root and ends in node instanceNode + edge label until edgeIndex
      */
     private InstanceNode instanceNode;
     /**
@@ -47,7 +47,8 @@ public class Instance implements Comparable<Instance>{
     //private Map<Integer, List<InstanceLocation>> instanceLocations;
 
 
-    public Instance(InstanceNode instanceNode, Edge e, int edgeIndex, int error, int deletions, List<Integer> insertionIndexes, String substring, int length){
+    public Instance(InstanceNode instanceNode, Edge e, int edgeIndex, int error, int deletions,
+                    List<Integer> insertionIndexes, String substring, int length){
         this.instanceNode = instanceNode;
         this.edge = e;
         this.edgeIndex = edgeIndex;
@@ -116,14 +117,14 @@ public class Instance implements Comparable<Instance>{
             instance_node_this = (InstanceNode) edge.getDest();
         }
 
-        return instance_node_other.getCountByKeys() - instance_node_this.getCountByKeys();
+        return instance_node_other.getCountInstancePerGenome() - instance_node_this.getCountInstancePerGenome();
     }
     @Override
     public boolean equals(Object other) {
         if (other == null) return false;
         if (other == this) return true;
         if (!(other instanceof Instance)) return false;
-        return ((Instance) other).getNodeInstance().getCountByKeys() == instanceNode.getCountByKeys();
+        return ((Instance) other).getNodeInstance().getCountInstancePerGenome() == instanceNode.getCountInstancePerGenome();
     }
 
     public int getInsertions() {
@@ -148,6 +149,6 @@ public class Instance implements Comparable<Instance>{
             Edge temp_edge = edge;
             instance_node = (InstanceNode) temp_edge.getDest();
         }
-        return instance_node.getResults();
+        return instance_node.getGenomeToLocationsInSubtree();
     }
 }

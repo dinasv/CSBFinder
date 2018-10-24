@@ -11,13 +11,15 @@ import java.util.*;
 public class InstanceNode extends SuffixNode {
 
     /**
-     * Save for every string key in data, the position of the suffix of that string that ends at this node
-     * sequence_id : {(replicon_id|start_index|numericValue)}
+     * Save for every genome in genomeToLocations, the position of the suffix of that string that ends at this node
+     *
+     * key = genome ID
+     * value = a list of locations of this substring in this genome
      */
-    private Map<Integer, List<InstanceLocation>> data;
+    private Map<Integer, List<InstanceLocation>> genomeToLocations;
 
     /**
-     * The total number of <em>different</em> results that are stored in this
+     * The total number of <em>different</em> genomeToLocationsInSubtree that are stored in this
      * node and in underlying ones (i.e. nodes that can be reached through paths
      * starting from <tt>this</tt>.
      *
@@ -25,50 +27,51 @@ public class InstanceNode extends SuffixNode {
      *
      * This must be calculated explicitly using computeAndCacheCount
      */
-    private int countByKeys = -1;
-    private int countByIndexes = -1;
+    private int countInstancePerGenome = -1;
+    private int countMultipleInstancesPerGenome = -1;
     /**
-     * All the <em>different</em> results that are stored in this
-     * node and in underlying ones (i.e. nodes that can be reached through paths
-     * starting from <tt>this</tt>.
+     * All the <em>different</em> locations that are stored in the subtree rooted in this node
+     * (in all nodes that can be reached through paths starting from <tt>this</tt>.
+     * i.e., locations of all substrings, that have a prefix identical to the current prefix
+     *
      * key = genome id
      * value = a list of instance locations
      *
      * This must be calculated explicitly using computeAndCacheCount
      */
-    private Map<Integer, List<InstanceLocation>> results;
+    private Map<Integer, List<InstanceLocation>> genomeToLocationsInSubtree;
 
 
     public InstanceNode(){
-        results = new HashMap<Integer, List<InstanceLocation>>();
-        data = new HashMap<Integer, List<InstanceLocation>>();
+        genomeToLocationsInSubtree = new HashMap<Integer, List<InstanceLocation>>();
+        genomeToLocations = new HashMap<Integer, List<InstanceLocation>>();
     }
 
     public InstanceNode(InstanceNode other){
         super(other);
 
-        results = new HashMap<Integer, List<InstanceLocation>>();
-        data = new HashMap<Integer, List<InstanceLocation>>();
+        genomeToLocationsInSubtree = new HashMap<Integer, List<InstanceLocation>>();
+        genomeToLocations = new HashMap<Integer, List<InstanceLocation>>();
     }
 
     /**
-     * Add position of the suffix (the starting index) of the string "key"
+     * Add the location of the suffix (the starting index) in genome with the id {@code genomeId}
      */
-    void addDataIndex(int key, InstanceLocation instanceLocation) {
+    void addLocationToGenome(int genomeId, InstanceLocation instanceLocation) {
 
-        List<InstanceLocation> key_indexes = data.get(key);
-        if (key_indexes == null){
-            key_indexes = new ArrayList<InstanceLocation>();
+        List<InstanceLocation> locations = genomeToLocations.get(genomeId);
+        if (locations == null){
+            locations = new ArrayList<InstanceLocation>();
         }
-        key_indexes.add(instanceLocation);
-        data.put(key, key_indexes);
+        locations.add(instanceLocation);
+        genomeToLocations.put(genomeId, locations);
 
         // add this reference to all the suffixes as well
-        addIndexToSuffix(this, key, instanceLocation);
+        addIndexToSuffix(this, genomeId, instanceLocation);
 
     }
 
-    private void addIndexToSuffix(InstanceNode node, int key, InstanceLocation instanceLocation){
+    private void addIndexToSuffix(InstanceNode node, int genomeId, InstanceLocation instanceLocation){
         InstanceNode iter = node.getSuffix();
         if (iter != null) {
             while (iter.getSuffix() != null) {
@@ -77,14 +80,13 @@ public class InstanceNode extends SuffixNode {
                 int endIndex = instanceLocation.getEndIndex();
 
                 int repliconId = instanceLocation.getRepliconId();
-                instanceLocation = new InstanceLocation(repliconId, startIndex + strand.numericValue, endIndex,
-                                        strand);
+                startIndex = startIndex + strand.numericValue;
+                instanceLocation = new InstanceLocation(repliconId, genomeId, startIndex, endIndex, strand);
 
-
-                List<InstanceLocation> key_indexes = iter.data.get(key);
+                List<InstanceLocation> key_indexes = iter.genomeToLocations.get(genomeId);
                 if (key_indexes == null){
                     key_indexes = new ArrayList<InstanceLocation>();
-                    iter.data.put(key, key_indexes);
+                    iter.genomeToLocations.put(genomeId, key_indexes);
                 }
                 key_indexes.add(instanceLocation);
 
@@ -94,24 +96,24 @@ public class InstanceNode extends SuffixNode {
     }
 
     /**
-     * Computes the results and the number of results that are stored on this node and on its
+     * Computes the genomeToLocationsInSubtree and the number of genomeToLocationsInSubtree that are stored on this node and on its
      * children, and caches the result. Equal to getData, only with caching
      *
      * Performs the same operation on subnodes as well
-     * @return the number of results
+     * @return the number of genomeToLocationsInSubtree
      */
     protected int computeAndCacheCount() {
-        if (countByKeys == -1) {
+        if (countInstancePerGenome == -1) {
             computeAndCacheCountRecursive();
         }
-        return countByKeys;
+        return countInstancePerGenome;
     }
 
     private Map<Integer, List<InstanceLocation>> computeAndCacheCountRecursive() {
-        countByKeys = 0;
-        countByIndexes = 0;
-        //add all data_indexes to results
-        countByIndexes += multimapAddAll(results, data);
+        countInstancePerGenome = 0;
+        countMultipleInstancesPerGenome = 0;
+        //add all data_indexes to genomeToLocationsInSubtree
+        countMultipleInstancesPerGenome += multimapAddAll(genomeToLocationsInSubtree, genomeToLocations);
 
         Map<Integer, Edge> edges = getEdges();
         for (Map.Entry<Integer, Edge> entry : edges.entrySet()) {
@@ -119,11 +121,11 @@ public class InstanceNode extends SuffixNode {
             InstanceNode destNode = (InstanceNode)e.getDest();
             Map<Integer, List<InstanceLocation>> dest_data_indexes = destNode.computeAndCacheCountRecursive();
 
-            countByIndexes += multimapAddAll(results, dest_data_indexes);
+            countMultipleInstancesPerGenome += multimapAddAll(genomeToLocationsInSubtree, dest_data_indexes);
 
         }
-        countByKeys = results.size();
-        return results;
+        countInstancePerGenome = genomeToLocationsInSubtree.size();
+        return genomeToLocationsInSubtree;
     }
 
     private static int multimapAddAll(Map<Integer, List<InstanceLocation>>  multimap_to, Map<Integer, List<InstanceLocation>>  multimap_from ){
@@ -146,35 +148,37 @@ public class InstanceNode extends SuffixNode {
     }
 
     /**
-     * Returns the number of results that are stored on this node and on its
-     * children.
+     * Returns the number of genomes that are stored in this subtree
      * Should be called after having called computeAndCacheCount.
      *
      * @throws IllegalStateException when this method is called without having called
      * computeAndCacheCount first
      * wasn't updated
      */
-    public int getCountByKeys() throws IllegalStateException {
-        if (-1 == countByKeys) {
-            throw new IllegalStateException("getCountByKeys() shouldn't be called without calling computeAndCacheCount() first");
+    public int getCountInstancePerGenome() throws IllegalStateException {
+        if (-1 == countInstancePerGenome) {
+            throw new IllegalStateException("getCountInstancePerGenome() shouldn't be called without calling " +
+                    "computeAndCacheCount() first");
         }
 
-        return countByKeys;
+        return countInstancePerGenome;
     }
 
-    public int getCountByIndexes() throws IllegalStateException {
-        if (-1 == countByKeys) {
-            throw new IllegalStateException("getCountByKeys() shouldn't be called without calling computeAndCacheCount() first");
+    public int getCountMultipleInstancesPerGenome() throws IllegalStateException {
+        if (-1 == countMultipleInstancesPerGenome) {
+            throw new IllegalStateException("getCountInstancePerGenome() shouldn't be called without calling " +
+                    "computeAndCacheCount() first");
         }
 
-        return countByIndexes;
+        return countMultipleInstancesPerGenome;
     }
-    public Map<Integer, List<InstanceLocation>> getResults(){
-        if (-1 == countByKeys) {
-            throw new IllegalStateException("getResults() shouldn't be called without calling computeCount() first");
+    public Map<Integer, List<InstanceLocation>> getGenomeToLocationsInSubtree(){
+        if (-1 == countInstancePerGenome) {
+            throw new IllegalStateException("getGenomeToLocationsInSubtree() shouldn't be called without calling " +
+                    "computeAndCacheCount() first");
         }
 
-        return results;
+        return genomeToLocationsInSubtree;
     }
 
     public InstanceNode getSuffix() {

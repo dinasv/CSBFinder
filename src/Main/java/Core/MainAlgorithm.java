@@ -15,7 +15,7 @@ public class MainAlgorithm {
 
     private static final String DELIMITER = " ";
 
-    public static long count_nodes_in_pattern_tree;
+    public static long countNodesInPatternTree;
     public static long count_nodes_in_data_tree;
 
     private int maxError;
@@ -74,7 +74,7 @@ public class MainAlgorithm {
 
         this.debug = params.debug;
 
-        count_nodes_in_pattern_tree = 0;
+        countNodesInPatternTree = 0;
         count_nodes_in_data_tree = 0;
 
         patterns = new HashMap<>();
@@ -95,24 +95,24 @@ public class MainAlgorithm {
 
     /**
      * Calls the recursive function spellPatterns
-     * @param pattern_node a node in the pattern tree, the pattern tree traversal begins from this node
+     * @param patternNode a node in the pattern tree, the pattern tree traversal begins from this node
      */
-    private void findPatterns(PatternNode pattern_node) {
+    private void findPatterns(PatternNode patternNode) {
 
         dataTree.computeCount();
-        totalCharsInData = ((InstanceNode) dataTree.getRoot()).getCountByIndexes();
+        totalCharsInData = ((InstanceNode) dataTree.getRoot()).getCountMultipleInstancesPerGenome();
 
-        InstanceNode data_tree_root = (InstanceNode) dataTree.getRoot();
+        InstanceNode dataTreeRoot = (InstanceNode) dataTree.getRoot();
         //the instance of an empty string is the root of the data tree
-        Instance empty_instance = new Instance(data_tree_root, null, -1, 0, 0);
+        Instance empty_instance = new Instance(dataTreeRoot, null, -1, 0, 0);
         count_nodes_in_data_tree ++;
 
-        pattern_node.addInstance(empty_instance, maxInsertion);
-        if (pattern_node.getType()== TreeType.VIRTUAL){
-            spellPatternsVirtually(pattern_node, data_tree_root, -1, null, "",
+        patternNode.addInstance(empty_instance, maxInsertion);
+        if (patternNode.getType()== TreeType.VIRTUAL){
+            spellPatternsVirtually(patternNode, dataTreeRoot, -1, null, "",
                     0, 0);
-        }else {
-            spellPatterns(pattern_node, "", 0, 0);
+        }else{
+            spellPatterns(patternNode, "", 0, 0);
         }
     }
 
@@ -268,107 +268,107 @@ public class MainAlgorithm {
                 }
             }
         }
-        count_nodes_in_pattern_tree++;
+        countNodesInPatternTree++;
 
         return max_num_of_diff_instances;
     }
 
 
     /**
-     * * Recursive function that traverses over the subtree rooted at pattern_node, which is a node of a suffix tree.
+     * * Recursive function that traverses over the subtree rooted at patternNode, which is a node of a suffix tree.
      * This operation 'spells' all possible strings with infix 'pattern', that have enough instances (q1 exact instances
      * and q2 approximate instances)
      * It is same as spellPatterns, only that the suffix tree of patterns is not saved in memory, it is created virtually
      * from data suffix tree.
      *
-     * @param pattern_node
-     * @param data_node
-     * @param data_edge_index
-     * @param data_edge
+     * @param patternNode
+     * @param dataNode
+     * @param dataEdgeIndex
+     * @param dataEdge
      * @param pattern
-     * @param pattern_length
-     * @param wildcard_count
+     * @param patternLength
+     * @param wildcardCount
      * @return
      */
-    private int spellPatternsVirtually(PatternNode pattern_node, InstanceNode data_node, int data_edge_index,
-                                       Edge data_edge,
-                                       String pattern, int pattern_length, int wildcard_count) {
+    private int spellPatternsVirtually(PatternNode patternNode, InstanceNode dataNode, int dataEdgeIndex,
+                                       Edge dataEdge,
+                                       String pattern, int patternLength, int wildcardCount) {
 
-        List<Instance> instances = pattern_node.getInstances();
+        List<Instance> instances = patternNode.getInstances();
         //the maximal number of different instances, of one of the extended patterns
-        int max_num_of_diff_instances = -1;
-        int num_of_diff_instances = 0;
+        int maxNumOfDiffInstances = -1;
+        int numOfDiffInstances = 0;
 
-        Map<Integer, Edge> data_node_edges = null;
+        Map<Integer, Edge> dataNodeEdges = null;
 
-        WordArray data_edge_label;
-        if (data_edge != null) {
-            data_edge_label = data_edge.getLabel();
-            if (data_edge_index >= data_edge_label.get_length()) {//we reached to the end of the edge
-                data_node = (InstanceNode) data_edge.getDest();
-                data_edge_index = -1;
-                data_edge = null;
+        WordArray dataEdgeLabel;
+        if (dataEdge != null) {
+            dataEdgeLabel = dataEdge.getLabel();
+            if (dataEdgeIndex >= dataEdgeLabel.get_length()) {//we reached to the end of the edge
+                dataNode = (InstanceNode) dataEdge.getDest();
+                dataEdgeIndex = -1;
+                dataEdge = null;
             }
         }
 
-        PatternNode target_node;
+        PatternNode targetNode;
 
-        if (data_edge_index == -1){
-            data_edge_index ++;
-            data_node_edges = data_node.getEdges();
+        if (dataEdgeIndex == -1){
+            dataEdgeIndex ++;
+            dataNodeEdges = dataNode.getEdges();
 
-            for (Map.Entry<Integer, Edge> entry : data_node_edges.entrySet()) {
+            for (Map.Entry<Integer, Edge> entry : dataNodeEdges.entrySet()) {
                 int alpha = entry.getKey();
                 String alpha_ch = gi.indexToChar.get(alpha);
-                data_edge = entry.getValue();
-                InstanceNode data_tree_target_node = (InstanceNode) data_edge.getDest();
+                dataEdge = entry.getValue();
+                InstanceNode data_tree_target_node = (InstanceNode) dataEdge.getDest();
 
-                if (data_tree_target_node.getCountByKeys() >= q1) {
+                if (data_tree_target_node.getCountInstancePerGenome() >= q1) {
 
                     if (alpha == gi.UNK_CHAR_INDEX) {
                         if (q1 == 0 && !pattern.startsWith("X")) {
-                            spellPatternsVirtually(pattern_node, data_node, data_edge_index + 1, data_edge,
-                            pattern, pattern_length, wildcard_count);
+                            spellPatternsVirtually(patternNode, dataNode, dataEdgeIndex + 1, dataEdge,
+                            pattern, patternLength, wildcardCount);
                         }
                     } else {
 
-                        target_node = new PatternNode(TreeType.VIRTUAL);
-                        target_node.setKey(++lastPatternKey);
+                        targetNode = new PatternNode(TreeType.VIRTUAL);
+                        targetNode.setKey(++lastPatternKey);
 
-                        num_of_diff_instances = extendPattern(alpha, data_edge_index + 1, data_node, data_edge,
-                                wildcard_count, pattern, target_node, pattern_node, instances, pattern_length);
+                        numOfDiffInstances = extendPattern(alpha, dataEdgeIndex + 1, dataNode, dataEdge,
+                                wildcardCount, pattern, targetNode, patternNode, instances, patternLength);
 
-                        if (num_of_diff_instances > max_num_of_diff_instances) {
-                            max_num_of_diff_instances = num_of_diff_instances;
+                        if (numOfDiffInstances > maxNumOfDiffInstances) {
+                            maxNumOfDiffInstances = numOfDiffInstances;
                         }
                     }
                 }
             }
-        }else{//data_edge_index>=1 && data_edge_index < data_edge_label.get_length()
-            data_edge_label = data_edge.getLabel();
-            int alpha = data_edge_label.get_index(data_edge_index);
+        }else{//dataEdgeIndex>=1 && dataEdgeIndex < dataEdgeLabel.get_length()
+            dataEdgeLabel = dataEdge.getLabel();
+            int alpha = dataEdgeLabel.get_index(dataEdgeIndex);
 
-            InstanceNode data_tree_target_node = (InstanceNode) data_edge.getDest();
+            InstanceNode data_tree_target_node = (InstanceNode) dataEdge.getDest();
 
-            if (data_tree_target_node.getCountByKeys() >= q1) {
+            if (data_tree_target_node.getCountInstancePerGenome() >= q1) {
                 if (alpha != gi.UNK_CHAR_INDEX) {
 
-                    target_node = new PatternNode(TreeType.VIRTUAL);
-                    target_node.setKey(++lastPatternKey);
+                    targetNode = new PatternNode(TreeType.VIRTUAL);
+                    targetNode.setKey(++lastPatternKey);
 
-                    num_of_diff_instances = extendPattern(alpha, data_edge_index + 1, data_node, data_edge,
-                            wildcard_count, pattern, target_node, pattern_node, instances, pattern_length);
+                    numOfDiffInstances = extendPattern(alpha, dataEdgeIndex + 1, dataNode, dataEdge,
+                            wildcardCount, pattern, targetNode, patternNode, instances, patternLength);
 
-                    if (num_of_diff_instances > max_num_of_diff_instances) {
-                        max_num_of_diff_instances = num_of_diff_instances;
+                    if (numOfDiffInstances > maxNumOfDiffInstances) {
+                        maxNumOfDiffInstances = numOfDiffInstances;
                     }
                 }
             }
         }
 
-        count_nodes_in_pattern_tree++;
+        countNodesInPatternTree++;
 
-        return max_num_of_diff_instances;
+        return maxNumOfDiffInstances;
     }
 
     private void handlePattern(Pattern new_pattern, String extended_pattern){
@@ -382,7 +382,7 @@ public class MainAlgorithm {
      * @param alpha                the char to append
      * @param wildcard_count how many wildcard in the pattern
      * @param pattern                previous pattern string, before adding alpha. i.e. COG1234|COG2000|
-     * @param target_node          node the extended pattern
+     * @param targetNode          node the extended pattern
      * @param pattern_node           node of pattern
      * @param Instances            the instances of pattern
      * @param pattern_length
@@ -390,74 +390,76 @@ public class MainAlgorithm {
      */
 
     private int extendPattern(int alpha, int data_edge_index, InstanceNode data_node, Edge data_edge,
-                              int wildcard_count, String pattern, PatternNode target_node,
+                              int wildcard_count, String pattern, PatternNode targetNode,
                               PatternNode pattern_node, List<Instance> Instances, int pattern_length) {
 
-        String extended_pattern = appendChar(pattern, alpha);
-        PatternNode extended_pattern_node = target_node;
+        String extendedPattern = appendChar(pattern, alpha);
+        PatternNode extendedPatternNode = targetNode;
         int extended_pattern_length = pattern_length + 1;
 
         //if there is a wildcard in the current pattern, have to create a copy of the subtree
         if (wildcard_count > 0 && alpha != gi.WC_CHAR_INDEX) {
-            extended_pattern_node = new PatternNode(extended_pattern_node);
-            pattern_node.addTargetNode(alpha, extended_pattern_node);
+            extendedPatternNode = new PatternNode(extendedPatternNode);
+            pattern_node.addTargetNode(alpha, extendedPatternNode);
         }
 
-        extended_pattern_node.setSubstring(extended_pattern);
-        extended_pattern_node.setSubstringLength(extended_pattern_length);
+        extendedPatternNode.setSubstring(extendedPattern);
+        extendedPatternNode.setSubstringLength(extended_pattern_length);
 
         int exact_instances_count = 0;
         //go over all instances of the pattern
         for (Instance instance : Instances) {
-            int curr_exact_instance_count = extendInstance(extended_pattern_node, instance, alpha);
+            int curr_exact_instance_count = extendInstance(extendedPatternNode, instance, alpha);
             if (curr_exact_instance_count > 0){
                 exact_instances_count = curr_exact_instance_count;
             }
         }
-        extended_pattern_node.setExactInstanceCount(exact_instances_count);
+        extendedPatternNode.setExactInstanceCount(exact_instances_count);
 
         int diff_instances_count;
         if (multCount){
-            diff_instances_count = extended_pattern_node.getInstanceIndexCount();
+            diff_instances_count = extendedPatternNode.getInstanceIndexCount();
         }else {
-            diff_instances_count = extended_pattern_node.getInstanceKeysSize();
+            diff_instances_count = extendedPatternNode.getInstanceKeysSize();
         }
 
         if (exact_instances_count >= q1 && diff_instances_count >= q2 &&
                 (extended_pattern_length - wildcard_count <= maxPatternLength)) {
 
-            TreeType type = extended_pattern_node.getType();
+            TreeType type = extendedPatternNode.getType();
             int ret;
             if (type == TreeType.VIRTUAL){
-                ret = spellPatternsVirtually(extended_pattern_node, data_node, data_edge_index, data_edge,
-                        extended_pattern, extended_pattern_length, wildcard_count);
+                ret = spellPatternsVirtually(extendedPatternNode, data_node, data_edge_index, data_edge,
+                        extendedPattern, extended_pattern_length, wildcard_count);
             }else {
-                ret = spellPatterns(extended_pattern_node, extended_pattern, extended_pattern_length, wildcard_count);
+                ret = spellPatterns(extendedPatternNode, extendedPattern, extended_pattern_length, wildcard_count);
             }
 
             if (extended_pattern_length - wildcard_count >= minPatternLength) {
                 if (type == TreeType.STATIC) {
-                    if (extended_pattern_node.getPatternKey()>0) {
-                        Pattern new_pattern = new Pattern(extended_pattern_node.getPatternKey(), extended_pattern,
-                                extended_pattern.split(DELIMITER), extended_pattern_length,
-                                extended_pattern_node.getInstanceKeys(), extended_pattern_node.getInstances(),
-                                extended_pattern_node.getExactInstanceCount());
+                    if (extendedPatternNode.getPatternKey()>0) {
+                        Pattern newPattern = new Pattern(extendedPatternNode.getPatternKey(), extendedPattern,
+                                extendedPattern.split(DELIMITER),
+                                extendedPatternNode.getInstanceKeys().size(),
+                                extendedPatternNode.getExactInstanceCount());
+                        newPattern.addInstanceLocations(extendedPatternNode.getInstances());
 
-                        handlePattern(new_pattern, extended_pattern);
+                        handlePattern(newPattern, extendedPattern);
 
                     }
                 } else if (type == TreeType.VIRTUAL) {
                     if (alpha != gi.WC_CHAR_INDEX) {
-                        if (!(starts_with_wildcard(extended_pattern))) {
-                            //make sure that extended_pattern is right maximal, if extended_pattern has the same number of
+                        if (!(starts_with_wildcard(extendedPattern))) {
+                            //make sure that extendedPattern is right maximal, if extendedPattern has the same number of
                             // instances as the longer pattern, prefer the longer pattern
                             if (diff_instances_count > ret || debug) {// diff_instances_count >= ret always
-                                Pattern new_pattern = new Pattern(extended_pattern_node.getPatternKey(), extended_pattern,
-                                        extended_pattern.split(DELIMITER), extended_pattern_length,
-                                        extended_pattern_node.getInstanceKeys(), extended_pattern_node.getInstances(),
-                                        extended_pattern_node.getExactInstanceCount());
+                                Pattern newPattern = new Pattern(extendedPatternNode.getPatternKey(), extendedPattern,
+                                        extendedPattern.split(DELIMITER),
+                                        extendedPatternNode.getInstanceKeys().size(),
+                                        extendedPatternNode.getExactInstanceCount());
+                                newPattern.addInstanceLocations(extendedPatternNode.getInstances());
 
-                                handlePattern(new_pattern, extended_pattern);
+                                handlePattern(newPattern, extendedPattern);
 
                                 if (debug && (getPatternsCount() % 5000 == 0) ){
                                     MemoryUtils.measure();
@@ -535,7 +537,7 @@ public class MainAlgorithm {
                     next_node_instance = node_instance;
                     //Exists an edge_instance starting with ch, add it to instances
                     if (next_edge_instance != null) {
-                        exact_instance_count = ((InstanceNode)next_edge_instance.getDest()).getCountByKeys();
+                        exact_instance_count = ((InstanceNode)next_edge_instance.getDest()).getCountInstancePerGenome();
                         //The label contains only 1 char, go to next node_instance
                         if (next_edge_instance.getLabel().get_length() == 1) {
                             next_node_instance = (InstanceNode) next_edge_instance.getDest();
@@ -580,7 +582,7 @@ public class MainAlgorithm {
 
             //if the char is equal add anyway
             if (next_ch == ch) {
-                exact_instance_count = ((InstanceNode)edge_instance.getDest()).getCountByKeys();
+                exact_instance_count = ((InstanceNode)edge_instance.getDest()).getCountInstancePerGenome();
                 addInstanceToPattern(extended_pattern, instance, next_ch, next_node_instance, next_edge_instance, next_edge_index, error,
                         deletions);
             } else {
@@ -634,7 +636,7 @@ public class MainAlgorithm {
 
             if (ch == next_ch) {
                 curr_error = error;
-                exact_instance_count = ((InstanceNode)next_edge.getDest()).getCountByKeys();
+                exact_instance_count = ((InstanceNode)next_edge.getDest()).getCountInstancePerGenome();
             } else {
                 if (ch != gi.WC_CHAR_INDEX) {//Substitution - the chars are different, increment error
                     curr_error = error + 1;

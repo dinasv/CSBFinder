@@ -6,22 +6,37 @@ package Core.Genomes;
 public class InstanceLocation{
 
     private int repliconId;
+    private int genomeId;
     private Strand strand;
     private int startIndex;
     private int endIndex;
     private String repliconName;
 
 
-    public InstanceLocation(int repliconId, int startIndex, int endIndex, Strand strand){
+    public InstanceLocation(int repliconId, int genomeId, int startIndex, int endIndex, Strand strand){
         this.repliconId = repliconId;
+        this.genomeId = genomeId;
         this.strand = strand;
         this.startIndex = startIndex;
         this.endIndex = endIndex;
         repliconName = "";
     }
 
+    public InstanceLocation(InstanceLocation other){
+        repliconId = other.repliconId;
+        genomeId = other.genomeId;
+        strand = other.strand;
+        startIndex = other.startIndex;
+        endIndex = other.endIndex;
+        repliconName = "";
+    }
+
     public int getRepliconId() {
         return repliconId;
+    }
+
+    public int getGenomeId() {
+        return genomeId;
     }
 
     public Strand getStrand() {
@@ -50,7 +65,7 @@ public class InstanceLocation{
         return endIndex;
     }
 
-    public void changeInstanceLength(int length){
+    public void setInstanceLength(int length){
         if (startIndex <= endIndex){
             endIndex = startIndex + length;
         }else{

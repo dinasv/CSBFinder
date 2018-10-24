@@ -59,7 +59,8 @@ public class DatasetTreeBuilder {
 
         String[] genes = genomicSegment.getGenesIDs();
         WordArray cog_word = createWordArray(genes, genomesInfo);
-        InstanceLocation instanceLocation = new InstanceLocation(genomicSegment.getId(), genomicSegment.getStartIndex(),
+        InstanceLocation instanceLocation = new InstanceLocation(genomicSegment.getId(), currGenomeIndex,
+                genomicSegment.getStartIndex(),
                 genomicSegment.getStartIndex() + genomicSegment.size(), genomicSegment.getStrand());
         if (genomicSegment.getStrand() == Strand.REVERSE){
             instanceLocation.switchStartEndIndex();

@@ -136,12 +136,12 @@ public class PatternNode {
         InstanceNode instance_node;
         if (instance.getEdge() == null) {
             instance_node = instance.getNodeInstance();
-            addOccKeys(instance_node.getResults().keySet());
+            addOccKeys(instance_node.getGenomeToLocationsInSubtree().keySet());
         } else {//we are in the middle of the edge, the instance is a suffix of edge.getDest()
             instance_node = (InstanceNode)instance.getEdge().getDest();
-            addOccKeys(instance_node.getResults().keySet());
+            addOccKeys(instance_node.getGenomeToLocationsInSubtree().keySet());
         }
-        incrementInstanceCount(instance_node.getCountByIndexes());
+        incrementInstanceCount(instance_node.getCountMultipleInstancesPerGenome());
     }
 
     public List<Instance> getInstances(){

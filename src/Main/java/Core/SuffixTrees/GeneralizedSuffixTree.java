@@ -111,7 +111,7 @@ public class GeneralizedSuffixTree  implements Serializable{
             return new ResultInfo(Collections.EMPTY_LIST, 0);
         }
 
-        return new ResultInfo(tmpNode.getData(to), tmpNode.getCountByKeys());
+        return new ResultInfo(tmpNode.getData(to), tmpNode.getCountInstancePerGenome());
     }*/
 
     /**
@@ -161,16 +161,14 @@ public class GeneralizedSuffixTree  implements Serializable{
 
 
     /**
-     * Adds the specified <tt>index</tt> to the GST under the given <tt>key</tt>.
+     * Adds the specified <tt>subsstring</tt> to the GST under the given <tt>genomeId</tt>.
      *
-     * Entries must be inserted so that their indexes are in non-decreasing order,
-     * otherwise an IllegalStateException will be raised.
      *
-     * @param str the string (word) added to the tree
-     * @param key the key of the genome
-     * @param instanceInfo info regarding the location of this word
+     * @param substring the substring (word) that will be added to the tree
+     * @param genomeId a unique id of the genome in which {@code substring} is a substring
+     * @param instanceLocation information regarding the location of substring in the genome
      */
-    public void put(WordArray str, int key, InstanceLocation instanceLocation) {
+    public void put(WordArray substring, int genomeId, InstanceLocation instanceLocation) {
 
         // reset activeLeaf
         activeLeaf = root;
@@ -181,15 +179,15 @@ public class GeneralizedSuffixTree  implements Serializable{
 
         // proceed with tree construction (closely related to procedure in
         // Ukkonen's paper)
-        WordArray text = new WordArray(str.wordArray, 0, 0);
+        WordArray text = new WordArray(substring.wordArray, 0, 0);
 
         // iterate over the string, one char at a time
-        for (int i = 0; i < str.get_length(); i++) {
+        for (int i = 0; i < substring.get_length(); i++) {
             // line 6
             text.add_to_end_index(1);
 
             // line 7: update the tree with the new transitions due to this new char
-            WordArray rest = new WordArray(str.wordArray, i, str.get_end_index());
+            WordArray rest = new WordArray(substring.wordArray, i, substring.get_end_index());
             WordArray text_copy = new WordArray(text.wordArray, text.get_start_index(), text.get_end_index());
 
 
@@ -209,10 +207,10 @@ public class GeneralizedSuffixTree  implements Serializable{
             activeLeaf.setSuffix(s);
         }
 
-        //add recursively the key and indexes to the nodes corresponding to this string
+        //add recursively the genomeId and indexes to the nodes corresponding to this string
 
         if (fullStringNode instanceof InstanceNode)
-            ((InstanceNode)fullStringNode).addDataIndex(key, instanceLocation);
+            ((InstanceNode)fullStringNode).addLocationToGenome(genomeId, instanceLocation);
 
 
     }
