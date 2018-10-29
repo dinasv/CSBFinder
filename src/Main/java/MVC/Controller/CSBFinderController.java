@@ -1,5 +1,6 @@
 package MVC.Controller;
 
+import Core.Genomes.Gene;
 import Core.Genomes.Genome;
 import MVC.Common.*;
 import MVC.Model.CSBFinderModel;
@@ -40,10 +41,6 @@ public class CSBFinderController {
         this.model.loadInputGenomesFile(file_path);
     }
 
-    /*
-    public void buildDatasetTree(){
-        this.model.buildDatasetTree();
-    }*/
 
     public void saveOutputFiles(String outputFileType) { this.model.saveOutputFiles(outputFileType); }
 
@@ -51,8 +48,8 @@ public class CSBFinderController {
         this.model.findCSBs(request);
     }
 
-    public List<COG> getCogInfo(List<String> cogs) {
-        return model.getCogInfo(cogs);
+    public List<COG> getCogInfo(List<Gene> genes) {
+        return model.getCogInfo(genes);
     }
 
     public Set<COG> getInsertedGenes(Map<String, Map<String, List<InstanceInfo>>> instances, List<COG> patternGenes){

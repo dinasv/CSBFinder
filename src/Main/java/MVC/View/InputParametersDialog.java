@@ -28,6 +28,7 @@ public class InputParametersDialog extends JDialog {
     private JLabel geneInfoFilePathLabel;
     private JLabel bcountLabel;
     private JLabel familyClusterThresholdLabel;
+    private JLabel segmentToDirectonsLabel;
 
 
     private JList clusterTypeField;
@@ -44,6 +45,8 @@ public class InputParametersDialog extends JDialog {
     private JTextField geneInfoFilePath;
     private JCheckBox bcount;
     private JSlider familyClusterThreshold;
+    private JCheckBox segmentToDirectons;
+
 
     private JLabel thresholdLabel;
 
@@ -103,6 +106,8 @@ public class InputParametersDialog extends JDialog {
         request.setMultCount(bcount.isSelected());
         request.setFamilyClusterThreshold(familyClusterThreshold.getValue() / 10.0f);
         request.setClusterType((String) clusterTypeField.getSelectedValue());
+        request.setNonDirectons(!segmentToDirectons.isSelected());
+
     }
 
     public void setRunListener(RunListener runListener) {
@@ -132,7 +137,9 @@ public class InputParametersDialog extends JDialog {
         geneInfoFilePath = new JTextField();
 
         bcount = new JCheckBox();
-        
+
+        segmentToDirectons = new JCheckBox();
+
         familyClusterThreshold = new JSlider();
 
         loadPatternBtn = new JButton("Load File");
@@ -166,51 +173,55 @@ public class InputParametersDialog extends JDialog {
         ImageIcon icon = createImageIcon("/question.png",
                 "question mark icon");
 
-        String label_name = "Quorum";
+        String labelName = "Quorum";
         String desc = "Minimal number of input sequences that must contain a CSB instance.";
-        quorumLabel = initLabel(icon, label_name, desc);
+        quorumLabel = initLabel(icon, labelName, desc);
 
-        label_name = "Insertions Allowed";
+        labelName = "Insertions Allowed";
         desc = "Maximal number of insertions allowed in a CSB instance.";
-        numOfInsertionsLabel = initLabel(icon, label_name, desc);
+        numOfInsertionsLabel = initLabel(icon, labelName, desc);
 
-        label_name = "Quorum without insertions";
+        labelName = "Quorum without insertions";
         desc = "Minimal number of input sequences that must contain a CSB instance with no insertions.";
-        quorumWithoutInsertionsLabel = initLabel(icon, label_name, desc);
+        quorumWithoutInsertionsLabel = initLabel(icon, labelName, desc);
 
-        label_name = "CSB Min Length";
+        labelName = "CSB Min Length";
         desc = "Minimal length (number of genes) of a CSB.";
-        minCSBLengthLabel = initLabel(icon, label_name, desc);
+        minCSBLengthLabel = initLabel(icon, labelName, desc);
 
-        label_name = "CSB Max Length";
+        labelName = "CSB Max Length";
         desc = "Maximal length (number of gene) of a CSB.";
-        maxCSBLengthLabel = initLabel(icon, label_name, desc);
+        maxCSBLengthLabel = initLabel(icon, labelName, desc);
 
-        label_name = "Dataset Name";
+        labelName = "Dataset Name";
         desc = "Dataset name - will be reflected in the output file name.";
-        datasetNameLabel = initLabel(icon, label_name, desc);
+        datasetNameLabel = initLabel(icon, labelName, desc);
 
-        label_name = "CSB Patterns File";
+        labelName = "CSB Patterns File";
         desc = "If this option is used, CSBs are no longer extracted from the input sequences. " +
                 "It specifies specific CSB patterns which the user is interested to find in the input sequences.";
-        patternFilePathLabel = initLabel(icon, label_name, desc);
+        patternFilePathLabel = initLabel(icon, labelName, desc);
 
-        label_name = "Gene Orthology Info File";
+        labelName = "Gene Orthology Info File";
         desc = "This file should contain functional description of orthology groups.";
-        geneInfoFilePathLabel = initLabel(icon, label_name, desc);
+        geneInfoFilePathLabel = initLabel(icon, labelName, desc);
 
-        label_name = "Count One Instance Per Sequence";
+        labelName = "Count One Instance Per Sequence";
         desc = "If checked, CSB count indicates the number of input sequences with an instance, " +
                 "rather than the total number of instances.";
-        bcountLabel = initLabel(icon, label_name, desc);
+        bcountLabel = initLabel(icon, labelName, desc);
 
-        label_name = "Family Clustering Threshold";
+        labelName = "Family Clustering Threshold";
         desc = "Threshold used in the process of clustering CSBs to families.";
-        familyClusterThresholdLabel = initLabel(icon, label_name, desc);
+        familyClusterThresholdLabel = initLabel(icon, labelName, desc);
 
-        label_name = "Cluster CSBs By";
+        labelName = "Cluster CSBs By";
         desc = "In the greedy CSB clustering to families, CSBs are sorted based on 'score' or 'length'.";
-        clusterTypeLabel = initLabel(icon, label_name, desc);
+        clusterTypeLabel = initLabel(icon, labelName, desc);
+
+        labelName = "Segment genomes to directons";
+        desc = "If checked, genomes will be segmented to directons - consecutive genes on the same strand.";
+        segmentToDirectonsLabel = initLabel(icon, labelName, desc);
 
     }
 
@@ -296,6 +307,9 @@ public class InputParametersDialog extends JDialog {
         clusterModel.addElement("Length");
         clusterTypeField.setModel(clusterModel);
         clusterTypeField.setSelectedIndex(0);
+
+        //directon segmantation
+        segmentToDirectons.setSelected(true);
     }
 
     private void addFieldsToGC() {
@@ -327,6 +341,9 @@ public class InputParametersDialog extends JDialog {
         addComponentToGC(0, y, 1, 0.1, insetLabel, datasetNameLabel, LINE_START);
         addComponentToGC(1, y++, 1, 0.2, insetField, datasetName, LINE_START);
 
+        addComponentToGC(0, y, 1, 0.1, insetLabel, segmentToDirectonsLabel, LINE_START);
+        addComponentToGC(1, y++, 1, 0.1, insetField, segmentToDirectons, LINE_START);
+
         addComponentToGC(0, y, 1, 0.2, insetLabel, quorumWithoutInsertionsLabel, LINE_START);
         addComponentToGC(2, y, 1, 0.2, insetField, quorumWithoutInsertions, LINE_START);
         addComponentToGC(1, y++, 1, 0.2, insetField, quorumWithoutInsertionsSlider, LINE_START);
@@ -340,7 +357,6 @@ public class InputParametersDialog extends JDialog {
         addComponentToGC(0, y, 1, 0.2, insetLabel, patternFilePathLabel, LINE_START);
         addComponentToGC(1, y, 1, 0.2, insetField, patternFilePath, LINE_START);
         addComponentToGC(2, y++, 1, 0.2, insetField, loadPatternBtn, LINE_START);
-
 
         addComponentToGC(0, y, 1, 0.1, insetLabel, bcountLabel, LINE_START);
         addComponentToGC(1, y++, 1, 0.1, insetField, bcount, LINE_START);

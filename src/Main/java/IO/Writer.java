@@ -292,7 +292,7 @@ public class Writer {
         row.createCell(col++).setCellValue(Double.valueOf(DF.format(pattern.getInstanceCount() /
                 (double) gi.getNumberOfGenomes())));
         row.createCell(col++).setCellValue(pattern.getExactInstanceCount());
-        row.createCell(col++).setCellValue(String.join(DELIMITER, pattern.getPatternArr()));
+        row.createCell(col++).setCellValue(pattern.getPattern());
         if (cogInfo.cogInfoExists()) {
             row.createCell(col++).setCellValue(pattern.getMainFunctionalCategory());
         }
@@ -310,14 +310,15 @@ public class Writer {
         row.createCell(4).setCellValue("Score=");
         row.createCell(5).setCellValue(pattern.getScore());
 
-        for (String cog : pattern.getPatternArr()){
+        for (Gene gene : pattern.getPatternGenes()){
             row = sheet.createRow(row_num++);
+            /*
             if (nonDirectons){
                 cog = cog.substring(0, cog.length()-1);
-            }
-            COG cog_obj = cogInfo.getCog(cog);
+            }*/
+            COG cog_obj = cogInfo.getCog(gene.getCogId());
 
-            row.createCell(0).setCellValue(cog);
+            row.createCell(0).setCellValue(gene.getCogId());
             if (cog_obj!=null) {
                 row.createCell(1).setCellValue(cog_obj.getCogDesc());
             }else{
@@ -346,7 +347,7 @@ public class Writer {
                         + DF.format(pattern.getInstanceCount() / (double) gi.getNumberOfGenomes()) + "\t"
                         + pattern.getExactInstanceCount() + "\t";
 
-                catalog_line += String.join(DELIMITER, pattern.getPatternArr()) + "\t";
+                catalog_line += pattern.getPattern() + "\t";
 
                 if (cogInfoExists) {
                     catalog_line += pattern.getMainFunctionalCategory() + "\t";

@@ -32,7 +32,7 @@ content similarity.
 The workflow of CSBFinder is given in the figure below.    
 
 **(A)** The input to the workflow is a dataset of input genomes, where each genome is a sequence of gene orthology group
-identifiers (genes belonging to the same orthology group have identical IDs). Each input genome is segmented to 'directons' - a directon is a maximal sequence of consecutive 
+identifiers (genes belonging to the same orthology group have identical IDs). Each input genome is segmented to 'nonDirectons' - a directon is a maximal sequence of consecutive 
 genes located on the same DNA numericValue. The gene order in each directon follows the order in which the genes are
 transcribed in each genome (on either the forward or the reverse numericValue of the DNA).    
 

@@ -28,6 +28,11 @@ public abstract class GenomicSegment {
         this.strand = strand;
     }
 
+    public GenomicSegment(GenomicSegment other){
+        this(other.getStrand(), other.getId());
+        genes.addAll(other.genes);
+    }
+
     public int size(){
         return genes.size();
     }
@@ -60,6 +65,6 @@ public abstract class GenomicSegment {
         return id;
     }
 
-    public abstract String[] getGenesIDs();
+    //public abstract List<Gene> getGenesIDs();
 
 }

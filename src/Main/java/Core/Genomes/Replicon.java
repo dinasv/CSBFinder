@@ -12,6 +12,7 @@ public class Replicon extends GenomicSegment {
     private String name;
 
     public Replicon(){
+        super();
     }
 
     public Replicon(Strand strand, int id, String name){
@@ -19,31 +20,48 @@ public class Replicon extends GenomicSegment {
         this.name = name;
     }
 
+    public Replicon(Replicon other){
+        super(other);
+        name = other.name;
+    }
+
+
     private static Strand reverseStrand(Strand strand){
         return strand == Strand.REVERSE ? Strand.FORWARD : Strand.REVERSE;
     }
 
-    public void reverse(){
+    public void reverseCompliment(){
+        List<Gene> reversedGenes = new ArrayList<>();
+
         Collections.reverse(genes);
-        setStrand(getStrand() == Strand.FORWARD ? Strand.REVERSE : Strand.FORWARD);
+        setStrand(reverseStrand(getStrand()));
+
+        for(Gene gene: genes){
+            reversedGenes.add(new Gene(gene.getCogId(), Gene.reverseStrand(gene.getStrand())));
+        }
 
         int start_index = getStartIndex();
-        start_index = getStrand() == Strand.REVERSE ? start_index + size() - 1 : start_index - size() + 1;
         setStartIndex(start_index);
+
+        genes = reversedGenes;
     }
 
 
-    public String[] getGenesIDs(){
+    /*
+    public List<Gene> getGenesIDs(){
+        return genes;
+        /*
         if (getStrand() == Strand.FORWARD) {
-            return genes.stream().map(gene -> gene.getCogId() + gene.getStrand().toString())
-                    .collect(Collectors.toList())
-                    .toArray(new String[genes.size()]);
+            return genes;
+            //genes.stream().map(gene -> gene.getCogId() + gene.getStrand().toString())
+                    //.collect(Collectors.toList());
+                    //.toArray(new String[genes.size()]);
         }else{
             return genes.stream().map(gene -> gene.getCogId() + reverseStrand(gene.getStrand()).toString())
-                    .collect(Collectors.toList())
-                    .toArray(new String[genes.size()]);
-        }
-    }
+                    .collect(Collectors.toList());
+                    //.toArray(new String[genes.size()]);
+        }*/
+    //}
 
 
     public List<Directon> splitRepliconToDirectons(String UNK_CHAR) {

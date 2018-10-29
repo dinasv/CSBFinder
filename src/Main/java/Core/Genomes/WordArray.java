@@ -8,7 +8,7 @@ import java.util.Arrays;
  */
 public class WordArray{
 
-    public int[] wordArray;
+    private int[] wordArray;
     //start index in wordArray
     private int startIndex;
     //end index in wordArray, not included
@@ -63,6 +63,11 @@ public class WordArray{
         }
         length = endIndex - startIndex;
     }
+
+    public int[] getWordArray(){
+        return wordArray;
+    }
+
     //return the index relative to the startIndex
     public int get_index(int index){
         return wordArray[startIndex + index];

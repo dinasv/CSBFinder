@@ -179,7 +179,7 @@ public class GeneralizedSuffixTree  implements Serializable{
 
         // proceed with tree construction (closely related to procedure in
         // Ukkonen's paper)
-        WordArray text = new WordArray(substring.wordArray, 0, 0);
+        WordArray text = new WordArray(substring.getWordArray(), 0, 0);
 
         // iterate over the string, one char at a time
         for (int i = 0; i < substring.get_length(); i++) {
@@ -187,8 +187,8 @@ public class GeneralizedSuffixTree  implements Serializable{
             text.add_to_end_index(1);
 
             // line 7: update the tree with the new transitions due to this new char
-            WordArray rest = new WordArray(substring.wordArray, i, substring.get_end_index());
-            WordArray text_copy = new WordArray(text.wordArray, text.get_start_index(), text.get_end_index());
+            WordArray rest = new WordArray(substring.getWordArray(), i, substring.get_end_index());
+            WordArray text_copy = new WordArray(text.getWordArray(), text.get_start_index(), text.get_end_index());
 
 
             Pair<SuffixNode, WordArray> active = update(s, text_copy, rest);
@@ -465,15 +465,15 @@ public class GeneralizedSuffixTree  implements Serializable{
 
 
     private WordArray copySeq(WordArray seq){
-        return new WordArray(seq.wordArray, seq.get_start_index(), seq.get_end_index());
+        return new WordArray(seq.getWordArray(), seq.get_start_index(), seq.get_end_index());
     }
     //works as the regular substring
     private WordArray getSubstring(WordArray seq, int start_index, int end_index) {
-        return new WordArray(seq.wordArray, seq.get_start_index()+start_index, seq.get_start_index() + end_index );
+        return new WordArray(seq.getWordArray(), seq.get_start_index()+start_index, seq.get_start_index() + end_index );
     }
 
     private WordArray safeCutLastChar(WordArray seq) {
-        WordArray seq_substr = new WordArray(seq.wordArray, seq.get_start_index(), seq.get_end_index());
+        WordArray seq_substr = new WordArray(seq.getWordArray(), seq.get_start_index(), seq.get_end_index());
         if (seq_substr.get_length() > 0) {
             seq_substr.add_to_end_index(-1);
         }

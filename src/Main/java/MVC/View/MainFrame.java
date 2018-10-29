@@ -251,13 +251,13 @@ public class MainFrame extends JFrame {
     private void setFamilyRowClickedListener() {
         summaryPanel.setFamilyRowClickedListener(new FamilyRowClickedListener() {
             @Override
-            public void rowClickedOccurred(FamilyRowClickedEvent e) {
-                Pattern p = e.getPattern();
-                Map<String, Map<String, List<InstanceInfo>>> instances = controller.getInstances(p);
+            public void rowClickedOccurred(FamilyRowClickedEvent event) {
+                Pattern pattern = event.getPattern();
+                Map<String, Map<String, List<InstanceInfo>>> instances = controller.getInstances(pattern);
                 genomes.clearPanel();
-                genomes.displayInstances(p.getPatternArr(), instances);
+                genomes.displayInstances(pattern.getPatternGenes(), instances);
 
-                List<COG> patternCOGs = controller.getCogInfo(Arrays.asList(p.getPatternArr()));
+                List<COG> patternCOGs = controller.getCogInfo(pattern.getPatternGenes());
                 Set<COG> insertedGenes = controller.getInsertedGenes(instances, patternCOGs);
                 summaryPanel.setCogInfo(patternCOGs, insertedGenes, genomes.getColorsUsed());
             }

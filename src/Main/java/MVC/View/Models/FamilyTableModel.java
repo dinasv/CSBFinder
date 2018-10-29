@@ -18,7 +18,7 @@ public class FamilyTableModel extends AbstractTableModel {
     public final static String MAIN_CATEGORY = "Main_Category";
     public final static String FAMILY_ID = "Family_ID";
 
-    public final static String DELIMITER = "-";
+    //public final static String DELIMITER = " ";
 
 
     public final static  String[] columns = new String[] {
@@ -34,13 +34,13 @@ public class FamilyTableModel extends AbstractTableModel {
 
 
     private List<Pattern> data;
-    private Map<String, Pattern> csbToPatternMap;
+    private Map<String, Pattern> strToPatternMap;
 
 
     public FamilyTableModel(){
         super();
         data = new ArrayList<>();
-        csbToPatternMap = new HashMap<>();
+        strToPatternMap = new HashMap<>();
     }
     @Override
     public String getColumnName(int column) {
@@ -90,7 +90,7 @@ public class FamilyTableModel extends AbstractTableModel {
             case EXACT_INSTANCE_COUNT:
                 return p.getExactInstanceCount();
             case CSB:
-                return Arrays.asList(p.getPatternArr()).stream().collect(Collectors.joining(DELIMITER));
+                return p.toStringWithNoStrand();
             case MAIN_CATEGORY:
                 return p.getMainFunctionalCategory();
             case FAMILY_ID:
@@ -120,26 +120,24 @@ public class FamilyTableModel extends AbstractTableModel {
     }
 
     public void setData(List<Family> families) {
-        //this.data = new ArrayList<>();
-        //this.csbToPatternMap = new HashMap<>();
+
         clearData();
 
         for (Family family: families) {
             family.getPatterns().forEach(pattern -> {
                 pattern.setFamilyId(family.getFamilyId());
-                csbToPatternMap.put(pattern.getPattern(), pattern);
+                strToPatternMap.put(pattern.toStringWithNoStrand(), pattern);
             });
             data.addAll(family.getPatterns());
         }
     }
 
-    public Pattern getPattern(String csbWithDelimiter) {
-        String csb = String.join(" ", csbWithDelimiter.split(DELIMITER)) + " ";
-        return csbToPatternMap.get(csb);
+    public Pattern getPattern(String pattern) {
+        return strToPatternMap.get(pattern);
     }
 
     public void clearData(){
         data.clear();
-        csbToPatternMap.clear();
+        strToPatternMap.clear();
     }
 }

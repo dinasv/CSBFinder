@@ -32,7 +32,11 @@ public class Parsers {
                 } else {
                     String[] patternArr = line.split("-");
                     if (patternArr.length > 1) {
-                        Pattern pattern = new Pattern(pattern_id, line, patternArr);
+                        List<Gene> genes = new ArrayList<>();
+                        for (String gene: patternArr){
+                            genes.add(new Gene(gene, Strand.FORWARD));
+                        }
+                        Pattern pattern = new Pattern(pattern_id, line, genes);
                         patterns.add(pattern);
                     }
                 }

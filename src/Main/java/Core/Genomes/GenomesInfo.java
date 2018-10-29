@@ -5,8 +5,8 @@ import java.util.*;
 /**
  */
 public class GenomesInfo {
-    public List<String> indexToChar;
-    public Map<String, Integer> charToIndex;
+    public List<Gene> indexToChar;
+    public Map<Gene, Integer> charToIndex;
 
     public static final int WC_CHAR_INDEX = 0;
     public static final String WC_CHAR = "*";
@@ -27,9 +27,9 @@ public class GenomesInfo {
     /**
      * for each cog, a set of genomes (indexes) in which the cog appears
      */
-    public Map<String, Set<Integer>> cogToContainingGenomes;
+    public Map<Integer, Set<Integer>> cogToContainingGenomes;
 
-    public Map<Integer, Map<String, Integer>> genomeToCogParalogCount;
+    public Map<Integer, Map<Integer, Integer>> genomeToCogParalogCount;
 
 
     private Map<String, Genome> genomesMap;
@@ -110,23 +110,28 @@ public class GenomesInfo {
     }
 
     private void initAlphabet(){
-        indexToChar = new ArrayList<String>();
-        charToIndex = new HashMap<String, Integer>();
+        indexToChar = new ArrayList<Gene>();
+        charToIndex = new HashMap<Gene, Integer>();
 
         //wild card
-        charToIndex.put(WC_CHAR, WC_CHAR_INDEX);
-        indexToChar.add(WC_CHAR);
+        Gene gene = new Gene(WC_CHAR, Strand.FORWARD);
+        charToIndex.put(gene, WC_CHAR_INDEX);
+        indexToChar.add(gene);
 
+        gene = new Gene(GAP_CHAR, Strand.FORWARD);
         //gap
-        charToIndex.put(GAP_CHAR, GAP_CHAR_INDEX);
-        indexToChar.add(GAP_CHAR);
+        charToIndex.put(gene, GAP_CHAR_INDEX);
+        indexToChar.add(gene);
 
+        gene = new Gene(UNK_CHAR, Strand.FORWARD);
         //unkown cog
-        charToIndex.put(UNK_CHAR, UNK_CHAR_INDEX);
-        indexToChar.add(UNK_CHAR);
+        charToIndex.put(gene, UNK_CHAR_INDEX);
+        indexToChar.add(gene);
+
+        gene = new Gene(UNK_CHAR, Strand.REVERSE);
         //if the sequence is not segmented to directons
-        charToIndex.put("X+", UNK_CHAR_INDEX);
-        charToIndex.put("X-", UNK_CHAR_INDEX);
+        //charToIndex.put("X+", UNK_CHAR_INDEX);
+        charToIndex.put(gene, UNK_CHAR_INDEX);
 
     }
 
@@ -134,25 +139,25 @@ public class GenomesInfo {
         return maxGenomeSize;
     }
 
-    public void countParalogsInSeqs(String[] directon, int curr_seq_index){
-        for (String gene : directon) {
+    public void countParalogsInSeqs(WordArray word, int curr_seq_index){
+        for (int ch : word.getWordArray()) {
 
-            Map<String, Integer> curr_genome_paralogs_count = genomeToCogParalogCount.get(curr_seq_index);
+            Map<Integer, Integer> curr_genome_paralogs_count = genomeToCogParalogCount.get(curr_seq_index);
             if (curr_genome_paralogs_count == null) {
                 curr_genome_paralogs_count = new HashMap<>();
                 genomeToCogParalogCount.put(curr_seq_index, curr_genome_paralogs_count);
             }
 
             int curr_cog_paralog_count = 1;
-            if (curr_genome_paralogs_count.containsKey(gene)) {
-                curr_cog_paralog_count += curr_genome_paralogs_count.get(gene);
+            if (curr_genome_paralogs_count.containsKey(ch)) {
+                curr_cog_paralog_count += curr_genome_paralogs_count.get(ch);
             }
-            curr_genome_paralogs_count.put(gene, curr_cog_paralog_count);
+            curr_genome_paralogs_count.put(ch, curr_cog_paralog_count);
 
-            Set<Integer> genomes = cogToContainingGenomes.get(gene);
+            Set<Integer> genomes = cogToContainingGenomes.get(ch);
             if (genomes == null) {
                 genomes = new HashSet<>();
-                cogToContainingGenomes.put(gene, genomes);
+                cogToContainingGenomes.put(ch, genomes);
             }
             genomes.add(curr_seq_index);
         }

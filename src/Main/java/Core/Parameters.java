@@ -1,7 +1,10 @@
 package Core;
+import Core.Genomes.Pattern;
 import com.beust.jcommander.IParameterValidator;
 import com.beust.jcommander.Parameter;
 import com.beust.jcommander.ParameterException;
+
+import java.util.Comparator;
 
 public class Parameters {
     public enum OutputType {
@@ -9,10 +12,6 @@ public class Parameters {
         XLSX;
     }
 
-    public enum ClusterBy {
-        LENGTH,
-        SCORE
-    }
 
     public static class PositiveInteger implements IParameterValidator {
         public void validate(String name, String value) throws ParameterException {

@@ -9,6 +9,9 @@ import java.util.stream.Collectors;
  * Represents a pattern consisting of characters
  **/
 public class Pattern {
+
+    public static final String DELIMITER = " ";
+
     /**
      * e.g. COG1234 COG5234
      */
@@ -16,8 +19,8 @@ public class Pattern {
     /**
      * Each cell contains the COG id, e.g. [COG1234, COG5234]
      */
-    private String[] patternArr;
-    private String[] reverseComplimentPatternArr;
+    private List<Gene> patternGenes;
+    private List<Gene> reverseComplimentPatternArr;
 
     private int patternId;
     private int instanceCount;
@@ -35,24 +38,25 @@ public class Pattern {
 
     private Map<Integer, PatternLocationsInGenome> genomeToInstanceLocations;
 
-    public Pattern(int patternId, String pattern, String[] patternArr, int instanceCount, int exactInstanceCount){
+    public Pattern(int patternId, String pattern, List<Gene> patternGenes, int instanceCount, int exactInstanceCount){
 
         this.patternId = patternId;
         this.pattern = pattern;
-        this.patternArr = patternArr;
-        this.length = patternArr.length;
+        this.patternGenes = new ArrayList<>();
+        this.patternGenes.addAll(patternGenes);
+        this.length = patternGenes.size();
         this.instances = instances;
         this.instanceCount = instanceCount;
         this.exactInstanceCount = exactInstanceCount;
         score = 0;
         mainFunctionalCategory = "";
-        reverseComplimentPatternArr = reverseComplimentPattern(patternArr);
+        reverseComplimentPatternArr = reverseComplimentPattern(patternGenes);
 
         genomeToInstanceLocations = new HashMap<>();
     }
 
-    public Pattern(int patternId, String pattern, String[] patternArr){
-        this(patternId, pattern, patternArr, 0, 0);
+    public Pattern(int patternId, String pattern, List<Gene> patternGenes){
+        this(patternId, pattern, patternGenes, 0, 0);
     }
 
     public void setPatternId(int pattern_id){
@@ -107,8 +111,8 @@ public class Pattern {
         return instanceCount;
     }
 
-    public String[] getPatternArr() {
-        return patternArr;
+    public List<Gene> getPatternGenes() {
+        return patternGenes;
     }
 
     public int getExactInstanceCount() {
@@ -128,11 +132,12 @@ public class Pattern {
 
             Map<String, Integer> functional_letter_count = new HashMap<>();
             Map<String, String> functional_letter_to_desc = new HashMap<>();
-            for (String cog_id : patternArr) {
+            for (Gene gene : patternGenes) {
+                String cogId = gene.getCogId();
                 if (nonDirectons){
-                    cog_id = cog_id.substring(0, cog_id.length()-1);
+                    cogId = cogId.substring(0, cogId.length()-1);
                 }
-                COG cog = cogInfo.getCog(cog_id);
+                COG cog = cogInfo.getCog(cogId);
                 if (cog != null) {
                     String[] functional_letters = cog.getFunctionalLetters();
                     String[] functional_categories = cog.getFunctionalCategories();
@@ -178,23 +183,23 @@ public class Pattern {
     }
 
     /**
-     * Returns the reverse compliment of a pattern. e.g. [COG1+, COG2-] -> [COG2+, COG1-]
+     * Returns the reverseCompliment compliment of a pattern. e.g. [COG1+, COG2-] -> [COG2+, COG1-]
      * @param pattern
      * @return
      */
-    private static String[] reverseComplimentPattern(String[] pattern){
-        String[] reversed_pattern = new String[pattern.length];
-        int j = 0;
-        for (int i = pattern.length-1; i >= 0; i--) {
-            String gene = pattern[i];
-            String prefix = gene.substring(0, gene.length()-1);
-            String reversed_strand = reverseStrand(gene.substring(gene.length()-1));
-            reversed_pattern[j++] = prefix + reversed_strand;
-        }
-        return reversed_pattern;
+    private static List<Gene> reverseComplimentPattern(List<Gene> pattern){
+
+        List<Gene> reversedPattern = pattern.stream().map(gene ->
+                {Gene copy = new Gene(gene.getCogId(), Gene.reverseStrand(gene.getStrand()));
+                return copy;})
+                .collect(Collectors.toList());
+
+        Collections.reverse(reversedPattern);
+
+        return reversedPattern;
     }
 
-    public String[] getReverseComplimentPatternArr() {
+    public List<Gene> getReverseComplimentPattern() {
         return reverseComplimentPatternArr;
     }
 
@@ -206,6 +211,13 @@ public class Pattern {
         this.familyId = familyId;
     }
 
+    public String toStringWithNoStrand(){
+        String str = "";
+        for (Gene gene: patternGenes){
+            str += gene.getCogId() + ",";
+        }
+        return str.substring(0, str.length()-1);
+    }
 
     public static class LengthComparator implements Comparator<Pattern> {
 

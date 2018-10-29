@@ -147,8 +147,6 @@ public class Controller {
 
         CogInfo cogInfo = new CogInfo();
         cogInfo.setCogInfo(cog_info);
-        //gi.setCogInfo(cog_info);
-
 
         MemoryUtils.measure();
 

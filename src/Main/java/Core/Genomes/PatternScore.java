@@ -3,6 +3,7 @@ package Core.Genomes;
 import org.apache.commons.math3.special.Beta;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -27,13 +28,13 @@ public class PatternScore {
     /**
      * for each cog, a set of genomes (bac_index) in which the cog appears
      */
-    public Map<String, Set<Integer>> cogToContainingGenomes;
+    public Map<Integer, Set<Integer>> cogToContainingGenomes;
 
-    public Map<Integer, Map<String, Integer>> genomeToCogParalogCount;
+    public Map<Integer, Map<Integer, Integer>> genomeToCogParalogCount;
 
     public PatternScore(int max_genome_size, int numberOfGenomes, int dataset_length_sum,
-                        Map<String, Set<Integer>> cogToContainingGenomes,
-                        Map<Integer, Map<String, Integer>> genomeToCogParalogCount){
+                        Map<Integer, Set<Integer>> cogToContainingGenomes,
+                        Map<Integer, Map<Integer, Integer>> genomeToCogParalogCount){
 
         pValues = new double[max_genome_size+1];
         this.numberOfGenomes = numberOfGenomes;
@@ -46,29 +47,29 @@ public class PatternScore {
         }
     }
 
-    public double computePatternScore(String[] pattern_chars, int max_insertions, int pattern_occs_keys_size){
+    public double computePatternScore(List<Integer> pattern_chars, int max_insertions, int pattern_occs_keys_size){
 
-        Set<Integer> intersection_of_genomes_with_pattern_chars = new HashSet<>(cogToContainingGenomes.get(pattern_chars[0]));
-        for (int i = 1; i < pattern_chars.length; i++) {
-            intersection_of_genomes_with_pattern_chars.retainAll(cogToContainingGenomes.get(pattern_chars[i]));
+        Set<Integer> intersectionOfGenomesWithPatternChars = new HashSet<>(cogToContainingGenomes.get(pattern_chars.get(0)));
+        for (int ch: pattern_chars) {
+            intersectionOfGenomesWithPatternChars.retainAll(cogToContainingGenomes.get(ch));
         }
 
         int paralog_count_product_sum = 0;
         int paralog_count_product;
-        for (int seq_key: intersection_of_genomes_with_pattern_chars) {
+        for (int seq_key: intersectionOfGenomesWithPatternChars) {
 
-            Map<String, Integer> curr_seq_paralog_count = genomeToCogParalogCount.get(seq_key);
+            Map<Integer, Integer> curr_seq_paralog_count = genomeToCogParalogCount.get(seq_key);
             paralog_count_product = 1;
-            for (String cog : pattern_chars) {
+            for (int cog : pattern_chars) {
                 int curr_cog_paralog_count = curr_seq_paralog_count.get(cog);
                 paralog_count_product *= curr_cog_paralog_count;
             }
             paralog_count_product_sum += paralog_count_product;
         }
 
-        int average_paralog_count = paralog_count_product_sum/intersection_of_genomes_with_pattern_chars.size();
+        int average_paralog_count = paralog_count_product_sum/intersectionOfGenomesWithPatternChars.size();
 
-        return pval_cross_genome(pattern_chars.length, max_insertions,
+        return pval_cross_genome(pattern_chars.size(), max_insertions,
                 average_paralog_count, pattern_occs_keys_size);
     }
 
@@ -178,7 +179,7 @@ public class PatternScore {
         return Beta.regularizedBeta(p, k, n-k+1);
     }
 
-    public static double computePatternScore(PatternScore pattern_score, String[] pattern_chars, int max_insertions,
+    public static double computePatternScore(PatternScore pattern_score, List<Integer> pattern_chars, int max_insertions,
                                              int max_error, int max_deletions, int pattern_occs_keys_size){
 
         if (pattern_score != null){

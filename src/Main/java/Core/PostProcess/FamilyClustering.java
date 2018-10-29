@@ -1,11 +1,12 @@
 package Core.PostProcess;
 
+import Core.Genomes.Gene;
 import Core.Genomes.GenomesInfo;
 import Core.Genomes.Pattern;
 
 import java.util.*;
 
-import Core.Parameters.ClusterBy;
+import Core.ClusterBy;
 
 /**
  * Created by Dina on 23/08/2017.
@@ -47,14 +48,10 @@ public class FamilyClustering {
         return false;
     }
 
-    private static List<Family> greedyClustering(List<Pattern> patterns, double threshold, ClusterBy cluster_by,
+    private static List<Family> greedyClustering(List<Pattern> patterns, double threshold, ClusterBy clusterBy,
                                                       GenomesInfo gi, boolean non_directons){
 
-        if (cluster_by == ClusterBy.LENGTH){
-            Collections.sort(patterns, new Pattern.LengthComparator());
-        }else {
-            Collections.sort(patterns, new Pattern.ScoreComparator());
-        }
+        Collections.sort(patterns, clusterBy.patternComparator);
 
         List<Family> families = new ArrayList<>();
         Iterator<Pattern> it = patterns.iterator();
@@ -67,7 +64,7 @@ public class FamilyClustering {
             while (it.hasNext()) {
                 Pattern curr_pattern = it.next();
 
-                Set<Integer> curr_pattern_gene_set = get_genes_set(curr_pattern.getPatternArr(), gi);
+                Set<Integer> curr_pattern_gene_set = getGenesSet(curr_pattern.getPatternGenes(), gi);
 
                 boolean added_pattern = false;
                 for (Family family : families) {
@@ -88,9 +85,9 @@ public class FamilyClustering {
         return families;
     }
 
-    private static Set<Integer> get_genes_set(String[] genes, GenomesInfo gi){
+    private static Set<Integer> getGenesSet(List<Gene> genes, GenomesInfo gi){
         Set<Integer> gene_set = new HashSet<>();
-        for (String cog: genes) {
+        for (Gene cog: genes) {
             int cog_index = gi.charToIndex.get(cog);
             gene_set.add(cog_index);
         }

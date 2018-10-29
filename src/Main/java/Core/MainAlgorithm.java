@@ -4,6 +4,8 @@ import Core.Genomes.WordArray;
 import Core.SuffixTrees.*;
 
 import java.util.*;
+import java.util.stream.Collectors;
+
 import Core.Genomes.*;
 
 /**
@@ -13,7 +15,6 @@ import Core.Genomes.*;
  */
 public class MainAlgorithm {
 
-    private static final String DELIMITER = " ";
 
     public static long countNodesInPatternTree;
     public static long count_nodes_in_data_tree;
@@ -27,7 +28,7 @@ public class MainAlgorithm {
     private int minPatternLength;
     private int maxPatternLength;
 
-    private GeneralizedSuffixTree dataTree;
+    private GeneralizedSuffixTree datasetTree;
 
     //contains all extracted patterns
     private Map<String, Pattern> patterns;
@@ -46,11 +47,11 @@ public class MainAlgorithm {
     /**
      *
      * @param params args
-     * @param data_t GST representing all input sequences
+     * @param datasetTree GST representing all input sequences
      * @param pattern_trie
      * @param gi Information regarding the input genomes (sequences)
      */
-    public MainAlgorithm(Parameters params, GeneralizedSuffixTree data_t, Trie pattern_trie, GenomesInfo gi){
+    public MainAlgorithm(Parameters params, DatasetTree datasetTree, Trie pattern_trie, GenomesInfo gi){
 
         // args
         this.maxError = params.maxError;
@@ -66,7 +67,7 @@ public class MainAlgorithm {
 
         //this.utils = utils;
 
-        dataTree = data_t;
+        this.datasetTree = datasetTree.getSuffixTree();
 
         totalCharsInData = -1;
         this.gi = gi;
@@ -99,20 +100,20 @@ public class MainAlgorithm {
      */
     private void findPatterns(PatternNode patternNode) {
 
-        dataTree.computeCount();
-        totalCharsInData = ((InstanceNode) dataTree.getRoot()).getCountMultipleInstancesPerGenome();
+        datasetTree.computeCount();
+        totalCharsInData = ((InstanceNode) datasetTree.getRoot()).getCountMultipleInstancesPerGenome();
 
-        InstanceNode dataTreeRoot = (InstanceNode) dataTree.getRoot();
+        InstanceNode dataTreeRoot = (InstanceNode) datasetTree.getRoot();
         //the instance of an empty string is the root of the data tree
         Instance empty_instance = new Instance(dataTreeRoot, null, -1, 0, 0);
         count_nodes_in_data_tree ++;
 
         patternNode.addInstance(empty_instance, maxInsertion);
         if (patternNode.getType()== TreeType.VIRTUAL){
-            spellPatternsVirtually(patternNode, dataTreeRoot, -1, null, "",
+            spellPatternsVirtually(patternNode, dataTreeRoot, -1, null, new ArrayList<>(),
                     0, 0);
         }else{
-            spellPatterns(patternNode, "", 0, 0);
+            spellPatterns(patternNode, new ArrayList<>(), 0, 0);
         }
     }
 
@@ -126,7 +127,7 @@ public class MainAlgorithm {
      * @return
      */
     private WordArray getSubstring(WordArray seq, int start_index, int end_index) {
-        return new WordArray(seq.wordArray, seq.get_start_index() + start_index,
+        return new WordArray(seq.getWordArray(), seq.get_start_index() + start_index,
                 seq.get_start_index() + end_index);
     }
 
@@ -139,35 +140,55 @@ public class MainAlgorithm {
      * Therefore it is sufficient to remove each pattern suffix if it has the same instance count
      */
     public void removeRedundantPatterns() {
-        HashSet<String> patterns_to_remove = new HashSet<>();
+        HashSet<String> patternsToRemove = new HashSet<>();
         for (Map.Entry<String, Pattern> entry : patterns.entrySet()) {
 
             Pattern pattern = entry.getValue();
-            String[] pattern_arr = pattern.getPatternArr();
+            List<Gene> patternGenes = pattern.getPatternGenes();
+            List<Gene> patternSuffix = new ArrayList<>(patternGenes);
+            patternSuffix.remove(0);
+            String suffixStr = patternSuffix.toString();
 
-            String[] suffix_arr = Arrays.copyOfRange(pattern_arr, 1, pattern_arr.length);
-            String suffix_str = String.join(DELIMITER, suffix_arr) + DELIMITER;
-            Pattern suffix = patterns.get(suffix_str);
+            Pattern suffix = patterns.get(suffixStr);
 
             if (suffix != null){
-                int pattern_count = pattern.getInstanceCount();
-                int suffix_count = suffix.getInstanceCount();
-                if (suffix_count == pattern_count){
-                    patterns_to_remove.add(suffix_str);
+                int patternCount = pattern.getInstanceCount();
+                int suffixCount = suffix.getInstanceCount();
+                if (suffixCount == patternCount){
+                    patternsToRemove.add(suffixStr);
                 }
             }
 
-            //remove reverse compliments
             if (nonDirectons){
-                String pattern_str = String.join(DELIMITER, pattern_arr) + DELIMITER;
-                String reversed_pattern_str = String.join(DELIMITER, pattern.getReverseComplimentPatternArr()) + DELIMITER;
-                Pattern reversed_pattern = patterns.get(reversed_pattern_str);
-                if (reversed_pattern != null && !patterns_to_remove.contains(pattern_str)){
-                    patterns_to_remove.add(reversed_pattern_str);
-                }
+                removeReverseCompliments(pattern, patternsToRemove);
             }
         }
-        patterns.keySet().removeAll(patterns_to_remove);
+        patterns.keySet().removeAll(patternsToRemove);
+    }
+
+    private void removeReverseCompliments(Pattern pattern, HashSet<String> patternsToRemove){
+
+        List<Gene> reversePatternGenes = pattern.getReverseComplimentPattern();
+        //String[] genes = genesToStrArr(reversePatternGenes);
+        String reversedPatternStr = reversePatternGenes.toString();
+        Pattern reversedPattern = patterns.get(reversedPatternStr);
+
+        String patternStr = pattern.getPatternGenes().toString();
+        if (reversedPattern != null && !patternsToRemove.contains(patternStr)){
+            patternsToRemove.add(reversedPatternStr);
+        }
+    }
+
+    private String[] genesToStrArr(List<Gene> genes){
+        return genes.stream().map(gene -> gene.getCogId() + gene.getStrand().toString())
+                .collect(Collectors.toList())
+                .toArray(new String[genes.size()]);
+    }
+
+    private String[] genesToStrArrWithoutStrand(List<Gene> genes){
+        return genes.stream().map(gene -> gene.getCogId())
+                .collect(Collectors.toList())
+                .toArray(new String[genes.size()]);
     }
 
     /**
@@ -189,9 +210,9 @@ public class MainAlgorithm {
         }
     }
 
-    private Boolean starts_with_wildcard(String pattern) {
-        if (pattern.length() > 0) {
-            if (pattern.charAt(0) == '*') {
+    private Boolean starts_with_wildcard(List<Gene> pattern) {
+        if (pattern.size() > 0) {
+            if (pattern.get(0).getCogId().equals('*')) {
                 return true;
             }
         }
@@ -204,11 +225,13 @@ public class MainAlgorithm {
      * @param ch the index of the character to add, converted to a letter
      * @return the extended str
      */
-    private String appendChar(String str, int ch) {
-        String cog = gi.indexToChar.get(ch);
+    private List<Gene> appendChar(List<Gene> str, int ch) {
+        Gene cog = gi.indexToChar.get(ch);
         //System.out.println(cog);
-        String extended_string = str + cog + DELIMITER;
-        extended_string.intern();
+        List<Gene> extended_string = new ArrayList<>();
+        extended_string.addAll(str);
+        extended_string.add(cog);
+        //extended_string.intern();
         return extended_string;
     }
 
@@ -224,7 +247,7 @@ public class MainAlgorithm {
      * @param pattern_wildcard_count  number of wildcards in the pattern
      * @return The maximal number of different string indexes that one of the extended patterns by a char appear in
      */
-    private int spellPatterns(PatternNode pattern_node, String pattern, int pattern_length, int pattern_wildcard_count) {
+    private int spellPatterns(PatternNode pattern_node, List<Gene> pattern, int pattern_length, int pattern_wildcard_count) {
         if (pattern_wildcard_count < maxWildcards && pattern_node.getType().equals("enumeration")) {
             //add to pattern_node an edge with "_", pointing to a new node that will save the instances
             addWildcardEdge(pattern_node, true);
@@ -241,7 +264,7 @@ public class MainAlgorithm {
         PatternNode target_node;
         for (Map.Entry<Integer, PatternNode> entry : target_nodes.entrySet()) {
             int alpha = entry.getKey();
-            String alpha_ch = gi.indexToChar.get(alpha);
+            Gene alpha_ch = gi.indexToChar.get(alpha);
             target_node = entry.getValue();
 
             //go over edges that are not wild cards
@@ -292,7 +315,7 @@ public class MainAlgorithm {
      */
     private int spellPatternsVirtually(PatternNode patternNode, InstanceNode dataNode, int dataEdgeIndex,
                                        Edge dataEdge,
-                                       String pattern, int patternLength, int wildcardCount) {
+                                       List<Gene> pattern, int patternLength, int wildcardCount) {
 
         List<Instance> instances = patternNode.getInstances();
         //the maximal number of different instances, of one of the extended patterns
@@ -319,14 +342,14 @@ public class MainAlgorithm {
 
             for (Map.Entry<Integer, Edge> entry : dataNodeEdges.entrySet()) {
                 int alpha = entry.getKey();
-                String alpha_ch = gi.indexToChar.get(alpha);
+                Gene alpha_ch = gi.indexToChar.get(alpha);
                 dataEdge = entry.getValue();
                 InstanceNode data_tree_target_node = (InstanceNode) dataEdge.getDest();
 
                 if (data_tree_target_node.getCountInstancePerGenome() >= q1) {
 
                     if (alpha == gi.UNK_CHAR_INDEX) {
-                        if (q1 == 0 && !pattern.startsWith("X")) {
+                        if (q1 == 0 && ! pattern.get(0).getCogId().equals("X")) {
                             spellPatternsVirtually(patternNode, dataNode, dataEdgeIndex + 1, dataEdge,
                             pattern, patternLength, wildcardCount);
                         }
@@ -371,8 +394,8 @@ public class MainAlgorithm {
         return maxNumOfDiffInstances;
     }
 
-    private void handlePattern(Pattern new_pattern, String extended_pattern){
-        patterns.put(extended_pattern, new_pattern);
+    private void handlePattern(Pattern new_pattern, List<Gene> extended_pattern){
+        patterns.put(extended_pattern.toString(), new_pattern);
     }
 
 
@@ -390,10 +413,10 @@ public class MainAlgorithm {
      */
 
     private int extendPattern(int alpha, int data_edge_index, InstanceNode data_node, Edge data_edge,
-                              int wildcard_count, String pattern, PatternNode targetNode,
+                              int wildcard_count, List<Gene> pattern, PatternNode targetNode,
                               PatternNode pattern_node, List<Instance> Instances, int pattern_length) {
 
-        String extendedPattern = appendChar(pattern, alpha);
+        List<Gene> extendedPattern = appendChar(pattern, alpha);
         PatternNode extendedPatternNode = targetNode;
         int extended_pattern_length = pattern_length + 1;
 
@@ -403,7 +426,7 @@ public class MainAlgorithm {
             pattern_node.addTargetNode(alpha, extendedPatternNode);
         }
 
-        extendedPatternNode.setSubstring(extendedPattern);
+        extendedPatternNode.setSubstring(extendedPattern.toString());
         extendedPatternNode.setSubstringLength(extended_pattern_length);
 
         int exact_instances_count = 0;
@@ -438,8 +461,8 @@ public class MainAlgorithm {
             if (extended_pattern_length - wildcard_count >= minPatternLength) {
                 if (type == TreeType.STATIC) {
                     if (extendedPatternNode.getPatternKey()>0) {
-                        Pattern newPattern = new Pattern(extendedPatternNode.getPatternKey(), extendedPattern,
-                                extendedPattern.split(DELIMITER),
+                        Pattern newPattern = new Pattern(extendedPatternNode.getPatternKey(), extendedPattern.toString(),
+                                extendedPattern,
                                 extendedPatternNode.getInstanceKeys().size(),
                                 extendedPatternNode.getExactInstanceCount());
                         newPattern.addInstanceLocations(extendedPatternNode.getInstances());
@@ -453,8 +476,8 @@ public class MainAlgorithm {
                             //make sure that extendedPattern is right maximal, if extendedPattern has the same number of
                             // instances as the longer pattern, prefer the longer pattern
                             if (diff_instances_count > ret || debug) {// diff_instances_count >= ret always
-                                Pattern newPattern = new Pattern(extendedPatternNode.getPatternKey(), extendedPattern,
-                                        extendedPattern.split(DELIMITER),
+                                Pattern newPattern = new Pattern(extendedPatternNode.getPatternKey(), extendedPattern.toString(),
+                                        extendedPattern,
                                         extendedPatternNode.getInstanceKeys().size(),
                                         extendedPatternNode.getExactInstanceCount());
                                 newPattern.addInstanceLocations(extendedPatternNode.getInstances());
@@ -570,7 +593,8 @@ public class MainAlgorithm {
 
             if (insertions < maxInsertion && instance.getLength() > 0){
                 if (next_ch != ch) {
-                    String extended_instance_string = appendChar(instance.getSubstring(), next_ch);
+                    //String extended_instance_string = appendChar(instance.getSubstring(), next_ch);
+                    String extended_instance_string = "";
                     Instance next_instance = new Instance(next_node_instance, next_edge_instance, next_edge_index,
                             error, deletions, instance.getInsertionIndexes(), extended_instance_string, instance.getLength() + 1);
                     next_instance.addInsertionIndex(instance.getLength());
@@ -654,7 +678,8 @@ public class MainAlgorithm {
 
             if (make_insertion) {
                 if (ch != next_ch) {
-                    String extended_instance_string = appendChar(instance.getSubstring(), next_ch);
+                    //String extended_instance_string = appendChar(instance.getSubstring(), next_ch);
+                    String extended_instance_string = "";
                     Instance next_instance = new Instance(next_node, next_edge, next_edge_index, error, deletions,
                             instance.getInsertionIndexes(), extended_instance_string, instance.getLength() + 1);
                     next_instance.addInsertionIndex(instance.getLength());
@@ -682,7 +707,8 @@ public class MainAlgorithm {
     private void addInstanceToPattern(PatternNode extended_pattern, Instance instance, int next_ch, InstanceNode next_node,
                                       Edge next_edge, int next_edge_index, int next_error, int next_deletions) {
 
-        String extended_instance_string = appendChar(instance.getSubstring(), next_ch);
+        //String extended_instance_string = appendChar(instance.getSubstring(), next_ch);
+        String extended_instance_string = "";
         Instance next_instance = new Instance(next_node, next_edge, next_edge_index, next_error, next_deletions,
                 instance.getInsertionIndexes(), extended_instance_string, instance.getLength()+1);
         extended_pattern.addInstance(next_instance, maxInsertion);

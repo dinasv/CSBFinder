@@ -1,5 +1,6 @@
 package MVC.View.Panels;
 
+import Core.Genomes.Gene;
 import MVC.Common.InstanceInfo;
 import MVC.View.Shapes.*;
 
@@ -35,15 +36,10 @@ public class GenomePanelContainer  extends JPanel {
         gc.gridx = 1; gc.gridy = 0; gc.weightx = 0.8; gc.anchor = GridBagConstraints.FIRST_LINE_START;
         add(instancesPanel, gc);
 
-        /*
-        setOrientation(JSplitPane.HORIZONTAL_SPLIT);
-        setDividerSize(2);
-        setLeftComponent(labelsPanel);
-        setRightComponent(instancesPanel);
-        setResizeWeight(0.2);*/
     }
 
-    public void displayInstances(String[] pattenCOGs, Map<String, Map<String,List<InstanceInfo>>> instances, int scrollWidth) {
+    public void displayInstances(List<Gene> pattenGenes, Map<String, Map<String, List<InstanceInfo>>> instances,
+                                 int scrollWidth) {
 
         List<String> genomeNames = new ArrayList<>();
         List<Map<String,List<InstanceInfo>>> instancesList = new ArrayList<>();
@@ -52,7 +48,7 @@ public class GenomePanelContainer  extends JPanel {
             instancesList.add(entry.getValue());
         }
 
-        instancesPanel.displayInstances(pattenCOGs, instancesList, scrollWidth-InstancesLabelsPanel.GENOME_NAME_WIDTH);
+        instancesPanel.displayInstances(pattenGenes, instancesList, scrollWidth-InstancesLabelsPanel.GENOME_NAME_WIDTH);
         labelsPanel.displayInstancesLabels(genomeNames, instancesPanel.getFirstRowHeight(), instancesPanel.getRowHeight());
 
         revalidate();

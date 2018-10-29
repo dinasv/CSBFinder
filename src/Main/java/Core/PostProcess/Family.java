@@ -1,5 +1,6 @@
 package Core.PostProcess;
 
+import Core.Genomes.Gene;
 import Core.Genomes.GenomesInfo;
 import Core.Genomes.Pattern;
 
@@ -43,15 +44,22 @@ public class Family {
     }
 
     private void addCharsToCharsSet(Pattern pattern){
-        addCharsToCharsSet(pattern.getPatternArr());
+        addCharsToCharsSet(pattern.getPatternGenes());
         if (nonDirectons){
-            addCharsToCharsSet(pattern.getReverseComplimentPatternArr());
+            addCharsToCharsSet(pattern.getReverseComplimentPattern());
         }
     }
 
-    private void addCharsToCharsSet(String[] pattern_arr){
-        for (String cog: pattern_arr) {
-            int cog_index = gi.charToIndex.get(cog);
+    private void addCharsToCharsSet(List<Gene> patternGenes){
+        for (Gene gene: patternGenes) {
+            int cog_index;
+            /*
+            if (nonDirectons){
+                cog_index = gi.charToIndex.get(gene.getCogId()+gene.getStrand());
+            }else {
+                cog_index = gi.charToIndex.get(gene.getCogId());
+            }*/
+            cog_index = gi.charToIndex.get(gene);
             charSet.add(cog_index);
         }
     }

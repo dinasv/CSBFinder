@@ -21,7 +21,6 @@ public class CSBFinderModel {
     private CSBFinderDoneListener csbFinderDoneListener;
 
     private Parameters params;
-    //private GeneralizedSuffixTree dataset_suffix_tree;
     private CSBFinderWorkflow workflow;
     private List<Family> families;
 
@@ -112,7 +111,7 @@ public class CSBFinderModel {
 
         System.out.println("Extracting CSBs from " + numberOfGenomes + " input sequences.");
 
-        if (patternsFromFile != null){
+        if (patternsFromFile.size() > 0){
             families = workflow.run(params, patternsFromFile);
         }else{
             families = workflow.run(params);
@@ -170,7 +169,7 @@ public class CSBFinderModel {
      * @return
      */
     private List<Pattern> readPatternsFromFile() {
-        List<Pattern> patterns = null;
+        List<Pattern> patterns = new ArrayList<>();
         if (params.inputPatternsFileName != null) {
             //these arguments are not valid when input patterns are give
             params.minPatternLength = 2;
@@ -196,11 +195,11 @@ public class CSBFinderModel {
         this.csbFinderDoneListener = csbFinderDoneListener;
     }
 
-    public List<COG> getCogInfo(List<String> cogs) {
+    public List<COG> getCogInfo(List<Gene> genes) {
         List<COG> currCogInfo = new ArrayList<COG>();
         if (cogInfo.cogInfoExists()) {
-            cogs.forEach(cog -> {
-                COG c = cogInfo.getCog(cog);
+            genes.forEach(gene -> {
+                COG c = cogInfo.getCog(gene.getCogId());
                 if (c != null) {
                     currCogInfo.add(c);
                 }
@@ -221,7 +220,7 @@ public class CSBFinderModel {
             for (Map<String, List<InstanceInfo>> instancesMap : instances.values()) {
                 for (List<InstanceInfo> instancesList : instancesMap.values()) {
                     for (InstanceInfo instance : instancesList) {
-                        List<COG> instanceGenes = getCogInfo(instance.getGenes().stream().map(gene -> gene.getCogId()).collect(Collectors.toList()));
+                        List<COG> instanceGenes = getCogInfo(instance.getGenes());
                         Set<COG> instanceGenesSet = new HashSet<>();
                         instanceGenesSet.addAll(instanceGenes);
                         instanceGenesSet.removeAll(patternGenesSet);
@@ -276,21 +275,21 @@ public class CSBFinderModel {
         return instances;
     }
 
-    private List<Gene> getInstanceFromCogList(String seq_name, int replicon_id, int startIndex, int endIndex) {
+    private List<Gene> getInstanceFromCogList(String genomeName, int replicon_id, int startIndex, int endIndex) {
         List<Gene> instanceList = null;
-        Genome genome = getGenomeMap().get(seq_name);
-        List<Gene> genomeToCogList = genome.getReplicon(replicon_id).getGenes();
-        if (genomeToCogList != null) {
-            if (startIndex >= 0 && startIndex < genomeToCogList.size() &&
-                    endIndex >= 0 && endIndex <= genomeToCogList.size()) {
+        Genome genome = getGenome(genomeName);
+        List<Gene> repliconGenes = genome.getReplicon(replicon_id).getGenes();
+        if (repliconGenes != null) {
+            if (startIndex >= 0 && startIndex < repliconGenes.size() &&
+                    endIndex >= 0 && endIndex <= repliconGenes.size()) {
 
-                instanceList = genomeToCogList.subList(startIndex, endIndex);
+                instanceList = repliconGenes.subList(startIndex, endIndex);
             } else {
 //                writer.writeLogger(String.format("WARNING: replicon is out of bound in sequence %s, start: %s,length: %s",
-//                        seq_name, startIndex, instanceLength));
+//                        genomeName, startIndex, instanceLength));
             }
         } else {
-//            writer.writeLogger(String.format("WARNING: Genome %s not found", seq_name));
+//            writer.writeLogger(String.format("WARNING: Genome %s not found", genomeName));
         }
 
         return instanceList;
@@ -303,6 +302,10 @@ public class CSBFinderModel {
 
     public Map<String, Genome> getGenomeMap() {
         return gi.getGenomesMap();
+    }
+
+    public Genome getGenome(String genomeName){
+        return gi.getGenome(genomeName);
     }
 
     public int getMaxGenomeSize(){

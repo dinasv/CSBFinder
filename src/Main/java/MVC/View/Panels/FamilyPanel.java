@@ -30,7 +30,6 @@ public class FamilyPanel extends JPanel {
                 FamilyTableModel model = ((FamilyTableModel) table.getModel());
 
                 rowClickedListener.rowClickedOccurred(new FamilyRowClickedEvent(
-                        //((FamilyTableModel) table.getModel()).getRowAt(table.getSelectedRow())
                         model.getPattern((String) table.getValueAt(table.getSelectedRow(), model.getIndexOfColumn(model.CSB)))
                 ));
             }

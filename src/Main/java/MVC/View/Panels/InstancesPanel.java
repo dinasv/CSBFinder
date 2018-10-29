@@ -43,8 +43,8 @@ public class InstancesPanel extends JPanel {
 
     }
 
-    public void displayInstances(String[] pattenCOGs, List<Map<String,List<InstanceInfo>>>  instances, int scrollWidth) {
-        setData(instances, pattenCOGs, scrollWidth);
+    public void displayInstances(List<Gene> pattenGenes, List<Map<String,List<InstanceInfo>>>  instances, int scrollWidth) {
+        setData(instances, pattenGenes, scrollWidth);
         revalidate();
         repaint();
     }
@@ -54,17 +54,19 @@ public class InstancesPanel extends JPanel {
     }
 
 
-    private void setData(List<Map<String,List<InstanceInfo>>> instances, String[] pattenCOGs, int scrollWidth) {
+    private void setData(List<Map<String,List<InstanceInfo>>> instances, List<Gene> pattenGenes, int scrollWidth) {
 
         int colIndex = 0;
 
+        /*
         List<Gene> patternGenesInner = new ArrayList<>();
-        for (String cog: pattenCOGs) {
+
+        for (String cog: pattenGenes) {
             patternGenesInner.add(new Gene(cog, Strand.FORWARD));
-        }
+        }*/
 
         List<ShapesInstance> shapesInstanceInnerList = new ArrayList<>();
-        shapesInstanceInnerList.add(getShapesCSB(patternGenesInner, 0, 0));
+        shapesInstanceInnerList.add(getShapesCSB(pattenGenes, 0, 0));
         List<List<ShapesInstance>> shapesInstanceOuterList = new ArrayList<>();
         shapesInstanceOuterList.add(shapesInstanceInnerList);
         ShapesPanel instancesRowPanel = getInstancesRowPanel(shapesInstanceOuterList,  Color.WHITE);
