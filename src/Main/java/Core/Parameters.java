@@ -7,10 +7,6 @@ import com.beust.jcommander.ParameterException;
 import java.util.Comparator;
 
 public class Parameters {
-    public enum OutputType {
-        TXT,
-        XLSX;
-    }
 
 
     public static class PositiveInteger implements IParameterValidator {

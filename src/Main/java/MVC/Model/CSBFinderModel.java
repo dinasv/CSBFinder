@@ -124,7 +124,7 @@ public class CSBFinderModel {
         csbFinderDoneListener.CSBFinderDoneOccurred(new CSBFinderDoneEvent(families));
     }
 
-    private Writer createWriter(boolean cog_info_exists, Parameters.OutputType outputType){
+    private Writer createWriter(boolean cog_info_exists, OutputType outputType){
         String parameters = "_ins" + params.maxInsertion + "_q" + params.quorum2;
         String catalog_file_name = "Catalog_" + params.datasetName + parameters;
         String instances_file_name = catalog_file_name + "_instances";
@@ -152,7 +152,7 @@ public class CSBFinderModel {
     public void saveOutputFiles(String outputFileType) {
 
          Writer writer = createWriter(params.cogInfoFileName != null && !"".equals(params.cogInfoFileName),
-                Parameters.OutputType.valueOf(outputFileType));
+                OutputType.valueOf(outputFileType));
 
         System.out.println("Writing to files");
         for (Family family : families) {

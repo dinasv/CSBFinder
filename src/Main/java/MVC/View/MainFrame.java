@@ -1,5 +1,6 @@
 package MVC.View;
 
+import Core.OutputType;
 import MVC.Common.CSBFinderRequest;
 import MVC.Common.InstanceInfo;
 import MVC.Controller.CSBFinderController;
@@ -208,8 +209,8 @@ public class MainFrame extends JFrame {
 
                 //JOptionPane option = new JOptionPane();
                 String[] ops = new String[] {
-                        String.valueOf(Parameters.OutputType.XLSX),
-                        String.valueOf(Parameters.OutputType.TXT) };
+                        String.valueOf(OutputType.XLSX),
+                        String.valueOf(OutputType.TXT) };
                 int type = JOptionPane.showOptionDialog(
                         MainFrame.this,
                         "Please choose the desired type for the output files",
