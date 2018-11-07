@@ -28,6 +28,9 @@ CSBFinder incorporates an efficient algorithm that identifies CSBs in large geno
 The discovered CSBs are ranked according to a probabilistic score and clustered to families according to their gene 
 content similarity.
 
+A detailed description of the workflow and the algorithm can be found in the paper: 
+[CSBFinder: discovery of colinear syntenic blocks across thousands of prokaryotic genomes](https://academic.oup.com/bioinformatics/advance-article/doi/10.1093/bioinformatics/bty861/5132694)
+
 ### Workflow Description
 The workflow of CSBFinder is given in the figure below.    
 
