@@ -36,8 +36,8 @@ public class Parameters {
         }
     }
 
-    @Parameter(names={"-in"}, description = "Input file name", required = true, order = 0)
-    public String inputFileName = "";
+    @Parameter(names={"-in"}, description = "Input file relative or absolute path", required = true, order = 0)
+    public String inputFilePath = "";
 
     @Parameter(names={"-q"}, description = "Instance quorum with insertions", required = true,
             validateWith = PositiveInteger.class, order = 1)
@@ -66,11 +66,11 @@ public class Parameters {
     @Parameter(names={"--datasetname", "-ds"}, description = "Dataset name", order = 6)
     public String datasetName = "dataset1";
 
-    @Parameter(names={"--patterns", "-p"}, description = "Input patterns file name", order = 7)
-    public String inputPatternsFileName = null;
+    @Parameter(names={"--patterns", "-p"}, description = "Input patterns file relative or absolute path", order = 7)
+    public String inputPatternsFilePath = null;
 
-    @Parameter(names={"-cog-info"}, description = "Gene families info file name", order = 8)
-    public String cogInfoFileName = null;
+    @Parameter(names={"-cog-info"}, description = "Gene families info file relative or absolute path", order = 8)
+    public String cogInfoFilePath = null;
 
     @Parameter(names={"--threshold", "-t"}, description = "Threshold for family clustering", order = 10)
     public double threshold = 0.8;

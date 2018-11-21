@@ -20,7 +20,7 @@ public class Controller {
     private MyLogger logger;
     private String outputPath;
     private Writer writer;
-    private String INPUT_PATH = "input/";
+    //private String INPUT_PATH = "input/";
 
 
     public Controller(String [ ] args){
@@ -101,12 +101,12 @@ public class Controller {
      */
     private List<Pattern> readPatternsFromFile() {
         List<Pattern> patterns = null;
-        if (params.inputPatternsFileName != null) {
+        if (params.inputPatternsFilePath != null) {
             //these arguments are not valid when input patterns are give
             params.minPatternLength = 2;
             params.maxPatternLength = Integer.MAX_VALUE;
 
-            String path = INPUT_PATH + params.inputPatternsFileName;
+            String path = params.inputPatternsFilePath;
             patterns = Parsers.parsePatternsFile(path);
         }
         return patterns;
@@ -123,15 +123,14 @@ public class Controller {
 
         long startTime = System.nanoTime();
 
-        logger.writeLogger("Building Data tree");
-        System.out.println("Building Data tree");
-
         //read genomes
         GenomesInfo gi = new GenomesInfo();
-        String genomes_file_path = INPUT_PATH + params.inputFileName;
+        String genomes_file_path = params.inputFilePath;
 
         int number_of_genomes = -1;
         try {
+            System.out.println("Parsing input genomes file");
+
             number_of_genomes = Parsers.parseGenomesFile(genomes_file_path, gi);
         }catch (IOException e){
             System.out.println("Input genome file is not valid. " + e.getMessage());
@@ -140,9 +139,11 @@ public class Controller {
 
         //cog info
         Map<String, COG> cog_info = null;
-        boolean cog_info_exists = (params.cogInfoFileName != null);
+        boolean cog_info_exists = (params.cogInfoFilePath != null);
         if (cog_info_exists) {
-            cog_info = Parsers.parseCogInfoTable(INPUT_PATH + params.cogInfoFileName);
+            System.out.println("Parsing orthology group information file");
+
+            cog_info = Parsers.parseCogInfoTable( params.cogInfoFilePath);
         }
 
         CogInfo cogInfo = new CogInfo();
@@ -151,6 +152,9 @@ public class Controller {
         MemoryUtils.measure();
 
         if (number_of_genomes != -1) {
+
+            logger.writeLogger("Executing workflow");
+            System.out.println("Executing workflow");
 
             CSBFinderWorkflow workflow = new CSBFinderWorkflow(gi);
 

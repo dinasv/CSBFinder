@@ -209,7 +209,7 @@ public class Writer {
 
         if (instancesFile != null) {
 
-            instancesFile.println(">" + pattern.getPatternId() + "\t" + pattern.getPattern());
+            instancesFile.println(String.format(">%s\t%s", pattern.getPatternId(), pattern.getPattern()));
 
             for (Map.Entry<Integer, PatternLocationsInGenome> entry : pattern.getPatternLocations().entrySet()) {
 
@@ -231,34 +231,6 @@ public class Writer {
 
         }
     }
-
-    /**
-     * Group all instances of pattern that are located in the same sequence
-     * @param pattern
-     * @return
-     */
-    /*
-    private Map<Integer, List<InstanceLocation>> groupSameSeqInstances(Pattern pattern){
-        Map<Integer, List<InstanceLocation>> instanceSeqToLocation = new HashMap<>();
-        for (Instance instance : pattern.getInstances()) {
-
-            int instance_length = instance.getLength();
-            for (Map.Entry<Integer, List<InstanceLocation>> entry : instance.getInstanceLocations().entrySet()) {
-                int seq_key = entry.getKey();
-
-                if (!instanceSeqToLocation.containsKey(seq_key)) {
-                    instanceSeqToLocation.put(seq_key, new ArrayList<InstanceLocation>());
-                }
-                List<InstanceLocation> instances_locations = instanceSeqToLocation.get(seq_key);
-                for (InstanceLocation instance_location : entry.getValue()) {
-                    //instance_location.setEndIndexUsingLength(instance_length);
-                    instance_location.setInstanceLength(instance_length);
-                    instances_locations.add(instance_location);
-                }
-            }
-        }
-        return instanceSeqToLocation;
-    }*/
 
 
     /**
@@ -312,10 +284,7 @@ public class Writer {
 
         for (Gene gene : pattern.getPatternGenes()){
             row = sheet.createRow(row_num++);
-            /*
-            if (nonDirectons){
-                cog = cog.substring(0, cog.length()-1);
-            }*/
+
             COG cog_obj = cogInfo.getCog(gene.getCogId());
 
             row.createCell(0).setCellValue(gene.getCogId());

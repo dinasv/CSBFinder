@@ -13,7 +13,6 @@ import com.beust.jcommander.ParameterException;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.*;
-import java.util.stream.Collectors;
 
 public class CSBFinderModel {
 
@@ -100,9 +99,9 @@ public class CSBFinderModel {
         long startTime = System.nanoTime();
 
         Map<String, COG> cog_info = null;
-        boolean cog_info_exists = (params.cogInfoFileName != null);
+        boolean cog_info_exists = (params.cogInfoFilePath != null);
         if (cog_info_exists) {
-            cog_info = Parsers.parseCogInfoTable(params.cogInfoFileName);
+            cog_info = Parsers.parseCogInfoTable(params.cogInfoFilePath);
         }
         cogInfo.setCogInfo(cog_info);
 
@@ -151,7 +150,7 @@ public class CSBFinderModel {
 
     public void saveOutputFiles(String outputFileType) {
 
-         Writer writer = createWriter(params.cogInfoFileName != null && !"".equals(params.cogInfoFileName),
+         Writer writer = createWriter(params.cogInfoFilePath != null && !"".equals(params.cogInfoFilePath),
                 OutputType.valueOf(outputFileType));
 
         System.out.println("Writing to files");
@@ -170,12 +169,12 @@ public class CSBFinderModel {
      */
     private List<Pattern> readPatternsFromFile() {
         List<Pattern> patterns = new ArrayList<>();
-        if (params.inputPatternsFileName != null) {
+        if (params.inputPatternsFilePath != null) {
             //these arguments are not valid when input patterns are give
             params.minPatternLength = 2;
             params.maxPatternLength = Integer.MAX_VALUE;
 
-            String path = params.inputPatternsFileName;
+            String path = params.inputPatternsFilePath;
             patterns = Parsers.parsePatternsFile(path);
         }
         return patterns;

@@ -128,7 +128,7 @@ public class Pattern {
     }
 
     public void calculateMainFunctionalCategory(CogInfo cogInfo, boolean nonDirectons){
-        if (mainFunctionalCategory.length() ==0 && cogInfo.cogInfoExists()) {
+        if (mainFunctionalCategory.length() == 0 && cogInfo.cogInfoExists()) {
 
             Map<String, Integer> functional_letter_count = new HashMap<>();
             Map<String, String> functional_letter_to_desc = new HashMap<>();
