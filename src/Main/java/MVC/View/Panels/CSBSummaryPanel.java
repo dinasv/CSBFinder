@@ -16,7 +16,7 @@ public class CSBSummaryPanel extends JPanel {
 
     private static final String NEWLINE = "\n";
     private static final String NO_COG_INFO_WARNNING = "Oops, No gene information was found. " +
-            "Did you load the gene orthology info file?";
+            "A gene orthogoly information file was not specified, or it did not load properly";
 
     private Style titleStyle;
     private Style textStyle;

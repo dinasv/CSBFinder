@@ -21,6 +21,7 @@ public class Controller {
     private String outputPath;
     private Writer writer;
 
+    private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
 
     public Controller(String [ ] args){
         JCommander jcommander = null;
@@ -128,11 +129,10 @@ public class Controller {
 
         int number_of_genomes = -1;
         try {
-            System.out.println("Parsing input genomes file");
-
+            printToScreen("Parsing input genomes file");
             number_of_genomes = Parsers.parseGenomesFile(genomes_file_path, gi);
         }catch (IOException e){
-            System.out.println("Input genome file is not valid. " + e.getMessage());
+            printToScreen("Input genome file is not valid. " + e.getMessage());
             return;
         }
 
@@ -140,7 +140,7 @@ public class Controller {
         Map<String, COG> cog_info = null;
         boolean cog_info_exists = (params.cogInfoFilePath != null);
         if (cog_info_exists) {
-            System.out.println("Parsing orthology group information file");
+            printToScreen("Parsing orthology group information file");
 
             try {
                 cog_info = Parsers.parseCogInfoTable(params.cogInfoFilePath);
@@ -157,7 +157,7 @@ public class Controller {
         if (number_of_genomes != -1) {
 
             logger.writeLogger("Executing workflow");
-            System.out.println("Executing workflow");
+            printToScreen("Executing workflow");
 
             CSBFinderWorkflow workflow = new CSBFinderWorkflow(gi);
 
@@ -170,17 +170,18 @@ public class Controller {
             }
             List<Family> families;
 
+            printToScreen(String.format("Extracting CSBs from %d input sequences.", number_of_genomes));
+
             if (patternsFromFile != null){
                 families = workflow.run(params, patternsFromFile);
             }else{
                 families = workflow.run(params);
             }
 
+            printToScreen(String.format("%d CSBs found.", workflow.getPatternsCount()));
 
-            System.out.println("Extracting CSBs from " + number_of_genomes + " input sequences.");
+            printToScreen("Writing to files");
 
-
-            System.out.println("Writing to files");
             writer = createWriter(cog_info_exists);
 
             for (Family family : families) {
@@ -191,15 +192,14 @@ public class Controller {
             }
             MemoryUtils.measure();
 
-
             writer.closeFiles();
 
-            System.out.println(writer.getCountPrintedPatterns() + " CSBs found");
+            printToScreen(String.format("%d CSBs written to files", writer.getCountPrintedPatterns()));
 
             float estimatedTime = (float) (System.nanoTime() - startTime) / (float) Math.pow(10, 9);
             logger.writeLogger("Took " + estimatedTime + " seconds");
 
-            System.out.println("Took " + estimatedTime + " seconds");
+            printToScreen(String.format("Took %f seconds", estimatedTime));
 
         }else{
             String msg = "Could not read input sequences";
@@ -207,6 +207,12 @@ public class Controller {
             logger.writeLogger(msg);
             System.exit(1);
         }
+    }
+
+    private void printToScreen(String msg){
+        Date date = new Date();
+
+        System.out.println(DATE_FORMAT.format(date) + ": " + msg);
     }
 }
 

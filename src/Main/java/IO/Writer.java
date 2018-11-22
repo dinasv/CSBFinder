@@ -273,28 +273,33 @@ public class Writer {
         }
     }
 
-    private int printPatternDescToExcelSheet(Sheet sheet, int row_num, Pattern pattern, GenomesInfo gi, CogInfo cogInfo){
-        Row row = sheet.createRow(row_num++);
-        row.createCell(0).setCellValue("ID=");
-        row.createCell(1).setCellValue(pattern.getPatternId());
-        row.createCell(2).setCellValue("Count=");
-        row.createCell(3).setCellValue(pattern.getInstanceCount());
-        row.createCell(4).setCellValue("Score=");
-        row.createCell(5).setCellValue(pattern.getScore());
+    private int printPatternDescToExcelSheet(Sheet sheet, int rowNum, Pattern pattern, GenomesInfo gi, CogInfo cogInfo){
+        try {
+            Row row = sheet.createRow(rowNum++);
+            row.createCell(0).setCellValue("ID=");
+            row.createCell(1).setCellValue(pattern.getPatternId());
+            row.createCell(2).setCellValue("Count=");
+            row.createCell(3).setCellValue(pattern.getInstanceCount());
+            row.createCell(4).setCellValue("Score=");
+            row.createCell(5).setCellValue(pattern.getScore());
 
-        for (Gene gene : pattern.getPatternGenes()){
-            row = sheet.createRow(row_num++);
+            for (Gene gene : pattern.getPatternGenes()) {
+                row = sheet.createRow(rowNum++);
 
-            COG cog_obj = cogInfo.getCog(gene.getCogId());
+                COG cog_obj = cogInfo.getCog(gene.getCogId());
 
-            row.createCell(0).setCellValue(gene.getCogId());
-            if (cog_obj!=null) {
-                row.createCell(1).setCellValue(cog_obj.getCogDesc());
-            }else{
-                row.createCell(1).setCellValue("-");
+                row.createCell(0).setCellValue(gene.getCogId());
+                if (cog_obj != null) {
+                    row.createCell(1).setCellValue(cog_obj.getCogDesc());
+                } else {
+                    row.createCell(1).setCellValue("-");
+                }
             }
+        }catch (IllegalArgumentException e){
+            System.out.println(String.format("Can't write line number %d to excel sheet. " +
+                    "Choose a different output file format", rowNum));
         }
-        return row_num+1;
+        return rowNum+1;
     }
 
     public void printPattern(Pattern pattern, GenomesInfo gi, String family_id, CogInfo cogInfo){
