@@ -20,7 +20,6 @@ public class Controller {
     private MyLogger logger;
     private String outputPath;
     private Writer writer;
-    //private String INPUT_PATH = "input/";
 
 
     public Controller(String [ ] args){
@@ -99,7 +98,7 @@ public class Controller {
      * Read patterns from a file if a file is given, and put them in a suffix trie
      * @return
      */
-    private List<Pattern> readPatternsFromFile() {
+    private List<Pattern> readPatternsFromFile() throws Exception{
         List<Pattern> patterns = null;
         if (params.inputPatternsFilePath != null) {
             //these arguments are not valid when input patterns are give
@@ -143,7 +142,11 @@ public class Controller {
         if (cog_info_exists) {
             System.out.println("Parsing orthology group information file");
 
-            cog_info = Parsers.parseCogInfoTable( params.cogInfoFilePath);
+            try {
+                cog_info = Parsers.parseCogInfoTable(params.cogInfoFilePath);
+            }catch (Exception e){
+                System.out.println(e.getMessage());
+            }
         }
 
         CogInfo cogInfo = new CogInfo();
@@ -159,7 +162,12 @@ public class Controller {
             CSBFinderWorkflow workflow = new CSBFinderWorkflow(gi);
 
             //read patterns from a file if a file is given
-            List<Pattern> patternsFromFile = readPatternsFromFile();
+            List<Pattern> patternsFromFile = new ArrayList<>();
+            try {
+                patternsFromFile = readPatternsFromFile();
+            }catch (Exception e){
+                System.out.println(e.getMessage());
+            }
             List<Family> families;
 
             if (patternsFromFile != null){

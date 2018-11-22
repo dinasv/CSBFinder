@@ -36,16 +36,16 @@ public class CSBFinderController {
         });
     }
 
-    public void loadInputGenomesFile(String file_path) {
+    public String loadInputGenomesFile(String file_path) {
 
-        this.model.loadInputGenomesFile(file_path);
+        return this.model.loadInputGenomesFile(file_path);
     }
 
 
     public void saveOutputFiles(String outputFileType) { this.model.saveOutputFiles(outputFileType); }
 
-    public void findCSBs(CSBFinderRequest request) {
-        this.model.findCSBs(request);
+    public String findCSBs(CSBFinderRequest request) {
+        return this.model.findCSBs(request);
     }
 
     public List<COG> getCogInfo(List<Gene> genes) {

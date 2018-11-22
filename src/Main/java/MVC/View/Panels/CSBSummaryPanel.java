@@ -15,13 +15,18 @@ public class CSBSummaryPanel extends JPanel {
     JScrollPane scroll;
 
     private static final String NEWLINE = "\n";
-    private static final String NO_COG_INFO_WARNNING = "Oops, No gene information was found. Did you load the gene orthology info file?";
+    private static final String NO_COG_INFO_WARNNING = "Oops, No gene information was found. " +
+            "Did you load the gene orthology info file?";
 
     private Style titleStyle;
     private Style textStyle;
-    Highlighter highlighter;
+    private Highlighter highlighter;
 
-    CSBSummaryPanel() {
+    private String missingInfoText;
+
+    public CSBSummaryPanel() {
+        missingInfoText = NO_COG_INFO_WARNNING;
+
         setLayout(new BorderLayout());
         summary = new JTextPane();
         summary.setEditable(false);
@@ -63,7 +68,7 @@ public class CSBSummaryPanel extends JPanel {
 
         if (patternGenes.size() == 0) {
             try {
-                doc.insertString(doc.getLength(), NO_COG_INFO_WARNNING, textStyle);
+                doc.insertString(doc.getLength(), missingInfoText, textStyle);
             } catch (BadLocationException e) {
             }
         }else {
@@ -72,7 +77,6 @@ public class CSBSummaryPanel extends JPanel {
 
             appendGenes(patternGenes, "CSB Genes:", highlightInfos, colorsUsed, genesUsed, doc);
             appendGenes(InsertedGenes, "Inserted Genes:", highlightInfos, colorsUsed, genesUsed, doc);
-
 
             //highlight text
             Highlighter.HighlightPainter painter;
@@ -129,6 +133,11 @@ public class CSBSummaryPanel extends JPanel {
         }
     }
 
+
+    public void setMissingInfoText(String text){
+        missingInfoText = text;
+    }
+
     private class HighlightInfo{
 
         private int start;
@@ -153,5 +162,6 @@ public class CSBSummaryPanel extends JPanel {
         public Color getColor() {
             return color;
         }
+
     }
 }

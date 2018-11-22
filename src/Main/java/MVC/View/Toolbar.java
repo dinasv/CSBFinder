@@ -79,4 +79,7 @@ public class Toolbar extends JPanel {
     public void enableSelectParamsBtn() {
         selectParams.setEnabled(true);
     }
+    public void disableSelectParamsBtn() {
+        selectParams.setEnabled(false);
+    }
 }

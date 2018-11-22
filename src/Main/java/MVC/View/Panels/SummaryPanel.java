@@ -16,8 +16,9 @@ public class SummaryPanel extends JSplitPane {
     private CSBSummaryPanel csbSummaryPanel;
 
     public SummaryPanel() {
-        tabs = new SummaryTabs();
         csbSummaryPanel = new CSBSummaryPanel();
+
+        tabs = new SummaryTabs();
 
         setOrientation(JSplitPane.HORIZONTAL_SPLIT);
         setDividerSize(2);
@@ -42,5 +43,9 @@ public class SummaryPanel extends JSplitPane {
     public void clearPanel(){
         tabs.clearPanel();
         csbSummaryPanel.clearPanel();
+    }
+
+    public void setMissingInfoText(String text){
+        csbSummaryPanel.setMissingInfoText(text);
     }
 }

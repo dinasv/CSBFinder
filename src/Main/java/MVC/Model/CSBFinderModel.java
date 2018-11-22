@@ -10,6 +10,7 @@ import Core.PostProcess.Family;
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.ParameterException;
 
+import javax.swing.*;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -38,17 +39,25 @@ public class CSBFinderModel {
     public MyLogger logger = new MyLogger("",true);
 
 
-    public void loadInputGenomesFile(String path) {
+    public String loadInputGenomesFile(String path) {
         cogInfo = new CogInfo();
-        gi = new GenomesInfo();
+        initGenomesInfo();
+
+        String msg = "";
         try {
             numberOfGenomes = Parsers.parseGenomesFile(path, gi);
-        }catch(IOException e){
-            //TODO: show error message
+            msg = "Loaded " + numberOfGenomes + " genomes.";
+            workflow = new CSBFinderWorkflow(gi);
+        }catch(Exception e){
+            msg = e.getMessage();
         }
-        System.out.println("Loaded " + numberOfGenomes + " genomes.");
-        workflow = new CSBFinderWorkflow(gi);
 
+        return msg;
+    }
+
+    private void initGenomesInfo(){
+        gi = new GenomesInfo();
+        numberOfGenomes = -1;
     }
 
 
@@ -68,45 +77,57 @@ public class CSBFinderModel {
         }
     }
 
-    public void findCSBs(CSBFinderRequest request) {
+    public String findCSBs(CSBFinderRequest request) {
         String[] args = request.toArgArray();
 
-        findCSBs(args);
+        return findCSBs(args);
     }
 
-    public void findCSBs(String[] args) {
+    public String findCSBs(String[] args) {
         JCommander jcommander = parseArgs(args);
         if (jcommander != null){
-
-            this.findCSBs();
+            return this.findCSBs();
         }
+        return "";
     }
 
 
     /**
      * Need to load genomes first
      */
-    private void findCSBs() {
+    private String findCSBs() {
+
+        String msg = "";
+        long startTime = System.nanoTime();
+        Map<String, COG> cog_info = null;
 
         if (gi == null || gi.getNumberOfGenomes() == 0){
-            System.out.println("Need to read genomes first.");
-            return;
+            msg = "Need to read genomes first.";
+            System.out.println(msg);
+            return msg;
         }else if(workflow == null){
-            System.out.println("CSBFinder workflow was not created yet.");
-            return;
+            msg = "CSBFinder workflow was not created yet.";
+            System.out.println(msg);
+            return msg;
         }
 
-        long startTime = System.nanoTime();
+        List<Pattern> patternsFromFile = new ArrayList<>();
+        try {
+            patternsFromFile = readPatternsFromFile();
+        }catch (Exception e){
+            msg = e.getMessage();
+            return msg;
+        }
 
-        Map<String, COG> cog_info = null;
         boolean cog_info_exists = (params.cogInfoFilePath != null);
         if (cog_info_exists) {
-            cog_info = Parsers.parseCogInfoTable(params.cogInfoFilePath);
+            try {
+                cog_info = Parsers.parseCogInfoTable(params.cogInfoFilePath);
+                cogInfo.setCogInfo(cog_info);
+            }catch (Exception e){
+                msg = e.getMessage() + "\n";
+            }
         }
-        cogInfo.setCogInfo(cog_info);
-
-
-        List<Pattern> patternsFromFile = readPatternsFromFile();
 
         System.out.println("Extracting CSBs from " + numberOfGenomes + " input sequences.");
 
@@ -116,11 +137,14 @@ public class CSBFinderModel {
             families = workflow.run(params);
         }
 
+        msg += workflow.getPatternsCount() + " CSBs found";
 
-        System.out.println(workflow.getPatternsCount() + " CSBs found");
+        System.out.println(msg);
         System.out.println("Took " + String.valueOf((System.nanoTime() - startTime) / Math.pow(10, 9)) + " seconds");
 
         csbFinderDoneListener.CSBFinderDoneOccurred(new CSBFinderDoneEvent(families));
+
+        return msg;
     }
 
     private Writer createWriter(boolean cog_info_exists, OutputType outputType){
@@ -167,7 +191,7 @@ public class CSBFinderModel {
      * Read patterns from a file if a file is given, and put them in a suffix trie
      * @return
      */
-    private List<Pattern> readPatternsFromFile() {
+    private List<Pattern> readPatternsFromFile() throws Exception{
         List<Pattern> patterns = new ArrayList<>();
         if (params.inputPatternsFilePath != null) {
             //these arguments are not valid when input patterns are give

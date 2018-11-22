@@ -118,16 +118,19 @@ public class MainFrame extends JFrame {
 
                 SwingWorker<Void, Void> swingWorker = new SwingWorker<Void, Void>() {
 
+                    String msg = "";
+
                     @Override
                     protected Void doInBackground() throws Exception {
                         clearPanels();
-                        controller.findCSBs(request);
+                        msg = controller.findCSBs(request);
                         return null;
                     }
 
                     @Override
                     protected void done() {
                         progressBar.done("");
+                        JOptionPane.showMessageDialog(MainFrame.this, msg);
                     }
                 };
                 swingWorker.execute();
@@ -164,6 +167,7 @@ public class MainFrame extends JFrame {
                     // open option dialog for user to choose if he wants to run with directon option
                     boolean isDirecton = true;
 
+
                     SwingUtilities.invokeLater(new Runnable() {
                         @Override
                         public void run() {
@@ -173,27 +177,29 @@ public class MainFrame extends JFrame {
 
                     SwingWorker<Void, Void> swingWorker = new SwingWorker<Void, Void>() {
 
+                        String msg = "File Loaded Successfully";
+
                         @Override
                         protected Void doInBackground() throws Exception {
-                            controller.loadInputGenomesFile(f.getPath());
+                            msg = controller.loadInputGenomesFile(f.getPath());
                             return null;
                         }
 
                         @Override
                         protected void done() {
+
                             clearPanels();
                             inputParamsDialog.initFields();
-
                             toolbar.disableSaveFileBtn();
 
-                            progressBar.done("File Loaded Successfully");
-                            if (controller.getGenomesLoaded() <= 0) {
-                                JOptionPane.showMessageDialog(MainFrame.this, "An error occurred while loading file");
-                            } else {
-
+                            if (controller.getGenomesLoaded() > 0) {
                                 inputParamsDialog.setGenomeData(controller.getNumberOfGenomes(), controller.getMaxGenomeSize());
                                 toolbar.enableSelectParamsBtn();
+                            }else{
+                                toolbar.disableSelectParamsBtn();
                             }
+                            progressBar.done("");
+                            JOptionPane.showMessageDialog(MainFrame.this, msg);
                         }
                     };
                     swingWorker.execute();

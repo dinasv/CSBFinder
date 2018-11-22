@@ -12,13 +12,17 @@ import java.util.*;
 
 public class Parsers {
 
-    public static List<Pattern> parsePatternsFile(String input_patterns_file_name) {
+    final static String CSB_DELIMITER = " ";
+
+    public static List<Pattern> parsePatternsFile(String inputPatternsFilePath)
+            throws IOException, IllegalArgumentException{
 
         List<Pattern> patterns = new ArrayList<>();
-        try {
-            BufferedReader br = new BufferedReader(new FileReader(input_patterns_file_name));
+
+        try (BufferedReader br = new BufferedReader(new FileReader(inputPatternsFilePath))) {
 
             String line = br.readLine();
+            int lineNumber = 0;
 
             int pattern_id = 0;
             while (line != null) {
@@ -26,11 +30,11 @@ public class Parsers {
                     try {
                         pattern_id = Integer.parseInt(line.substring(1));
                     } catch (NumberFormatException e) {
-                        System.out.println("Pattern id should be an integer, found " + line);
-                        return null;
+                        throw new IllegalArgumentException(errorMessage("Pattern id should be an integer",
+                                line, lineNumber, inputPatternsFilePath));
                     }
                 } else {
-                    String[] patternArr = line.split("-");
+                    String[] patternArr = line.split(CSB_DELIMITER);
                     if (patternArr.length > 1) {
                         List<Gene> genes = new ArrayList<>();
                         for (String gene: patternArr){
@@ -38,21 +42,19 @@ public class Parsers {
                         }
                         Pattern pattern = new Pattern(pattern_id, line, genes);
                         patterns.add(pattern);
+                    }else{
+                        throw new IllegalArgumentException(errorMessage("Genes delimited by \"" + CSB_DELIMITER + "\"",
+                                line, lineNumber, inputPatternsFilePath));
                     }
                 }
                 line = br.readLine();
+                lineNumber++;
             }
 
-            try {
-                br.close();
-            } catch (IOException e) {
-                System.out.println("A problem occurred while reading file " + input_patterns_file_name);
-                return null;
-            }
-
+        } catch (FileNotFoundException e) {
+            throw new FileNotFoundException("File " + inputPatternsFilePath + " was not found.");
         } catch (IOException e) {
-            System.out.println("A problem occurred while reading file " + input_patterns_file_name);
-            return null;
+            throw new IOException("An exception occurred while reading " + inputPatternsFilePath);
         }
         return patterns;
     }
@@ -72,7 +74,7 @@ public class Parsers {
      * @param lineNumber of {@code rawLine} in {@code filePath}
      * @param filePath
      */
-    private static Gene parseGeneLine(String rawLine, int lineNumber, String filePath) {
+    private static Gene parseGeneLine(String rawLine, int lineNumber, String filePath) throws IllegalArgumentException {
 
         Objects.requireNonNull(rawLine, "rawLine is null");
         Objects.requireNonNull(filePath, "filePath is null");
@@ -106,7 +108,7 @@ public class Parsers {
      * @param rawTitle
      * @param replicon
      */
-    private static String[] parseGenomeTitle(String rawTitle, int lineNumber, String filePath) {
+    private static String[] parseGenomeTitle(String rawTitle, int lineNumber, String filePath) throws IllegalArgumentException{
 
         Objects.requireNonNull(rawTitle, "rawTitle is null");
         Objects.requireNonNull(filePath, "filePath is null");
@@ -141,7 +143,7 @@ public class Parsers {
     }
 
     private static String errorMessage(String expected, String recieved, int lineNumber, String path) {
-        return String.format("Expected %s, got %s in file %s line %d", expected, recieved, path, lineNumber);
+        return String.format("Expected %s, got \"%s\" in file %s line %d", expected, recieved, path, lineNumber);
     }
 
     private static Genome getNewOrExistingGenome(GenomesInfo genomesInfo, String currGenomeName) {
@@ -159,7 +161,8 @@ public class Parsers {
      * @param input_file_path path to input file with input sequences
      * @return number of input sequences
      */
-    public static int parseGenomesFile(String filePath, GenomesInfo genomesInfo) throws IOException {
+    public static int parseGenomesFile(String filePath, GenomesInfo genomesInfo)
+            throws IOException, IllegalArgumentException {
 
         if (genomesInfo == null || filePath == null) {
             throw new IllegalArgumentException();
@@ -239,7 +242,8 @@ public class Parsers {
      *
      * @throws FileNotFoundException
      */
-    public static Map<String, COG> parseCogInfoTable(String cogInfoFilePath) {
+    public static Map<String, COG> parseCogInfoTable(String cogInfoFilePath)
+            throws IOException, IllegalArgumentException{
         Map<String, COG> cogInfo = new HashMap<>();
 
         try (BufferedReader br = new BufferedReader(new FileReader(cogInfoFilePath))) {
@@ -293,8 +297,11 @@ public class Parsers {
 
                 line = br.readLine();
             }
-        } catch (IOException e) {
-            System.out.println("File " + cogInfoFilePath + " was not found");
+        }catch(FileNotFoundException e){
+            throw new FileNotFoundException("File " + cogInfoFilePath + " was not found.");
+        }
+        catch (IOException e) {
+            throw new IOException("An exception occurred while reading " + cogInfoFilePath);
         }
         return cogInfo;
     }
