@@ -27,7 +27,6 @@ public class Writer {
 
     private PrintWriter instancesFile;
 
-
     private String catalogInstancesPath;
 
     private int countPrintedPatterns;
@@ -69,7 +68,7 @@ public class Writer {
         instancesFile = createOutputPrintWriter(catalogInstancesPath);
     }
 
-    private PrintWriter createOutputPrintWriter(String path){
+    public static PrintWriter createOutputPrintWriter(String path){
         try {
             PrintWriter output_file = new PrintWriter(path, "UTF-8");
 
@@ -93,7 +92,7 @@ public class Writer {
 
     private String createHeader(boolean include_families){
 
-        String header = "ID\tLength\tScore\tInstance_Count\tInstance_Ratio\tExact_Instance_Count\tCSB";
+        String header = "ID\tLength\tScore\tInstance_Count\tExact_Instance_Count\tCSB";
         if (cogInfoExists){
             header += "\tMain_Category";
         }
@@ -126,35 +125,47 @@ public class Writer {
         }
     }
 
-    private void printInstances(Pattern pattern, GenomesInfo gi){
+    public static void printInstances(Pattern pattern, String familyId, GenomesInfo gi, boolean nonDirectons, PrintWriter instancesFile){
 
         if (instancesFile != null) {
 
+            String catalogLine = pattern.getPatternId() + "\t" + pattern.getLength() + "\t";
+
+            catalogLine += DF.format(pattern.getScore()) + "\t"
+                    + pattern.getInstanceCount() + "\t"
+                    + pattern.getExactInstanceCount() + "\t";
+
             String patternGenes;
-            if(nonDirectons){
+            if (nonDirectons) {
                 patternGenes = pattern.toString();
-            }else{
+            } else {
                 patternGenes = pattern.toStringWithNoStrand();
             }
 
-            instancesFile.println(String.format(">%s\t%s", pattern.getPatternId(), patternGenes));
+            catalogLine += patternGenes + "\t";
+
+            catalogLine += familyId;
+
+            instancesFile.println(">" + catalogLine);
 
             for (Map.Entry<Integer, PatternLocationsInGenome> entry : pattern.getPatternLocations().entrySet()) {
 
                 String genomeName = gi.getGenomeName(entry.getKey());
+                String repliconName;
+
                 instancesFile.print(genomeName);
 
                 PatternLocationsInGenome patternLocationsInGenome = entry.getValue();
                 for (List<InstanceLocation> instanceLocationsInReplicon : patternLocationsInGenome.getSortedLocations().values()){
                     for (InstanceLocation instanceLocation: instanceLocationsInReplicon) {
-                        String replicon_name = gi.getRepliconName(instanceLocation.getRepliconId());
+                        repliconName = gi.getRepliconName(instanceLocation.getRepliconId());
 
-                        instancesFile.print("\t" + replicon_name + "|[" + instanceLocation.getActualStartIndex() + ","
-                                + instanceLocation.getActualEndIndex() + "]");
+                        instancesFile.print(String.format("\t%s|[%d,%d]", repliconName,
+                                instanceLocation.getActualStartIndex(), instanceLocation.getActualEndIndex()));
                     }
                 }
 
-                instancesFile.print("\n");
+                instancesFile.println();
             }
 
         }
@@ -168,10 +179,10 @@ public class Writer {
 
         for (Pattern pattern : family.getPatterns()) {
             pattern.calculateMainFunctionalCategory(cogInfo);
-            printInstances(pattern, gi);
+            printInstances(pattern, family.getFamilyId(), gi, nonDirectons, instancesFile);
         }
 
-        patternsWriter.write(family, gi, cogInfo);
+        patternsWriter.write(family, cogInfo);
 
     }
 

@@ -37,14 +37,13 @@ public class TextWriter implements PatternsWriter{
         this.nonDirectons = nonDirectons;
 
         String catalogPath = path + ".txt";
-        catalogFile = createOutputPrintWriter(catalogPath);
+        catalogFile = Writer.createOutputPrintWriter(catalogPath);
 
-        //init(path, header);
     }
 
     @Override
-    public void write(Family family, GenomesInfo gi, CogInfo cogInfo) {
-        printFamily(family, gi, cogInfo);
+    public void write(Family family, CogInfo cogInfo) {
+        printFamily(family, cogInfo);
     }
 
     public void writeHeader(String header){
@@ -53,36 +52,20 @@ public class TextWriter implements PatternsWriter{
         }
     }
 
-
-    private PrintWriter createOutputPrintWriter(String path){
-
-        PrintWriter output_file = null;
-
-        try {
-            output_file = new PrintWriter(path, "UTF-8");
-        } catch (Exception e) {
-            System.out.println("Cannot create file " + path);
-            System.exit(1);
-        }
-        return output_file;
-    }
-
     public void closeFile() {
         if (catalogFile != null) {
             catalogFile.close();
         }
     }
 
-    public void printFamily(Family family, GenomesInfo gi, CogInfo cogInfo){
+    public void printFamily(Family family, CogInfo cogInfo){
         for (Pattern pattern: family.getPatterns()) {
             countPrintedPatterns++;
-            //pattern.calculateMainFunctionalCategory(cogInfo, false);
 
             String catalogLine = pattern.getPatternId() + "\t" + pattern.getLength() + "\t";
 
             catalogLine += DF.format(pattern.getScore()) + "\t"
                     + pattern.getInstanceCount() + "\t"
-                    + DF.format(pattern.getInstanceCount() / (double) gi.getNumberOfGenomes()) + "\t"
                     + pattern.getExactInstanceCount() + "\t";
 
             String patternGenes;
@@ -102,7 +85,7 @@ public class TextWriter implements PatternsWriter{
             //}
 
             if (catalogFile != null) {
-                catalogFile.write(catalogLine + "\n");
+                catalogFile.println(catalogLine);
             }
         }
     }

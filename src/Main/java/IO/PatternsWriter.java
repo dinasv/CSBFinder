@@ -8,7 +8,7 @@ import Core.PostProcess.Family;
  */
 public interface PatternsWriter {
 
-    void write(Family family, GenomesInfo gi, CogInfo cogInfo);
+    void write(Family family, CogInfo cogInfo);
 
     void writeHeader(String header);
 

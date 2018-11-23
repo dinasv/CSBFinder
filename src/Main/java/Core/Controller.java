@@ -53,7 +53,7 @@ public class Controller {
     }
 
 
-    private Writer createWriter(boolean cog_info_exists){
+    private Writer createWriter(boolean cog_info_exists, GenomesInfo genomesInfo){
         String parameters = "_ins" + params.maxInsertion + "_q" + params.quorum2;
         String catalogFileName = "Catalog_" + params.datasetName + parameters;
         String instancesFileName = catalogFileName + "_instances";
@@ -64,11 +64,20 @@ public class Controller {
 
         PatternsWriter patternsWriter = null;
 
-        if (params.outputFileType == OutputType.TXT){
-            patternsWriter = new TextWriter(cog_info_exists, includeFamilies, params.nonDirectons, catalogPath);
-        }else if(params.outputFileType == OutputType.XLSX){
-            patternsWriter = new ExcelWriter(cog_info_exists, includeFamilies, params.nonDirectons, catalogPath);
+        switch (params.outputFileType){
+            case TXT:
+                patternsWriter = new TextWriter(cog_info_exists, includeFamilies, params.nonDirectons, catalogPath);
+                break;
+            case XLSX:
+                patternsWriter = new ExcelWriter(cog_info_exists, includeFamilies, params.nonDirectons, catalogPath);
+                break;
+            case EXPORT:
+                SessionWriter sessionWriter = new SessionWriter(includeFamilies, params.nonDirectons, catalogPath, genomesInfo);
+                sessionWriter.writeGenomes(genomesInfo.getGenomesMap());
+                patternsWriter = sessionWriter;
+                break;
         }
+
 
         Writer writer = new Writer(params.debug, catalogFileName,
                 instancesFileName, includeFamilies, cog_info_exists, params.nonDirectons,
@@ -191,14 +200,10 @@ public class Controller {
 
             printToScreen("Writing to files");
 
-            writer = createWriter(cog_info_exists);
+            writer = createWriter(cog_info_exists, gi);
 
             for (Family family : families) {
                 writer.printFamily(family, gi, cogInfo);
-                /*writer.printTopScoringPattern(family.getTopScoringPattern(), gi, family.getFamilyId(), cogInfo);
-                for (Pattern pattern : family.getPatterns()) {
-                    writer.printPattern(pattern, gi, family.getFamilyId(), cogInfo);
-                }*/
             }
             MemoryUtils.measure();
 

@@ -84,19 +84,19 @@ public class ExcelWriter implements PatternsWriter{
     }
 
 
-    public void printFamily(Family family, GenomesInfo gi, CogInfo cogInfo){
+    public void printFamily(Family family, CogInfo cogInfo){
 
-        printTopScoringPattern(family.getTopScoringPattern(), gi, family.getFamilyId(), cogInfo);
+        printTopScoringPattern(family.getTopScoringPattern(), family.getFamilyId(), cogInfo);
 
         for (Pattern pattern: family.getPatterns()) {
             //pattern.calculateMainFunctionalCategory(cogInfo, false);
 
             countPrintedPatterns++;
-            printPatternLineToExcelSheet(catalogSheet, pattern, countPrintedPatterns, family.getFamilyId(), gi, cogInfo);
+            printPatternLineToExcelSheet(catalogSheet, pattern, countPrintedPatterns, family.getFamilyId(), cogInfo);
 
             if (patternsDescriptionSheet != null) {
                 nextLineIndexDescSheet = printPatternDescToExcelSheet(patternsDescriptionSheet,
-                        nextLineIndexDescSheet, pattern, gi, cogInfo);
+                        nextLineIndexDescSheet, pattern, cogInfo);
             }
 
         }
@@ -106,20 +106,19 @@ public class ExcelWriter implements PatternsWriter{
      * Prints a pattern with the highest score in its family to a different sheet
      * @param pattern
      * @param gi
-     * @param family_id
+     * @param familyId
      */
-    public void printTopScoringPattern(Pattern pattern, GenomesInfo gi, String family_id, CogInfo cogInfo){
+    public void printTopScoringPattern(Pattern pattern, String familyId, CogInfo cogInfo){
         if (pattern != null) {
-            //pattern.calculateMainFunctionalCategory(cogInfo, false);
 
             countPrintedFilteredPatterns++;
-            printPatternLineToExcelSheet(filteredPatternsSheet, pattern, countPrintedFilteredPatterns, family_id, gi, cogInfo);
+            printPatternLineToExcelSheet(filteredPatternsSheet, pattern, countPrintedFilteredPatterns, familyId, cogInfo);
         }
     }
 
 
     private void printPatternLineToExcelSheet(Sheet sheet, Pattern pattern, int rowNum, String familyId,
-                                              GenomesInfo gi, CogInfo cogInfo){
+                                               CogInfo cogInfo){
         Row row = sheet.createRow(rowNum);
         int col = 0;
         row.createCell(col++).setCellValue(pattern.getPatternId());
@@ -130,8 +129,7 @@ public class ExcelWriter implements PatternsWriter{
             row.createCell(col).setCellValue(DF.format(pattern.getScore()));
         }
         row.createCell(col++).setCellValue(pattern.getInstanceCount());
-        row.createCell(col++).setCellValue(Double.valueOf(DF.format(pattern.getInstanceCount() /
-                (double) gi.getNumberOfGenomes())));
+
         row.createCell(col++).setCellValue(pattern.getExactInstanceCount());
 
         String patternGenes;
@@ -151,7 +149,7 @@ public class ExcelWriter implements PatternsWriter{
         }
     }
 
-    private int printPatternDescToExcelSheet(Sheet sheet, int rowNum, Pattern pattern, GenomesInfo gi, CogInfo cogInfo){
+    private int printPatternDescToExcelSheet(Sheet sheet, int rowNum, Pattern pattern, CogInfo cogInfo){
         try {
             Row row = sheet.createRow(rowNum++);
             row.createCell(0).setCellValue("ID=");
@@ -181,8 +179,8 @@ public class ExcelWriter implements PatternsWriter{
     }
 
 
-    public void write(Family family, GenomesInfo gi, CogInfo cogInfo) {
-        printFamily(family, gi, cogInfo);
+    public void write(Family family, CogInfo cogInfo) {
+        printFamily(family, cogInfo);
     }
 
     @Override
