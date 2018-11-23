@@ -1,9 +1,7 @@
 package MVC.Model;
 
 import Core.Genomes.*;
-import IO.MyLogger;
-import IO.Parsers;
-import IO.Writer;
+import IO.*;
 import MVC.Common.*;
 import Core.*;
 import Core.PostProcess.Family;
@@ -149,13 +147,26 @@ public class CSBFinderModel {
 
     private Writer createWriter(boolean cog_info_exists, OutputType outputType){
         String parameters = "_ins" + params.maxInsertion + "_q" + params.quorum2;
-        String catalog_file_name = "Catalog_" + params.datasetName + parameters;
-        String instances_file_name = catalog_file_name + "_instances";
-        boolean include_families = true;
+        String catalogFileName = "Catalog_" + params.datasetName + parameters;
+        String instancesFileName = catalogFileName + "_instances";
 
-        Writer writer = new Writer(params.maxError, params.maxDeletion, params.maxInsertion, params.debug, catalog_file_name,
-                instances_file_name,
-                include_families, outputType, cog_info_exists, params.nonDirectons, createOutputPath());
+        String outputPath = createOutputPath();
+
+        String catalogPath = outputPath + catalogFileName;
+        //TODO: add as input parameter
+        boolean includeFamilies = true;
+
+        PatternsWriter patternsWriter = null;
+
+        if (params.outputFileType == OutputType.TXT){
+            patternsWriter = new TextWriter(cog_info_exists, includeFamilies, params.nonDirectons, catalogPath);
+        }else if(params.outputFileType == OutputType.XLSX){
+            patternsWriter = new ExcelWriter(cog_info_exists, includeFamilies, params.nonDirectons, catalogPath);
+        }
+
+        Writer writer = new Writer(params.debug, catalogFileName,
+                instancesFileName, includeFamilies, cog_info_exists, params.nonDirectons,
+                outputPath, patternsWriter);
 
         return writer;
     }
@@ -179,10 +190,12 @@ public class CSBFinderModel {
 
         System.out.println("Writing to files");
         for (Family family : families) {
-            writer.printTopScoringPattern(family.getPatterns().get(0), gi, family.getFamilyId(), cogInfo);
+
+            writer.printFamily(family, gi, cogInfo);
+            /*writer.printTopScoringPattern(family.getPatterns().get(0), gi, family.getFamilyId(), cogInfo);
             for (Pattern pattern : family.getPatterns()) {
                 writer.printPattern(pattern, gi, family.getFamilyId(), cogInfo);
-            }
+            }*/
         }
         writer.closeFiles();
     }

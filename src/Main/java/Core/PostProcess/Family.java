@@ -52,15 +52,10 @@ public class Family {
 
     private void addCharsToCharsSet(List<Gene> patternGenes){
         for (Gene gene: patternGenes) {
-            int cog_index;
-            /*
-            if (nonDirectons){
-                cog_index = gi.charToIndex.get(gene.getCogId()+gene.getStrand());
-            }else {
-                cog_index = gi.charToIndex.get(gene.getCogId());
-            }*/
-            cog_index = gi.charToIndex.get(gene);
-            charSet.add(cog_index);
+            int cogIndex;
+
+            cogIndex = gi.charToIndex.get(gene);
+            charSet.add(cogIndex);
         }
     }
 
@@ -106,5 +101,12 @@ public class Family {
             if (o2.getScore() > o1.getScore()) return 1;
             return 0;
         }
+    }
+
+    public Pattern getTopScoringPattern(){
+        if (patterns.size() > 0){
+            return patterns.get(0);
+        }
+        return null;
     }
 }

@@ -5,5 +5,6 @@ package Core;
  */
 public enum OutputType {
     TXT,
-    XLSX;
+    XLSX,
+    EXPORT;
 }

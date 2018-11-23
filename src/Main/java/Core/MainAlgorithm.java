@@ -461,7 +461,7 @@ public class MainAlgorithm {
             if (extended_pattern_length - wildcard_count >= minPatternLength) {
                 if (type == TreeType.STATIC) {
                     if (extendedPatternNode.getPatternKey()>0) {
-                        Pattern newPattern = new Pattern(extendedPatternNode.getPatternKey(), extendedPattern.toString(),
+                        Pattern newPattern = new Pattern(extendedPatternNode.getPatternKey(),
                                 extendedPattern,
                                 extendedPatternNode.getInstanceKeys().size(),
                                 extendedPatternNode.getExactInstanceCount());
@@ -476,7 +476,7 @@ public class MainAlgorithm {
                             //make sure that extendedPattern is right maximal, if extendedPattern has the same number of
                             // instances as the longer pattern, prefer the longer pattern
                             if (diff_instances_count > ret || debug) {// diff_instances_count >= ret always
-                                Pattern newPattern = new Pattern(extendedPatternNode.getPatternKey(), extendedPattern.toString(),
+                                Pattern newPattern = new Pattern(extendedPatternNode.getPatternKey(),
                                         extendedPattern,
                                         extendedPatternNode.getInstanceKeys().size(),
                                         extendedPatternNode.getExactInstanceCount());

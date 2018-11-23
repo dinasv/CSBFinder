@@ -40,7 +40,7 @@ public class Parsers {
                         for (String gene: patternArr){
                             genes.add(new Gene(gene, Strand.FORWARD));
                         }
-                        Pattern pattern = new Pattern(pattern_id, line, genes);
+                        Pattern pattern = new Pattern(pattern_id, genes);
                         patterns.add(pattern);
                     }else{
                         throw new IllegalArgumentException(errorMessage("Genes delimited by \"" + CSB_DELIMITER + "\"",

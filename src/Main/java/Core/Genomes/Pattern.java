@@ -15,10 +15,8 @@ public class Pattern {
     /**
      * e.g. COG1234 COG5234
      */
-    private String pattern;
-    /**
-     * Each cell contains the COG id, e.g. [COG1234, COG5234]
-     */
+    //private String pattern;
+
     private List<Gene> patternGenes;
     private List<Gene> reverseComplimentPatternArr;
 
@@ -38,10 +36,10 @@ public class Pattern {
 
     private Map<Integer, PatternLocationsInGenome> genomeToInstanceLocations;
 
-    public Pattern(int patternId, String pattern, List<Gene> patternGenes, int instanceCount, int exactInstanceCount){
+    public Pattern(int patternId, List<Gene> patternGenes, int instanceCount, int exactInstanceCount){
 
         this.patternId = patternId;
-        this.pattern = pattern;
+        //this.pattern = pattern;
         this.patternGenes = new ArrayList<>();
         this.patternGenes.addAll(patternGenes);
         this.length = patternGenes.size();
@@ -55,8 +53,8 @@ public class Pattern {
         genomeToInstanceLocations = new HashMap<>();
     }
 
-    public Pattern(int patternId, String pattern, List<Gene> patternGenes){
-        this(patternId, pattern, patternGenes, 0, 0);
+    public Pattern(int patternId, List<Gene> patternGenes){
+        this(patternId, patternGenes, 0, 0);
     }
 
     public void setPatternId(int pattern_id){
@@ -100,12 +98,13 @@ public class Pattern {
         return length;
     }
 
+    /*
     public void setPattern(String pattern){
         this.pattern = pattern;
     }
     public String getPattern(){
         return pattern;
-    }
+    }*/
 
     public int getInstanceCount(){
         return instanceCount;
@@ -127,16 +126,17 @@ public class Pattern {
         this.score = score;
     }
 
-    public void calculateMainFunctionalCategory(CogInfo cogInfo, boolean nonDirectons){
+    public void calculateMainFunctionalCategory(CogInfo cogInfo){
         if (mainFunctionalCategory.length() == 0 && cogInfo.cogInfoExists()) {
 
             Map<String, Integer> functional_letter_count = new HashMap<>();
             Map<String, String> functional_letter_to_desc = new HashMap<>();
             for (Gene gene : patternGenes) {
                 String cogId = gene.getCogId();
+                /*
                 if (nonDirectons){
                     cogId = cogId.substring(0, cogId.length()-1);
-                }
+                }*/
                 COG cog = cogInfo.getCog(cogId);
                 if (cog != null) {
                     String[] functional_letters = cog.getFunctionalLetters();
@@ -209,6 +209,14 @@ public class Pattern {
 
     public void setFamilyId(String familyId) {
         this.familyId = familyId;
+    }
+
+    public String toString(){
+        String str = "";
+        for (Gene gene: patternGenes){
+            str += gene.getCogId() + gene.getStrand() + ",";
+        }
+        return str.substring(0, str.length()-1);
     }
 
     public String toStringWithNoStrand(){
