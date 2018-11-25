@@ -4,15 +4,10 @@ import Core.CogInfo;
 import Core.Genomes.*;
 
 import java.io.*;
-import java.math.RoundingMode;
 import java.text.DecimalFormat;
 import java.util.*;
 
 import Core.PostProcess.Family;
-import org.apache.poi.ss.usermodel.Row;
-import org.apache.poi.ss.usermodel.Sheet;
-
-import Core.OutputType;
 
 import java.util.logging.Logger;
 
@@ -150,7 +145,8 @@ public class Writer {
 
             for (Map.Entry<Integer, PatternLocationsInGenome> entry : pattern.getPatternLocations().entrySet()) {
 
-                String genomeName = gi.getGenomeName(entry.getKey());
+                Genome genome = gi.getGenome(entry.getKey());
+                String genomeName = genome.getName();
                 String repliconName;
 
                 instancesFile.print(genomeName);
@@ -158,7 +154,8 @@ public class Writer {
                 PatternLocationsInGenome patternLocationsInGenome = entry.getValue();
                 for (List<InstanceLocation> instanceLocationsInReplicon : patternLocationsInGenome.getSortedLocations().values()){
                     for (InstanceLocation instanceLocation: instanceLocationsInReplicon) {
-                        repliconName = gi.getRepliconName(instanceLocation.getRepliconId());
+                        //repliconName = gi.getRepliconName(instanceLocation.getRepliconId());
+                        repliconName = genome.getReplicon(instanceLocation.getRepliconId()).getName();
 
                         instancesFile.print(String.format("\t%s|[%d,%d]", repliconName,
                                 instanceLocation.getActualStartIndex(), instanceLocation.getActualEndIndex()));

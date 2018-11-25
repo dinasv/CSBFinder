@@ -73,7 +73,7 @@ public class Controller {
                 break;
             case EXPORT:
                 SessionWriter sessionWriter = new SessionWriter(includeFamilies, params.nonDirectons, catalogPath, genomesInfo);
-                sessionWriter.writeGenomes(genomesInfo.getGenomesMap());
+                sessionWriter.writeGenomes(genomesInfo.getGenomesByName());
                 patternsWriter = sessionWriter;
                 break;
         }
@@ -142,13 +142,15 @@ public class Controller {
         long startTime = System.nanoTime();
 
         //read genomes
-        GenomesInfo gi = new GenomesInfo();
+        GenomesInfo gi;
         String genomes_file_path = params.inputFilePath;
 
-        int number_of_genomes = -1;
         try {
             printToScreen("Parsing input genomes file");
-            number_of_genomes = Parsers.parseGenomesFile(genomes_file_path, gi);
+            gi = Parsers.parseGenomesFile(genomes_file_path);
+            //gi = new GenomesInfo();
+            //List<Pattern> patterns = Parsers.parseSessionFile(genomes_file_path, gi);
+            //System.out.println(patterns);
         }catch (IOException e){
             printToScreen("Input genome file is not valid. " + e.getMessage());
             return;
@@ -172,7 +174,7 @@ public class Controller {
 
         MemoryUtils.measure();
 
-        if (number_of_genomes != -1) {
+        if (gi.getNumberOfGenomes() >= 0) {
 
             logger.writeLogger("Executing workflow");
             printToScreen("Executing workflow");
@@ -188,7 +190,7 @@ public class Controller {
             }
             List<Family> families;
 
-            printToScreen(String.format("Extracting CSBs from %d input sequences.", number_of_genomes));
+            printToScreen(String.format("Extracting CSBs from %d input sequences.", gi.getNumberOfGenomes()));
 
             if (patternsFromFile != null){
                 families = workflow.run(params, patternsFromFile);

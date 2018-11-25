@@ -8,6 +8,7 @@ import MVC.View.MainFrame;
 import Core.Genomes.COG;
 import Core.Genomes.Pattern;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -21,13 +22,6 @@ public class CSBFinderController {
         this.model = new CSBFinderModel();
         this.view = new MainFrame(this);
 
-//        this.model.setGenomesLoadedListener(new GenomesLoadedListener() {
-//            @Override
-//            public void genomesLoadDone(GenomesLoadEvent e) {
-//                view.displayInputPanel(model.getNumberOfGenomes());
-//            }
-//        });
-
         this.model.setCSBFinderDoneListener(new CSBFinderDoneListener() {
             @Override
             public void CSBFinderDoneOccurred(CSBFinderDoneEvent e) {
@@ -36,11 +30,14 @@ public class CSBFinderController {
         });
     }
 
-    public String loadInputGenomesFile(String file_path) {
+    public String loadInputGenomesFile(String filePath) {
 
-        return this.model.loadInputGenomesFile(file_path);
+        return this.model.loadInputGenomesFile(filePath);
     }
 
+    public String loadSessionFile(String filePath) throws IOException {
+        return this.model.loadSessionFile(filePath);
+    }
 
     public void saveOutputFiles(String outputFileType) { this.model.saveOutputFiles(outputFileType); }
 
@@ -59,10 +56,6 @@ public class CSBFinderController {
     public Map<String, Map<String, List<InstanceInfo>>> getInstances(Pattern pattern) { return model.getInstances(pattern); }
 
     public Map<String, Genome> getGenomeMap() { return model.getGenomeMap(); }
-
-    public int getGenomesLoaded() {
-        return model.getNumberOfGenomes();
-    }
 
     public int getMaxGenomeSize(){
         return model.getMaxGenomeSize();

@@ -179,17 +179,6 @@ public class MainAlgorithm {
         }
     }
 
-    private String[] genesToStrArr(List<Gene> genes){
-        return genes.stream().map(gene -> gene.getCogId() + gene.getStrand().toString())
-                .collect(Collectors.toList())
-                .toArray(new String[genes.size()]);
-    }
-
-    private String[] genesToStrArrWithoutStrand(List<Gene> genes){
-        return genes.stream().map(gene -> gene.getCogId())
-                .collect(Collectors.toList())
-                .toArray(new String[genes.size()]);
-    }
 
     /**
      * Add to node an edge with label = gap. edge.dest = copy of node, its edged are deep copied
@@ -349,7 +338,7 @@ public class MainAlgorithm {
                 if (data_tree_target_node.getCountInstancePerGenome() >= q1) {
 
                     if (alpha == gi.UNK_CHAR_INDEX) {
-                        if (q1 == 0 && ! pattern.get(0).getCogId().equals("X")) {
+                        if (q1 == 0 && gi.charToIndex.get(pattern.get(0)) != gi.UNK_CHAR_INDEX) {
                             spellPatternsVirtually(patternNode, dataNode, dataEdgeIndex + 1, dataEdge,
                             pattern, patternLength, wildcardCount);
                         }

@@ -18,9 +18,10 @@ public class GenomesInfo {
     /**
      * Accession number to tax key
      */
-    private Map<String, Integer> genomeNameToId;
-    private Map<Integer, String> genomeIdToName;
-    private Map<Integer, String> repliconIdToName;
+    private Map<Integer, Genome> genomesById;
+    private Map<String, Genome> genomesByName;
+
+    private int countReplicons;
 
     private int datasetLengthSum;
 
@@ -32,18 +33,15 @@ public class GenomesInfo {
     public Map<Integer, Map<Integer, Integer>> genomeToCogParalogCount;
 
 
-    private Map<String, Genome> genomesMap;
 
     private int maxGenomeSize;
 
     public GenomesInfo(){
-        genomesMap = new HashMap<>();
+        genomesByName = new HashMap<>();
+        genomesById = new HashMap<>();
 
         maxGenomeSize = 0;
-
-        genomeNameToId = new HashMap<>();
-        genomeIdToName = new HashMap<>();
-        repliconIdToName = new HashMap<>();
+        countReplicons = 0;
 
         datasetLengthSum = 0;
 
@@ -57,54 +55,57 @@ public class GenomesInfo {
 
 
     public int getNumberOfGenomes(){
-        return genomesMap.size();
+        return genomesByName.size();
     }
 
     public int getNumberOfReplicons(){
-        return repliconIdToName.size();
+        return countReplicons;
     }
 
     public boolean genomeExists(String genomeId){
-        return genomesMap.get(genomeId) != null;
+        return genomesByName.get(genomeId) != null;
     }
 
     public void addGenome(Genome genome){
 
-        genomeNameToId.put(genome.getName(), genome.getId());
-        genomeIdToName.put(genome.getId(), genome.getName());
-        genomesMap.put(genome.getName(), genome);
+        genomesById.put(genome.getId(), genome);
+        genomesByName.put(genome.getName(), genome);
 
         maxGenomeSize = genome.getGenomeSize() > maxGenomeSize ? genome.getGenomeSize() : maxGenomeSize;
 
     }
 
-    public Genome getGenome(String genomeId){
-        return genomesMap.get(genomeId);
+    public Genome getGenome(String genomeName){
+        return genomesByName.get(genomeName);
+    }
+
+    public Genome getGenome(int genomeId){
+        return genomesById.get(genomeId);
     }
 
     public Collection<Genome> getGenomes(){
-        return genomesMap.values();
+        return genomesByName.values();
     }
 
-    public Map<String, Genome> getGenomesMap() {
-        return this.genomesMap;
+    public Map<String, Genome> getGenomesByName() {
+        return this.genomesByName;
     }
 
     public String getGenomeName(int id){
-        return genomeIdToName.get(id);
+        if (!genomesById.containsKey(id)){
+            return null;
+        }
+        return genomesById.get(id).getName();
     }
 
     public int getGenomeId(String name){
-        return genomeNameToId.get(name);
+        return genomesByName.get(name).getId();
     }
 
-    public String getRepliconName(int id){
-        return repliconIdToName.get(id);
-    }
 
     public void addReplicon(Replicon replicon){
 
-        repliconIdToName.put(replicon.getId(), replicon.getName());
+        countReplicons++;
 
         datasetLengthSum += replicon.size();
     }
@@ -124,13 +125,14 @@ public class GenomesInfo {
         indexToChar.add(gene);
 
         gene = new Gene(UNK_CHAR, Strand.FORWARD);
-        //unkown cog
+        //unkown orthology group
         charToIndex.put(gene, UNK_CHAR_INDEX);
         indexToChar.add(gene);
 
         gene = new Gene(UNK_CHAR, Strand.REVERSE);
-        //if the sequence is not segmented to directons
-        //charToIndex.put("X+", UNK_CHAR_INDEX);
+        charToIndex.put(gene, UNK_CHAR_INDEX);
+
+        gene = new Gene(UNK_CHAR, Strand.INVALID);
         charToIndex.put(gene, UNK_CHAR_INDEX);
 
     }

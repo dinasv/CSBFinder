@@ -7,16 +7,19 @@ import java.util.Map;
 /**
  */
 public class Genome {
+
     private String name;
     private int id;
     private int genomeSize;
-    private Map<Integer, Replicon> replicons;
+    private Map<Integer, Replicon> repliconsById;
+    private Map<String, Replicon> repliconsByName;
 
     public Genome(String name, int id){
         this.name = name;
         this.id = id;
         genomeSize = 0;
-        replicons = new HashMap<>();
+        repliconsById = new HashMap<>();
+        repliconsByName = new HashMap<>();
     }
 
     public Genome(){
@@ -24,12 +27,13 @@ public class Genome {
     }
 
     public void addReplicon(Replicon replicon){
-        replicons.put(replicon.getId(), replicon);
+        repliconsById.put(replicon.getId(), replicon);
+        repliconsByName.put(replicon.getName(), replicon);
         genomeSize += replicon.size();
     }
 
     public Collection<Replicon> getReplicons(){
-        return replicons.values();
+        return repliconsById.values();
     }
 
     public String getName() {
@@ -41,7 +45,11 @@ public class Genome {
     }
 
     public Replicon getReplicon(int id){
-        return replicons.get(id);
+        return repliconsById.get(id);
+    }
+
+    public Replicon getReplicon(String name){
+        return repliconsByName.get(name);
     }
 
     public int getGenomeSize() {

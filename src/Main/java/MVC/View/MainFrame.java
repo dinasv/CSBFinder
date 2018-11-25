@@ -6,7 +6,6 @@ import MVC.Common.InstanceInfo;
 import MVC.Controller.CSBFinderController;
 import MVC.View.Events.*;
 import MVC.View.Listeners.*;
-import Core.Parameters;
 import MVC.View.Panels.GenomePanel;
 import MVC.View.Panels.SummaryPanel;
 import Core.Genomes.COG;
@@ -140,6 +139,7 @@ public class MainFrame extends JFrame {
 
     private void setToolbarListener() {
         setLoadButtonListener();
+        setImportSessionButtonListener();
         setSaveButtonListener();
         setSelectParamsListener();
     }
@@ -164,20 +164,17 @@ public class MainFrame extends JFrame {
 
                 File f = e.getFilePath();
                 if (f.exists() && !f.isDirectory()) {
-                    // open option dialog for user to choose if he wants to run with directon option
-                    boolean isDirecton = true;
-
 
                     SwingUtilities.invokeLater(new Runnable() {
                         @Override
                         public void run() {
-                            progressBar.start("Loading Files");
+                            progressBar.start("Loading File");
                         }
                     });
 
                     SwingWorker<Void, Void> swingWorker = new SwingWorker<Void, Void>() {
 
-                        String msg = "File Loaded Successfully";
+                        String msg = "";
 
                         @Override
                         protected Void doInBackground() throws Exception {
@@ -189,10 +186,59 @@ public class MainFrame extends JFrame {
                         protected void done() {
 
                             clearPanels();
-                            inputParamsDialog.initFields();
                             toolbar.disableSaveFileBtn();
 
-                            if (controller.getGenomesLoaded() > 0) {
+                            if (controller.getNumberOfGenomes() > 0) {
+                                inputParamsDialog.setGenomeData(controller.getNumberOfGenomes(), controller.getMaxGenomeSize());
+                                toolbar.enableSelectParamsBtn();
+                            }else{
+                                toolbar.disableSelectParamsBtn();
+                            }
+                            progressBar.done("");
+                            JOptionPane.showMessageDialog(MainFrame.this, msg);
+
+                        }
+                    };
+                    swingWorker.execute();
+                }
+            }
+        });
+    }
+
+    private void setImportSessionButtonListener() {
+        toolbar.setImportSessionListener(new LoadFileListener() {
+
+            @Override
+            public void loadFileEventOccurred(LoadFileEvent e) {
+
+                File f = e.getFilePath();
+                if (f.exists() && !f.isDirectory()) {
+
+                    SwingUtilities.invokeLater(new Runnable() {
+                        @Override
+                        public void run() {
+                            progressBar.start("Loading File");
+                        }
+                    });
+
+                    SwingWorker<Void, Void> swingWorker = new SwingWorker<Void, Void>() {
+
+                        String msg = "";
+
+                        @Override
+                        protected Void doInBackground() throws Exception {
+                            clearPanels();
+                            msg = controller.loadSessionFile(f.getPath());
+                            return null;
+                        }
+
+                        @Override
+                        protected void done() {
+
+                            toolbar.disableSaveFileBtn();
+                            toolbar.enableSelectParamsBtn();
+
+                            if (controller.getNumberOfGenomes() > 0) {
                                 inputParamsDialog.setGenomeData(controller.getNumberOfGenomes(), controller.getMaxGenomeSize());
                                 toolbar.enableSelectParamsBtn();
                             }else{

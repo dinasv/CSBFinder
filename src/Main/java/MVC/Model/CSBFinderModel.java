@@ -8,21 +8,17 @@ import Core.PostProcess.Family;
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.ParameterException;
 
-import javax.swing.*;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
 public class CSBFinderModel {
 
-    private GenomesLoadedListener genomesLoadedListener;
     private CSBFinderDoneListener csbFinderDoneListener;
 
     private Parameters params;
     private CSBFinderWorkflow workflow;
     private List<Family> families;
-
-    private int numberOfGenomes;
 
     private GenomesInfo gi;
     CogInfo cogInfo;
@@ -37,14 +33,17 @@ public class CSBFinderModel {
     public MyLogger logger = new MyLogger("",true);
 
 
-    public String loadInputGenomesFile(String path) {
+    private void init(){
         cogInfo = new CogInfo();
-        initGenomesInfo();
+    }
+
+    public String loadInputGenomesFile(String path) {
+        init();
 
         String msg = "";
         try {
-            numberOfGenomes = Parsers.parseGenomesFile(path, gi);
-            msg = "Loaded " + numberOfGenomes + " genomes.";
+            gi = Parsers.parseGenomesFile(path);
+            msg = "Loaded " + gi.getNumberOfGenomes() + " genomes.";
             workflow = new CSBFinderWorkflow(gi);
         }catch(Exception e){
             msg = e.getMessage();
@@ -53,9 +52,21 @@ public class CSBFinderModel {
         return msg;
     }
 
-    private void initGenomesInfo(){
-        gi = new GenomesInfo();
-        numberOfGenomes = -1;
+    public String loadSessionFile(String path) throws IOException {
+        init();
+
+        String msg = "";
+        try {
+            gi = new GenomesInfo();
+            List<Family> families = Parsers.parseSessionFile(path, gi);
+            workflow = new CSBFinderWorkflow(gi);
+            csbFinderDoneListener.CSBFinderDoneOccurred(new CSBFinderDoneEvent(families));
+            msg = "Loaded session file.";
+        }catch(Exception e){
+            msg = e.getMessage();
+            e.printStackTrace();
+        }
+        return msg;
     }
 
 
@@ -127,7 +138,7 @@ public class CSBFinderModel {
             }
         }
 
-        System.out.println("Extracting CSBs from " + numberOfGenomes + " input sequences.");
+        System.out.println("Extracting CSBs from " + gi.getNumberOfGenomes() + " input sequences.");
 
         if (patternsFromFile.size() > 0){
             families = workflow.run(params, patternsFromFile);
@@ -192,10 +203,7 @@ public class CSBFinderModel {
         for (Family family : families) {
 
             writer.printFamily(family, gi, cogInfo);
-            /*writer.printTopScoringPattern(family.getPatterns().get(0), gi, family.getFamilyId(), cogInfo);
-            for (Pattern pattern : family.getPatterns()) {
-                writer.printPattern(pattern, gi, family.getFamilyId(), cogInfo);
-            }*/
+
         }
         writer.closeFiles();
     }
@@ -217,14 +225,8 @@ public class CSBFinderModel {
         return patterns;
     }
 
-
-
     public List<Family> getFamilies() {
         return families;
-    }
-
-    public void setGenomesLoadedListener(GenomesLoadedListener genomesLoadedListener) {
-        this.genomesLoadedListener = genomesLoadedListener;
     }
 
     public void setCSBFinderDoneListener(CSBFinderDoneListener csbFinderDoneListener) {
@@ -249,7 +251,7 @@ public class CSBFinderModel {
 
         Set<COG> insertedGenes = new HashSet<COG>();
 
-        if (params.maxInsertion > 0) {
+        //if (params.maxInsertion > 0) {
             Set<COG> patternGenesSet = new HashSet<>();
             patternGenesSet.addAll(patternGenes);
 
@@ -264,7 +266,7 @@ public class CSBFinderModel {
                     }
                 }
             }
-        }
+        //}
         return insertedGenes;
     }
 
@@ -275,7 +277,8 @@ public class CSBFinderModel {
 
         for (Map.Entry<Integer, PatternLocationsInGenome> genomeToRepliconsLocations : locationsPerGenome.entrySet()) {
 
-            String genomeName = gi.getGenomeName(genomeToRepliconsLocations.getKey());
+            Genome genome = gi.getGenome(genomeToRepliconsLocations.getKey());
+            String genomeName = genome.getName();
 
             PatternLocationsInGenome repliconInstanceLocations = genomeToRepliconsLocations.getValue();
 
@@ -286,10 +289,8 @@ public class CSBFinderModel {
                 List<InstanceInfo> instanceLocations = new ArrayList<>();
 
                 int replicon_id = replicon2locations.getKey();
-                String replicon_name = gi.getRepliconName(replicon2locations.getKey());
+                String replicon_name = genome.getReplicon(replicon2locations.getKey()).getName();
                 List<InstanceLocation> instances_locations = replicon2locations.getValue();
-
-                //instances_locations.sort(Comparator.comparing(InstanceLocation::getActualStartIndex));
 
                 for (InstanceLocation instance_location : instances_locations) {
                     instance_location.setRepliconName(replicon_name);
@@ -314,7 +315,8 @@ public class CSBFinderModel {
     private List<Gene> getInstanceFromCogList(String genomeName, int replicon_id, int startIndex, int endIndex) {
         List<Gene> instanceList = null;
         Genome genome = getGenome(genomeName);
-        List<Gene> repliconGenes = genome.getReplicon(replicon_id).getGenes();
+        Replicon replicon = genome.getReplicon(replicon_id);
+        List<Gene> repliconGenes = replicon.getGenes();
         if (repliconGenes != null) {
             if (startIndex >= 0 && startIndex < repliconGenes.size() &&
                     endIndex >= 0 && endIndex <= repliconGenes.size()) {
@@ -333,11 +335,11 @@ public class CSBFinderModel {
 
 
     public int getNumberOfGenomes() {
-        return numberOfGenomes;
+        return gi.getNumberOfGenomes();
     }
 
     public Map<String, Genome> getGenomeMap() {
-        return gi.getGenomesMap();
+        return gi.getGenomesByName();
     }
 
     public Genome getGenome(String genomeName){

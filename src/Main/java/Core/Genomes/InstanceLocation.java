@@ -12,7 +12,6 @@ public class InstanceLocation{
     private int endIndex;
     private String repliconName;
 
-
     public InstanceLocation(int repliconId, int genomeId, int startIndex, int endIndex, Strand strand){
         this.repliconId = repliconId;
         this.genomeId = genomeId;
@@ -72,15 +71,6 @@ public class InstanceLocation{
             endIndex = startIndex - length;
         }
     }
-    /*
-    public void setEndIndexUsingLength(int instance_length) {
-
-        endIndex = startIndex + instance_length;
-
-        if (strand == Strand.REVERSE){
-            switchStartEndIndex();
-        }
-    }*/
 
     public void switchStartEndIndex(){
         int temp = startIndex;

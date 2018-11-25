@@ -10,13 +10,6 @@ import java.util.stream.Collectors;
  **/
 public class Pattern {
 
-    public static final String DELIMITER = " ";
-
-    /**
-     * e.g. COG1234 COG5234
-     */
-    //private String pattern;
-
     private List<Gene> patternGenes;
     private List<Gene> reverseComplimentPatternArr;
 
@@ -36,10 +29,13 @@ public class Pattern {
 
     private Map<Integer, PatternLocationsInGenome> genomeToInstanceLocations;
 
+    public Pattern(){
+        this(-1, new ArrayList<>());
+    }
+
     public Pattern(int patternId, List<Gene> patternGenes, int instanceCount, int exactInstanceCount){
 
         this.patternId = patternId;
-        //this.pattern = pattern;
         this.patternGenes = new ArrayList<>();
         this.patternGenes.addAll(patternGenes);
         this.length = patternGenes.size();
@@ -79,14 +75,18 @@ public class Pattern {
                 InstanceLocation patternLocation = new InstanceLocation(instanceLocation);
                 patternLocation.setInstanceLength(instance.getLength());
 
-                PatternLocationsInGenome patternLocations = genomeToInstanceLocations.get(patternLocation.getGenomeId());
-                if (patternLocations == null){
-                    patternLocations = new PatternLocationsInGenome();
-                }
-                patternLocations.addLocation(patternLocation);
-                genomeToInstanceLocations.put(patternLocation.getGenomeId(), patternLocations);
+                addInstanceLocation(patternLocation);
             }
         }
+    }
+
+    public void addInstanceLocation(InstanceLocation patternLocation){
+        PatternLocationsInGenome patternLocations = genomeToInstanceLocations.get(patternLocation.getGenomeId());
+        if (patternLocations == null){
+            patternLocations = new PatternLocationsInGenome();
+        }
+        patternLocations.addLocation(patternLocation);
+        genomeToInstanceLocations.put(patternLocation.getGenomeId(), patternLocations);
     }
 
 
@@ -97,14 +97,6 @@ public class Pattern {
     public int getLength(){
         return length;
     }
-
-    /*
-    public void setPattern(String pattern){
-        this.pattern = pattern;
-    }
-    public String getPattern(){
-        return pattern;
-    }*/
 
     public int getInstanceCount(){
         return instanceCount;
@@ -133,10 +125,6 @@ public class Pattern {
             Map<String, String> functional_letter_to_desc = new HashMap<>();
             for (Gene gene : patternGenes) {
                 String cogId = gene.getCogId();
-                /*
-                if (nonDirectons){
-                    cogId = cogId.substring(0, cogId.length()-1);
-                }*/
                 COG cog = cogInfo.getCog(cogId);
                 if (cog != null) {
                     String[] functional_letters = cog.getFunctionalLetters();
@@ -216,7 +204,7 @@ public class Pattern {
         for (Gene gene: patternGenes){
             str += gene.getCogId() + gene.getStrand() + ",";
         }
-        return str.substring(0, str.length()-1);
+        return str;
     }
 
     public String toStringWithNoStrand(){
@@ -224,7 +212,7 @@ public class Pattern {
         for (Gene gene: patternGenes){
             str += gene.getCogId() + ",";
         }
-        return str.substring(0, str.length()-1);
+        return str;
     }
 
     public static class LengthComparator implements Comparator<Pattern> {

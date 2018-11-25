@@ -1,7 +1,7 @@
 package IO;
 
 import Core.Genomes.*;
-import org.apache.xmlbeans.impl.piccolo.io.FileFormatException;
+import Core.PostProcess.Family;
 
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
@@ -12,7 +12,7 @@ import java.util.*;
 
 public class Parsers {
 
-    final static String CSB_DELIMITER = " ";
+    final static String CSB_DELIMITER = ",";
 
     public static List<Pattern> parsePatternsFile(String inputPatternsFilePath)
             throws IOException, IllegalArgumentException{
@@ -24,28 +24,16 @@ public class Parsers {
             String line = br.readLine();
             int lineNumber = 0;
 
-            int pattern_id = 0;
+            int patternId = 0;
             while (line != null) {
                 if (line.charAt(0) == '>') {
-                    try {
-                        pattern_id = Integer.parseInt(line.substring(1));
-                    } catch (NumberFormatException e) {
-                        throw new IllegalArgumentException(errorMessage("Pattern id should be an integer",
-                                line, lineNumber, inputPatternsFilePath));
-                    }
+
+                    patternId = castToInteger(line.substring(1), "id", lineNumber, inputPatternsFilePath);
+
                 } else {
-                    String[] patternArr = line.split(CSB_DELIMITER);
-                    if (patternArr.length > 1) {
-                        List<Gene> genes = new ArrayList<>();
-                        for (String gene: patternArr){
-                            genes.add(new Gene(gene, Strand.FORWARD));
-                        }
-                        Pattern pattern = new Pattern(pattern_id, genes);
-                        patterns.add(pattern);
-                    }else{
-                        throw new IllegalArgumentException(errorMessage("Genes delimited by \"" + CSB_DELIMITER + "\"",
-                                line, lineNumber, inputPatternsFilePath));
-                    }
+                    List<Gene> genes = parseGenes(line, lineNumber, inputPatternsFilePath);
+                    Pattern pattern = new Pattern(patternId, genes);
+                    patterns.add(pattern);
                 }
                 line = br.readLine();
                 lineNumber++;
@@ -57,6 +45,29 @@ public class Parsers {
             throw new IOException("An exception occurred while reading " + inputPatternsFilePath);
         }
         return patterns;
+    }
+
+    private static List<Gene> parseGenes(String line, int lineNumber, String inputPatternsFilePath) throws IllegalArgumentException{
+        String[] patternArr = line.split(CSB_DELIMITER);
+        List<Gene> genes = new ArrayList<>();
+        if (patternArr.length > 1) {
+            for (String gene: patternArr){
+                if (gene.length() > 0) {
+                    String lastChar = gene.substring(gene.length() - 1);
+                    Strand strand = determineStrand(lastChar);
+
+                    if (strand != Strand.INVALID){
+                        gene = gene.substring(0, gene.length()-1);
+                    }
+
+                    genes.add(new Gene(gene, strand));
+                }
+            }
+        }else{
+            throw new IllegalArgumentException(errorMessage(String.format("Genes delimited by \"%s\"", CSB_DELIMITER),
+                    line, lineNumber, inputPatternsFilePath));
+        }
+        return genes;
     }
 
 
@@ -157,63 +168,31 @@ public class Parsers {
         return genome;
     }
 
-    /**
-     * @param input_file_path path to input file with input sequences
-     * @return number of input sequences
-     */
-    public static int parseGenomesFile(String filePath, GenomesInfo genomesInfo)
-            throws IOException, IllegalArgumentException {
 
-        if (genomesInfo == null || filePath == null) {
+    public static List<Family> parseSessionFile(String filePath, GenomesInfo genomesInfo)
+        throws IOException, IllegalArgumentException {
+
+        if ( filePath == null) {
             throw new IllegalArgumentException();
         }
 
         int lineNumber = 0;
+        List<Family> families = new ArrayList<>();
 
         try (BufferedReader br = new BufferedReader(new FileReader(filePath))) {
 
             String rawLine = br.readLine();
-
-            String repliconName;
-            String currGenomeName = "";
-
-            Genome genome = new Genome();
-            Replicon replicon = new Replicon(Strand.FORWARD, -1, "");
-
+            lineNumber++;
             while (rawLine != null) {
-                lineNumber++;
+                if (rawLine.startsWith("<genomes>")){
 
-                if (rawLine.startsWith(">")) {
-
-                    if (replicon.size() > 0) {
-
-                        genome.addReplicon(replicon);
-
-                        genomesInfo.addGenome(genome);
-                        genomesInfo.addReplicon(replicon);
-
-                    }
-
-                    String[] title = parseGenomeTitle(rawLine, lineNumber, filePath);
-
-                    currGenomeName = title[0];
-                    repliconName = title[1];
-
-                    genome = getNewOrExistingGenome(genomesInfo, currGenomeName);
-                    replicon = new Replicon(Strand.FORWARD, genomesInfo.getNumberOfReplicons(), repliconName);
-
-                } else {
-                    Gene gene = parseGeneLine(rawLine, lineNumber, filePath);
-                    replicon.add(gene);
+                    lineNumber = readGenomes(br, genomesInfo, filePath, "<\\genomes>", lineNumber);
+                }else if (rawLine.startsWith("<instances>")){
+                    families = readInstances(br, genomesInfo, filePath, "<\\instances>", lineNumber);
                 }
-
                 rawLine = br.readLine();
+                lineNumber++;
             }
-
-            genome.addReplicon(replicon);
-
-            genomesInfo.addGenome(genome);
-            genomesInfo.addReplicon(replicon);
 
         } catch (FileNotFoundException e) {
             throw new FileNotFoundException("File " + filePath + " was not found.");
@@ -221,8 +200,188 @@ public class Parsers {
             throw new IOException("An exception occurred while reading " + filePath);
         }
 
-        return genomesInfo.getNumberOfGenomes();
+        return families;
+    }
 
+    /**
+     * @param input_file_path path to input file with input sequences
+     * @return number of input sequences
+     */
+    public static GenomesInfo parseGenomesFile(String filePath)
+            throws IOException, IllegalArgumentException {
+
+        if ( filePath == null) {
+            throw new IllegalArgumentException();
+        }
+
+        GenomesInfo genomesInfo = new GenomesInfo();
+
+        try (BufferedReader br = new BufferedReader(new FileReader(filePath))) {
+
+            readGenomes(br, genomesInfo, filePath, null);
+
+        } catch (FileNotFoundException e) {
+            throw new FileNotFoundException("File " + filePath + " was not found.");
+        } catch (IOException e) {
+            throw new IOException("An exception occurred while reading " + filePath);
+        }
+
+        return genomesInfo;
+
+    }
+
+    private static List<Family> readInstances(BufferedReader br, GenomesInfo genomesInfo, String filePath, String end,
+                                      int lineNumber)
+            throws IOException{
+
+        HashMap<String, Family> families = new HashMap<>();
+
+        Pattern pattern = new Pattern();
+
+        String rawLine = br.readLine();
+        while (!rawLine.equals(end)) {
+            lineNumber++;
+
+            if (rawLine.startsWith(">")) {
+
+                pattern = parsePattern(rawLine, lineNumber, filePath);
+
+                Family family;
+                if (families.containsKey(pattern.getFamilyId())){
+                    family = families.get(pattern.getFamilyId());
+                    family.addPattern(pattern);
+                }else{
+                    family = new Family(pattern.getFamilyId(), pattern, genomesInfo);
+                }
+                families.put(pattern.getFamilyId(), family);
+
+            } else {
+                String[] locationsLine = rawLine.trim().split("\t");
+                String genomeName = locationsLine[0];
+                Genome genome = genomesInfo.getGenome(genomeName);
+                int genomeId = genome.getId();
+                for (int i = 1; i < locationsLine.length; i++) {
+                    String[] location = locationsLine[i].split("\\|");;
+                    String repliconName = location[0];
+                    int repliconId = genome.getReplicon(repliconName).getId();
+                    String[] indexes = location[1].substring(1, location[1].length()-1).split(",");
+                    int startIndex = castToInteger(indexes[0], "start index", lineNumber, filePath);
+                    int endIndex = castToInteger(indexes[1], "end index", lineNumber, filePath);
+
+                    InstanceLocation instanceLocation = new InstanceLocation(repliconId, genomeId, startIndex, endIndex,
+                            Strand.FORWARD);
+                    pattern.addInstanceLocation(instanceLocation);
+                }
+            }
+
+            rawLine = br.readLine();
+        }
+
+        return new ArrayList<Family>(families.values());
+    }
+
+    private static Pattern parsePattern(String rawLine, int lineNumber, String filePath) throws IllegalArgumentException{
+        String[] patternLine = rawLine.trim().substring(1).split("\t");
+        if (patternLine.length < 7) {
+            throw new IllegalArgumentException(
+                    errorMessage(">[ID][TAB][Length][TAB][Score][TAB][Count][TAB][Exact Count][TAB][Genes][TAB][Family ID]",
+                            rawLine, lineNumber, filePath));
+        }
+
+        int id = castToInteger(patternLine[0], "id", lineNumber, filePath);
+        int length = castToInteger(patternLine[1], "length", lineNumber, filePath);
+        double score = castToDouble(patternLine[2], "score", lineNumber, filePath);
+        int count = castToInteger(patternLine[3], "count", lineNumber, filePath);
+        int exactCount = castToInteger(patternLine[4], "exact count", lineNumber, filePath);
+        List<Gene> genes = parseGenes(patternLine[5], lineNumber, filePath);
+        String familyId = patternLine[6];
+
+        Pattern pattern = new Pattern(id, genes, count, exactCount);
+        pattern.setScore(score);
+        pattern.setFamilyId(familyId);
+
+        return pattern;
+    }
+
+    private static int castToInteger(String value, String type, int lineNumber, String filePath)
+            throws IllegalArgumentException{
+        int result = -1;
+        try {
+            result = Integer.valueOf(value);
+        }catch(NumberFormatException e){
+            throw new IllegalArgumentException(
+                    errorMessage(type + " type double",
+                            value, lineNumber, filePath));
+        }
+        return result;
+    }
+
+    private static double castToDouble(String value, String type, int lineNumber, String filePath)
+            throws IllegalArgumentException{
+        double result = -1;
+        try {
+            result = Double.valueOf(value);
+        }catch(NumberFormatException e){
+            throw new IllegalArgumentException(
+                    errorMessage(type + " type integer",
+                            value, lineNumber, filePath));
+        }
+        return result;
+    }
+
+    private static void readGenomes(BufferedReader br, GenomesInfo genomesInfo, String filePath, String end)
+            throws IOException{
+        readGenomes(br, genomesInfo, filePath, end, 0);
+    }
+
+
+    private static int readGenomes(BufferedReader br, GenomesInfo genomesInfo, String filePath, String end,
+                                    int lineNumber)
+                                throws IOException{
+
+        String repliconName;
+        String currGenomeName = "";
+
+        Genome genome = new Genome();
+        Replicon replicon = new Replicon(Strand.FORWARD, -1, "");
+
+        String rawLine = br.readLine();
+        while (rawLine != null && !rawLine.equals(end)) {
+            lineNumber++;
+
+            if (rawLine.startsWith(">")) {
+
+                if (replicon.size() > 0) {
+
+                    genome.addReplicon(replicon);
+
+                    genomesInfo.addGenome(genome);
+                    genomesInfo.addReplicon(replicon);
+
+                }
+
+                String[] title = parseGenomeTitle(rawLine, lineNumber, filePath);
+
+                currGenomeName = title[0];
+                repliconName = title[1];
+
+                genome = getNewOrExistingGenome(genomesInfo, currGenomeName);
+                replicon = new Replicon(Strand.FORWARD, genomesInfo.getNumberOfReplicons(), repliconName);
+
+            } else {
+                Gene gene = parseGeneLine(rawLine, lineNumber, filePath);
+                replicon.add(gene);
+            }
+
+            rawLine = br.readLine();
+        }
+
+        genome.addReplicon(replicon);
+
+        genomesInfo.addGenome(genome);
+        genomesInfo.addReplicon(replicon);
+
+        return lineNumber;
     }
 
     /**

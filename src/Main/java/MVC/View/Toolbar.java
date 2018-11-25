@@ -13,19 +13,22 @@ import java.awt.*;
 public class Toolbar extends JPanel {
 
     private JButton loadFile;
+    private JButton importSession;
     private JButton saveFile;
     private JButton selectParams;
     private LoadFileListener loadFileListener;
+    private LoadFileListener importSessionListener;
     private SaveOutputListener saveOutputListener;
     private SelectParamsListener selectParamsListener;
 
-    private JFileChooser fc;
+    private JFileChooser fileChooser;
 
-    public Toolbar(JFileChooser fc) {
-        this.fc = fc;
+    public Toolbar(JFileChooser fileChooser) {
+        this.fileChooser = fileChooser;
 
         setBorder(BorderFactory.createEtchedBorder());
         loadFile = new JButton("Load Input Genomes");
+        importSession = new JButton("Import Session");
         saveFile =  new JButton("Save");
         saveFile.setEnabled(false);
         selectParams =  new JButton("Run");
@@ -34,16 +37,27 @@ public class Toolbar extends JPanel {
         setLayout(new FlowLayout(FlowLayout.LEFT));
 
         add(loadFile);
+        add(importSession);
         add(selectParams);
         add(saveFile);
 
         loadFile.addActionListener(e -> {
-            fc.addChoosableFileFilter(new GenomeFileChooser());
+            fileChooser.addChoosableFileFilter(new GenomeFileChooser());
 
-            int value = fc.showOpenDialog(this);
+            int value = fileChooser.showOpenDialog(this);
 
             if (value == JFileChooser.APPROVE_OPTION) {
-                loadFileListener.loadFileEventOccurred(new LoadFileEvent(e, fc.getSelectedFile()));
+                loadFileListener.loadFileEventOccurred(new LoadFileEvent(e, fileChooser.getSelectedFile()));
+            }
+        });
+
+        importSession.addActionListener(e -> {
+            fileChooser.addChoosableFileFilter(new GenomeFileChooser());
+
+            int value = fileChooser.showOpenDialog(this);
+
+            if (value == JFileChooser.APPROVE_OPTION) {
+                importSessionListener.loadFileEventOccurred(new LoadFileEvent(e, fileChooser.getSelectedFile()));
             }
         });
 
@@ -55,6 +69,10 @@ public class Toolbar extends JPanel {
             selectParamsListener.selectParamsOccurred(new SelectParamsEvent());
         });
 
+    }
+
+    public void setImportSessionListener(LoadFileListener loadFileListener) {
+        this.importSessionListener = loadFileListener;
     }
 
     public void setLoadListener(LoadFileListener loadFileListener) {

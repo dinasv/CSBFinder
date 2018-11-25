@@ -57,7 +57,7 @@ public class FamilyClustering {
         Iterator<Pattern> it = patterns.iterator();
         if (it.hasNext()) {
             Pattern first_pattern = it.next();
-            Family first_family = new Family("0", first_pattern, gi, non_directons);
+            Family first_family = new Family("0", first_pattern, gi);
 
             families.add(first_family);
 
@@ -76,7 +76,7 @@ public class FamilyClustering {
                 }
 
                 if (!added_pattern) {
-                    Family new_family = new Family(Integer.toString(families.size()), curr_pattern, gi, non_directons);
+                    Family new_family = new Family(Integer.toString(families.size()), curr_pattern, gi);
                     families.add(new_family);
                 }
             }

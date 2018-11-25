@@ -46,12 +46,10 @@ public class DatasetTree {
         int[] word = new int[genes.size()];
         int i = 0;
         for(Gene gene: genes){
-            Gene ch;
 
-            if (nonDirectons){
-                ch = gene;
-            }else{
-                ch = new Gene(gene.getCogId(), Strand.FORWARD);
+            Gene ch = gene;
+            if (!nonDirectons){
+                ch = new Gene(gene.getCogId(), Strand.INVALID);
             }
 
             int char_index = -1;
@@ -77,20 +75,20 @@ public class DatasetTree {
      * @param datasetTree
      * @param currGenomeIndex
      */
-    private void putWordInDataTree(GenomicSegment genomicSegment, //GeneralizedSuffixTree datasetTree,
+    private void putWordInDataTree(GenomicSegment genomicSegment,
                                           int currGenomeIndex, GenomesInfo genomesInfo){
 
         List<Gene> genes = genomicSegment.getGenes();
-        WordArray cog_word = createWordArray(genes, genomesInfo);
+        WordArray wordArray = createWordArray(genes, genomesInfo);
         InstanceLocation instanceLocation = new InstanceLocation(genomicSegment.getId(), currGenomeIndex,
                 genomicSegment.getStartIndex(),
                 genomicSegment.getStartIndex() + genomicSegment.size(), genomicSegment.getStrand());
         if (genomicSegment.getStrand() == Strand.REVERSE){
             instanceLocation.switchStartEndIndex();
         }
-        datasetTree.put(cog_word, currGenomeIndex, instanceLocation);
+        datasetTree.put(wordArray, currGenomeIndex, instanceLocation);
 
-        genomesInfo.countParalogsInSeqs(cog_word, currGenomeIndex);
+        genomesInfo.countParalogsInSeqs(wordArray, currGenomeIndex);
     }
 
     /**
@@ -102,8 +100,8 @@ public class DatasetTree {
      */
     private int updateDataTree(Replicon replicon, int currGenomeIndex, GenomesInfo gi){
 
-        int replicon_length = 0;
-        if (nonDirectons) {//put replicon and its reverseCompliment compliment
+        int repliconLength = 0;
+        if (nonDirectons) {//put replicon and its reverseCompliment
 
             putWordInDataTree(replicon, currGenomeIndex, gi);
 
@@ -112,27 +110,27 @@ public class DatasetTree {
             replicon.reverseCompliment();
             putWordInDataTree(replicon, currGenomeIndex, gi);
 
-            replicon_length += replicon.size() * 2;
+            repliconLength += replicon.size() * 2;
 
         }else{//split replicon to directons
 
             List<Directon> directons = replicon.splitRepliconToDirectons(gi.UNK_CHAR);
 
             for (Directon directon: directons){
-                replicon_length += directon.size();
+                repliconLength += directon.size();
                 putWordInDataTree(directon, currGenomeIndex, gi);
             }
 
         }
-        return replicon_length;
+        return repliconLength;
     }
 
-    private void buildTree(GenomesInfo gi){
-        for (Genome genome : gi.getGenomes()) {
+    private void buildTree(GenomesInfo genomesInfo){
+        for (Genome genome : genomesInfo.getGenomes()) {
 
-            int genome_index = genome.getId();
+            int genomeId = genome.getId();
             for (Replicon replicon: genome.getReplicons()) {
-                updateDataTree(replicon, genome_index, gi);
+                updateDataTree(replicon, genomeId, genomesInfo);
             }
         }
     }

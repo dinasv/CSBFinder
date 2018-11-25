@@ -35,7 +35,6 @@ public class CSBFinderWorkflow {
 
         datasetTree = null;
 
-        //new DatasetTree(nonDirectons, gi);
     }
 
     public List<Family> run(Parameters params, List<Pattern> patternsFromFile){
