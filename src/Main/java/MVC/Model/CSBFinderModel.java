@@ -170,13 +170,13 @@ public class CSBFinderModel {
         PatternsWriter patternsWriter = null;
 
         if (params.outputFileType == OutputType.TXT){
-            patternsWriter = new TextWriter(cog_info_exists, includeFamilies, params.nonDirectons, catalogPath);
+            patternsWriter = new TextWriter(cog_info_exists, includeFamilies, catalogPath);
         }else if(params.outputFileType == OutputType.XLSX){
-            patternsWriter = new ExcelWriter(cog_info_exists, includeFamilies, params.nonDirectons, catalogPath);
+            patternsWriter = new ExcelWriter(cog_info_exists, includeFamilies, catalogPath);
         }
 
         Writer writer = new Writer(params.debug, catalogFileName,
-                instancesFileName, includeFamilies, cog_info_exists, params.nonDirectons,
+                instancesFileName, includeFamilies, cog_info_exists,
                 outputPath, patternsWriter);
 
         return writer;

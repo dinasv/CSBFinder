@@ -19,13 +19,12 @@ public class SessionWriter implements PatternsWriter {
     GenomesInfo genomesInfo;
 
     private boolean includeFamilies;
-    private boolean nonDirectons;
 
     private int countPrintedPatterns;
 
     private static final DecimalFormat DF = new DecimalFormat("#.####");
 
-    public SessionWriter(boolean includeFamilies, boolean nonDirectons, String path, GenomesInfo genomesInfo){
+    public SessionWriter(boolean includeFamilies, String path, GenomesInfo genomesInfo){
         DF.setRoundingMode(RoundingMode.HALF_UP);
 
         countPrintedPatterns = 0;
@@ -33,9 +32,8 @@ public class SessionWriter implements PatternsWriter {
         this.genomesInfo = genomesInfo;
 
         this.includeFamilies = includeFamilies;
-        this.nonDirectons = nonDirectons;
 
-        String catalogPath = path + ".txt";
+        String catalogPath = path + "_export_session.txt";
         file = Writer.createOutputPrintWriter(catalogPath);
     }
 
@@ -59,7 +57,7 @@ public class SessionWriter implements PatternsWriter {
         for (Pattern pattern: family.getPatterns()) {
             countPrintedPatterns++;
 
-            Writer.printInstances(pattern, family.getFamilyId(), genomesInfo, nonDirectons, file);
+            Writer.printInstances(pattern, family.getFamilyId(), genomesInfo, file);
         }
     }
 

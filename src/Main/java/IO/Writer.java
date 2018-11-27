@@ -30,15 +30,13 @@ public class Writer {
 
     private static final DecimalFormat DF = new DecimalFormat("#.####");
 
-    private boolean nonDirectons;
-
     public Logger logger = null;
 
     String header;
 
     public Writer(boolean debug, String catalogFileName,
                   String instancesFileName, boolean includeFamilies,
-                  boolean cogInfoExists, boolean nonDirectons, String outputPath,
+                  boolean cogInfoExists, String outputPath,
                   PatternsWriter patternsWriter){
 
         this.patternsWriter = patternsWriter;
@@ -47,20 +45,18 @@ public class Writer {
         countPrintedPatterns = 0;
 
         this.cogInfoExists = cogInfoExists;
-        this.nonDirectons = nonDirectons;
+        catalogInstancesPath = outputPath + instancesFileName + ".fasta";
 
-        init(catalogFileName, instancesFileName, includeFamilies, outputPath);
+        instancesFile = null;
 
         header = createHeader(includeFamilies);
         this.patternsWriter.writeHeader(header);
     }
 
-    private void init(String catalog_file_name, String instances_file_name, boolean include_families,
-                      String output_path){
-
-        catalogInstancesPath = output_path + instances_file_name;
-        catalogInstancesPath += ".fasta";
-        instancesFile = createOutputPrintWriter(catalogInstancesPath);
+    private void createInstancesFile(){
+        if (instancesFile == null) {
+            instancesFile = createOutputPrintWriter(catalogInstancesPath);
+        }
     }
 
     public static PrintWriter createOutputPrintWriter(String path){
@@ -120,7 +116,7 @@ public class Writer {
         }
     }
 
-    public static void printInstances(Pattern pattern, String familyId, GenomesInfo gi, boolean nonDirectons, PrintWriter instancesFile){
+    public static void printInstances(Pattern pattern, String familyId, GenomesInfo gi, PrintWriter instancesFile){
 
         if (instancesFile != null) {
 
@@ -128,16 +124,8 @@ public class Writer {
 
             catalogLine += DF.format(pattern.getScore()) + "\t"
                     + pattern.getInstanceCount() + "\t"
-                    + pattern.getExactInstanceCount() + "\t";
-
-            String patternGenes;
-            if (nonDirectons) {
-                patternGenes = pattern.toString();
-            } else {
-                patternGenes = pattern.toStringWithNoStrand();
-            }
-
-            catalogLine += patternGenes + "\t";
+                    + pattern.getExactInstanceCount() + "\t"
+                    + pattern.toString() + "\t";
 
             catalogLine += familyId;
 
@@ -154,7 +142,7 @@ public class Writer {
                 PatternLocationsInGenome patternLocationsInGenome = entry.getValue();
                 for (List<InstanceLocation> instanceLocationsInReplicon : patternLocationsInGenome.getSortedLocations().values()){
                     for (InstanceLocation instanceLocation: instanceLocationsInReplicon) {
-                        //repliconName = gi.getRepliconName(instanceLocation.getRepliconId());
+
                         repliconName = genome.getReplicon(instanceLocation.getRepliconId()).getName();
 
                         instancesFile.print(String.format("\t%s|[%d,%d]", repliconName,
@@ -174,13 +162,32 @@ public class Writer {
             return;
         }
 
-        for (Pattern pattern : family.getPatterns()) {
-            pattern.calculateMainFunctionalCategory(cogInfo);
-            printInstances(pattern, family.getFamilyId(), gi, nonDirectons, instancesFile);
-        }
-
+        family.getPatterns().forEach(pattern -> pattern.calculateMainFunctionalCategory(cogInfo));
         patternsWriter.write(family, cogInfo);
 
+        /*for (Pattern pattern : family.getPatterns()) {
+            pattern.calculateMainFunctionalCategory(cogInfo);
+            printInstances(pattern, family.getFamilyId(), gi, nonDirectons, instancesFile);
+        }*/
+    }
+
+    public void printFamilies(List<Family> families, GenomesInfo gi, CogInfo cogInfo){
+        if (families == null | gi == null | cogInfo == null){
+            return;
+        }
+
+        families.forEach(family -> printFamily(family, gi, cogInfo));
+
+    }
+
+    public void printInstances(Family family, GenomesInfo gi, CogInfo cogInfo){
+        createInstancesFile();
+        family.getPatterns().forEach(pattern -> printInstances(pattern, family.getFamilyId(), gi, instancesFile));
+    }
+
+    public void printInstances(List<Family> families, GenomesInfo gi, CogInfo cogInfo){
+        createInstancesFile();
+        families.forEach(family -> printInstances(family, gi, cogInfo));
     }
 
 }

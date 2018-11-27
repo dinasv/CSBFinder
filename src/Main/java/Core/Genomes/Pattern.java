@@ -206,7 +206,7 @@ public class Pattern {
         }
         return str;
     }
-
+/*
     public String toStringWithNoStrand(){
         String str = "";
         for (Gene gene: patternGenes){
@@ -214,7 +214,7 @@ public class Pattern {
         }
         return str;
     }
-
+*/
     public static class LengthComparator implements Comparator<Pattern> {
 
         @Override

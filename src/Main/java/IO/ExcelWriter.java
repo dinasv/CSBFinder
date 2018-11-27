@@ -29,7 +29,6 @@ public class ExcelWriter implements PatternsWriter{
 
     boolean cogInfoExists;
     boolean includeFamilies;
-    boolean nonDirectons;
 
     private int countPrintedPatterns;
     private int countPrintedFilteredPatterns;
@@ -38,13 +37,12 @@ public class ExcelWriter implements PatternsWriter{
 
     private static final DecimalFormat DF = new DecimalFormat("#.####");
 
-    public ExcelWriter(boolean cogInfoExists, boolean includeFamilies, boolean nonDirectons, String path){
+    public ExcelWriter(boolean cogInfoExists, boolean includeFamilies, String path){
 
         DF.setRoundingMode(RoundingMode.HALF_UP);
 
         this.cogInfoExists = cogInfoExists;
         this.includeFamilies = includeFamilies;
-        this.nonDirectons = nonDirectons;
         this.path = path + ".xlsx";
 
         countPrintedPatterns = 0;
@@ -132,12 +130,7 @@ public class ExcelWriter implements PatternsWriter{
 
         row.createCell(col++).setCellValue(pattern.getExactInstanceCount());
 
-        String patternGenes;
-        if(nonDirectons){
-            patternGenes = pattern.toString();
-        }else{
-            patternGenes = pattern.toStringWithNoStrand();
-        }
+        String patternGenes = pattern.toString();
 
         row.createCell(col++).setCellValue(patternGenes);
 

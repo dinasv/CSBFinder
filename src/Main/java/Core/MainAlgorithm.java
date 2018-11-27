@@ -10,11 +10,11 @@ import Core.Genomes.*;
 
 /**
  * Suffix Tree based algorithm for CSB pattern discovery
+ *
  * A CSB is a substring of at least quorum1 input sequences and must have instance in at least quorum2 input sequences
  * An instance can differ from a CSB by at most k insertions
  */
 public class MainAlgorithm {
-
 
     public static long countNodesInPatternTree;
     public static long count_nodes_in_data_tree;

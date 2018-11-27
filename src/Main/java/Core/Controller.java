@@ -4,10 +4,11 @@ import IO.*;
 import Core.PostProcess.Family;
 import Core.Genomes.*;
 
-import java.io.IOException;
+import java.io.*;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
+import IO.Writer;
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.ParameterException;
 
@@ -42,7 +43,6 @@ public class Controller {
         outputPath = createOutputPath();
         logger = new MyLogger("output/", params.debug);
 
-
         run();
     }
 
@@ -53,7 +53,8 @@ public class Controller {
     }
 
 
-    private Writer createWriter(boolean cog_info_exists, GenomesInfo genomesInfo){
+    private Writer writeFamiliesToFiles(List<Family> families, boolean cog_info_exists, GenomesInfo genomesInfo,
+                                                CogInfo cogInfo){
         String parameters = "_ins" + params.maxInsertion + "_q" + params.quorum2;
         String catalogFileName = "Catalog_" + params.datasetName + parameters;
         String instancesFileName = catalogFileName + "_instances";
@@ -66,22 +67,28 @@ public class Controller {
 
         switch (params.outputFileType){
             case TXT:
-                patternsWriter = new TextWriter(cog_info_exists, includeFamilies, params.nonDirectons, catalogPath);
+                patternsWriter = new TextWriter(cog_info_exists, includeFamilies, catalogPath);
                 break;
             case XLSX:
-                patternsWriter = new ExcelWriter(cog_info_exists, includeFamilies, params.nonDirectons, catalogPath);
+                patternsWriter = new ExcelWriter(cog_info_exists, includeFamilies, catalogPath);
                 break;
             case EXPORT:
-                SessionWriter sessionWriter = new SessionWriter(includeFamilies, params.nonDirectons, catalogPath, genomesInfo);
+                SessionWriter sessionWriter = new SessionWriter(includeFamilies, catalogPath, genomesInfo);
                 sessionWriter.writeGenomes(genomesInfo.getGenomesByName());
                 patternsWriter = sessionWriter;
                 break;
         }
 
-
         Writer writer = new Writer(params.debug, catalogFileName,
-                instancesFileName, includeFamilies, cog_info_exists, params.nonDirectons,
+                instancesFileName, includeFamilies, cog_info_exists,
                 outputPath, patternsWriter);
+
+        if (params.outputFileType != OutputType.EXPORT){
+            writer.printInstances(families, genomesInfo, cogInfo);
+        }
+
+        writer.printFamilies(families, genomesInfo, cogInfo);
+        writer.closeFiles();
 
         return writer;
     }
@@ -148,9 +155,7 @@ public class Controller {
         try {
             printToScreen("Parsing input genomes file");
             gi = Parsers.parseGenomesFile(genomes_file_path);
-            //gi = new GenomesInfo();
-            //List<Pattern> patterns = Parsers.parseSessionFile(genomes_file_path, gi);
-            //System.out.println(patterns);
+
         }catch (IOException e){
             printToScreen("Input genome file is not valid. " + e.getMessage());
             return;
@@ -158,8 +163,8 @@ public class Controller {
 
         //cog info
         Map<String, COG> cog_info = null;
-        boolean cog_info_exists = (params.cogInfoFilePath != null);
-        if (cog_info_exists) {
+        boolean cogInfoExists = (params.cogInfoFilePath != null);
+        if (cogInfoExists) {
             printToScreen("Parsing orthology group information file");
 
             try {
@@ -202,14 +207,9 @@ public class Controller {
 
             printToScreen("Writing to files");
 
-            writer = createWriter(cog_info_exists, gi);
+            writer = writeFamiliesToFiles(families, cogInfoExists, gi, cogInfo);
 
-            for (Family family : families) {
-                writer.printFamily(family, gi, cogInfo);
-            }
             MemoryUtils.measure();
-
-            writer.closeFiles();
 
             printToScreen(String.format("%d CSBs written to files", writer.getCountPrintedPatterns()));
 

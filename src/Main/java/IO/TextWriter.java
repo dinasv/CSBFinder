@@ -20,13 +20,12 @@ public class TextWriter implements PatternsWriter{
     private boolean cogInfoExists;
 
     private boolean includeFamilies;
-    private boolean nonDirectons;
 
     private int countPrintedPatterns;
 
     private static final DecimalFormat DF = new DecimalFormat("#.####");
 
-    public TextWriter(boolean cogInfoExists, boolean includeFamilies, boolean nonDirectons, String path){
+    public TextWriter(boolean cogInfoExists, boolean includeFamilies, String path){
 
         DF.setRoundingMode(RoundingMode.HALF_UP);
 
@@ -34,7 +33,6 @@ public class TextWriter implements PatternsWriter{
 
         this.cogInfoExists = cogInfoExists;
         this.includeFamilies = includeFamilies;
-        this.nonDirectons = nonDirectons;
 
         String catalogPath = path + ".txt";
         catalogFile = Writer.createOutputPrintWriter(catalogPath);
@@ -66,16 +64,8 @@ public class TextWriter implements PatternsWriter{
 
             catalogLine += DF.format(pattern.getScore()) + "\t"
                     + pattern.getInstanceCount() + "\t"
-                    + pattern.getExactInstanceCount() + "\t";
-
-            String patternGenes;
-            if(nonDirectons){
-                patternGenes = pattern.toString();
-            }else{
-                patternGenes = pattern.toStringWithNoStrand();
-            }
-
-            catalogLine += patternGenes + "\t";
+                    + pattern.getExactInstanceCount() + "\t"
+                    + pattern.toString() + "\t";
 
             if (cogInfoExists) {
                 catalogLine += pattern.getMainFunctionalCategory() + "\t";

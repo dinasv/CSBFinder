@@ -90,7 +90,7 @@ public class FamilyTableModel extends AbstractTableModel {
             case EXACT_INSTANCE_COUNT:
                 return p.getExactInstanceCount();
             case CSB:
-                return p.toStringWithNoStrand();
+                return p.toString();
             case MAIN_CATEGORY:
                 return p.getMainFunctionalCategory();
             case FAMILY_ID:
@@ -126,7 +126,7 @@ public class FamilyTableModel extends AbstractTableModel {
         for (Family family: families) {
             family.getPatterns().forEach(pattern -> {
                 pattern.setFamilyId(family.getFamilyId());
-                strToPatternMap.put(pattern.toStringWithNoStrand(), pattern);
+                strToPatternMap.put(pattern.toString(), pattern);
             });
             data.addAll(family.getPatterns());
         }
