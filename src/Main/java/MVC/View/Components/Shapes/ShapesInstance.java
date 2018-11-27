@@ -1,6 +1,5 @@
-package MVC.View.Shapes;
+package MVC.View.Components.Shapes;
 
-import javax.swing.*;
 import java.awt.*;
 import java.util.List;
 

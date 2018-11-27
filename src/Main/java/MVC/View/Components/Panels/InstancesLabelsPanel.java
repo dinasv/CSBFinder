@@ -1,4 +1,4 @@
-package MVC.View.Panels;
+package MVC.View.Components.Panels;
 
 import javax.swing.*;
 import java.awt.*;

@@ -1,4 +1,4 @@
-package MVC.View.Shapes;
+package MVC.View.Components.Shapes;
 
 /**
  * Dimensions of the square with an arrow

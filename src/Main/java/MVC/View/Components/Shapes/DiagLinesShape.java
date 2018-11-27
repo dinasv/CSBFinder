@@ -1,4 +1,4 @@
-package MVC.View.Shapes;
+package MVC.View.Components.Shapes;
 
 import java.awt.*;
 import java.awt.geom.Line2D;

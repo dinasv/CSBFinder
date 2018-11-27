@@ -1,8 +1,8 @@
-package MVC.View.Panels;
+package MVC.View.Components.Panels;
 
 import Core.Genomes.Gene;
 import MVC.Common.InstanceInfo;
-import MVC.View.Shapes.*;
+import MVC.View.Components.Shapes.*;
 
 import javax.swing.*;
 import java.awt.*;

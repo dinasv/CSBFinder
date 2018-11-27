@@ -1,4 +1,4 @@
-package MVC.View;
+package MVC.View.Components.Dialogs;
 
 import MVC.Common.CSBFinderRequest;
 import MVC.View.Events.RunEvent;
@@ -25,7 +25,6 @@ public class InputParametersDialog extends JDialog {
     private JLabel maxCSBLengthLabel;
     private JLabel datasetNameLabel;
     private JLabel patternFilePathLabel;
-    private JLabel geneInfoFilePathLabel;
     private JLabel bcountLabel;
     private JLabel familyClusterThresholdLabel;
     private JLabel segmentToDirectonsLabel;
@@ -42,7 +41,6 @@ public class InputParametersDialog extends JDialog {
     private JSpinner maxCSBLength;
     private JTextField datasetName;
     private JTextField patternFilePath;
-    private JTextField geneInfoFilePath;
     private JCheckBox bcount;
     private JSlider familyClusterThreshold;
     private JCheckBox segmentToDirectons;
@@ -51,7 +49,6 @@ public class InputParametersDialog extends JDialog {
     private JLabel thresholdLabel;
 
     private JButton loadPatternBtn;
-    private JButton loadGeneInfoBtn;
 
     private JButton run;
 
@@ -101,8 +98,6 @@ public class InputParametersDialog extends JDialog {
         request.setDatasetName(datasetName.getText());
         String patternPath = patternFilePath.getText();
         request.setCsbPatternFilePath("optional".equals(patternPath) || "".equals(patternPath) ? null : patternFilePath.getText());
-        String geneInfoPath = geneInfoFilePath.getText();
-        request.setGeneInfoFilePath("optional".equals(geneInfoPath) || "".equals(geneInfoPath) ? null : geneInfoFilePath.getText());
         request.setMultCount(bcount.isSelected());
         request.setFamilyClusterThreshold(familyClusterThreshold.getValue() / 10.0f);
         request.setClusterType((String) clusterTypeField.getSelectedValue());
@@ -134,8 +129,6 @@ public class InputParametersDialog extends JDialog {
 
         patternFilePath = new JTextField();
 
-        geneInfoFilePath = new JTextField();
-
         bcount = new JCheckBox();
 
         segmentToDirectons = new JCheckBox();
@@ -147,13 +140,6 @@ public class InputParametersDialog extends JDialog {
             File f = chooseFile();
             if (f != null && f.exists() && !f.isDirectory()) {
                 patternFilePath.setText(f.getPath());
-            }
-        });
-        loadGeneInfoBtn = new JButton("Load File");
-        loadGeneInfoBtn.addActionListener(e -> {
-            File f = chooseFile();
-            if (f != null && f.exists() && !f.isDirectory()) {
-                geneInfoFilePath.setText(f.getPath());
             }
         });
 
@@ -201,10 +187,6 @@ public class InputParametersDialog extends JDialog {
         desc = "If this option is used, CSBs are no longer extracted from the input sequences. " +
                 "It specifies specific CSB patterns which the user is interested to find in the input sequences.";
         patternFilePathLabel = initLabel(icon, labelName, desc);
-
-        labelName = "Gene Orthology Info File";
-        desc = "This file should contain functional description of orthology groups.";
-        geneInfoFilePathLabel = initLabel(icon, labelName, desc);
 
         labelName = "Count One Instance Per Sequence";
         desc = "If checked, CSB count indicates the number of input sequences with an instance, " +
@@ -281,10 +263,6 @@ public class InputParametersDialog extends JDialog {
         patternFilePath.setText("optional");
         patternFilePath.setColumns(20);
 
-        // gene family information file path
-        geneInfoFilePath.setText("optional");
-        geneInfoFilePath.setColumns(20);
-
         // bcount
         bcount.setSelected(true);
 
@@ -322,10 +300,6 @@ public class InputParametersDialog extends JDialog {
         title.setFont(new Font("Serif", Font.BOLD, 20));
 
         addComponentToGC(0, y++, 1, 0.6, insetLabel, title, LINE_START);
-
-        addComponentToGC(0, y, 1, 0.6, insetLabel, geneInfoFilePathLabel, LINE_START);
-        addComponentToGC(1, y, 1, 0.6, insetField, geneInfoFilePath, LINE_START);
-        addComponentToGC(2, y++, 1, 0.6, insetField, loadGeneInfoBtn, LINE_START);
 
         addComponentToGC(0, y, 1, 0.2, insetLabel, quorumLabel, LINE_START);
         addComponentToGC(2, y, 1, 0.2, insetField, quorum, LINE_START);

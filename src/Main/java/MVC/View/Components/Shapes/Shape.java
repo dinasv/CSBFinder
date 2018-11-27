@@ -1,4 +1,4 @@
-package MVC.View.Shapes;
+package MVC.View.Components.Shapes;
 
 import java.awt.*;
 

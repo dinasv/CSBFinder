@@ -4,7 +4,7 @@ import Core.Genomes.Gene;
 import Core.Genomes.Genome;
 import MVC.Common.*;
 import MVC.Model.CSBFinderModel;
-import MVC.View.MainFrame;
+import MVC.View.Components.MainFrame;
 import Core.Genomes.COG;
 import Core.Genomes.Pattern;
 
@@ -37,6 +37,10 @@ public class CSBFinderController {
 
     public String loadSessionFile(String filePath) throws IOException {
         return this.model.loadSessionFile(filePath);
+    }
+
+    public String loadCogInfo(String path){
+        return this.model.loadCogInfo(path);
     }
 
     public void saveOutputFiles(String outputFileType) { this.model.saveOutputFiles(outputFileType); }

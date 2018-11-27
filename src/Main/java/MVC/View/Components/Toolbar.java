@@ -1,5 +1,6 @@
-package MVC.View;
+package MVC.View.Components;
 
+import MVC.View.Components.Dialogs.GenomeFileChooser;
 import MVC.View.Events.LoadFileEvent;
 import MVC.View.Events.SaveOutputEvent;
 import MVC.View.Events.SelectParamsEvent;
@@ -9,15 +10,19 @@ import MVC.View.Listeners.SelectParamsListener;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 public class Toolbar extends JPanel {
 
     private JButton loadFile;
     private JButton importSession;
+    private JButton loadCogInfo;
     private JButton saveFile;
     private JButton selectParams;
-    private LoadFileListener loadFileListener;
+    private LoadFileListener loadGenomesListener;
     private LoadFileListener importSessionListener;
+    private LoadFileListener loadCogInfoListener;
     private SaveOutputListener saveOutputListener;
     private SelectParamsListener selectParamsListener;
 
@@ -29,6 +34,7 @@ public class Toolbar extends JPanel {
         setBorder(BorderFactory.createEtchedBorder());
         loadFile = new JButton("Load Input Genomes");
         importSession = new JButton("Import Session");
+        loadCogInfo = new JButton("Load Orthology Info");
         saveFile =  new JButton("Save");
         saveFile.setEnabled(false);
         selectParams =  new JButton("Run");
@@ -38,6 +44,7 @@ public class Toolbar extends JPanel {
 
         add(loadFile);
         add(importSession);
+        add(loadCogInfo);
         add(selectParams);
         add(saveFile);
 
@@ -47,17 +54,25 @@ public class Toolbar extends JPanel {
             int value = fileChooser.showOpenDialog(this);
 
             if (value == JFileChooser.APPROVE_OPTION) {
-                loadFileListener.loadFileEventOccurred(new LoadFileEvent(e, fileChooser.getSelectedFile()));
+                loadGenomesListener.loadFileEventOccurred(new LoadFileEvent(e, fileChooser.getSelectedFile()));
             }
         });
 
         importSession.addActionListener(e -> {
-            fileChooser.addChoosableFileFilter(new GenomeFileChooser());
 
             int value = fileChooser.showOpenDialog(this);
 
             if (value == JFileChooser.APPROVE_OPTION) {
                 importSessionListener.loadFileEventOccurred(new LoadFileEvent(e, fileChooser.getSelectedFile()));
+            }
+        });
+
+        loadCogInfo.addActionListener(e -> {
+
+            int value = fileChooser.showOpenDialog(this);
+
+            if (value == JFileChooser.APPROVE_OPTION) {
+                loadCogInfoListener.loadFileEventOccurred(new LoadFileEvent(e, fileChooser.getSelectedFile()));
             }
         });
 
@@ -71,12 +86,16 @@ public class Toolbar extends JPanel {
 
     }
 
-    public void setImportSessionListener(LoadFileListener loadFileListener) {
-        this.importSessionListener = loadFileListener;
+    public void setImportSessionListener(LoadFileListener importSessionListener) {
+        this.importSessionListener = importSessionListener;
     }
 
-    public void setLoadListener(LoadFileListener loadFileListener) {
-        this.loadFileListener = loadFileListener;
+    public void setLoadGenomesListener(LoadFileListener loadGenomesListener) {
+        this.loadGenomesListener = loadGenomesListener;
+    }
+
+    public void setLoadCogInfoListener(LoadFileListener loadCogInfoListener) {
+        this.loadCogInfoListener = loadCogInfoListener;
     }
 
     public void setSaveOutputListener(SaveOutputListener saveOutputListener) {
@@ -100,4 +119,32 @@ public class Toolbar extends JPanel {
     public void disableSelectParamsBtn() {
         selectParams.setEnabled(false);
     }
+
+    private class LoadFileListenerClass implements ActionListener{
+
+        LoadFileListener listener;
+        JFileChooser fileChooser;
+        int value;
+
+        public LoadFileListenerClass(JFileChooser fileChooser, JPanel jPanel, LoadFileListener listener){
+            this.listener = listener;
+            this.fileChooser = fileChooser;
+            this.fileChooser.addChoosableFileFilter(new GenomeFileChooser());
+            value = fileChooser.showOpenDialog(jPanel);
+        }
+
+
+
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            if (value == JFileChooser.APPROVE_OPTION) {
+                listener.loadFileEventOccurred(new LoadFileEvent(e, fileChooser.getSelectedFile()));
+            }
+        }
+    }
+
 }
+
+
+
+

@@ -24,6 +24,8 @@ public class CSBFinderModel {
     CogInfo cogInfo;
 
     public CSBFinderModel() {
+        cogInfo = new CogInfo();
+        gi = new GenomesInfo();
     }
 
     public String getUNKchar(){
@@ -33,12 +35,7 @@ public class CSBFinderModel {
     public MyLogger logger = new MyLogger("",true);
 
 
-    private void init(){
-        cogInfo = new CogInfo();
-    }
-
     public String loadInputGenomesFile(String path) {
-        init();
 
         String msg = "";
         try {
@@ -53,7 +50,6 @@ public class CSBFinderModel {
     }
 
     public String loadSessionFile(String path) throws IOException {
-        init();
 
         String msg = "";
         try {
@@ -108,7 +104,7 @@ public class CSBFinderModel {
 
         String msg = "";
         long startTime = System.nanoTime();
-        Map<String, COG> cog_info = null;
+        Map<String, COG> cogInfoTable = null;
 
         if (gi == null || gi.getNumberOfGenomes() == 0){
             msg = "Need to read genomes first.";
@@ -128,15 +124,16 @@ public class CSBFinderModel {
             return msg;
         }
 
-        boolean cog_info_exists = (params.cogInfoFilePath != null);
-        if (cog_info_exists) {
+        /*
+        boolean cogInfoExists = (params.cogInfoFilePath != null);
+        if (cogInfoExists) {
             try {
-                cog_info = Parsers.parseCogInfoTable(params.cogInfoFilePath);
-                cogInfo.setCogInfo(cog_info);
+                cogInfoTable = Parsers.parseCogInfoTable(params.cogInfoFilePath);
+                this.cogInfo.setCogInfo(cogInfoTable);
             }catch (Exception e){
                 msg = e.getMessage() + "\n";
             }
-        }
+        }*/
 
         System.out.println("Extracting CSBs from " + gi.getNumberOfGenomes() + " input sequences.");
 
@@ -153,6 +150,25 @@ public class CSBFinderModel {
 
         csbFinderDoneListener.CSBFinderDoneOccurred(new CSBFinderDoneEvent(families));
 
+        return msg;
+    }
+
+    public String loadCogInfo(String path){
+        cogInfo = new CogInfo();
+
+        String msg = "";
+        Map<String, COG> cogInfoTable = null;
+
+        boolean cogInfoExists = (path != null);
+        if (cogInfoExists) {
+            try {
+                cogInfoTable = Parsers.parseCogInfoTable(path);
+                this.cogInfo.setCogInfo(cogInfoTable);
+                msg = "Loaded orthology information table";
+            }catch (Exception e){
+                msg = e.getMessage() + "\n";
+            }
+        }
         return msg;
     }
 

@@ -1,4 +1,4 @@
-package MVC.View.Components;
+package MVC.View.Components.Panels;
 
 import MVC.View.Listeners.ToggleCallBackListener;
 

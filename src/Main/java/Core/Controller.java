@@ -162,20 +162,20 @@ public class Controller {
         }
 
         //cog info
-        Map<String, COG> cog_info = null;
+        Map<String, COG> cogInfoMap = null;
         boolean cogInfoExists = (params.cogInfoFilePath != null);
         if (cogInfoExists) {
             printToScreen("Parsing orthology group information file");
 
             try {
-                cog_info = Parsers.parseCogInfoTable(params.cogInfoFilePath);
+                cogInfoMap = Parsers.parseCogInfoTable(params.cogInfoFilePath);
             }catch (Exception e){
                 System.out.println(e.getMessage());
             }
         }
 
         CogInfo cogInfo = new CogInfo();
-        cogInfo.setCogInfo(cog_info);
+        cogInfo.setCogInfo(cogInfoMap);
 
         MemoryUtils.measure();
 

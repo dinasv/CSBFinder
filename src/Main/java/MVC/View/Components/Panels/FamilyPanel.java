@@ -1,4 +1,4 @@
-package MVC.View.Panels;
+package MVC.View.Components.Panels;
 
 import MVC.View.Events.FamilyRowClickedEvent;
 import MVC.View.Listeners.FamilyRowClickedListener;

@@ -1,13 +1,15 @@
-package MVC.View;
+package MVC.View.Components;
 
 import Core.OutputType;
 import MVC.Common.CSBFinderRequest;
 import MVC.Common.InstanceInfo;
 import MVC.Controller.CSBFinderController;
+import MVC.View.Components.Dialogs.InputParametersDialog;
+import MVC.View.Components.Dialogs.ProgressBar;
 import MVC.View.Events.*;
 import MVC.View.Listeners.*;
-import MVC.View.Panels.GenomePanel;
-import MVC.View.Panels.SummaryPanel;
+import MVC.View.Components.Panels.GenomePanel;
+import MVC.View.Components.Panels.SummaryPanel;
 import Core.Genomes.COG;
 import Core.Genomes.Pattern;
 import Core.PostProcess.Family;
@@ -140,6 +142,7 @@ public class MainFrame extends JFrame {
     private void setToolbarListener() {
         setLoadButtonListener();
         setImportSessionButtonListener();
+        setLoadCogInfoButtonListener();
         setSaveButtonListener();
         setSelectParamsListener();
     }
@@ -157,7 +160,7 @@ public class MainFrame extends JFrame {
     }
 
     private void setLoadButtonListener() {
-        toolbar.setLoadListener(new LoadFileListener() {
+        toolbar.setLoadGenomesListener(new LoadFileListener() {
 
             @Override
             public void loadFileEventOccurred(LoadFileEvent e) {
@@ -253,6 +256,47 @@ public class MainFrame extends JFrame {
             }
         });
     }
+
+    private void setLoadCogInfoButtonListener() {
+        toolbar.setLoadCogInfoListener(new LoadFileListener() {
+
+            @Override
+            public void loadFileEventOccurred(LoadFileEvent e) {
+
+                File f = e.getFilePath();
+                if (f.exists() && !f.isDirectory()) {
+
+                    SwingUtilities.invokeLater(new Runnable() {
+                        @Override
+                        public void run() {
+                            progressBar.start("Loading File");
+                        }
+                    });
+
+                    SwingWorker<Void, Void> swingWorker = new SwingWorker<Void, Void>() {
+
+                        String msg = "";
+
+                        @Override
+                        protected Void doInBackground() throws Exception {
+
+                            msg = controller.loadCogInfo(f.getPath());
+                            return null;
+                        }
+
+                        @Override
+                        protected void done() {
+
+                            progressBar.done("");
+                            JOptionPane.showMessageDialog(MainFrame.this, msg);
+                        }
+                    };
+                    swingWorker.execute();
+                }
+            }
+        });
+    }
+
 
     private void setSaveButtonListener() {
         toolbar.setSaveOutputListener(new SaveOutputListener() {

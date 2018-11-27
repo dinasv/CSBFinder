@@ -1,4 +1,4 @@
-package MVC.View;
+package MVC.View.Components.Dialogs;
 
 
 import javax.swing.filechooser.FileFilter;
