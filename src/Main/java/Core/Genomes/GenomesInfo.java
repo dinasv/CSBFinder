@@ -5,16 +5,17 @@ import java.util.*;
 /**
  */
 public class GenomesInfo {
-    public List<Gene> indexToChar;
-    public Map<Gene, Integer> charToIndex;
+    //public List<Gene> indexToChar;
+    //public Map<Gene, Integer> charToIndex;
 
+    /*
     public static final int WC_CHAR_INDEX = 0;
     public static final String WC_CHAR = "*";
     public static final int GAP_CHAR_INDEX = 1;
     public static final String GAP_CHAR = "_";
     public static final int UNK_CHAR_INDEX = 2;
     public static final String UNK_CHAR = "X";
-
+*/
     /**
      * Accession number to tax key
      */
@@ -32,9 +33,9 @@ public class GenomesInfo {
 
     public Map<Integer, Map<Integer, Integer>> genomeToCogParalogCount;
 
-
-
     private int maxGenomeSize;
+
+    private Alphabet alphabet;
 
     public GenomesInfo(){
         genomesByName = new HashMap<>();
@@ -49,10 +50,25 @@ public class GenomesInfo {
 
         genomeToCogParalogCount = new HashMap<>();
 
-        initAlphabet();
+        alphabet = new Alphabet();
+        //initAlphabet();
     }
 
+    public WordArray createWordArray(List<Gene> genes, boolean nonDirectons){
+        return alphabet.createWordArray(genes, nonDirectons);
+    }
 
+    public Gene getLetter(int index){
+        return alphabet.getLetter(index);
+    }
+
+    public int getLetter(Gene gene){
+        return alphabet.getLetter(gene);
+    }
+
+    public int alphabetSize() {
+        return alphabet.alphabetSize();
+    }
 
     public int getNumberOfGenomes(){
         return genomesByName.size();
@@ -110,32 +126,6 @@ public class GenomesInfo {
         datasetLengthSum += replicon.size();
     }
 
-    private void initAlphabet(){
-        indexToChar = new ArrayList<Gene>();
-        charToIndex = new HashMap<Gene, Integer>();
-
-        //wild card
-        Gene gene = new Gene(WC_CHAR, Strand.FORWARD);
-        charToIndex.put(gene, WC_CHAR_INDEX);
-        indexToChar.add(gene);
-
-        gene = new Gene(GAP_CHAR, Strand.FORWARD);
-        //gap
-        charToIndex.put(gene, GAP_CHAR_INDEX);
-        indexToChar.add(gene);
-
-        gene = new Gene(UNK_CHAR, Strand.FORWARD);
-        //unkown orthology group
-        charToIndex.put(gene, UNK_CHAR_INDEX);
-        indexToChar.add(gene);
-
-        gene = new Gene(UNK_CHAR, Strand.REVERSE);
-        charToIndex.put(gene, UNK_CHAR_INDEX);
-
-        gene = new Gene(UNK_CHAR, Strand.INVALID);
-        charToIndex.put(gene, UNK_CHAR_INDEX);
-
-    }
 
     public int getMaxGenomeSize(){
         return maxGenomeSize;

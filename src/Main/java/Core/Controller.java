@@ -47,7 +47,7 @@ public class Controller {
     }
 
     private static void printUsageAndExit(JCommander jcommander, int exitStatus){
-        jcommander.setProgramName("java -jar MainAlgorithm.jar");
+        jcommander.setProgramName("java -jar SuffixTreeBasedAlgorithm.jar");
         jcommander.usage();
         System.exit(exitStatus);
     }
@@ -125,7 +125,7 @@ public class Controller {
      * @return
      */
     private List<Pattern> readPatternsFromFile() throws Exception{
-        List<Pattern> patterns = null;
+        List<Pattern> patterns = new ArrayList<>();
         if (params.inputPatternsFilePath != null) {
             //these arguments are not valid when input patterns are give
             params.minPatternLength = 2;
@@ -138,7 +138,7 @@ public class Controller {
     }
 
     /**
-     * Executes MainAlgorithm and prints colinear synteny blocks
+     * Executes SuffixTreeBasedAlgorithm and prints colinear synteny blocks
      *
      * @return
      * @throws Exception
@@ -185,6 +185,8 @@ public class Controller {
             printToScreen("Executing workflow");
 
             CSBFinderWorkflow workflow = new CSBFinderWorkflow(gi);
+            Algorithm algorithm = new SuffixTreeBasedAlgorithm();
+            workflow.setAlgorithm(algorithm);
 
             //read patterns from a file if a file is given
             List<Pattern> patternsFromFile = new ArrayList<>();
@@ -197,11 +199,7 @@ public class Controller {
 
             printToScreen(String.format("Extracting CSBs from %d input sequences.", gi.getNumberOfGenomes()));
 
-            if (patternsFromFile != null){
-                families = workflow.run(params, patternsFromFile);
-            }else{
-                families = workflow.run(params);
-            }
+            families = workflow.run(params);
 
             printToScreen(String.format("%d CSBs found.", workflow.getPatternsCount()));
 

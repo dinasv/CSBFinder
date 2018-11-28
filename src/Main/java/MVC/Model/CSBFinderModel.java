@@ -29,7 +29,7 @@ public class CSBFinderModel {
     }
 
     public String getUNKchar(){
-        return gi.UNK_CHAR;
+        return Alphabet.UNK_CHAR;
     }
 
     public MyLogger logger = new MyLogger("",true);
@@ -103,8 +103,6 @@ public class CSBFinderModel {
     private String findCSBs() {
 
         String msg = "";
-        long startTime = System.nanoTime();
-        Map<String, COG> cogInfoTable = null;
 
         if (gi == null || gi.getNumberOfGenomes() == 0){
             msg = "Need to read genomes first.";
@@ -116,6 +114,9 @@ public class CSBFinderModel {
             return msg;
         }
 
+        long startTime = System.nanoTime();
+        Map<String, COG> cogInfoTable = null;
+
         List<Pattern> patternsFromFile = new ArrayList<>();
         try {
             patternsFromFile = readPatternsFromFile();
@@ -124,24 +125,12 @@ public class CSBFinderModel {
             return msg;
         }
 
-        /*
-        boolean cogInfoExists = (params.cogInfoFilePath != null);
-        if (cogInfoExists) {
-            try {
-                cogInfoTable = Parsers.parseCogInfoTable(params.cogInfoFilePath);
-                this.cogInfo.setCogInfo(cogInfoTable);
-            }catch (Exception e){
-                msg = e.getMessage() + "\n";
-            }
-        }*/
+        Algorithm algorithm = new SuffixTreeBasedAlgorithm();
+        workflow.setAlgorithm(algorithm);
 
         System.out.println("Extracting CSBs from " + gi.getNumberOfGenomes() + " input sequences.");
 
-        if (patternsFromFile.size() > 0){
-            families = workflow.run(params, patternsFromFile);
-        }else{
-            families = workflow.run(params);
-        }
+        families = workflow.run(params);
 
         msg += workflow.getPatternsCount() + " CSBs found";
 

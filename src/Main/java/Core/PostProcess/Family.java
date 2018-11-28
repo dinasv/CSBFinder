@@ -56,8 +56,8 @@ public class Family {
         for (Gene gene: patternGenes) {
             int cogIndex;
 
-            if (genomesInfo.charToIndex.containsKey(gene)){
-                cogIndex = genomesInfo.charToIndex.get(gene);
+            if (genomesInfo.getLetter(gene) != -1){
+                cogIndex = genomesInfo.getLetter(gene);
                 charSet.add(cogIndex);
             }
         }

@@ -9,40 +9,32 @@ import java.util.List;
 public class DatasetTree {
 
     private GeneralizedSuffixTree datasetTree;
-    public final boolean nonDirectons;
+    private GenomesInfo genomesInfo;
+    public boolean nonDirectons;
 
-    public DatasetTree(boolean nonDirectons, GenomesInfo gi){
-        datasetTree = new GeneralizedSuffixTree();
+    public DatasetTree(/*boolean nonDirectons, */GenomesInfo gi){
+        datasetTree = null;
 
-        this.nonDirectons = nonDirectons;
+        genomesInfo = gi;
 
-        buildTree(gi);
+        nonDirectons = false;
+        //this.nonDirectons = nonDirectons;
+
+        //buildTree(gi);
     }
 
     public GeneralizedSuffixTree getSuffixTree(){
         return datasetTree;
     }
 
-    /**
-     * Builds a Trie of patterns, given in a file.
-     * @param pattern_tree the patterns are inserted to this GST
-     * @return True if succesful, False if exception occurred
-     */
-    public void buildPatternsTree(List<Pattern> patterns, Trie pattern_tree, GenomesInfo gi) {
-
-        for (Pattern pattern: patterns){
-            WordArray word = createWordArray(pattern.getPatternGenes(), gi);
-            pattern_tree.put(word, pattern.getPatternId(), gi.UNK_CHAR_INDEX);
-        }
-    }
-
 
     /**
      * Converts an array of strings to wordArray, using charToIndex
-     * @param genes contains the characters comprising this str
-     * @return WordArray representing this str
+     * @param genes each gene will we converted to a chracter with index
+     * @return WordArray representing genes
      */
-    private WordArray createWordArray(List<Gene> genes, GenomesInfo gi){
+    /*
+    private static WordArray createWordArray(List<Gene> genes, GenomesInfo gi, boolean nonDirectons){
         int[] word = new int[genes.size()];
         int i = 0;
         for(Gene gene: genes){
@@ -52,21 +44,19 @@ public class DatasetTree {
                 ch = new Gene(gene.getCogId(), Strand.INVALID);
             }
 
-            int char_index = -1;
-            if (gi.charToIndex.containsKey(ch)) {
-                char_index = gi.charToIndex.get(ch);
-            } else {
-                char_index = gi.indexToChar.size();
+            int letterIndex = gi.getLetter(ch);
+            if (gi.getLetter(ch) == -1) {
+                letterIndex = gi.alphabetSize();
                 gi.indexToChar.add(ch);
-                gi.charToIndex.put(ch, char_index);
+                gi.charToIndex.put(ch, letterIndex);
             }
 
-            word[i] = char_index;
+            word[i] = letterIndex;
             i++;
         }
 
         return new WordArray(word);
-    }
+    }*/
 
 
     /**
@@ -76,10 +66,10 @@ public class DatasetTree {
      * @param currGenomeIndex
      */
     private void putWordInDataTree(GenomicSegment genomicSegment,
-                                          int currGenomeIndex, GenomesInfo genomesInfo){
+                                          int currGenomeIndex, boolean nonDirectons){
 
         List<Gene> genes = genomicSegment.getGenes();
-        WordArray wordArray = createWordArray(genes, genomesInfo);
+        WordArray wordArray = genomesInfo.createWordArray(genes, nonDirectons);
         InstanceLocation instanceLocation = new InstanceLocation(genomicSegment.getId(), currGenomeIndex,
                 genomicSegment.getStartIndex(),
                 genomicSegment.getStartIndex() + genomicSegment.size(), genomicSegment.getStrand());
@@ -98,39 +88,45 @@ public class DatasetTree {
      * @param currGenomeIndex
      * @return
      */
-    private int updateDataTree(Replicon replicon, int currGenomeIndex, GenomesInfo gi){
+    private int updateDataTree(Replicon replicon, int currGenomeIndex, boolean nonDirectons){
 
         int repliconLength = 0;
         if (nonDirectons) {//put replicon and its reverseCompliment
 
-            putWordInDataTree(replicon, currGenomeIndex, gi);
+            putWordInDataTree(replicon, currGenomeIndex, nonDirectons);
 
             //reverseCompliment replicon
             replicon = new Replicon(replicon);
             replicon.reverseCompliment();
-            putWordInDataTree(replicon, currGenomeIndex, gi);
+            putWordInDataTree(replicon, currGenomeIndex, nonDirectons);
 
             repliconLength += replicon.size() * 2;
 
         }else{//split replicon to directons
 
-            List<Directon> directons = replicon.splitRepliconToDirectons(gi.UNK_CHAR);
+            List<Directon> directons = replicon.splitRepliconToDirectons(Alphabet.UNK_CHAR);
 
             for (Directon directon: directons){
                 repliconLength += directon.size();
-                putWordInDataTree(directon, currGenomeIndex, gi);
+                putWordInDataTree(directon, currGenomeIndex, nonDirectons);
             }
 
         }
         return repliconLength;
     }
 
-    private void buildTree(GenomesInfo genomesInfo){
+    public void buildTree(boolean nonDirectons){
+        if (datasetTree != null && this.nonDirectons == nonDirectons){
+            return;
+        }
+        datasetTree = new GeneralizedSuffixTree();
+        this.nonDirectons = nonDirectons;
+
         for (Genome genome : genomesInfo.getGenomes()) {
 
             int genomeId = genome.getId();
             for (Replicon replicon: genome.getReplicons()) {
-                updateDataTree(replicon, genomeId, genomesInfo);
+                updateDataTree(replicon, genomeId, nonDirectons);
             }
         }
     }

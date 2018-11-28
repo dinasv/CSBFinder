@@ -4,7 +4,6 @@ import Core.Genomes.WordArray;
 import Core.SuffixTrees.*;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 import Core.Genomes.*;
 
@@ -14,10 +13,10 @@ import Core.Genomes.*;
  * A CSB is a substring of at least quorum1 input sequences and must have instance in at least quorum2 input sequences
  * An instance can differ from a CSB by at most k insertions
  */
-public class MainAlgorithm {
+public class SuffixTreeBasedAlgorithm implements Algorithm{
 
     public static long countNodesInPatternTree;
-    public static long count_nodes_in_data_tree;
+    public static long countNodesInDataTree;
 
     private int maxError;
     private int maxWildcards;
@@ -28,7 +27,9 @@ public class MainAlgorithm {
     private int minPatternLength;
     private int maxPatternLength;
 
-    private GeneralizedSuffixTree datasetTree;
+    private Parameters parameters;
+
+    private DatasetTree datasetTree;
 
     //contains all extracted patterns
     private Map<String, Pattern> patterns;
@@ -41,17 +42,37 @@ public class MainAlgorithm {
 
     private boolean debug;
 
-    int totalCharsInData;
-    GenomesInfo gi;
+    private int totalCharsInData;
+    private GenomesInfo gi;
+
+    private PatternNode patternTreeRoot;
+
+    private List<Pattern> patternsFromFile;
 
     /**
      *
      * @param params args
      * @param datasetTree GST representing all input sequences
-     * @param pattern_trie
+     * @param patternTrie
      * @param gi Information regarding the input genomes (sequences)
      */
-    public MainAlgorithm(Parameters params, DatasetTree datasetTree, Trie pattern_trie, GenomesInfo gi){
+    public SuffixTreeBasedAlgorithm(){
+
+        parameters = null;
+        this.gi = null;
+
+        patterns = new HashMap<>();
+        patternsFromFile = new ArrayList<>();
+
+        //initialize();
+        //initialize(params, gi, patternsFromFile);
+
+        //findPatterns();
+    }
+
+    public void setParameters(Parameters params){
+
+        this.parameters = params;
 
         // args
         this.maxError = params.maxError;
@@ -64,57 +85,83 @@ public class MainAlgorithm {
         this.minPatternLength = params.minPatternLength;
         this.maxPatternLength = params.maxPatternLength;
         this.multCount = params.multCount;
-
-        //this.utils = utils;
-
-        this.datasetTree = datasetTree.getSuffixTree();
-
-        totalCharsInData = -1;
-        this.gi = gi;
-        lastPatternKey = 0;
-
         this.debug = params.debug;
 
-        countNodesInPatternTree = 0;
-        count_nodes_in_data_tree = 0;
+    }
 
-        patterns = new HashMap<>();
+    public void setGenomesInfo(GenomesInfo gi){
+        this.gi = gi;
 
-        PatternNode pattern_tree_root;
-        if (pattern_trie == null){//all patterns will be extracted from the data tree
-            pattern_tree_root = new PatternNode(TreeType.VIRTUAL);
-            pattern_tree_root.setKey(++lastPatternKey);
-        }else {//if we were given patterns as input
-            pattern_tree_root = pattern_trie.getRoot();
-        }
-        findPatterns(pattern_tree_root);
+        datasetTree = new DatasetTree(gi);
+        //this.datasetTree = datasetTree.getSuffixTree();
+    }
+
+    public void setPatternsFromFile(List<Pattern> patternsFromFile){
+        this.patternsFromFile = patternsFromFile;
+    }
+
+
+    public Parameters getParameters(){
+        return parameters;
     }
 
     public int getPatternsCount(){
         return patterns.size();
     }
 
+    public void initialize(){
+        totalCharsInData = -1;
+        lastPatternKey = 0;
+        countNodesInPatternTree = 0;
+        countNodesInDataTree = 0;
+
+        patterns = new HashMap<>();
+
+        setPatternTreeRoot();
+    }
+
+    private void setPatternTreeRoot(){
+        if (patternsFromFile.size() > 0) {
+            PatternsTree patternsTree = new PatternsTree(patternsFromFile, gi);
+            Trie patternTrie = patternsTree.getTrie();
+            patternTreeRoot = patternTrie.getRoot();
+        }else{//all patterns will be extracted from the data tree
+            patternTreeRoot = new PatternNode(TreeType.VIRTUAL);
+            patternTreeRoot.setKey(++lastPatternKey);
+        }
+    }
+
+
     /**
      * Calls the recursive function spellPatterns
      * @param patternNode a node in the pattern tree, the pattern tree traversal begins from this node
      */
-    private void findPatterns(PatternNode patternNode) {
+    public void findPatterns() {
+        if (parameters == null || gi == null || datasetTree == null){
+            return;
+        }
 
-        datasetTree.computeCount();
-        totalCharsInData = ((InstanceNode) datasetTree.getRoot()).getCountMultipleInstancesPerGenome();
+        initialize();
 
-        InstanceNode dataTreeRoot = (InstanceNode) datasetTree.getRoot();
+        datasetTree.buildTree(parameters.nonDirectons);
+        GeneralizedSuffixTree datasetSuffixTree = datasetTree.getSuffixTree();
+        datasetSuffixTree.computeCount();
+        totalCharsInData = ((InstanceNode) datasetSuffixTree.getRoot()).getCountMultipleInstancesPerGenome();
+
+        InstanceNode dataTreeRoot = (InstanceNode) datasetSuffixTree.getRoot();
         //the instance of an empty string is the root of the data tree
         Instance empty_instance = new Instance(dataTreeRoot, null, -1, 0, 0);
-        count_nodes_in_data_tree ++;
+        countNodesInDataTree++;
 
-        patternNode.addInstance(empty_instance, maxInsertion);
-        if (patternNode.getType()== TreeType.VIRTUAL){
-            spellPatternsVirtually(patternNode, dataTreeRoot, -1, null, new ArrayList<>(),
+        patternTreeRoot.addInstance(empty_instance, maxInsertion);
+        if (patternTreeRoot.getType()== TreeType.VIRTUAL){
+            spellPatternsVirtually(patternTreeRoot, dataTreeRoot, -1, null, new ArrayList<>(),
                     0, 0);
         }else{
-            spellPatterns(patternNode, new ArrayList<>(), 0, 0);
+            spellPatterns(patternTreeRoot, new ArrayList<>(), 0, 0);
         }
+
+        removeRedundantPatterns();
     }
 
 
@@ -139,31 +186,33 @@ public class MainAlgorithm {
      * pattern
      * Therefore it is sufficient to remove each pattern suffix if it has the same instance count
      */
-    public void removeRedundantPatterns() {
-        HashSet<String> patternsToRemove = new HashSet<>();
-        for (Map.Entry<String, Pattern> entry : patterns.entrySet()) {
+    private void removeRedundantPatterns() {
+        if(patternTreeRoot.getType() == TreeType.VIRTUAL) {
+            HashSet<String> patternsToRemove = new HashSet<>();
+            for (Map.Entry<String, Pattern> entry : patterns.entrySet()) {
 
-            Pattern pattern = entry.getValue();
-            List<Gene> patternGenes = pattern.getPatternGenes();
-            List<Gene> patternSuffix = new ArrayList<>(patternGenes);
-            patternSuffix.remove(0);
-            String suffixStr = patternSuffix.toString();
+                Pattern pattern = entry.getValue();
+                List<Gene> patternGenes = pattern.getPatternGenes();
+                List<Gene> patternSuffix = new ArrayList<>(patternGenes);
+                patternSuffix.remove(0);
+                String suffixStr = patternSuffix.toString();
 
-            Pattern suffix = patterns.get(suffixStr);
+                Pattern suffix = patterns.get(suffixStr);
 
-            if (suffix != null){
-                int patternCount = pattern.getInstanceCount();
-                int suffixCount = suffix.getInstanceCount();
-                if (suffixCount == patternCount){
-                    patternsToRemove.add(suffixStr);
+                if (suffix != null) {
+                    int patternCount = pattern.getInstanceCount();
+                    int suffixCount = suffix.getInstanceCount();
+                    if (suffixCount == patternCount) {
+                        patternsToRemove.add(suffixStr);
+                    }
+                }
+
+                if (nonDirectons) {
+                    removeReverseCompliments(pattern, patternsToRemove);
                 }
             }
-
-            if (nonDirectons){
-                removeReverseCompliments(pattern, patternsToRemove);
-            }
+            patterns.keySet().removeAll(patternsToRemove);
         }
-        patterns.keySet().removeAll(patternsToRemove);
     }
 
     private void removeReverseCompliments(Pattern pattern, HashSet<String> patternsToRemove){
@@ -186,16 +235,16 @@ public class MainAlgorithm {
      * @param node
      */
     private void addWildcardEdge(PatternNode node, Boolean copy_node) {
-        PatternNode targetNode = node.getTargetNode(gi.WC_CHAR_INDEX);
+        PatternNode targetNode = node.getTargetNode(Alphabet.WC_CHAR_INDEX);
         if (targetNode == null) {
-            int[] wildcard = {gi.WC_CHAR_INDEX};
+            int[] wildcard = {Alphabet.WC_CHAR_INDEX};
             //create a copy of node
             PatternNode newnode = new PatternNode(node);
-            node.addTargetNode(gi.WC_CHAR_INDEX, newnode);
+            node.addTargetNode(Alphabet.WC_CHAR_INDEX, newnode);
         } else {
-            PatternNode newnode = node.getTargetNode(gi.WC_CHAR_INDEX);
+            PatternNode newnode = node.getTargetNode(Alphabet.WC_CHAR_INDEX);
             newnode = new PatternNode(newnode);
-            targetNode.addTargetNode(gi.WC_CHAR_INDEX, newnode);
+            targetNode.addTargetNode(Alphabet.WC_CHAR_INDEX, newnode);
         }
     }
 
@@ -215,7 +264,7 @@ public class MainAlgorithm {
      * @return the extended str
      */
     private List<Gene> appendChar(List<Gene> str, int ch) {
-        Gene cog = gi.indexToChar.get(ch);
+        Gene cog = gi.getLetter(ch);
         //System.out.println(cog);
         List<Gene> extended_string = new ArrayList<>();
         extended_string.addAll(str);
@@ -253,11 +302,11 @@ public class MainAlgorithm {
         PatternNode target_node;
         for (Map.Entry<Integer, PatternNode> entry : target_nodes.entrySet()) {
             int alpha = entry.getKey();
-            Gene alpha_ch = gi.indexToChar.get(alpha);
+            Gene alpha_ch = gi.getLetter(alpha);
             target_node = entry.getValue();
 
             //go over edges that are not wild cards
-            if (alpha != gi.WC_CHAR_INDEX) {
+            if (alpha != Alphabet.WC_CHAR_INDEX) {
                 num_of_diff_instance = extendPattern(alpha, -1, null, null,
                                     pattern_wildcard_count, pattern, target_node, pattern_node, instances, pattern_length);
 
@@ -271,9 +320,9 @@ public class MainAlgorithm {
 
         //handle wild card edge
         if (pattern_node.getType().equals("pattern") || pattern_wildcard_count < maxWildcards) {
-            target_node = pattern_node.getTargetNode(gi.WC_CHAR_INDEX);
+            target_node = pattern_node.getTargetNode(Alphabet.WC_CHAR_INDEX);
             if (target_node != null) {
-                num_of_diff_instance = extendPattern(gi.WC_CHAR_INDEX, -1, null, null,
+                num_of_diff_instance = extendPattern(Alphabet.WC_CHAR_INDEX, -1, null, null,
                             pattern_wildcard_count + 1, pattern, target_node, pattern_node, instances, pattern_length);
                 if (num_of_diff_instance > max_num_of_diff_instances) {
                     max_num_of_diff_instances = num_of_diff_instance;
@@ -331,14 +380,14 @@ public class MainAlgorithm {
 
             for (Map.Entry<Integer, Edge> entry : dataNodeEdges.entrySet()) {
                 int alpha = entry.getKey();
-                Gene alpha_ch = gi.indexToChar.get(alpha);
+                Gene alpha_ch = gi.getLetter(alpha);
                 dataEdge = entry.getValue();
                 InstanceNode data_tree_target_node = (InstanceNode) dataEdge.getDest();
 
                 if (data_tree_target_node.getCountInstancePerGenome() >= q1) {
 
-                    if (alpha == gi.UNK_CHAR_INDEX) {
-                        if (q1 == 0 && gi.charToIndex.get(pattern.get(0)) != gi.UNK_CHAR_INDEX) {
+                    if (alpha == Alphabet.UNK_CHAR_INDEX) {
+                        if (q1 == 0 && gi.getLetter(pattern.get(0)) != Alphabet.UNK_CHAR_INDEX) {
                             spellPatternsVirtually(patternNode, dataNode, dataEdgeIndex + 1, dataEdge,
                             pattern, patternLength, wildcardCount);
                         }
@@ -363,7 +412,7 @@ public class MainAlgorithm {
             InstanceNode data_tree_target_node = (InstanceNode) dataEdge.getDest();
 
             if (data_tree_target_node.getCountInstancePerGenome() >= q1) {
-                if (alpha != gi.UNK_CHAR_INDEX) {
+                if (alpha != Alphabet.UNK_CHAR_INDEX) {
 
                     targetNode = new PatternNode(TreeType.VIRTUAL);
                     targetNode.setKey(++lastPatternKey);
@@ -410,7 +459,7 @@ public class MainAlgorithm {
         int extended_pattern_length = pattern_length + 1;
 
         //if there is a wildcard in the current pattern, have to create a copy of the subtree
-        if (wildcard_count > 0 && alpha != gi.WC_CHAR_INDEX) {
+        if (wildcard_count > 0 && alpha != Alphabet.WC_CHAR_INDEX) {
             extendedPatternNode = new PatternNode(extendedPatternNode);
             pattern_node.addTargetNode(alpha, extendedPatternNode);
         }
@@ -460,7 +509,7 @@ public class MainAlgorithm {
 
                     }
                 } else if (type == TreeType.VIRTUAL) {
-                    if (alpha != gi.WC_CHAR_INDEX) {
+                    if (alpha != Alphabet.WC_CHAR_INDEX) {
                         if (!(starts_with_wildcard(extendedPattern))) {
                             //make sure that extendedPattern is right maximal, if extendedPattern has the same number of
                             // instances as the longer pattern, prefer the longer pattern
@@ -521,12 +570,12 @@ public class MainAlgorithm {
             Map<Integer, Edge> instance_edges = node_instance.getEdges();
 
             //we can extend the instance using all outgoing edges, increment error if needed
-            if (ch == gi.WC_CHAR_INDEX) {
+            if (ch == Alphabet.WC_CHAR_INDEX) {
                 exact_instance_count = addAllInstanceEdges(false, instance, instance_edges, deletions, error, node_instance,
                         edge_index, ch, extended_pattern);
                 //extend instance by deletions char
                 if (deletions < maxDeletion) {
-                    addInstanceToPattern(extended_pattern, instance, gi.GAP_CHAR_INDEX, node_instance, edge_instance, edge_index,
+                    addInstanceToPattern(extended_pattern, instance, Alphabet.GAP_CHAR_INDEX, node_instance, edge_instance, edge_index,
                             error, deletions + 1);
                 }
             } else {
@@ -540,7 +589,7 @@ public class MainAlgorithm {
                             error, node_instance, edge_index, ch, extended_pattern);
                     //extend instance by deletions char
                     if (deletions < maxDeletion) {
-                        addInstanceToPattern(extended_pattern, instance, gi.GAP_CHAR_INDEX, node_instance, edge_instance, edge_index,
+                        addInstanceToPattern(extended_pattern, instance, Alphabet.GAP_CHAR_INDEX, node_instance, edge_instance, edge_index,
                                 error, deletions + 1);
                     }
                 } else {//error = max error, only edge_instance starting with ch can be added, or deletions
@@ -561,7 +610,7 @@ public class MainAlgorithm {
                     } else {
                         //extend instance by deletions char
                         if (deletions < maxDeletion) {
-                            addInstanceToPattern(extended_pattern, instance, gi.GAP_CHAR_INDEX, node_instance, edge_instance,
+                            addInstanceToPattern(extended_pattern, instance, Alphabet.GAP_CHAR_INDEX, node_instance, edge_instance,
                                     edge_index, error, deletions + 1);
                         }
                     }
@@ -589,7 +638,7 @@ public class MainAlgorithm {
                     next_instance.addInsertionIndex(instance.getLength());
                     next_instance.addAllInsertionIndexes(instance.getInsertionIndexes());
                     extendInstance(extended_pattern, next_instance, ch);
-                    count_nodes_in_data_tree++;
+                    countNodesInDataTree++;
                 }
             }
 
@@ -599,7 +648,7 @@ public class MainAlgorithm {
                 addInstanceToPattern(extended_pattern, instance, next_ch, next_node_instance, next_edge_instance, next_edge_index, error,
                         deletions);
             } else {
-                if (ch == gi.WC_CHAR_INDEX) {
+                if (ch == Alphabet.WC_CHAR_INDEX) {
                     addInstanceToPattern(extended_pattern, instance, next_ch, next_node_instance, next_edge_instance, next_edge_index, error,
                             deletions);
                 } else {
@@ -609,7 +658,7 @@ public class MainAlgorithm {
                     }
                     //extend instance by deletions char
                     if (deletions < maxDeletion) {
-                        addInstanceToPattern(extended_pattern, instance, gi.GAP_CHAR_INDEX, node_instance, edge_instance, edge_index, error, deletions + 1);
+                        addInstanceToPattern(extended_pattern, instance, Alphabet.GAP_CHAR_INDEX, node_instance, edge_instance, edge_index, error, deletions + 1);
                     }
                 }
             }
@@ -651,7 +700,7 @@ public class MainAlgorithm {
                 curr_error = error;
                 exact_instance_count = ((InstanceNode)next_edge.getDest()).getCountInstancePerGenome();
             } else {
-                if (ch != gi.WC_CHAR_INDEX) {//Substitution - the chars are different, increment error
+                if (ch != Alphabet.WC_CHAR_INDEX) {//Substitution - the chars are different, increment error
                     curr_error = error + 1;
                 }
             }
@@ -673,7 +722,7 @@ public class MainAlgorithm {
                             instance.getInsertionIndexes(), extended_instance_string, instance.getLength() + 1);
                     next_instance.addInsertionIndex(instance.getLength());
                     extendInstance(patternNode, next_instance, ch);
-                    count_nodes_in_data_tree++;
+                    countNodesInDataTree++;
                 }
             } else {
                 addInstanceToPattern(patternNode, instance, next_ch, next_node, next_edge, next_edge_index, curr_error, deletions);
@@ -702,7 +751,7 @@ public class MainAlgorithm {
                 instance.getInsertionIndexes(), extended_instance_string, instance.getLength()+1);
         extended_pattern.addInstance(next_instance, maxInsertion);
 
-        count_nodes_in_data_tree++;
+        countNodesInDataTree++;
     }
 
 

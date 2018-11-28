@@ -18,7 +18,7 @@ public class MyLogger {
             logger = java.util.logging.Logger.getLogger("MyLog");
             LogManager.getLogManager().reset();//disable logging information printed to screen
 
-            FileHandler fh = new FileHandler(path + "MainAlgorithm.log");
+            FileHandler fh = new FileHandler(path + "SuffixTreeBasedAlgorithm.log");
             logger.addHandler(fh);
             SimpleFormatter formatter = new SimpleFormatter();
             fh.setFormatter(formatter);
