@@ -93,11 +93,11 @@ public class Controller {
         return writer;
     }
 
-    private static String createOutputPath(){
+    private String createOutputPath(){
         Date dNow = new Date( );
         SimpleDateFormat ft = new SimpleDateFormat ("dd_MM_yyyy_hh_mm_ss_a");
 
-        String path = "output";
+        String path = params.outputDir;
         Writer.createOutputDirectory(path);
         path += "/"+ft.format(dNow)+"/";
         Writer.createOutputDirectory(path);

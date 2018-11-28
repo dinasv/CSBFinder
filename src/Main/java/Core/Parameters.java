@@ -8,7 +8,6 @@ import java.util.Comparator;
 
 public class Parameters {
 
-
     public static class PositiveInteger implements IParameterValidator {
         public void validate(String name, String value) throws ParameterException {
             try {
@@ -83,6 +82,9 @@ public class Parameters {
 
     @Parameter(names={"-non-directons"}, description = "If true, segment input sequences directons", order = 13)
     public boolean nonDirectons = false;
+
+    @Parameter(names={"-out-dir"}, description = "Path to output directory", order = 14)
+    public String outputDir = "output";
 
     @Parameter(names={"--mismatch", "-err"}, description = "Maximal number of mismatches allowed", hidden = true)
     public int maxError = 0;
