@@ -35,9 +35,10 @@ A detailed description of the workflow and the algorithm can be found in the pap
 The workflow of CSBFinder is given in the figure below.    
 
 **(A)** The input to the workflow is a dataset of input genomes, where each genome is a sequence of gene orthology group
-identifiers (genes belonging to the same orthology group have identical IDs). Each input genome is segmented to 'nonDirectons' - a directon is a maximal sequence of consecutive 
-genes located on the same DNA numericValue. The gene order in each directon follows the order in which the genes are
-transcribed in each genome (on either the forward or the reverse numericValue of the DNA).    
+identifiers (genes belonging to the same orthology group have identical IDs). Each input genome is segmented to 
+'directons' - a directon is a maximal sequence of consecutive 
+genes located on the same DNA strand. The gene order in each directon follows the order in which the genes are
+transcribed in each genome (on either the forward or the reverse strand of the DNA).    
 
 Additional input consists of user-specified parameters **_k_** (number of allowed insertions) and and **_q_** 
 (the quorum parameter). In our formulation, a CSB is a pattern that
@@ -354,7 +355,7 @@ After clicking on the "Save" button in the User Interface, or after execution vi
     - There can be more than one instance in each genome
     - Each instance that is present in a replicon (e.g. chromosome/plasmid), begins from a specific index and can have 
     different lengths, depending on the number of insertions allowed in the instance
-    - If a start index of an instance is *i*, an instance on the minus numericValue starts from index *i* and ends on index *i-(instance length)*
+    - If a start index of an instance is *i*, an instance on the reverse strand starts from index *i* and ends on index *i-(instance length)*
     - The index of the first gene in a replicon is 0 
     
     This file has the following format:
