@@ -27,7 +27,7 @@ public class PatternsTree {
     public void buildPatternsTree(List<Pattern> patterns) {
 
         for (Pattern pattern: patterns){
-            WordArray word = genomesInfo.createWordArray(pattern.getPatternGenes(), true);
+            WordArray word = genomesInfo.createWordArray(pattern.getPatternGenes()/*, true*/);
             patternsTree.put(word, pattern.getPatternId(), Alphabet.UNK_CHAR_INDEX);
         }
     }

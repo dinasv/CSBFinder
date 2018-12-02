@@ -15,8 +15,8 @@ public class Replicon extends GenomicSegment {
         super();
     }
 
-    public Replicon(Strand strand, int id, String name){
-        super(strand, id);
+    public Replicon(Strand strand, int id, String name, int genomeId){
+        super(strand, id, genomeId);
         this.name = name;
     }
 
@@ -24,7 +24,6 @@ public class Replicon extends GenomicSegment {
         super(other);
         name = other.name;
     }
-
 
     private static Strand reverseStrand(Strand strand){
         return strand == Strand.REVERSE ? Strand.FORWARD : Strand.REVERSE;
@@ -47,28 +46,11 @@ public class Replicon extends GenomicSegment {
     }
 
 
-    /*
-    public List<Gene> getGenesIDs(){
-        return genes;
-        /*
-        if (getStrand() == Strand.FORWARD) {
-            return genes;
-            //genes.stream().map(gene -> gene.getCogId() + gene.getStrand().toString())
-                    //.collect(Collectors.toList());
-                    //.toArray(new String[genes.size()]);
-        }else{
-            return genes.stream().map(gene -> gene.getCogId() + reverseStrand(gene.getStrand()).toString())
-                    .collect(Collectors.toList());
-                    //.toArray(new String[genes.size()]);
-        }*/
-    //}
-
-
     public List<Directon> splitRepliconToDirectons(String UNK_CHAR) {
 
         List<Directon> directons = new ArrayList<>();
 
-        Directon directon = new Directon(getId());
+        Directon directon = new Directon(getId(), getGenomeId());
 
         int geneIndex = 0;
         for (Gene gene : getGenes()) {
@@ -77,10 +59,11 @@ public class Replicon extends GenomicSegment {
                     !(gene.getStrand().equals(getGenes().get(geneIndex+1).getStrand()));
             if (directon.size() == 0) {
                 if (!gene.getCogId().equals(UNK_CHAR) && !endDirecton) {
-                    directon.add(gene);
+                    directon.setStrand(gene.getStrand());
+                    directon.add(new Gene(gene.getCogId(), Strand.INVALID));
                 }
             } else {
-                directon.add(gene);
+                directon.add(new Gene(gene.getCogId(), Strand.INVALID));
 
                 if (endDirecton){//directon.size()>0
 
@@ -88,15 +71,14 @@ public class Replicon extends GenomicSegment {
 
                         directon.setStartIndex(geneIndex-directon.size()+1);
 
-                        directon.removeXFromEnd(UNK_CHAR);
+                        directon.removeUnkChars(UNK_CHAR);
                         if (directon.size() > 1) {
-                            directon.setStrand();
 
                             directons.add(directon);
                         }
                     }
 
-                    directon = new Directon(getId());
+                    directon = new Directon(getId(), getGenomeId());
                 }
             }
             geneIndex ++;

@@ -14,12 +14,12 @@ public class Pattern {
     private List<Gene> reverseComplimentPatternArr;
 
     private int patternId;
-    private int instanceCount;
+
+    //private int instanceCount;
+    //private int exactInstanceCount;
 
     private int length;
     private List<Instance> instances;
-
-    private int exactInstanceCount;
 
     private double score;
 
@@ -33,15 +33,15 @@ public class Pattern {
         this(-1, new ArrayList<>());
     }
 
-    public Pattern(int patternId, List<Gene> patternGenes, int instanceCount, int exactInstanceCount){
+    public Pattern(int patternId, List<Gene> patternGenes/*, int instanceCount, int exactInstanceCount*/){
 
         this.patternId = patternId;
         this.patternGenes = new ArrayList<>();
         this.patternGenes.addAll(patternGenes);
         this.length = patternGenes.size();
         this.instances = instances;
-        this.instanceCount = instanceCount;
-        this.exactInstanceCount = exactInstanceCount;
+        //this.instanceCount = instanceCount;
+        //this.exactInstanceCount = exactInstanceCount;
         score = 0;
         mainFunctionalCategory = "";
         reverseComplimentPatternArr = reverseComplimentPattern(patternGenes);
@@ -49,9 +49,9 @@ public class Pattern {
         genomeToInstanceLocations = new HashMap<>();
     }
 
-    public Pattern(int patternId, List<Gene> patternGenes){
-        this(patternId, patternGenes, 0, 0);
-    }
+    //public Pattern(int patternId, List<Gene> patternGenes){
+    //    this(patternId, patternGenes, 0, 0);
+    //}
 
     public void setPatternId(int pattern_id){
         this.patternId = pattern_id;
@@ -80,6 +80,7 @@ public class Pattern {
         }
     }
 
+
     public void addInstanceLocation(InstanceLocation patternLocation){
         PatternLocationsInGenome patternLocations = genomeToInstanceLocations.get(patternLocation.getGenomeId());
         if (patternLocations == null){
@@ -98,16 +99,22 @@ public class Pattern {
         return length;
     }
 
+    /*
     public int getInstanceCount(){
         return instanceCount;
     }
+    */
+    //public int getExactInstanceCount() {
+    //    return exactInstanceCount;
+    //}
 
+/*
+    public void incerementExactInstanceCount(){
+        exactInstanceCount++;
+    }
+  */
     public List<Gene> getPatternGenes() {
         return patternGenes;
-    }
-
-    public int getExactInstanceCount() {
-        return exactInstanceCount;
     }
 
     public double getScore(){
@@ -199,6 +206,10 @@ public class Pattern {
         this.familyId = familyId;
     }
 
+    public int getInstancesPerGenome(){
+        return genomeToInstanceLocations.size();
+    }
+
     public String toString(){
         String str = "";
         for (Gene gene: patternGenes){
@@ -206,15 +217,7 @@ public class Pattern {
         }
         return str;
     }
-/*
-    public String toStringWithNoStrand(){
-        String str = "";
-        for (Gene gene: patternGenes){
-            str += gene.getCogId() + ",";
-        }
-        return str;
-    }
-*/
+
     public static class LengthComparator implements Comparator<Pattern> {
 
         @Override

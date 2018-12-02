@@ -47,10 +47,10 @@ public class PatternScore {
         }
     }
 
-    public double computePatternScore(List<Integer> pattern_chars, int max_insertions, int pattern_occs_keys_size){
+    public double computePatternScore(List<Integer> patternLetters, int max_insertions, int pattern_occs_keys_size){
 
-        Set<Integer> intersectionOfGenomesWithPatternChars = new HashSet<>(cogToContainingGenomes.get(pattern_chars.get(0)));
-        for (int ch: pattern_chars) {
+        Set<Integer> intersectionOfGenomesWithPatternChars = new HashSet<>(cogToContainingGenomes.get(patternLetters.get(0)));
+        for (int ch: patternLetters) {
             intersectionOfGenomesWithPatternChars.retainAll(cogToContainingGenomes.get(ch));
         }
 
@@ -60,7 +60,7 @@ public class PatternScore {
 
             Map<Integer, Integer> curr_seq_paralog_count = genomeToCogParalogCount.get(seq_key);
             paralog_count_product = 1;
-            for (int cog : pattern_chars) {
+            for (int cog : patternLetters) {
                 int curr_cog_paralog_count = curr_seq_paralog_count.get(cog);
                 paralog_count_product *= curr_cog_paralog_count;
             }
@@ -69,7 +69,7 @@ public class PatternScore {
 
         int average_paralog_count = paralog_count_product_sum/intersectionOfGenomesWithPatternChars.size();
 
-        return pval_cross_genome(pattern_chars.size(), max_insertions,
+        return pval_cross_genome(patternLetters.size(), max_insertions,
                 average_paralog_count, pattern_occs_keys_size);
     }
 
@@ -179,11 +179,11 @@ public class PatternScore {
         return Beta.regularizedBeta(p, k, n-k+1);
     }
 
-    public static double computePatternScore(PatternScore pattern_score, List<Integer> pattern_chars, int max_insertions,
-                                             int max_error, int max_deletions, int pattern_occs_keys_size){
+    public static double computePatternScore(PatternScore patternScore, List<Integer> patternLetters, int maxInsertions,
+                                             int maxError, int maxDeletions, int patternOccsKeysSize){
 
-        if (pattern_score != null){
-            return pattern_score.computePatternScore(pattern_chars, max_insertions, pattern_occs_keys_size);
+        if (patternScore != null){
+            return patternScore.computePatternScore(patternLetters, maxInsertions, patternOccsKeysSize);
         }
         return -1;
     }

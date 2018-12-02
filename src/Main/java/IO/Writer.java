@@ -83,7 +83,7 @@ public class Writer {
 
     private String createHeader(boolean include_families){
 
-        String header = "ID\tLength\tScore\tInstance_Count\tExact_Instance_Count\tCSB";
+        String header = "ID\tLength\tScore\tInstance_Count\tCSB";
         if (cogInfoExists){
             header += "\tMain_Category";
         }
@@ -123,8 +123,8 @@ public class Writer {
             String catalogLine = pattern.getPatternId() + "\t" + pattern.getLength() + "\t";
 
             catalogLine += DF.format(pattern.getScore()) + "\t"
-                    + pattern.getInstanceCount() + "\t"
-                    + pattern.getExactInstanceCount() + "\t"
+                    + pattern.getInstancesPerGenome() + "\t"
+                    //+ pattern.getExactInstanceCount() + "\t"
                     + pattern.toString() + "\t";
 
             catalogLine += familyId;

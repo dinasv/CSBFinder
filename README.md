@@ -379,7 +379,7 @@ After clicking on the "Save" button in the User Interface, or after execution vi
 <a name='sample'>Sample input files</a>   
 --------------------------------------
 
-Download the following zip file and extract its content to the same location as CSBFinder.jar:
+Download the following zip file and extract its content to the same matchPoint as CSBFinder.jar:
 
 > [Sample_input_files.zip](https://github.com/dinasv/CSBFinder/raw/master/input/Sample_input_files.zip)
 
@@ -426,7 +426,7 @@ Clicking on the "Run" button will launch the computation of CSBs, this may take 
 
 ##### Output
 Click on the "Save" button an  choose the required output format. The resulting files will be saved in the output 
-directory, in the same location as CSBFinder.jar
+directory, in the same matchPoint as CSBFinder.jar
 
 #### Command Line
 ``` 
@@ -468,7 +468,7 @@ Clicking on the "Run" button will launch the computation of CSBs, this may take 
 
 ##### Output
 Click on the "Save" button an  choose the required output format. The resulting files will be saved in the output 
-directory, in the same location as CSBFinder.jar
+directory, in the same matchPoint as CSBFinder.jar
 
 #### Command Line
 ``` 

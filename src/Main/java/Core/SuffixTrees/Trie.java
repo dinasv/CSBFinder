@@ -51,10 +51,10 @@ public class Trie {
     }
 
     public PatternNode put(WordArray str, PatternNode src_node, boolean include_unknown_char, int UNK_CHAR_INDEX){
-        if (str.get_length() > 0) {
+        if (str.getLength() > 0) {
             PatternNode curr_node = src_node;
-            for (int i = 0; i < str.get_length(); i++) {
-                int str_char = str.get_index(i);
+            for (int i = 0; i < str.getLength(); i++) {
+                int str_char = str.getLetter(i);
                 if (include_unknown_char || (!include_unknown_char && str_char != UNK_CHAR_INDEX )) {
                     curr_node = addNode(str_char, curr_node);
 
@@ -76,12 +76,12 @@ public class Trie {
      * @throws IllegalStateException if an invalid index is passed as input
      */
     public PatternNode put(WordArray str, int key, PatternNode extended_str_node) throws IllegalStateException {
-        if (str.get_length() > 0) {
+        if (str.getLength() > 0) {
             PatternNode curr_node = root;
             int index = 0;
             //as long as the infix of str is in the tree, go on
-            for (int i = 0; i < str.get_length(); i++) {
-                int str_char = str.get_index(i);
+            for (int i = 0; i < str.getLength(); i++) {
+                int str_char = str.getLetter(i);
 
                 PatternNode target_node = curr_node.getTargetNode(str_char);
                 //there is no outgoing edge with str_char
@@ -105,8 +105,8 @@ public class Trie {
             }
 
             //insert to the tree the rest of str
-            for (int i = index; i < str.get_length(); i++) {
-                int str_char = str.get_index(i);
+            for (int i = index; i < str.getLength(); i++) {
+                int str_char = str.getLetter(i);
 
                 PatternNode next_node = new PatternNode(type);
                 curr_node.addTargetNode(str_char, next_node);
@@ -131,12 +131,12 @@ public class Trie {
             /*
             //continue recursively adding all suffixes
             if (type.equals("enumeration")) {
-                if (index != str.get_length()) {
+                if (index != str.getLength()) {
                     //put the suffix of str
-                    extended_str_node = root.getTargetNode(str.get_index(0));
+                    extended_str_node = root.getTargetNode(str.getLetter(0));
                     extended_str_node.setSuffix(root);
                     str = new WordArray(str);
-                    str.add_to_start_index(1);
+                    str.addToStartIndex(1);
 
                     put(str, key, extended_str_node);
                 }
@@ -158,8 +158,8 @@ public class Trie {
     public Pair<PatternNode, Integer> search(WordArray str, PatternNode src_node){
         PatternNode curr_node = src_node;
         int index = 0;
-        for (int i = 0; i < str.get_length(); i++) {
-            int str_char = str.get_index(i);
+        for (int i = 0; i < str.getLength(); i++) {
+            int str_char = str.getLetter(i);
             PatternNode target_node = curr_node.getTargetNode(str_char);
 
             if (target_node == null){

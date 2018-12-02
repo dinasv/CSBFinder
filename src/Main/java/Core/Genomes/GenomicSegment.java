@@ -8,6 +8,8 @@ import java.util.List;
 public abstract class GenomicSegment {
 
     private int id;
+    private int genomeId;
+
     protected List<Gene> genes;
     private Strand strand;
     private int startIndex;
@@ -17,19 +19,21 @@ public abstract class GenomicSegment {
         strand = Strand.INVALID;
         startIndex = 0;
         id = -1;
+        genomeId = -1;
     }
-    public GenomicSegment(int id){
+    public GenomicSegment(int id, int genomeId){
         this();
         this.id = id;
+        this.genomeId = genomeId;
     }
 
-    public GenomicSegment(Strand strand, int id){
-        this(id);
+    public GenomicSegment(Strand strand, int id, int genomeId){
+        this(id, genomeId);
         this.strand = strand;
     }
 
     public GenomicSegment(GenomicSegment other){
-        this(other.getStrand(), other.getId());
+        this(other.getStrand(), other.getId(), other.getGenomeId());
         genes.addAll(other.genes);
     }
 
@@ -65,6 +69,9 @@ public abstract class GenomicSegment {
         return id;
     }
 
-    //public abstract List<Gene> getGenesIDs();
+    public int getGenomeId() {
+        return genomeId;
+    }
+
 
 }

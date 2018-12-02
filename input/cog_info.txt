@@ -3828,8 +3828,8 @@ COG4529;Uncharacterized NAD(P)/FAD-binding protein YdhS;R;General function predi
 COG4530;Uncharacterized protein;S;Function unknown;;
 COG4531;ABC-type Zn2+ transport system, periplasmic component/surface adhesin;P;Inorganic ion transport and metabolism;ZnuA;
 COG4533;DNA-binding transcriptional regulator SgrR  of sgrS sRNA, contains a MarR-type HTH domain and a periplasmic-type solute-binding domain;K;Transcription;SgrR;
-COG4535;Mg2+ and Co2+ transporter CorC, contains CBS pair and CorC-HlyC domains;P;Inorganic ion transport and metabolism;CorC;
-COG4536;Mg2+ and Co2+ transporter CorB, contains DUF21, CBS pair, and CorC-HlyC domains;P;Inorganic ion transport and metabolism;CorB;
+COG4535;Mg2+ and Co2+ transporter CorC, contains CBS matchPoint and CorC-HlyC domains;P;Inorganic ion transport and metabolism;CorC;
+COG4536;Mg2+ and Co2+ transporter CorB, contains DUF21, CBS matchPoint, and CorC-HlyC domains;P;Inorganic ion transport and metabolism;CorB;
 COG4537;Competence protein ComGC;X;Mobilome: prophages, transposons;ComGC;
 COG4538;Uncharacterized protein;S;Function unknown;;
 COG4539;Uncharacterized membrane protein YGL010W;S;Function unknown;;

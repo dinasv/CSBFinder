@@ -86,9 +86,9 @@ public class FamilyTableModel extends AbstractTableModel {
             case SCORE:
                 return p.getScore();
             case INSTANCE_COUNT:
-                return p.getInstanceCount();
-            case EXACT_INSTANCE_COUNT:
-                return p.getExactInstanceCount();
+                return p.getInstancesPerGenome();
+           // case EXACT_INSTANCE_COUNT:
+           //     return p.getExactInstanceCount();
             case CSB:
                 return p.toString();
             case MAIN_CATEGORY:

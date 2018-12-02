@@ -65,21 +65,22 @@ public class Alphabet {
      * @param genes each gene will we converted to a chracter with index
      * @return WordArray representing genes
      */
-    public WordArray createWordArray(List<Gene> genes, boolean nonDirectons){
+    public WordArray createWordArray(List<Gene> genes/*, boolean nonDirectons*/){
         int[] word = new int[genes.size()];
         int i = 0;
         for(Gene gene: genes){
 
+            /*
             Gene letter = gene;
             if (!nonDirectons){
                 letter = new Gene(gene.getCogId(), Strand.INVALID);
-            }
+            }*/
 
-            int letterIndex = getLetter(letter);
+            int letterIndex = getLetter(gene);
             if (letterIndex == -1) {
                 letterIndex = alphabetSize();
-                indexToLetter.add(letter);
-                letterToIndex.put(letter, letterIndex);
+                indexToLetter.add(gene);
+                letterToIndex.put(gene, letterIndex);
             }
 
             word[i] = letterIndex;

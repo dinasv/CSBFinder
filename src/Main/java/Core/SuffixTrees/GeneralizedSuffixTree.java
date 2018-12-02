@@ -126,9 +126,9 @@ public class GeneralizedSuffixTree  implements Serializable{
         SuffixNode currentNode = root;
         Edge currentEdge;
 
-        for (int i = 0; i < word.get_length(); ++i) {
+        for (int i = 0; i < word.getLength(); ++i) {
             //char ch = word.charAt(i); --ORIGINAL CODE--
-            int bs = word.get_index(i);
+            int bs = word.getLetter(i);
             // follow the edge corresponding to this char
             currentEdge = currentNode.getEdge(bs);
             if (null == currentEdge) {
@@ -137,16 +137,16 @@ public class GeneralizedSuffixTree  implements Serializable{
             } else {
                 //String label = currentEdge.getLabel(); --ORIGINAL CODE--
                 WordArray label = currentEdge.getLabel();
-                int word_length = word.get_length();
-                int lenToMatch = Math.min(word_length - i, label.get_length());
+                int word_length = word.getLength();
+                int lenToMatch = Math.min(word_length - i, label.getLength());
 
                 //if (!word.regionMatches(i, label, 0, lenToMatch)) { --ORIGINAL CODE--
-                if (!word.compare_to(label, i, lenToMatch)) {
+                if (!word.compareTo(label, i, lenToMatch)) {
                     // the label on the edge does not correspond to the one in the string to search
                     return null;
                 }
 
-                if (label.get_length() >= word.get_length() - i) {
+                if (label.getLength() >= word.getLength() - i) {
                     return (SuffixNode)currentEdge.getDest();
                 } else {
                     // advance to next node
@@ -182,13 +182,13 @@ public class GeneralizedSuffixTree  implements Serializable{
         WordArray text = new WordArray(substring.getWordArray(), 0, 0);
 
         // iterate over the string, one char at a time
-        for (int i = 0; i < substring.get_length(); i++) {
+        for (int i = 0; i < substring.getLength(); i++) {
             // line 6
-            text.add_to_end_index(1);
+            text.addToEndIndex(1);
 
             // line 7: update the tree with the new transitions due to this new char
-            WordArray rest = new WordArray(substring.getWordArray(), i, substring.get_end_index());
-            WordArray text_copy = new WordArray(text.getWordArray(), text.get_start_index(), text.get_end_index());
+            WordArray rest = new WordArray(substring.getWordArray(), i, substring.getEndIndex());
+            WordArray text_copy = new WordArray(text.getWordArray(), text.getStartIndex(), text.getEndIndex());
 
 
             Pair<SuffixNode, WordArray> active = update(s, text_copy, rest);
@@ -242,20 +242,20 @@ public class GeneralizedSuffixTree  implements Serializable{
         SuffixNode s = ret.getFirst();
         WordArray str = ret.getSecond();
 
-        if (str.get_length() > 0) {
-            Edge g = s.getEdge(str.get_index(0));
+        if (str.getLength() > 0) {
+            Edge g = s.getEdge(str.getLetter(0));
 
             WordArray label = g.getLabel();
             // must see whether "str" is substring of the label of an edge
-            if ((label.get_length() > str.get_length()) && (label.get_index(str.get_length()) == t)) {
+            if ((label.getLength() > str.getLength()) && (label.getLetter(str.getLength()) == t)) {
                 return new Pair<Boolean, SuffixNode>(true, s);
             } else {
                 // need to split the edge
 
-                WordArray newlabel = getSubstring(label, str.get_length(), label.get_length());
+                WordArray newlabel = getSubstring(label, str.getLength(), label.getLength());
                 WordArray str_copy = str;
 
-                assert (label.starts_with(str_copy) );
+                assert (label.startsWith(str_copy) );
 
                 // build a new node
                 SuffixNode r = new InstanceNode();
@@ -265,8 +265,8 @@ public class GeneralizedSuffixTree  implements Serializable{
                 g.setLabel(newlabel);
 
                 // link s -> r
-                r.addEdge(newlabel.get_index(0), g);
-                s.addEdge(str.get_index(0), newedge);
+                r.addEdge(newlabel.getLetter(0), g);
+                s.addEdge(str.getLetter(0), newedge);
 
                 return new Pair<Boolean, SuffixNode>(false, r);
             }
@@ -286,9 +286,9 @@ public class GeneralizedSuffixTree  implements Serializable{
                         fullStringNode = (SuffixNode)e.getDest();
                     }
                     return new Pair<Boolean, SuffixNode>(true, s);
-                } else if (remainder.starts_with(e.getLabel())) {
+                } else if (remainder.startsWith(e.getLabel())) {
                     return new Pair<Boolean, SuffixNode>(true, s);
-                } else if (e.getLabel().starts_with(remainder)){
+                } else if (e.getLabel().startsWith(remainder)){
                     // need to split as above
                     SuffixNode newNode = new InstanceNode();
                     //newNode.addRef(key);
@@ -302,11 +302,11 @@ public class GeneralizedSuffixTree  implements Serializable{
                     WordArray e_label = e.getLabel();
                     //e.setLabel(e.getLabel().substring(remainder.length())); --ORIGINAL CODE--
 
-                    WordArray e_label_substr = getSubstring(e_label, remainder.get_length(), e_label.get_length());
+                    WordArray e_label_substr = getSubstring(e_label, remainder.getLength(), e_label.getLength());
                     //String label_str = e_label_substr.to_string(bitset_to_cog, indexToChar);
 
                     e.setLabel( e_label_substr );
-                    newNode.addEdge(e_label_substr.get_index(0), e);
+                    newNode.addEdge(e_label_substr.getLetter(0), e);
 
                     s.addEdge(t, newEdge);
 
@@ -330,22 +330,22 @@ public class GeneralizedSuffixTree  implements Serializable{
      */
     private Pair<SuffixNode, WordArray> canonize(final SuffixNode s, final WordArray inputstr) {
 
-        if (inputstr.get_length()==0) {
+        if (inputstr.getLength()==0) {
             return new Pair<SuffixNode, WordArray>(s, inputstr);
         } else {
             SuffixNode currentNode = s;
 
             WordArray str = copySeq(inputstr);
             //Edge g = s.getEdge(str.charAt(0)); --ORIGINAL CODE--
-            Edge g = s.getEdge(str.get_index(0));
+            Edge g = s.getEdge(str.getLetter(0));
             // descend the tree as long as a proper label is found
             //while (g != null && str.startsWith(g.getLabel())) { --ORIGINAL CODE--
-            while (g != null && str.starts_with(g.getLabel())) {
+            while (g != null && str.startsWith(g.getLabel())) {
                 //str = str.substring(g.getLabel().length());
-                str.add_to_start_index(g.getLabel().get_length());
+                str.addToStartIndex(g.getLabel().getLength());
                 currentNode = (SuffixNode)g.getDest();
-                if (str.get_length() > 0) {
-                    g = currentNode.getEdge(str.get_index(0));
+                if (str.getLength() > 0) {
+                    g = currentNode.getEdge(str.getLetter(0));
                 }
             }
 
@@ -374,12 +374,12 @@ public class GeneralizedSuffixTree  implements Serializable{
 
             WordArray tempstr = stringPart;
 
-            int newChar = stringPart.get_index(stringPart.get_length() - 1);
+            int newChar = stringPart.getLetter(stringPart.getLength() - 1);
 
             // line 1
             SuffixNode oldroot = root;
 
-            Pair<Boolean, SuffixNode> ret = testAndSplit(s, getSubstring(tempstr, 0, tempstr.get_length()-1), newChar, rest/*, key, index*/);
+            Pair<Boolean, SuffixNode> ret = testAndSplit(s, getSubstring(tempstr, 0, tempstr.getLength()-1), newChar, rest/*, key, index*/);
 
             SuffixNode r = ret.getSecond();
             boolean endpoint = ret.getFirst();
@@ -424,7 +424,7 @@ public class GeneralizedSuffixTree  implements Serializable{
                 if (null == s.getSuffix()) { // root node
                     assert (root == s);
                     // this is a special case to handle what is referred to as node _|_ on the paper
-                    tempstr.set_start_index(tempstr.get_start_index() + 1);
+                    tempstr.setStartIndex(tempstr.getStartIndex() + 1);
 
                 } else {
                     // cut last char from tempstr and canonize
@@ -433,7 +433,7 @@ public class GeneralizedSuffixTree  implements Serializable{
                     // use intern to ensure that tempstr is a reference from the string pool
                     //tempstr = (canret.getSecond() + tempstr.charAt(tempstr.length() - 1)).intern(); --ORIGINAL CODE--
                     tempstr = canret.getSecond();
-                    tempstr.add_to_end_index(1);
+                    tempstr.addToEndIndex(1);
                 }
 
                 // line 7
@@ -465,17 +465,17 @@ public class GeneralizedSuffixTree  implements Serializable{
 
 
     private WordArray copySeq(WordArray seq){
-        return new WordArray(seq.getWordArray(), seq.get_start_index(), seq.get_end_index());
+        return new WordArray(seq.getWordArray(), seq.getStartIndex(), seq.getEndIndex());
     }
     //works as the regular substring
     private WordArray getSubstring(WordArray seq, int start_index, int end_index) {
-        return new WordArray(seq.getWordArray(), seq.get_start_index()+start_index, seq.get_start_index() + end_index );
+        return new WordArray(seq.getWordArray(), seq.getStartIndex()+start_index, seq.getStartIndex() + end_index );
     }
 
     private WordArray safeCutLastChar(WordArray seq) {
-        WordArray seq_substr = new WordArray(seq.getWordArray(), seq.get_start_index(), seq.get_end_index());
-        if (seq_substr.get_length() > 0) {
-            seq_substr.add_to_end_index(-1);
+        WordArray seq_substr = new WordArray(seq.getWordArray(), seq.getStartIndex(), seq.getEndIndex());
+        if (seq_substr.getLength() > 0) {
+            seq_substr.addToEndIndex(-1);
         }
         return seq_substr;
     }

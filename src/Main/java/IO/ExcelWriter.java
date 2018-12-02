@@ -126,9 +126,9 @@ public class ExcelWriter implements PatternsWriter{
         }catch (Exception e){
             row.createCell(col).setCellValue(DF.format(pattern.getScore()));
         }
-        row.createCell(col++).setCellValue(pattern.getInstanceCount());
+        row.createCell(col++).setCellValue(pattern.getInstancesPerGenome());
 
-        row.createCell(col++).setCellValue(pattern.getExactInstanceCount());
+        //row.createCell(col++).setCellValue(pattern.getExactInstanceCount());
 
         String patternGenes = pattern.toString();
 
@@ -148,7 +148,7 @@ public class ExcelWriter implements PatternsWriter{
             row.createCell(0).setCellValue("ID=");
             row.createCell(1).setCellValue(pattern.getPatternId());
             row.createCell(2).setCellValue("Count=");
-            row.createCell(3).setCellValue(pattern.getInstanceCount());
+            row.createCell(3).setCellValue(pattern.getInstancesPerGenome());
             row.createCell(4).setCellValue("Score=");
             row.createCell(5).setCellValue(pattern.getScore());
 

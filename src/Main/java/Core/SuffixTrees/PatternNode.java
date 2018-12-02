@@ -187,7 +187,7 @@ public class PatternNode {
         return exactInstanceCount;
     }
 
-    public void setExactInstanceCount(int exact_occs_conut) {
-        this.exactInstanceCount = exact_occs_conut;
+    public void setExactInstanceCount(int exactInstanceCount) {
+        this.exactInstanceCount = exactInstanceCount;
     }
 }

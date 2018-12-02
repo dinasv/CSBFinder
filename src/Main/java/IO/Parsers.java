@@ -12,7 +12,16 @@ import java.util.*;
 
 public class Parsers {
 
-    final static String CSB_DELIMITER = ",";
+    final static String PATTERN_DELIMITER = ",";
+    final static String[] INSTANCE_HEADER = {"[ID]","[Length]","[Score]","[Count]","[Genes]","[Family ID]"};
+    final static String INSTANCE_HEADER_DELIMITER = "TAB";
+    final static String[] GENOME_HEADER = {"[Genome name]","[Replicon ID]"};
+    final static String GENOME_HEADER_DELIMITER = "|";
+    final static String[] GENE_LINE = {"[Gene ID]","[Strand]"};
+    final static String GENE_LINE_DELIMITER = "TAB";
+    final static String[] COG_LINE = {"[COG ID]","[COG description]"};
+    final static String COG_LINE_DELIMITER = ";";
+
 
     public static List<Pattern> parsePatternsFile(String inputPatternsFilePath)
             throws IOException, IllegalArgumentException{
@@ -28,7 +37,7 @@ public class Parsers {
             while (line != null) {
                 if (line.charAt(0) == '>') {
 
-                    patternId = castToInteger(line.substring(1), "id", lineNumber, inputPatternsFilePath);
+                    patternId = castToInteger(line.substring(1), "ID", lineNumber, inputPatternsFilePath);
 
                 } else {
                     List<Gene> genes = parseGenes(line, lineNumber, inputPatternsFilePath);
@@ -48,7 +57,7 @@ public class Parsers {
     }
 
     private static List<Gene> parseGenes(String line, int lineNumber, String inputPatternsFilePath) throws IllegalArgumentException{
-        String[] patternArr = line.split(CSB_DELIMITER);
+        String[] patternArr = line.split(PATTERN_DELIMITER);
         List<Gene> genes = new ArrayList<>();
         if (patternArr.length > 1) {
             for (String gene: patternArr){
@@ -64,7 +73,7 @@ public class Parsers {
                 }
             }
         }else{
-            throw new IllegalArgumentException(errorMessage(String.format("Genes delimited by \"%s\"", CSB_DELIMITER),
+            throw new IllegalArgumentException(errorMessage(String.format("Genes delimited by \"%s\"", PATTERN_DELIMITER),
                     line, lineNumber, inputPatternsFilePath));
         }
         return genes;
@@ -75,7 +84,7 @@ public class Parsers {
      * Parse {@code rawLine} containing a gene and its numericValue separated by TAB, and create {@link Genomes.Gene}.
      * A numericValue must be "+" or "-"
      * <p>
-     * Format: [gene id][TAB][numericValue]
+     * Format: [Gene ID][TAB][Strand]
      * <p>
      * Valid examples:
      * COG1234[TAB]+
@@ -92,7 +101,8 @@ public class Parsers {
 
         String[] splitLine = rawLine.trim().split("\t");
         if (splitLine.length < 2) {
-            throw new IllegalArgumentException(errorMessage("[gene id][TAB][numericValue]", rawLine, lineNumber, filePath));
+            throw new IllegalArgumentException(errorMessage(String.join(GENE_LINE_DELIMITER, GENE_LINE), rawLine,
+                    lineNumber, filePath));
         }
 
         String geneId = splitLine[0];
@@ -100,7 +110,7 @@ public class Parsers {
 
         Strand strand = determineStrand(rawStrand);
         if (strand == Strand.INVALID) {
-            throw new IllegalArgumentException(errorMessage("numericValue to be + or -",
+            throw new IllegalArgumentException(errorMessage("Strand must be + or -",
                     rawStrand, lineNumber, filePath));
         }
 
@@ -127,7 +137,7 @@ public class Parsers {
         String rawTitleSuffix = rawTitle.substring(1); //remove ">"
         String[] title = rawTitleSuffix.trim().split("\\|");
         if (title.length < 2) {
-            throw new IllegalArgumentException(errorMessage(">[Genome name][TAB][Replicon id]",
+            throw new IllegalArgumentException(errorMessage(">"+String.join(GENOME_HEADER_DELIMITER, GENOME_HEADER),
                     rawTitle, lineNumber, filePath));
         }
 
@@ -268,8 +278,8 @@ public class Parsers {
                     int startIndex = castToInteger(indexes[0], "start index", lineNumber, filePath);
                     int endIndex = castToInteger(indexes[1], "end index", lineNumber, filePath);
 
-                    InstanceLocation instanceLocation = new InstanceLocation(repliconId, genomeId, startIndex, endIndex,
-                            Strand.FORWARD);
+                    InstanceLocation instanceLocation = new InstanceLocation(repliconId, genomeId, startIndex,
+                            endIndex-startIndex, Strand.FORWARD, 0, 0);
                     pattern.addInstanceLocation(instanceLocation);
                 }
             }
@@ -282,21 +292,26 @@ public class Parsers {
 
     private static Pattern parsePattern(String rawLine, int lineNumber, String filePath) throws IllegalArgumentException{
         String[] patternLine = rawLine.trim().substring(1).split("\t");
-        if (patternLine.length < 7) {
+        if (patternLine.length < 6) {
             throw new IllegalArgumentException(
-                    errorMessage(">[ID][TAB][Length][TAB][Score][TAB][Count][TAB][Exact Count][TAB][Genes][TAB][Family ID]",
+                    errorMessage(">"+ String.join(INSTANCE_HEADER_DELIMITER, INSTANCE_HEADER),
                             rawLine, lineNumber, filePath));
         }
 
-        int id = castToInteger(patternLine[0], "id", lineNumber, filePath);
-        int length = castToInteger(patternLine[1], "length", lineNumber, filePath);
-        double score = castToDouble(patternLine[2], "score", lineNumber, filePath);
-        int count = castToInteger(patternLine[3], "count", lineNumber, filePath);
-        int exactCount = castToInteger(patternLine[4], "exact count", lineNumber, filePath);
-        List<Gene> genes = parseGenes(patternLine[5], lineNumber, filePath);
-        String familyId = patternLine[6];
+        int i = 0;
+        int id = castToInteger(patternLine[i], INSTANCE_HEADER[i], lineNumber, filePath);
+        i++;
+        int length = castToInteger(patternLine[i], INSTANCE_HEADER[i], lineNumber, filePath);
+        i++;
+        double score = castToDouble(patternLine[i], INSTANCE_HEADER[i], lineNumber, filePath);
+        i++;
+        int count = castToInteger(patternLine[i], INSTANCE_HEADER[i], lineNumber, filePath);
+        i++;
+        List<Gene> genes = parseGenes(patternLine[i], lineNumber, filePath);
+        i++;
+        String familyId = patternLine[i];
 
-        Pattern pattern = new Pattern(id, genes, count, exactCount);
+        Pattern pattern = new Pattern(id, genes);
         pattern.setScore(score);
         pattern.setFamilyId(familyId);
 
@@ -343,11 +358,11 @@ public class Parsers {
         String currGenomeName = "";
 
         Genome genome = new Genome();
-        Replicon replicon = new Replicon(Strand.FORWARD, -1, "");
+        Replicon replicon = new Replicon(Strand.FORWARD, -1, "", -1);
 
         String rawLine = br.readLine();
+        lineNumber++;
         while (rawLine != null && !rawLine.equals(end)) {
-            lineNumber++;
 
             if (rawLine.startsWith(">")) {
 
@@ -366,7 +381,8 @@ public class Parsers {
                 repliconName = title[1];
 
                 genome = getNewOrExistingGenome(genomesInfo, currGenomeName);
-                replicon = new Replicon(Strand.FORWARD, genomesInfo.getNumberOfReplicons(), repliconName);
+                replicon = new Replicon(Strand.FORWARD, genomesInfo.getNumberOfReplicons(), repliconName,
+                        genome.getId());
 
             } else {
                 Gene gene = parseGeneLine(rawLine, lineNumber, filePath);
@@ -374,6 +390,7 @@ public class Parsers {
             }
 
             rawLine = br.readLine();
+            lineNumber++;
         }
 
         genome.addReplicon(replicon);
@@ -415,7 +432,7 @@ public class Parsers {
 
                 String[] cogLine = line.split(";");
                 if (cogLine.length < 2) {
-                    throw new IllegalArgumentException(errorMessage("[COG ID];[COG description];",
+                    throw new IllegalArgumentException(errorMessage(String.join(COG_LINE_DELIMITER, COG_LINE),
                             line, lineNumber, cogInfoFilePath));
                 }
 

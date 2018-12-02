@@ -3,8 +3,7 @@ package Core;
 import Core.Genomes.Gene;
 import Core.PostProcess.Family;
 import Core.PostProcess.FamilyClustering;
-import Core.SuffixTrees.DatasetTree;
-import Core.SuffixTrees.PatternsTree;
+
 import Core.Genomes.GenomesInfo;
 import Core.Genomes.Pattern;
 import Core.Genomes.PatternScore;
@@ -16,9 +15,6 @@ import java.util.Objects;
 /**
  */
 public class CSBFinderWorkflow {
-
-    //private DatasetTree datasetTree;
-    //private PatternsTree patternsTree;
 
     Algorithm algorithm;
 
@@ -36,7 +32,6 @@ public class CSBFinderWorkflow {
 
         patternsCount = 0;
 
-        //datasetTree = null;
         this.algorithm = null;
 
         patternsFromFile = new ArrayList<>();
@@ -69,22 +64,6 @@ public class CSBFinderWorkflow {
         return families;
     }
 
-    /*
-    public List<Family> run(Parameters params){
-        this.params = params;
-
-        Algorithm mainAlgorithm = executeMainAlgorithm();
-        if (mainAlgorithm == null){
-            return new ArrayList<>();
-        }
-
-        List<Pattern> patterns = mainAlgorithm.getPatterns();
-
-        List<Family> families = processPatterns(patterns);
-
-        return families;
-    }*/
-
     private List<Family> processPatterns(List<Pattern> patterns){
 
         patternsCount = patterns.size();
@@ -94,45 +73,20 @@ public class CSBFinderWorkflow {
         return families;
     }
 
-    private Algorithm executeMainAlgorithm(){
-        if (params == null || gi == null || algorithm == null){
-            return null;
-        }
-
-        //if (params.nonDirectons != datasetTree.nonDirectons){
-            //datasetTree = new DatasetTree(params.nonDirectons, gi);
-            //algorithm.initialize(params, gi, patternsFromFile);
-        //}
-        algorithm.findPatterns();
-        //SuffixTreeBasedAlgorithm mainAlgorithm = new SuffixTreeBasedAlgorithm(params, gi, patternsFromFile);
-
-        return algorithm;
-
-    }
-
-    /*
-    private void buildPatternsTree(List<Pattern> patternsFromFile){
-        if (patternsFromFile.size() > 0){
-            patternsTree = new PatternsTree(patternsFromFile, gi);
-                    //new Trie(TreeType.STATIC);
-            //datasetTree.buildPatternsTree(patternsFromFile, patternsTree, gi);
-        }
-    }*/
-
     private void computeScores(List<Pattern> patterns){
 
-        PatternScore pattern_score = new PatternScore(gi.getMaxGenomeSize(), gi.getNumberOfGenomes(), gi.getDatasetLengthSum(),
+        PatternScore patternScore = new PatternScore(gi.getMaxGenomeSize(), gi.getNumberOfGenomes(), gi.getDatasetLengthSum(),
                 gi.cogToContainingGenomes, gi.genomeToCogParalogCount);
 
         for (Pattern pattern : patterns) {
-            List<Integer> patternChars = new ArrayList<>();
+            List<Integer> patternLetters = new ArrayList<>();
 
             for (Gene gene: pattern.getPatternGenes()){
-                patternChars.add(gi.getLetter(gene));
+                patternLetters.add(gi.getLetter(gene));
             }
 
-            double score = PatternScore.computePatternScore(pattern_score, patternChars, params.maxInsertion, params.maxError,
-                    params.maxDeletion, pattern.getInstanceCount());
+            double score = PatternScore.computePatternScore(patternScore, patternLetters, params.maxInsertion, params.maxError,
+                    params.maxDeletion, pattern.getInstancesPerGenome());
             pattern.setScore(score);
         }
     }

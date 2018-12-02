@@ -5,17 +5,7 @@ import java.util.*;
 /**
  */
 public class GenomesInfo {
-    //public List<Gene> indexToChar;
-    //public Map<Gene, Integer> charToIndex;
 
-    /*
-    public static final int WC_CHAR_INDEX = 0;
-    public static final String WC_CHAR = "*";
-    public static final int GAP_CHAR_INDEX = 1;
-    public static final String GAP_CHAR = "_";
-    public static final int UNK_CHAR_INDEX = 2;
-    public static final String UNK_CHAR = "X";
-*/
     /**
      * Accession number to tax key
      */
@@ -51,11 +41,10 @@ public class GenomesInfo {
         genomeToCogParalogCount = new HashMap<>();
 
         alphabet = new Alphabet();
-        //initAlphabet();
     }
 
-    public WordArray createWordArray(List<Gene> genes, boolean nonDirectons){
-        return alphabet.createWordArray(genes, nonDirectons);
+    public WordArray createWordArray(List<Gene> genes/*, boolean nonDirectons*/){
+        return alphabet.createWordArray(genes/*, nonDirectons*/);
     }
 
     public Gene getLetter(int index){
@@ -118,7 +107,6 @@ public class GenomesInfo {
         return genomesByName.get(name).getId();
     }
 
-
     public void addReplicon(Replicon replicon){
 
         countReplicons++;
@@ -131,27 +119,27 @@ public class GenomesInfo {
         return maxGenomeSize;
     }
 
-    public void countParalogsInSeqs(WordArray word, int curr_seq_index){
+    public void countParalogsInSeqs(WordArray word, int currGenomeId){
         for (int ch : word.getWordArray()) {
 
-            Map<Integer, Integer> curr_genome_paralogs_count = genomeToCogParalogCount.get(curr_seq_index);
-            if (curr_genome_paralogs_count == null) {
-                curr_genome_paralogs_count = new HashMap<>();
-                genomeToCogParalogCount.put(curr_seq_index, curr_genome_paralogs_count);
+            Map<Integer, Integer> currGenomeParalogsCount = genomeToCogParalogCount.get(currGenomeId);
+            if (currGenomeParalogsCount == null) {
+                currGenomeParalogsCount = new HashMap<>();
+                genomeToCogParalogCount.put(currGenomeId, currGenomeParalogsCount);
             }
 
-            int curr_cog_paralog_count = 1;
-            if (curr_genome_paralogs_count.containsKey(ch)) {
-                curr_cog_paralog_count += curr_genome_paralogs_count.get(ch);
+            int currCogParalogCount = 1;
+            if (currGenomeParalogsCount.containsKey(ch)) {
+                currCogParalogCount += currGenomeParalogsCount.get(ch);
             }
-            curr_genome_paralogs_count.put(ch, curr_cog_paralog_count);
+            currGenomeParalogsCount.put(ch, currCogParalogCount);
 
             Set<Integer> genomes = cogToContainingGenomes.get(ch);
             if (genomes == null) {
                 genomes = new HashSet<>();
                 cogToContainingGenomes.put(ch, genomes);
             }
-            genomes.add(curr_seq_index);
+            genomes.add(currGenomeId);
         }
     }
 

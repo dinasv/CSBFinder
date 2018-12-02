@@ -63,8 +63,8 @@ public class TextWriter implements PatternsWriter{
             String catalogLine = pattern.getPatternId() + "\t" + pattern.getLength() + "\t";
 
             catalogLine += DF.format(pattern.getScore()) + "\t"
-                    + pattern.getInstanceCount() + "\t"
-                    + pattern.getExactInstanceCount() + "\t"
+                    + pattern.getInstancesPerGenome() + "\t"
+                    //+ pattern.getExactInstanceCount() + "\t"
                     + pattern.toString() + "\t";
 
             if (cogInfoExists) {

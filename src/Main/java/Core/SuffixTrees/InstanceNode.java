@@ -75,13 +75,15 @@ public class InstanceNode extends SuffixNode {
         InstanceNode iter = node.getSuffix();
         if (iter != null) {
             while (iter.getSuffix() != null) {
-                Strand strand = instanceLocation.getStrand();
-                int startIndex = instanceLocation.getStartIndex();
-                int endIndex = instanceLocation.getEndIndex();
+                //Strand strand = instanceLocation.getStrand();
+                //int startIndex = instanceLocation.getRelativeStartIndex();
+                //int endIndex = instanceLocation.getEndIndex();
 
-                int repliconId = instanceLocation.getRepliconId();
-                startIndex = startIndex + strand.numericValue;
-                instanceLocation = new InstanceLocation(repliconId, genomeId, startIndex, endIndex, strand);
+                //int repliconId = instanceLocation.getRepliconId();
+                //startIndex = startIndex + strand.numericValue;
+                instanceLocation = new InstanceLocation(instanceLocation);
+                instanceLocation.incrementRelativeStartIndex();
+                //instanceLocation = new InstanceLocation(repliconId, genomeId, startIndex, endIndex, strand);
 
                 List<InstanceLocation> key_indexes = iter.genomeToLocations.get(genomeId);
                 if (key_indexes == null){

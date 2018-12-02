@@ -3,7 +3,7 @@ package Core.Genomes;
 import java.util.Arrays;
 
 /**
- * WordArray object represents a "word". The chars of the word are integers.
+ * WordArray object represents a "word". The letters of the word are integers.
  * It contains a pointer to wordArray (the "word"), and indexes that represent a substring of this "word"
  */
 public class WordArray{
@@ -29,9 +29,9 @@ public class WordArray{
      */
     public WordArray(WordArray other){
         this.wordArray = other.wordArray;
-        startIndex = other.get_start_index();
-        endIndex = other.get_end_index();
-        length = other.get_length();
+        startIndex = other.getStartIndex();
+        endIndex = other.getEndIndex();
+        length = other.getLength();
     }
 
     public WordArray(int[] wordArray){
@@ -69,27 +69,27 @@ public class WordArray{
     }
 
     //return the index relative to the startIndex
-    public int get_index(int index){
+    public int getLetter(int index){
         return wordArray[startIndex + index];
     }
 
-    public int get_start_index(){
+    public int getStartIndex(){
         return startIndex;
     }
 
-    public int get_end_index(){
+    public int getEndIndex(){
         return endIndex;
     }
 
-    public int get_length(){
+    public int getLength(){
         return  length;
     }
 
-    public void set_index(int index, int ch){
-        wordArray[startIndex + index] = ch;
+    public void setIndex(int index, int letter){
+        wordArray[startIndex + index] = letter;
     }
 
-    public void set_start_index(int start_index) throws ArrayIndexOutOfBoundsException{
+    public void setStartIndex(int start_index) throws ArrayIndexOutOfBoundsException{
         if(start_index >= 0 && start_index <= endIndex) {
             this.startIndex = start_index;
             length = endIndex - start_index;
@@ -99,7 +99,7 @@ public class WordArray{
     }
 
     //adds diff to startIndex, if it's legal, else throws exception
-    public void add_to_start_index(int diff) throws ArrayIndexOutOfBoundsException{
+    public void addToStartIndex(int diff) throws ArrayIndexOutOfBoundsException{
         int new_start_index = startIndex + diff;
         if(new_start_index >= 0 && new_start_index <= endIndex) {
             this.startIndex = new_start_index;
@@ -109,7 +109,7 @@ public class WordArray{
         }
     }
 
-    public void set_end_index(int end_index) throws ArrayIndexOutOfBoundsException{
+    public void setEndIndex(int end_index) throws ArrayIndexOutOfBoundsException{
         end_index = startIndex + end_index;
         if(end_index >= startIndex && end_index <= wordArray.length) {
             this.endIndex = end_index;
@@ -124,7 +124,7 @@ public class WordArray{
      * @param diff
      * @throws ArrayIndexOutOfBoundsException
      */
-    public void add_to_end_index(int diff) throws ArrayIndexOutOfBoundsException{
+    public void addToEndIndex(int diff) throws ArrayIndexOutOfBoundsException{
         int new_end_index = endIndex + diff;
         if(new_end_index >= startIndex && new_end_index <= wordArray.length) {
             this.endIndex = new_end_index;
@@ -138,7 +138,7 @@ public class WordArray{
      * Deep copy
      * @return
      */
-    public WordArray get_copy(){
+    public WordArray getCopy(){
          int[] word_copy = Arrays.copyOfRange(wordArray, startIndex, length);
          return new WordArray(word_copy, startIndex, endIndex);
     }
@@ -149,8 +149,8 @@ public class WordArray{
      * @param to is absolute
      */
     public void substring(int from, int to){
-        set_start_index(startIndex +from);
-        set_end_index(to);
+        setStartIndex(startIndex +from);
+        setEndIndex(to);
     }
 
     /**
@@ -158,7 +158,7 @@ public class WordArray{
      * @param from is relative to startIndex
      */
     public void substring(int from){
-        set_start_index(startIndex +from);
+        setStartIndex(startIndex +from);
         endIndex = wordArray.length;
     }
 
@@ -167,11 +167,11 @@ public class WordArray{
      * @param bs2
      * @return true if the this wordArray starts with bs2, false otherwise
      */
-    public boolean starts_with(WordArray bs2){
-        if (bs2.get_length() > length){
+    public boolean startsWith(WordArray bs2){
+        if (bs2.getLength() > length){
             return false;
         }
-        return compare_to(bs2, 0, bs2.get_length());
+        return compareTo(bs2, 0, bs2.getLength());
     }
     /**
      * Checks if this wordArray is equal to bs2
@@ -179,10 +179,10 @@ public class WordArray{
      * @return true if the this wordArray is equal to bs2, false otherwise
      */
     public boolean equal(WordArray bs2){
-        if (bs2.get_length() != length){
+        if (bs2.getLength() != length){
             return false;
         }
-        return compare_to(bs2, 0, length);
+        return compareTo(bs2, 0, length);
     }
 
     /**
@@ -192,10 +192,10 @@ public class WordArray{
      * @param lenToMatch number of cells compared
      * @return true if the subarrays are equal, false otherwise
      */
-    public Boolean compare_to(WordArray bs2, int start_i, int lenToMatch){
+    public Boolean compareTo(WordArray bs2, int start_i, int lenToMatch){
         start_i = this.startIndex + start_i;
         int end_i = start_i + lenToMatch;
-        int j = bs2.get_start_index();
+        int j = bs2.getStartIndex();
         for (int i = start_i; i < end_i; i++){
             if (wordArray[i]!=(bs2.wordArray[j])){
                 return false;
