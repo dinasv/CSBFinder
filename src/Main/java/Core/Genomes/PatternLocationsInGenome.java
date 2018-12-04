@@ -32,4 +32,5 @@ public class PatternLocationsInGenome {
         }
         return repliconToLocations;
     }
+
 }

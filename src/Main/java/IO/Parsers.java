@@ -420,6 +420,7 @@ public class Parsers {
      */
     public static Map<String, COG> parseCogInfoTable(String cogInfoFilePath)
             throws IOException, IllegalArgumentException{
+
         Map<String, COG> cogInfo = new HashMap<>();
 
         try (BufferedReader br = new BufferedReader(new FileReader(cogInfoFilePath))) {
@@ -430,16 +431,20 @@ public class Parsers {
             while (line != null) {
                 lineNumber++;
 
-                String[] cogLine = line.split(";");
+                String[] cogLine = line.split(COG_LINE_DELIMITER);
                 if (cogLine.length < 2) {
                     throw new IllegalArgumentException(errorMessage(String.join(COG_LINE_DELIMITER, COG_LINE),
                             line, lineNumber, cogInfoFilePath));
                 }
 
-                String cog_id = cogLine[0];
-                String cog_desc = cogLine[1];
+                String cogId = cogLine[0];
+                String cogDesc = cogLine[1];
 
-                COG cog = new COG(cog_id, cog_desc);
+                if(cogId.equals("COG2747")){
+                    System.out.println();
+                }
+
+                COG cog = new COG(cogId, cogDesc);
 
                 if (cogLine.length == 3) {
 
@@ -459,7 +464,7 @@ public class Parsers {
                     String[] functional_categories = getFunctionalCategories(functionalLetters.length, 3, cogLine);
 
                     String geneName = "";
-                    int valuesParsedSoFar = 2 + functionalLetters.length*2;
+                    int valuesParsedSoFar = 3 + functionalLetters.length;
                     if (cogLine.length == valuesParsedSoFar + 1){
                         geneName = cogLine[valuesParsedSoFar];
                     }
@@ -469,7 +474,7 @@ public class Parsers {
                     cog.setFunctionalLetters(functionalLetters);
                 }
 
-                cogInfo.put(cog_id, cog);
+                cogInfo.put(cogId, cog);
 
                 line = br.readLine();
             }

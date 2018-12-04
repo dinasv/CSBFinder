@@ -9,7 +9,6 @@ import java.util.*;
 import Core.ClusterBy;
 
 /**
- * Created by Dina on 23/08/2017.
  * Clusters patterns to families using a greedy method.
  */
 public class FamilyClustering {

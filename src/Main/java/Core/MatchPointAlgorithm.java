@@ -10,7 +10,7 @@ import java.util.stream.Collectors;
 
 /**
  */
-public class MatchPointAlgorithm implements Algorithm{
+public class MatchPointAlgorithm implements Algorithm {
 
     private Map<Integer, Map<Integer, List<MatchPoint>>> matchLists;
     private List<GenomicSegment> genomicSegments;
@@ -18,22 +18,22 @@ public class MatchPointAlgorithm implements Algorithm{
     private Parameters parameters;
     private Map<String, Pattern> patterns;
 
-    public MatchPointAlgorithm(){
+    public MatchPointAlgorithm() {
         matchLists = new HashMap<>();
         genomesInfo = null;
         genomicSegments = new ArrayList<>();
         patterns = new HashMap<>();
     }
 
-    private void createMatchLists(boolean nonDirectons){
-        if (genomesInfo == null){
+    private void createMatchLists(boolean nonDirectons) {
+        if (genomesInfo == null) {
             return;
         }
 
         for (Genome genome : genomesInfo.getGenomes()) {
 
             int genomeId = genome.getId();
-            for (Replicon replicon: genome.getReplicons()) {
+            for (Replicon replicon : genome.getReplicons()) {
                 if (nonDirectons) {//put replicon and its reverseCompliment
 
                     createMatchLists(replicon, genome.getId(), nonDirectons);
@@ -43,11 +43,11 @@ public class MatchPointAlgorithm implements Algorithm{
                     replicon.reverseCompliment();
                     createMatchLists(replicon, genome.getId(), nonDirectons);
 
-                }else{//split replicon to directons
+                } else {//split replicon to directons
 
                     List<Directon> directons = replicon.splitRepliconToDirectons(Alphabet.UNK_CHAR);
 
-                    for (Directon directon: directons){
+                    for (Directon directon : directons) {
                         createMatchLists(directon, genome.getId(), nonDirectons);
                     }
 
@@ -56,12 +56,12 @@ public class MatchPointAlgorithm implements Algorithm{
         }
     }
 
-    private void createMatchLists(GenomicSegment genomicSegment, int currGenomeId, boolean nonDirectons){
+    private void createMatchLists(GenomicSegment genomicSegment, int currGenomeId, boolean nonDirectons) {
 
         genomicSegments.add(genomicSegment);
 
         List<Gene> genes = genomicSegment.getGenes();
-        WordArray cogWord = genomesInfo.createWordArray(genes/*, nonDirectons*/);
+        WordArray cogWord = genomesInfo.createWordArray(genes);
         genomesInfo.countParalogsInSeqs(cogWord, currGenomeId);
 
         for (int i = 0; i < cogWord.getLength(); i++) {
@@ -80,7 +80,7 @@ public class MatchPointAlgorithm implements Algorithm{
                     genomeIdToCogPositions.put(currGenomeId, genePositions);
                 }
 
-                MatchPoint matchPoint = new MatchPoint(genomicSegment, genomicSegment.getStartIndex()+i);
+                MatchPoint matchPoint = new MatchPoint(genomicSegment, i);
                 genePositions.add(matchPoint);
             }
         }
@@ -104,11 +104,11 @@ public class MatchPointAlgorithm implements Algorithm{
 
     @Override
     public void findPatterns() {
-        if (genomesInfo == null || parameters == null){
+        if (genomesInfo == null || parameters == null) {
             return;
         }
 
-        if (matchLists.size() == 0){
+        if (matchLists.size() == 0) {
             createMatchLists(parameters.nonDirectons);
         }
 
@@ -125,45 +125,16 @@ public class MatchPointAlgorithm implements Algorithm{
             //go over all possible start indices of a pattern
             for (int i = 0; i < cogWord.getLength(); i++) {
 
-                Map<Integer, List<InstanceLocation>> instanceLists = new HashMap<>();
-                List<InstanceLocation> instanceList;
+                List<Gene> patternGenes = genomicSegment.getGenes().subList(i, i + 1);
+                Pattern pattern = new Pattern(patternId, patternGenes);
 
                 int letter = cogWord.getLetter(i);
                 if (letter == Alphabet.UNK_CHAR_INDEX) {//There can't be an unkonwn char in a motif
                     continue;
                 }
 
-                Map<Integer, List<MatchPoint>> matchList = matchLists.get(letter);
-                List<MatchPoint> currGenomeMatchList;
+                initializePattern(letter, genomicSegment, pattern);
 
-                //initialize instanceLists, using matchLists
-                if (matchList != null) {
-                    for (Map.Entry<Integer, List<MatchPoint>> entry : matchList.entrySet()) {
-                        int genomeId = entry.getKey();
-                        if (genomeId != genomicSegment.getGenomeId()) {
-
-                            currGenomeMatchList = matchList.get(genomeId);
-
-                            instanceList = new ArrayList<>();
-                            instanceLists.put(genomeId, instanceList);
-
-                            if (currGenomeMatchList != null) {
-                                matchPointCounter += currGenomeMatchList.size();
-
-                                for (MatchPoint matchPoint : currGenomeMatchList) {
-                                    GenomicSegment currGenomicSegment = matchPoint.getGenomicSegment();
-                                    int pos = matchPoint.getPosition();
-
-                                    InstanceLocation instanceLocation = new InstanceLocation(currGenomicSegment.getId(),
-                                            currGenomicSegment.getGenomeId(), 0, 1,
-                                            currGenomicSegment.getStrand(), pos, currGenomicSegment.size());
-
-                                    instanceList.add(instanceLocation);
-                                }
-                            }
-                        }
-                    }
-                }
                 //extend pattern to length > 1, one character at a time
                 for (int j = i + 1; j < cogWord.getLength(); j++) {
                     letter = cogWord.getLetter(j);
@@ -173,20 +144,19 @@ public class MatchPointAlgorithm implements Algorithm{
                     }
                     patternId++;
 
-                    List<Gene> patternGenes = genomicSegment.getGenes().subList(i, j+1);
+                    List<Gene> extendedPatternGenes = genomicSegment.getGenes().subList(i, j + 1);
+                    Pattern extendedPattern = new Pattern(patternId, extendedPatternGenes);
 
-                    Pattern pattern = new Pattern(patternId, patternGenes);
+                    if (patterns.containsKey(extendedPattern.toString())) {
+                        pattern = patterns.get(extendedPattern.toString());
+                        continue;
+                    }
 
-                    //the pattern is an instance of itself
-                    InstanceLocation instance = new InstanceLocation(genomicSegment.getId(), genomicSegment.getGenomeId(),
-                            i, pattern.getLength(), genomicSegment.getStrand(), genomicSegment.getStartIndex(),
-                            genomicSegment.size());
-                    pattern.addInstanceLocation(instance);
+                    extendPattern(cogWord, patternId, letter, pattern, extendedPattern);
 
-                    int patternInstanceCount = extendPattern(cogWord, patternId, genomicSegment,
-                            letter, instanceLists, pattern);
+                    pattern = extendedPattern;
                     //pruning
-                    if (patternInstanceCount < parameters.quorum2) {
+                    if (extendedPattern.getInstancesPerGenome() < parameters.quorum2) {
                         break;
                     }
                 }
@@ -194,37 +164,64 @@ public class MatchPointAlgorithm implements Algorithm{
         }
     }
 
-    private int extendPattern(WordArray wordArray, int patternId, GenomicSegment genomicSegment,
-                              int letter, Map<Integer, List<InstanceLocation>> instanceLists,
-                              Pattern pattern){
+    private void initializePattern(int letter, GenomicSegment genomicSegment, Pattern pattern) {
 
-        String patternStr = pattern.toString();
+        Map<Integer, List<MatchPoint>> matchList = matchLists.get(letter);
+        List<MatchPoint> currGenomeMatchList;
+
+        //initialize instanceLists, using matchLists
+        if (matchList != null) {
+            for (Map.Entry<Integer, List<MatchPoint>> entry : matchList.entrySet()) {
+                int genomeId = entry.getKey();
+
+                currGenomeMatchList = matchList.get(genomeId);
+
+                if (currGenomeMatchList != null) {
+
+                    for (MatchPoint matchPoint : currGenomeMatchList) {
+                        GenomicSegment currGenomicSegment = matchPoint.getGenomicSegment();
+                        int pos = matchPoint.getPosition();
+
+                        InstanceLocation instanceLocation = new InstanceLocation(currGenomicSegment.getId(),
+                                currGenomicSegment.getGenomeId(), pos, 1,
+                                currGenomicSegment.getStrand(), currGenomicSegment.getStartIndex(),
+                                currGenomicSegment.size());
+
+                        pattern.addInstanceLocation(instanceLocation);
+                    }
+                }
+            }
+        }
+    }
+
+    private void extendPattern(WordArray wordArray, int patternId, int letter, Pattern pattern, Pattern extendedPattern) {
+
+        String extendedPatternStr = extendedPattern.toString();
 
         Map<Integer, List<MatchPoint>> matchList = matchLists.get(letter);
 
         if (matchList != null) {
-            for (Map.Entry<Integer, List<InstanceLocation>> entry : instanceLists.entrySet()) {
-                int genomeId = entry.getKey();
+            for (Map.Entry<Integer, PatternLocationsInGenome> genomeToInstanceLocations : pattern.getPatternLocations().entrySet()) {
 
+                int genomeId = genomeToInstanceLocations.getKey();
                 List<MatchPoint> matchList_y = matchList.get(genomeId);
 
-                List<InstanceLocation> instanceList = entry.getValue();
-                if (instanceList != null) {
-                    instanceList = extendInstances(instanceList, matchList_y, pattern);
-                    instanceLists.put(genomeId, instanceList);
+                PatternLocationsInGenome instanceLocationsInGenome = genomeToInstanceLocations.getValue();
+                if (instanceLocationsInGenome != null) {
+                    for (Map.Entry<Integer, List<InstanceLocation>> entry : instanceLocationsInGenome.getSortedLocations().entrySet()) {
+                        extendInstances(entry.getValue(), matchList_y, extendedPattern);
+                    }
                 }
             }
         }
-        if (pattern.getInstancesPerGenome() >= parameters.quorum2 && pattern.getLength() >= parameters.minPatternLength) {
-            patterns.put(patternStr, pattern);
+        if (extendedPattern.getInstancesPerGenome() >= parameters.quorum2 && extendedPattern.getLength() >= parameters.minPatternLength) {
+            patterns.put(extendedPatternStr, extendedPattern);
         }
-        return pattern.getInstancesPerGenome();
     }
 
-    private List<InstanceLocation> extendInstances(List<InstanceLocation> instanceList, List<MatchPoint> matchList_y,
-                                                     Pattern pattern){
+    private void extendInstances(List<InstanceLocation> instanceList, List<MatchPoint> matchList_y,
+                                 Pattern extendedPattern) {
 
-        List<InstanceLocation> nextInstanceList = new ArrayList<>();
         if (matchList_y != null) {
             InstanceLocation currInstance;
             InstanceLocation nextInstance;
@@ -232,6 +229,7 @@ public class MatchPointAlgorithm implements Algorithm{
 
             int instancePtr = 0;
             int matchPointPtr = 0;
+            int relativeMatchPointIndex;
 
             while (instancePtr < instanceList.size() && matchPointPtr < matchList_y.size()) {
                 currInstance = instanceList.get(instancePtr);
@@ -241,6 +239,7 @@ public class MatchPointAlgorithm implements Algorithm{
                     nextInstance = null;
                 }
                 matchPoint = matchList_y.get(matchPointPtr);
+                relativeMatchPointIndex = matchPoint.getPosition();
 
                 //match point is in an earlier word in this sequence
                 if (matchPoint.getGenomicSegment().getId() < currInstance.getRepliconId()) {
@@ -250,28 +249,28 @@ public class MatchPointAlgorithm implements Algorithm{
                     instancePtr++;
                 } else {//matchPoint.getWordId() == currInstance.getWordId()
                     //the match point index is too small to extend curr instance
-                    if (matchPoint.getPosition() < currInstance.getActualEndIndex()) {
+                    if (relativeMatchPointIndex < currInstance.getRelativeStartIndex()) {
                         matchPointPtr++;
                         //The match point is closer to next instance
                     } else if (nextInstance != null &&
                             matchPoint.getGenomicSegment().getId() == nextInstance.getRepliconId() &&
-                            matchPoint.getPosition() >= nextInstance.getActualEndIndex()) {
+                            relativeMatchPointIndex >= nextInstance.getRelativeEndIndex()) {
                         instancePtr++;
                     } else {//The match point is > currInstance.getEnd()
-                        int instanceLength = matchPoint.getPosition() - currInstance.getActualStartIndex() + 1;
-                        int numOfInsertions = instanceLength - pattern.getLength();
+                        int instanceLength = relativeMatchPointIndex - currInstance.getRelativeStartIndex() + 1;
+                        int numOfInsertions = instanceLength - extendedPattern.getLength();
                         if (numOfInsertions <= parameters.maxInsertion) {
-                            currInstance.setInstanceLength(instanceLength);
+                            InstanceLocation extendedPatternInstance = new InstanceLocation(currInstance);
+                            extendedPatternInstance.setInstanceLength(instanceLength);
+                            extendedPattern.addInstanceLocation(extendedPatternInstance);
+
                             matchPointPtr++;//each match point used only once
-                            nextInstanceList.add(currInstance);
-                            pattern.addInstanceLocation(currInstance);
                         }
                         instancePtr++;
                     }
                 }
             }
         }
-        return nextInstanceList;
     }
 
 

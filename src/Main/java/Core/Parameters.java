@@ -86,6 +86,9 @@ public class Parameters {
     @Parameter(names={"-out-dir"}, description = "Path to output directory", order = 14)
     public String outputDir = "output";
 
+    @Parameter(names={"-alg"}, description = "Algorithm to use for finding CSBs", order = 15)
+    public AlgorithmType algorithmType = AlgorithmType.SUFFIX_TREE;
+
     @Parameter(names={"--mismatch", "-err"}, description = "Maximal number of mismatches allowed", hidden = true)
     public int maxError = 0;
     @Parameter(names={"--deletion", "-del"}, description = "Maximal number of deletions allowed", hidden = true)

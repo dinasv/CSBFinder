@@ -47,7 +47,7 @@ public class Controller {
     }
 
     private static void printUsageAndExit(JCommander jcommander, int exitStatus){
-        jcommander.setProgramName("java -jar SuffixTreeAlgorithm.jar");
+        jcommander.setProgramName("java -jar CSBFinder.jar");
         jcommander.usage();
         System.exit(exitStatus);
     }
@@ -138,7 +138,7 @@ public class Controller {
     }
 
     /**
-     * Executes SuffixTreeAlgorithm and prints colinear synteny blocks
+     * Executes CSBFinder and prints colinear synteny blocks
      *
      * @return
      * @throws Exception
@@ -185,8 +185,7 @@ public class Controller {
             printToScreen("Executing workflow");
 
             CSBFinderWorkflow workflow = new CSBFinderWorkflow(gi);
-            Algorithm algorithm = new SuffixTreeAlgorithm();
-            //Algorithm algorithm = new MatchPointAlgorithm();
+            Algorithm algorithm = params.algorithmType.algorithm;
             workflow.setAlgorithm(algorithm);
 
             //read patterns from a file if a file is given
