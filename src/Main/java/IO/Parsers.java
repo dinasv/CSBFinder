@@ -22,6 +22,10 @@ public class Parsers {
     final static String[] COG_LINE = {"[COG ID]","[COG description]"};
     final static String COG_LINE_DELIMITER = ";";
 
+    final static String GENOMES_START = "<genomes>";
+    final static String GENOMES_END = "<\\genomes>";
+    final static String INSTANCES_START = "<instances>";
+    final static String INSTANCES_END = "<\\instances>";
 
     public static List<Pattern> parsePatternsFile(String inputPatternsFilePath)
             throws IOException, IllegalArgumentException{
@@ -179,7 +183,7 @@ public class Parsers {
     }
 
 
-    public static List<Family> parseSessionFile(String filePath, GenomesInfo genomesInfo)
+    public static String[] parseSessionFile(List<Family> families, String filePath, GenomesInfo genomesInfo)
         throws IOException, IllegalArgumentException {
 
         if ( filePath == null) {
@@ -187,18 +191,21 @@ public class Parsers {
         }
 
         int lineNumber = 0;
-        List<Family> families = new ArrayList<>();
+        String[] args = new String[0];
 
         try (BufferedReader br = new BufferedReader(new FileReader(filePath))) {
+
+            args = br.readLine().split(" ");
+            lineNumber++;
 
             String rawLine = br.readLine();
             lineNumber++;
             while (rawLine != null) {
-                if (rawLine.startsWith("<genomes>")){
+                if (rawLine.startsWith(GENOMES_START)){
 
-                    lineNumber = readGenomes(br, genomesInfo, filePath, "<\\genomes>", lineNumber);
-                }else if (rawLine.startsWith("<instances>")){
-                    families = readInstances(br, genomesInfo, filePath, "<\\instances>", lineNumber);
+                    lineNumber = readGenomes(br, genomesInfo, filePath, GENOMES_END, lineNumber);
+                }else if (rawLine.startsWith(INSTANCES_START)){
+                    readInstances(br, genomesInfo, filePath, INSTANCES_END, lineNumber, families);
                 }
                 rawLine = br.readLine();
                 lineNumber++;
@@ -210,8 +217,9 @@ public class Parsers {
             throw new IOException("An exception occurred while reading " + filePath);
         }
 
-        return families;
+        return args;
     }
+
 
     /**
      * @param input_file_path path to input file with input sequences
@@ -240,11 +248,11 @@ public class Parsers {
 
     }
 
-    private static List<Family> readInstances(BufferedReader br, GenomesInfo genomesInfo, String filePath, String end,
-                                      int lineNumber)
+    private static void readInstances(BufferedReader br, GenomesInfo genomesInfo, String filePath, String end,
+                                      int lineNumber, List<Family> families)
             throws IOException{
 
-        HashMap<String, Family> families = new HashMap<>();
+        HashMap<String, Family> familiesMap = new HashMap<>();
 
         Pattern pattern = new Pattern();
 
@@ -257,13 +265,13 @@ public class Parsers {
                 pattern = parsePattern(rawLine, lineNumber, filePath);
 
                 Family family;
-                if (families.containsKey(pattern.getFamilyId())){
-                    family = families.get(pattern.getFamilyId());
+                if (familiesMap.containsKey(pattern.getFamilyId())){
+                    family = familiesMap.get(pattern.getFamilyId());
                     family.addPattern(pattern);
                 }else{
                     family = new Family(pattern.getFamilyId(), pattern, genomesInfo);
                 }
-                families.put(pattern.getFamilyId(), family);
+                familiesMap.put(pattern.getFamilyId(), family);
 
             } else {
                 String[] locationsLine = rawLine.trim().split("\t");
@@ -287,7 +295,7 @@ public class Parsers {
             rawLine = br.readLine();
         }
 
-        return new ArrayList<Family>(families.values());
+        families.addAll(familiesMap.values());
     }
 
     private static Pattern parsePattern(String rawLine, int lineNumber, String filePath) throws IllegalArgumentException{

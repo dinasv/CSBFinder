@@ -54,7 +54,10 @@ public class CSBFinderModel {
         String msg = "";
         try {
             gi = new GenomesInfo();
-            List<Family> families = Parsers.parseSessionFile(path, gi);
+            families = new ArrayList<>();
+            String[] args = Parsers.parseSessionFile(families, path, gi);
+            parseArgs(args);
+
             workflow = new CSBFinderWorkflow(gi);
             csbFinderDoneListener.CSBFinderDoneOccurred(new CSBFinderDoneEvent(families));
             msg = "Loaded session file.";
@@ -252,7 +255,7 @@ public class CSBFinderModel {
 
         Set<COG> insertedGenes = new HashSet<COG>();
 
-        //if (params.maxInsertion > 0) {
+        if (params.maxInsertion > 0) {
             Set<COG> patternGenesSet = new HashSet<>();
             patternGenesSet.addAll(patternGenes);
 
@@ -267,7 +270,7 @@ public class CSBFinderModel {
                     }
                 }
             }
-        //}
+        }
         return insertedGenes;
     }
 

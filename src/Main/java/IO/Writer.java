@@ -149,9 +149,10 @@ public class Writer {
             return;
         }
 
-        families.forEach(family -> family.getPatterns()
-                .forEach(pattern -> pattern.calculateMainFunctionalCategory(cogInfo)));
-
+        if (cogInfo.cogInfoExists()) {
+            families.forEach(family -> family.getPatterns()
+                    .forEach(pattern -> pattern.calculateMainFunctionalCategory(cogInfo)));
+        }
         patternsWriter.write(families, cogInfo);
     }
 
