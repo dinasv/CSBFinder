@@ -13,20 +13,15 @@ public class FamilyTableModel extends AbstractTableModel {
     public final static String LENGTH = "Length";
     public final static String SCORE = "Score";
     public final static String INSTANCE_COUNT = "Instance_Count";
-    public final static String EXACT_INSTANCE_COUNT = "Exact_Instance_Count";
     public final static String CSB = "CSB";
     public final static String MAIN_CATEGORY = "Main_Category";
     public final static String FAMILY_ID = "Family_ID";
-
-    //public final static String DELIMITER = " ";
-
 
     public final static  String[] columns = new String[] {
             ID,
             LENGTH ,
             SCORE,
             INSTANCE_COUNT ,
-            EXACT_INSTANCE_COUNT,
             CSB,
             MAIN_CATEGORY ,
             FAMILY_ID
@@ -55,8 +50,6 @@ public class FamilyTableModel extends AbstractTableModel {
             case SCORE:
                 return Double.class;
             case INSTANCE_COUNT:
-                return Integer.class;
-            case EXACT_INSTANCE_COUNT:
                 return Integer.class;
             case ID:
                 return Integer.class;
@@ -87,8 +80,6 @@ public class FamilyTableModel extends AbstractTableModel {
                 return p.getScore();
             case INSTANCE_COUNT:
                 return p.getInstancesPerGenome();
-           // case EXACT_INSTANCE_COUNT:
-           //     return p.getExactInstanceCount();
             case CSB:
                 return p.toString();
             case MAIN_CATEGORY:

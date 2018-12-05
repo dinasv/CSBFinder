@@ -9,7 +9,6 @@ public class GeneShape implements Shape{
 
     final static int PADDING_SMALL = 5;
     final static int PADDING_MEDIUM = 20;
-    final static int PADDING_LARGE = 50;
     final static int ARROW_WIDTH = 30;
 
     private int x, y;
