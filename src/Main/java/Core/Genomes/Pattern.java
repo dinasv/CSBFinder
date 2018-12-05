@@ -22,7 +22,7 @@ public class Pattern {
 
     private String mainFunctionalCategory;
 
-    private String familyId;
+    private int familyId;
 
     private Map<Integer, PatternLocationsInGenome> genomeToInstanceLocations;
 
@@ -30,7 +30,7 @@ public class Pattern {
         this(-1, new ArrayList<>());
     }
 
-    public Pattern(int patternId, List<Gene> patternGenes/*, int instanceCount, int exactInstanceCount*/){
+    public Pattern(int patternId, List<Gene> patternGenes){
 
         this.patternId = patternId;
         this.patternGenes = new ArrayList<>();
@@ -177,11 +177,11 @@ public class Pattern {
         return reverseComplimentPatternArr;
     }
 
-    public String getFamilyId() {
+    public int getFamilyId() {
         return familyId;
     }
 
-    public void setFamilyId(String familyId) {
+    public void setFamilyId(int familyId) {
         this.familyId = familyId;
     }
 

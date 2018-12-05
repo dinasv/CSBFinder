@@ -12,7 +12,7 @@ import java.util.*;
  */
 public class Family {
 
-    private String familyId;
+    private int familyId;
     //members of the family
     private List<Pattern> patterns;
     //contains the union of all characters of all family members
@@ -24,7 +24,7 @@ public class Family {
     private double score;
     private GenomesInfo genomesInfo;
 
-    public Family(String familyId, Pattern firstPattern, GenomesInfo genomesInfo){
+    public Family(int familyId, Pattern firstPattern, GenomesInfo genomesInfo){
         charSet = new HashSet<>();
 
         this.genomesInfo = genomesInfo;
@@ -74,7 +74,7 @@ public class Family {
         patterns.add(pattern);
     }
 
-    public String getFamilyId(){
+    public int getFamilyId(){
         return familyId;
     }
 

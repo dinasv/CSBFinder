@@ -88,7 +88,6 @@ public class ExcelWriter implements PatternsWriter{
         printTopScoringPattern(family.getTopScoringPattern(), family.getFamilyId(), cogInfo);
 
         for (Pattern pattern: family.getPatterns()) {
-            //pattern.calculateMainFunctionalCategory(cogInfo, false);
 
             countPrintedPatterns++;
             printPatternLineToExcelSheet(catalogSheet, pattern, countPrintedPatterns, family.getFamilyId(), cogInfo);
@@ -107,7 +106,7 @@ public class ExcelWriter implements PatternsWriter{
      * @param gi
      * @param familyId
      */
-    public void printTopScoringPattern(Pattern pattern, String familyId, CogInfo cogInfo){
+    public void printTopScoringPattern(Pattern pattern, int familyId, CogInfo cogInfo){
         if (pattern != null) {
 
             countPrintedFilteredPatterns++;
@@ -116,7 +115,7 @@ public class ExcelWriter implements PatternsWriter{
     }
 
 
-    private void printPatternLineToExcelSheet(Sheet sheet, Pattern pattern, int rowNum, String familyId,
+    private void printPatternLineToExcelSheet(Sheet sheet, Pattern pattern, int rowNum, int familyId,
                                                CogInfo cogInfo){
         Row row = sheet.createRow(rowNum);
         int col = 0;
@@ -129,8 +128,6 @@ public class ExcelWriter implements PatternsWriter{
         }
         row.createCell(col++).setCellValue(pattern.getInstancesPerGenome());
 
-        //row.createCell(col++).setCellValue(pattern.getExactInstanceCount());
-
         String patternGenes = pattern.toString();
 
         row.createCell(col++).setCellValue(patternGenes);
@@ -138,9 +135,7 @@ public class ExcelWriter implements PatternsWriter{
         if (cogInfo.cogInfoExists()) {
             row.createCell(col++).setCellValue(pattern.getMainFunctionalCategory());
         }
-        if (familyId != null){
-            row.createCell(col++).setCellValue(familyId);
-        }
+        row.createCell(col++).setCellValue(familyId);
     }
 
     private int printPatternDescToExcelSheet(Sheet sheet, int rowNum, Pattern pattern, CogInfo cogInfo){

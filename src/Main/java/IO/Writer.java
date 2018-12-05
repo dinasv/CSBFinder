@@ -105,7 +105,7 @@ public class Writer {
         }
     }
 
-    public static void printInstances(Pattern pattern, String familyId, GenomesInfo gi, PrintWriter instancesFile){
+    public static void printInstances(Pattern pattern, int familyId, GenomesInfo gi, PrintWriter instancesFile){
 
         if (instancesFile != null) {
 

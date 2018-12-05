@@ -252,7 +252,7 @@ public class Parsers {
                                       int lineNumber, List<Family> families)
             throws IOException{
 
-        HashMap<String, Family> familiesMap = new HashMap<>();
+        HashMap<Integer, Family> familiesMap = new HashMap<>();
 
         Pattern pattern = new Pattern();
 
@@ -317,7 +317,7 @@ public class Parsers {
         i++;
         List<Gene> genes = parseGenes(patternLine[i], lineNumber, filePath);
         i++;
-        String familyId = patternLine[i];
+        int familyId = castToInteger(patternLine[i], INSTANCE_HEADER[i], lineNumber, filePath);
 
         Pattern pattern = new Pattern(id, genes);
         pattern.setScore(score);

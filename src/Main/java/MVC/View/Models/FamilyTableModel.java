@@ -53,6 +53,8 @@ public class FamilyTableModel extends AbstractTableModel {
                 return Integer.class;
             case ID:
                 return Integer.class;
+            case FAMILY_ID:
+                return Integer.class;
         }
 
         return String.class;
