@@ -48,4 +48,8 @@ public class SummaryPanel extends JSplitPane {
     public void setMissingInfoText(String text){
         csbSummaryPanel.setMissingInfoText(text);
     }
+
+    public void fireTableDataChanged(){
+        tabs.fireTableDataChanged();
+    }
 }

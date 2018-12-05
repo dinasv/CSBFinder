@@ -96,7 +96,6 @@ public class CSBSummaryPanel extends JPanel {
                              Map<String, Color> colorsUsed, Set<COG> genesUsed, StyledDocument doc){
 
         if (genes.size() > 0) {
-
             try {
 
                 doc.insertString(doc.getLength(), title +"\n", titleStyle);

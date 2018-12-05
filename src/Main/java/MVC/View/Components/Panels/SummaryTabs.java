@@ -32,4 +32,9 @@ public class SummaryTabs extends JTabbedPane {
         familyPanel.clearPanel();
         familyTopScorePanel.clearPanel();
     }
+
+    public void fireTableDataChanged(){
+        familyPanel.fireTableDataChanged();
+        familyTopScorePanel.fireTableDataChanged();
+    }
 }

@@ -72,4 +72,13 @@ public class FamilyPanel extends JPanel {
         model.clearData();
         model.fireTableDataChanged();
     }
+
+    public void fireTableDataChanged(){
+        int row = table.getSelectedRow();
+        model.fireTableDataChanged();
+
+        if (row != -1) {
+            table.setRowSelectionInterval(row, row);
+        }
+    }
 }

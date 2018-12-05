@@ -288,6 +288,7 @@ public class MainFrame extends JFrame {
                         protected void done() {
 
                             progressBar.done("");
+                            summaryPanel.fireTableDataChanged();
                             JOptionPane.showMessageDialog(MainFrame.this, msg);
                         }
                     };

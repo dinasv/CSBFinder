@@ -135,6 +135,8 @@ public class CSBFinderModel {
 
         families = workflow.run(params);
 
+        calculateMainFunctionalCategory();
+
         msg += workflow.getPatternsCount() + " CSBs found";
 
         System.out.println(msg);
@@ -156,12 +158,20 @@ public class CSBFinderModel {
             try {
                 cogInfoTable = Parsers.parseCogInfoTable(path);
                 this.cogInfo.setCogInfo(cogInfoTable);
+                calculateMainFunctionalCategory();
                 msg = "Loaded orthology information table";
             }catch (Exception e){
                 msg = e.getMessage() + "\n";
             }
         }
         return msg;
+    }
+
+    private void calculateMainFunctionalCategory(){
+        if (cogInfo.cogInfoExists() && families != null){
+            families.forEach(family -> family.getPatterns()
+                    .forEach(pattern -> pattern.calculateMainFunctionalCategory(cogInfo)));
+        }
     }
 
     private Writer createWriter(boolean cog_info_exists, OutputType outputType){
