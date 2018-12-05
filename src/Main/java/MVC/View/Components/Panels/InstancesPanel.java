@@ -13,7 +13,6 @@ import java.util.List;
 
 public class InstancesPanel extends JPanel {
 
-
     private GridBagConstraints gc;
 
     private static final int CONTAINERS_DIST = 50;
@@ -24,21 +23,18 @@ public class InstancesPanel extends JPanel {
     private int rowHeight;
     private int firstRowHeight;
 
-    private ShapeDimensions geneShapeDim;
 
-    public InstancesPanel(ShapeDimensions geneShapeDim, Map<String, Color> colorsUsed) {
+    public InstancesPanel(Map<String, Color> colorsUsed) {
 
         setGCLayout();
         setLayout(new GridBagLayout());
 
         this.rowHeight = 0;
         this.firstRowHeight = 0;
-        this.geneShapeDim = geneShapeDim;
 
         //setPreferredSize(new Dimension(1000, 500));
 
         this.colorsUsed = colorsUsed;
-
 
     }
 
@@ -52,17 +48,9 @@ public class InstancesPanel extends JPanel {
         removeAll();
     }
 
-
     private void setData(List<Map<String,List<InstanceInfo>>> instances, List<Gene> pattenGenes, int scrollWidth) {
 
         int colIndex = 0;
-
-        /*
-        List<Gene> patternGenesInner = new ArrayList<>();
-
-        for (String cog: pattenGenes) {
-            patternGenesInner.add(new Gene(cog, Strand.FORWARD));
-        }*/
 
         List<ShapesInstance> shapesInstanceInnerList = new ArrayList<>();
         shapesInstanceInnerList.add(getShapesCSB(pattenGenes, 0, 0));
@@ -75,13 +63,14 @@ public class InstancesPanel extends JPanel {
         }
         colIndex = setGenomePanelRow(instancesRowPanel, colIndex, scrollWidth, firstRowHeight);
 
-
         Color light_gray = new Color(238,238,238);
 
-
+        int x;
+        int y;
         for (Map<String, List<InstanceInfo>> genomeInstances: instances) {
-            int x = 0;
-            int y = 0;
+            x = 0;
+            y = 0;
+
             List<List<ShapesInstance>> genomeShapesInstances = new ArrayList<>();
             for (Map.Entry<String, List<InstanceInfo>> repliconInstances : genomeInstances.entrySet()) {
                 List<InstanceInfo> instancesList = repliconInstances.getValue();
@@ -98,8 +87,6 @@ public class InstancesPanel extends JPanel {
             }
             colIndex = setGenomePanelRow(instancesRowPanel, colIndex, scrollWidth, rowHeight);
         }
-
-
     }
 
 
@@ -169,7 +156,7 @@ public class InstancesPanel extends JPanel {
             }else {
                 color = getRandomColor();
             }
-            GeneShape geneShape = new GeneShape(x, y, color, geneShapeDim, gene);
+            GeneShape geneShape = new GeneShape(x, y, color, gene, getGraphics());
 
             geneShapesList.add(geneShape);
             colorsUsed.put(gene.getCogId(), color);

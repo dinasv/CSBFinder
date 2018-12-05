@@ -15,9 +15,6 @@ public class Pattern {
 
     private int patternId;
 
-    //private int instanceCount;
-    //private int exactInstanceCount;
-
     private int length;
     private List<Instance> instances;
 
@@ -49,9 +46,6 @@ public class Pattern {
         genomeToInstanceLocations = new HashMap<>();
     }
 
-    //public Pattern(int patternId, List<Gene> patternGenes){
-    //    this(patternId, patternGenes, 0, 0);
-    //}
 
     public void setPatternId(int pattern_id){
         this.patternId = pattern_id;
@@ -99,20 +93,6 @@ public class Pattern {
         return length;
     }
 
-    /*
-    public int getInstanceCount(){
-        return instanceCount;
-    }
-    */
-    //public int getExactInstanceCount() {
-    //    return exactInstanceCount;
-    //}
-
-/*
-    public void incerementExactInstanceCount(){
-        exactInstanceCount++;
-    }
-  */
     public List<Gene> getPatternGenes() {
         return patternGenes;
     }

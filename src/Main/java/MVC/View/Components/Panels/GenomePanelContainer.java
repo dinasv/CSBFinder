@@ -9,14 +9,13 @@ import java.awt.*;
 import java.util.*;
 import java.util.List;
 
-public class GenomePanelContainer  extends JPanel {
+public class GenomePanelContainer extends JPanel {
 
     private InstancesLabelsPanel labelsPanel;
     private InstancesPanel instancesPanel;
 
     GridBagConstraints gc;
 
-    private final ShapeDimensions geneShapeDim = new ShapeDimensions(60, 15, 30);
 
     Map<String, Color> colorsUsed;
 
@@ -27,7 +26,7 @@ public class GenomePanelContainer  extends JPanel {
         setLayout(new GridBagLayout());
         setGCLayout();
 
-        instancesPanel = new InstancesPanel(geneShapeDim, colorsUsed);
+        instancesPanel = new InstancesPanel(colorsUsed);
 
         labelsPanel = new InstancesLabelsPanel();
 

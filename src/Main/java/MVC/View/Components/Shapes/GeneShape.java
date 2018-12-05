@@ -7,9 +7,12 @@ import java.awt.*;
 
 public class GeneShape implements Shape{
 
-    private int x, y;
+    final static int PADDING_SMALL = 5;
+    final static int PADDING_MEDIUM = 20;
+    final static int PADDING_LARGE = 50;
+    final static int ARROW_WIDTH = 30;
 
-    private ShapeDimensions dim;
+    private int x, y;
 
     private Color color;
     private Label label;
@@ -18,51 +21,67 @@ public class GeneShape implements Shape{
     private int width;
     private int height;
 
-    public GeneShape(int x, int y, Color color, ShapeDimensions dim, Gene gene) {
-            this.x = x;
-            this.y = y;
+    int labelWidth;
+    int labelHeight;
 
-            this.dim = dim;
-            this.color = color;
+    int rectWidth;
 
-            this.label = new Label(gene.getCogId());
-            this.strand = gene.getStrand();
+    public GeneShape(int x, int y, Color color, Gene gene, Graphics graphics) {
+        this.x = x;
+        this.y = y;
 
-            width = dim.getArrowWidth() + dim.getRectWidth();
-            height = dim.getRectHeight();
+        this.color = color;
+
+        this.label = new Label(gene.getCogId());
+        this.strand = gene.getStrand();
+
+        graphics.setFont(label.getFont());
+        labelWidth = graphics.getFontMetrics().stringWidth(label.getText());
+        labelHeight = graphics.getFontMetrics().getAscent();
+
+        rectWidth = labelWidth + PADDING_MEDIUM;
+
+        height = labelHeight + PADDING_MEDIUM;
+        width = ARROW_WIDTH + rectWidth;
+
     }
 
     public void draw(Graphics g) {
 
+       drawGene(g);
+       drawLabel(g);
+
+    }
+
+    private void drawGene(Graphics g){
         int rectStartX = x;
-        int arrowStartX = x + dim.getRectWidth();
-        int arrowEndX = x + dim.getRectWidth() + dim.getArrowWidth();
+        int arrowStartX = x + rectWidth;
+        int arrowEndX = x + width;
 
         if (strand == Strand.REVERSE){
-            rectStartX = x + dim.getArrowWidth();
-            arrowStartX =  x + dim.getArrowWidth();
+            rectStartX = x + ARROW_WIDTH;
+            arrowStartX =  x + ARROW_WIDTH;
             arrowEndX = x;
         }
 
-        // Draw gene
         int[] xPoints = {arrowStartX, arrowEndX, arrowStartX};
-        int[] yPoints = {y, y + dim.getRectHeight() /2, y + dim.getRectHeight()};
+        int[] yPoints = {y, y + height /2, y + height};
         g.setColor(color);
-        g.fillRect(rectStartX, y, dim.getRectWidth(), dim.getRectHeight());
+        g.fillRect(rectStartX, y, rectWidth, height);
         g.fillPolygon(xPoints, yPoints, 3);
 
-        // Draw label
+    }
 
+    private void drawLabel(Graphics g){
         g.setColor(label.getColor());
         g.setFont(label.getFont());
 
-        int labelWidth = g.getFontMetrics().stringWidth(label.getText());
-        int labelPositionX = x + (dim.getRectWidth() - labelWidth)/2;
+        int labelPositionX = x + (rectWidth-labelWidth)/2;
         if (strand == Strand.REVERSE){
-            labelPositionX += dim.getArrowWidth();
+            labelPositionX += ARROW_WIDTH;
         }
 
-        g.drawString(label.getText(), labelPositionX, y + dim.getArrowHeight()+5);
+        g.drawString(label.getText(), labelPositionX, y + height/2 + PADDING_SMALL);
     }
 
     public int getWidth(){
@@ -89,22 +108,12 @@ public class GeneShape implements Shape{
         this.y = y;
     }
 
-
-
     public Color getColor() {
         return color;
     }
 
     public void setColor(Color color) {
         this.color = color;
-    }
-
-    public ShapeDimensions getShapeDimensions() {
-        return dim;
-    }
-
-    public void setShapeDimensions(ShapeDimensions shapeDimensions) {
-        this.dim = shapeDimensions;
     }
 
     public Label getLabel() {

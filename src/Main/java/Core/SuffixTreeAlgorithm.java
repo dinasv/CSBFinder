@@ -176,7 +176,7 @@ public class SuffixTreeAlgorithm implements Algorithm{
 
     /**
      * Remove patterns that are suffixes of existing patterns, and has the same number of instances
-     * If a pattern passes the quorum1, all its sub-patterns also pass the quorum1
+     * If a pattern passes the quorum, all its sub-patterns also pass the quorum
      * If a (sub-pattern instance count = pattern instance count) : the sub-pattern is always a part of the larger
      * pattern
      * Therefore it is sufficient to remove each pattern suffix if it has the same instance count
@@ -493,14 +493,10 @@ public class SuffixTreeAlgorithm implements Algorithm{
             if (extended_pattern_length - wildcard_count >= minPatternLength) {
                 if (type == TreeType.STATIC) {
                     if (extendedPatternNode.getPatternKey()>0) {
-                        Pattern newPattern = new Pattern(extendedPatternNode.getPatternKey(),
-                                extendedPattern
-                                //instancesCount,
-                                //extendedPatternNode.getExactInstanceCount()
-                                 );
+                        Pattern newPattern = new Pattern(extendedPatternNode.getPatternKey(), extendedPattern);
                         newPattern.addInstanceLocations(extendedPatternNode.getInstances());
 
-                        handlePattern(newPattern, extendedPattern);
+                        patterns.put(newPattern.toString(), newPattern);
 
                     }
                 } else if (type == TreeType.VIRTUAL) {
@@ -511,11 +507,10 @@ public class SuffixTreeAlgorithm implements Algorithm{
                             if (instancesCount > ret || debug) {// instancesCount >= ret always
                                 Pattern newPattern = new Pattern(extendedPatternNode.getPatternKey(),
                                         extendedPattern);
-                                        //extendedPatternNode.getInstanceKeys().size(),
-                                        //extendedPatternNode.getExactInstanceCount());
+
                                 newPattern.addInstanceLocations(extendedPatternNode.getInstances());
 
-                                handlePattern(newPattern, extendedPattern);
+                                patterns.put(newPattern.toString(), newPattern);
 
                                 if (debug && (getPatternsCount() % 5000 == 0) ){
                                     MemoryUtils.measure();

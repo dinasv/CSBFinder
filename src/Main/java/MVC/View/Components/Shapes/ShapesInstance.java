@@ -10,11 +10,11 @@ public class ShapesInstance implements Shape{
     private List<GeneShape> geneShapesList;
     private int x;
     private int y;
+
     //the distance between shapes
     private int DIST_SHAPES = 10;
     private int NAME_LABEL_HEIGHT = 22;
     private int LOCATION_LABELS_HEIGHT = 15;
-    //private Dimension containerDimensions;
 
     private LabelShape nameLabel;
     private LabelShape startIndexLabel;
@@ -30,7 +30,7 @@ public class ShapesInstance implements Shape{
         this.y = y;
         height = 0;
 
-        calcWidth();
+        width = calcWidth();
 
         if (geneShapesList.size()>0){
             height = geneShapesList.get(0).getHeight();
@@ -60,12 +60,13 @@ public class ShapesInstance implements Shape{
 
     }
 
-    private void calcWidth(){
-        width = 0;
+    private int calcWidth(){
+        int width = 0;
         for (GeneShape geneShape: geneShapesList){
             width += geneShape.getWidth();
         }
         width += DIST_SHAPES * (geneShapesList.size()-1);
+        return width;
     }
 
     public int getX(){
@@ -96,7 +97,6 @@ public class ShapesInstance implements Shape{
         return height;
     }
 
-
     public void draw(Graphics g) {
 
         int curr_x = x;
@@ -106,15 +106,13 @@ public class ShapesInstance implements Shape{
             curr_y += NAME_LABEL_HEIGHT;
         }
 
-        ShapeDimensions sd = null;
         for (GeneShape geneShape : geneShapesList) {
             geneShape.setX(curr_x);
             geneShape.setY(curr_y);
 
             geneShape.draw(g);
 
-            sd = geneShape.getShapeDimensions();
-            curr_x += sd.getRectWidth() + sd.getArrowWidth() + DIST_SHAPES;
+            curr_x += geneShape.getWidth() + DIST_SHAPES;
         }
 
 

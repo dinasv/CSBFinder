@@ -9,17 +9,25 @@ import javax.swing.*;
 
 public class ShapesPanel extends JPanel{
 
-    private List<Shape> shapes = new ArrayList<>();
+    private List<Shape> shapes;
+    private List<List<ShapesInstance>> shapesInstanceList;
     private int containersDist;
     private int panelHeight;
 
     public ShapesPanel(List<List<ShapesInstance>> shapesInstanceList, int containersDist, Color backgroundColor) {
+
         this.containersDist = containersDist;
         shapes = new ArrayList<>();
+        this.shapesInstanceList = shapesInstanceList;
 
         setBackground(backgroundColor);
 
-        //set preferred container size
+        setPanelSize();
+
+        addShapes();
+    }
+
+    private void setPanelSize(){
         panelHeight = 0;
         if (shapesInstanceList.size() > 0) {
             List<ShapesInstance> repliconInstances = shapesInstanceList.get(0);
@@ -27,10 +35,10 @@ public class ShapesPanel extends JPanel{
                 panelHeight = repliconInstances.get(0).getHeight();
             }
         }
-
         this.setPreferredPanelSize(shapesInstanceList);
+    }
 
-        //add shapes
+    private void addShapes(){
         int i = 0;
         int x = 0;
         int x1, x2, y1, y2;
@@ -60,7 +68,6 @@ public class ShapesPanel extends JPanel{
                 addShape(new RectShape(x1, 0, 5, panelHeight, Color.black));
             }
         }
-
     }
 
     private void setPreferredPanelSize(List<List<ShapesInstance>> shapesInstanceList){

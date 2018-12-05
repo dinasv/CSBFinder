@@ -5,6 +5,8 @@ import java.awt.*;
 
 public class Label {
 
+    public final static Font DEFAULT_FONT = new Font("Monospaced", Font.BOLD, 24);
+
     private String text;
     private Font font;
     private Color color;
@@ -16,7 +18,7 @@ public class Label {
     }
 
     public Label(String text){
-        this(text, new Font("TimesRoman", Font.BOLD, 12));
+        this(text, DEFAULT_FONT);
     }
 
     public String getText() {
