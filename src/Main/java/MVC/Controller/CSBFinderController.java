@@ -43,7 +43,7 @@ public class CSBFinderController {
         return this.model.loadCogInfo(path);
     }
 
-    public void saveOutputFiles(String outputFileType) { this.model.saveOutputFiles(outputFileType); }
+    public String saveOutputFiles(String outputFileType) { return this.model.saveOutputFiles(outputFileType); }
 
     public String findCSBs(CSBFinderRequest request) {
         return this.model.findCSBs(request);

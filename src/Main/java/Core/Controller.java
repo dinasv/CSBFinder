@@ -59,6 +59,7 @@ public class Controller {
 
     private Writer writeFamiliesToFiles(List<Family> families, boolean cog_info_exists, GenomesInfo genomesInfo,
                                                 CogInfo cogInfo){
+
         String parameters = "_ins" + params.maxInsertion + "_q" + params.quorum2;
         String catalogFileName = "Catalog_" + params.datasetName + parameters;
         String instancesFileName = catalogFileName + "_instances";

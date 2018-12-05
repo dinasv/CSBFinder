@@ -120,28 +120,6 @@ public class Toolbar extends JPanel {
         selectParams.setEnabled(false);
     }
 
-    private class LoadFileListenerClass implements ActionListener{
-
-        LoadFileListener listener;
-        JFileChooser fileChooser;
-        int value;
-
-        public LoadFileListenerClass(JFileChooser fileChooser, JPanel jPanel, LoadFileListener listener){
-            this.listener = listener;
-            this.fileChooser = fileChooser;
-            this.fileChooser.addChoosableFileFilter(new GenomeFileChooser());
-            value = fileChooser.showOpenDialog(jPanel);
-        }
-
-
-
-        @Override
-        public void actionPerformed(ActionEvent e) {
-            if (value == JFileChooser.APPROVE_OPTION) {
-                listener.loadFileEventOccurred(new LoadFileEvent(e, fileChooser.getSelectedFile()));
-            }
-        }
-    }
 
 }
 

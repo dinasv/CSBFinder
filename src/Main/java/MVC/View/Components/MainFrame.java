@@ -301,13 +301,15 @@ public class MainFrame extends JFrame {
 
     private void setSaveButtonListener() {
         toolbar.setSaveOutputListener(new SaveOutputListener() {
+            String msg = "";
             @Override
             public void saveOutputOccurred(SaveOutputEvent e) {
 
-                //JOptionPane option = new JOptionPane();
                 String[] ops = new String[] {
                         String.valueOf(OutputType.XLSX),
-                        String.valueOf(OutputType.TXT) };
+                        String.valueOf(OutputType.TXT),
+                        String.valueOf(OutputType.EXPORT)
+                };
                 int type = JOptionPane.showOptionDialog(
                         MainFrame.this,
                         "Please choose the desired type for the output files",
@@ -319,7 +321,7 @@ public class MainFrame extends JFrame {
 
                 String strType = type == JOptionPane.CLOSED_OPTION ? "" : ops[type];
 
-                if (!"".equals(strType)) {
+                if (!strType.equals("")) {
                     SwingUtilities.invokeLater(new Runnable() {
                         @Override
                         public void run() {
@@ -330,13 +332,14 @@ public class MainFrame extends JFrame {
                     SwingWorker<Void, Void> swingWorker = new SwingWorker<Void, Void>() {
                         @Override
                         protected Void doInBackground() throws Exception {
-                            controller.saveOutputFiles(strType);
+                            msg = controller.saveOutputFiles(strType);
                             return null;
                         }
 
                         @Override
                         protected void done() {
                             progressBar.done("");
+                            JOptionPane.showMessageDialog(MainFrame.this, msg);
                         }
                     };
 

@@ -23,6 +23,8 @@ public class CSBFinderModel {
     private GenomesInfo gi;
     CogInfo cogInfo;
 
+    private static String ARGS;
+
     public CSBFinderModel() {
         cogInfo = new CogInfo();
         gi = new GenomesInfo();
@@ -76,6 +78,9 @@ public class CSBFinderModel {
 
             jcommander = JCommander.newBuilder().addObject(params).build();
             jcommander.parse(args);
+
+            ARGS = String.join(" ", args);
+
             return jcommander;
 
         } catch (ParameterException e){
@@ -174,12 +179,13 @@ public class CSBFinderModel {
         }
     }
 
-    private Writer createWriter(boolean cog_info_exists, OutputType outputType){
+    private Writer createWriter(boolean cogInfoExists, OutputType outputType){
+
+        String outputPath = createOutputPath();
+
         String parameters = "_ins" + params.maxInsertion + "_q" + params.quorum2;
         String catalogFileName = "Catalog_" + params.datasetName + parameters;
         String instancesFileName = catalogFileName + "_instances";
-
-        String outputPath = createOutputPath();
 
         String catalogPath = outputPath + catalogFileName;
         //TODO: add as input parameter
@@ -187,15 +193,32 @@ public class CSBFinderModel {
 
         PatternsWriter patternsWriter = null;
 
-        if (params.outputFileType == OutputType.TXT){
-            patternsWriter = new TextWriter(cog_info_exists, includeFamilies, catalogPath);
-        }else if(params.outputFileType == OutputType.XLSX){
-            patternsWriter = new ExcelWriter(cog_info_exists, includeFamilies, catalogPath);
+        switch (outputType){
+            case TXT:
+                patternsWriter = new TextWriter(cogInfoExists, includeFamilies, catalogPath);
+                break;
+            case XLSX:
+                patternsWriter = new ExcelWriter(cogInfoExists, includeFamilies, catalogPath);
+                break;
+            case EXPORT:
+                SessionWriter sessionWriter = new SessionWriter(includeFamilies, catalogPath, gi);
+                sessionWriter.writeHeader(ARGS);
+                sessionWriter.writeGenomes(gi.getGenomesByName());
+                patternsWriter = sessionWriter;
+                break;
         }
 
         Writer writer = new Writer(params.debug, catalogFileName,
-                instancesFileName, includeFamilies, cog_info_exists,
+                instancesFileName, includeFamilies, cogInfoExists,
                 outputPath, patternsWriter);
+
+        if (outputType != OutputType.EXPORT){
+            writer.printInstances(families, gi, cogInfo);
+            writer.writeHeader(createHeader(includeFamilies));
+        }
+
+        writer.printFamilies(families, cogInfo);
+        writer.closeFiles();
 
         return writer;
     }
@@ -212,14 +235,32 @@ public class CSBFinderModel {
         return path;
     }
 
-    public void saveOutputFiles(String outputFileType) {
-
-         Writer writer = createWriter(params.cogInfoFilePath != null && !"".equals(params.cogInfoFilePath),
-                OutputType.valueOf(outputFileType));
-
+    public String saveOutputFiles(String outputFileType) {
         System.out.println("Writing to files");
-        writer.printFamilies(families, cogInfo);
-        writer.closeFiles();
+
+        String msg = "";
+        try {
+            Writer writer = createWriter(params.cogInfoFilePath != null && !"".equals(params.cogInfoFilePath),
+                    OutputType.valueOf(outputFileType));
+            msg = "CSBs written to files.";
+        }catch (Exception e){
+            msg = e.getMessage();
+        }
+
+        return msg;
+    }
+
+    private String createHeader(boolean include_families){
+
+        String header = "ID\tLength\tScore\tInstance_Count\tCSB";
+        if (cogInfo.cogInfoExists()){
+            header += "\tMain_Category";
+        }
+        if (include_families){
+            header += "\tFamily_ID";
+        }
+
+        return header;
     }
 
     /**
