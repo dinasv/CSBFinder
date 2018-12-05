@@ -238,7 +238,7 @@ public class MainFrame extends JFrame {
                         @Override
                         protected void done() {
 
-                            toolbar.disableSaveFileBtn();
+                            toolbar.enableSaveFileBtn();
                             toolbar.enableSelectParamsBtn();
 
                             if (controller.getNumberOfGenomes() > 0) {
