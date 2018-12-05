@@ -19,10 +19,12 @@ public class Controller {
     private MyLogger logger;
     private String outputPath;
     private Writer writer;
+    CogInfo cogInfo;
 
+    private static String ARGS;
     private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
 
-    public Controller(String [ ] args){
+    public Controller(String[] args){
         JCommander jcommander = null;
         try {
             params = new Parameters();
@@ -40,6 +42,8 @@ public class Controller {
             printUsageAndExit(jcommander, 1);
         }
 
+        ARGS = String.join(" ", args);
+        cogInfo = new CogInfo();
         outputPath = createOutputPath();
         logger = new MyLogger("output/", params.debug);
 
@@ -74,6 +78,7 @@ public class Controller {
                 break;
             case EXPORT:
                 SessionWriter sessionWriter = new SessionWriter(includeFamilies, catalogPath, genomesInfo);
+                sessionWriter.writeHeader(ARGS);
                 sessionWriter.writeGenomes(genomesInfo.getGenomesByName());
                 patternsWriter = sessionWriter;
                 break;
@@ -85,13 +90,28 @@ public class Controller {
 
         if (params.outputFileType != OutputType.EXPORT){
             writer.printInstances(families, genomesInfo, cogInfo);
+            writer.writeHeader(createHeader(includeFamilies));
         }
 
-        writer.printFamilies(families, genomesInfo, cogInfo);
+        writer.printFamilies(families, cogInfo);
         writer.closeFiles();
 
         return writer;
     }
+
+    private String createHeader(boolean include_families){
+
+        String header = "ID\tLength\tScore\tInstance_Count\tCSB";
+        if (cogInfo.cogInfoExists()){
+            header += "\tMain_Category";
+        }
+        if (include_families){
+            header += "\tFamily_ID";
+        }
+
+        return header;
+    }
+
 
     private String createOutputPath(){
         Date dNow = new Date( );
@@ -174,7 +194,6 @@ public class Controller {
             }
         }
 
-        CogInfo cogInfo = new CogInfo();
         cogInfo.setCogInfo(cogInfoMap);
 
         MemoryUtils.measure();

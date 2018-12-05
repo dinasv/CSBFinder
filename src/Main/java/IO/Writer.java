@@ -32,7 +32,7 @@ public class Writer {
 
     public Logger logger = null;
 
-    String header;
+    //String header;
 
     public Writer(boolean debug, String catalogFileName,
                   String instancesFileName, boolean includeFamilies,
@@ -48,9 +48,11 @@ public class Writer {
         catalogInstancesPath = outputPath + instancesFileName + ".fasta";
 
         instancesFile = null;
+    }
 
-        header = createHeader(includeFamilies);
+    public void writeHeader(String header){
         this.patternsWriter.writeHeader(header);
+
     }
 
     private void createInstancesFile(){
@@ -79,19 +81,6 @@ public class Writer {
                     "Please create a directory named 'output' in the following path: " + System.getProperty("user.dir"));
             System.exit(1);
         }
-    }
-
-    private String createHeader(boolean include_families){
-
-        String header = "ID\tLength\tScore\tInstance_Count\tCSB";
-        if (cogInfoExists){
-            header += "\tMain_Category";
-        }
-        if (include_families){
-            header += "\tFamily_ID";
-        }
-
-        return header;
     }
 
 
@@ -124,7 +113,6 @@ public class Writer {
 
             catalogLine += DF.format(pattern.getScore()) + "\t"
                     + pattern.getInstancesPerGenome() + "\t"
-                    //+ pattern.getExactInstanceCount() + "\t"
                     + pattern.toString() + "\t";
 
             catalogLine += familyId;
@@ -156,28 +144,15 @@ public class Writer {
         }
     }
 
-
-    public void printFamily(Family family, GenomesInfo gi, CogInfo cogInfo){
-        if (family == null | gi == null | cogInfo == null){
+    public void printFamilies(List<Family> families, CogInfo cogInfo){
+        if (families == null | cogInfo == null){
             return;
         }
 
-        family.getPatterns().forEach(pattern -> pattern.calculateMainFunctionalCategory(cogInfo));
-        patternsWriter.write(family, cogInfo);
+        families.forEach(family -> family.getPatterns()
+                .forEach(pattern -> pattern.calculateMainFunctionalCategory(cogInfo)));
 
-        /*for (Pattern pattern : family.getPatterns()) {
-            pattern.calculateMainFunctionalCategory(cogInfo);
-            printInstances(pattern, family.getFamilyId(), gi, nonDirectons, instancesFile);
-        }*/
-    }
-
-    public void printFamilies(List<Family> families, GenomesInfo gi, CogInfo cogInfo){
-        if (families == null | gi == null | cogInfo == null){
-            return;
-        }
-
-        families.forEach(family -> printFamily(family, gi, cogInfo));
-
+        patternsWriter.write(families, cogInfo);
     }
 
     public void printInstances(Family family, GenomesInfo gi, CogInfo cogInfo){

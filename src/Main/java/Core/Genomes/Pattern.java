@@ -37,8 +37,7 @@ public class Pattern {
         this.patternGenes.addAll(patternGenes);
         this.length = patternGenes.size();
         this.instances = instances;
-        //this.instanceCount = instanceCount;
-        //this.exactInstanceCount = exactInstanceCount;
+
         score = 0;
         mainFunctionalCategory = "";
         reverseComplimentPatternArr = reverseComplimentPattern(patternGenes);

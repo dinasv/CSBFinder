@@ -7,6 +7,7 @@ import Core.PostProcess.Family;
 import java.io.PrintWriter;
 import java.math.RoundingMode;
 import java.text.DecimalFormat;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -49,21 +50,23 @@ public class SessionWriter implements PatternsWriter {
             }
         }
 
-        file.write("<\\genomes>\n");
+        file.println("<\\genomes>");
     }
 
     @Override
-    public void write(Family family, CogInfo cogInfo) {
-        for (Pattern pattern: family.getPatterns()) {
-            countPrintedPatterns++;
-
-            Writer.printInstances(pattern, family.getFamilyId(), genomesInfo, file);
+    public void write(List<Family> families, CogInfo cogInfo) {
+        file.println("<instances>");
+        for (Family family: families) {
+            for (Pattern pattern : family.getPatterns()) {
+                countPrintedPatterns++;
+                Writer.printInstances(pattern, family.getFamilyId(), genomesInfo, file);
+            }
         }
     }
 
     @Override
     public void writeHeader(String header) {
-        file.println("<instances>");
+        file.println(header);
     }
 
     @Override

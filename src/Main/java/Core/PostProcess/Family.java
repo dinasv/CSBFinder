@@ -25,17 +25,19 @@ public class Family {
     private GenomesInfo genomesInfo;
 
     public Family(String familyId, Pattern firstPattern, GenomesInfo genomesInfo){
+        charSet = new HashSet<>();
+
         this.genomesInfo = genomesInfo;
         score = -1;
         this.familyId = familyId;
         patterns = new ArrayList<>();
         patterns.add(firstPattern);
-        charSet = new HashSet<>();
         addCharsToCharsSet(firstPattern);
     }
 
     public Family(Family family) {
         patterns = new ArrayList<>(family.getPatterns());
+
         score = family.score;
         genomesInfo = family.genomesInfo;
         familyId = family.familyId;

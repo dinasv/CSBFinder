@@ -440,10 +440,6 @@ public class Parsers {
                 String cogId = cogLine[0];
                 String cogDesc = cogLine[1];
 
-                if(cogId.equals("COG2747")){
-                    System.out.println();
-                }
-
                 COG cog = new COG(cogId, cogDesc);
 
                 if (cogLine.length == 3) {

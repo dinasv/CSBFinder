@@ -4,11 +4,13 @@ import Core.CogInfo;
 import Core.Genomes.GenomesInfo;
 import Core.PostProcess.Family;
 
+import java.util.List;
+
 /**
  */
 public interface PatternsWriter {
 
-    void write(Family family, CogInfo cogInfo);
+    void write(List<Family> families, CogInfo cogInfo);
 
     void writeHeader(String header);
 

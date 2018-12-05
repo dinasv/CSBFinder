@@ -13,6 +13,7 @@ import org.apache.poi.xssf.streaming.SXSSFWorkbook;
 import java.io.FileOutputStream;
 import java.math.RoundingMode;
 import java.text.DecimalFormat;
+import java.util.List;
 
 /**
  */
@@ -172,8 +173,8 @@ public class ExcelWriter implements PatternsWriter{
     }
 
 
-    public void write(Family family, CogInfo cogInfo) {
-        printFamily(family, cogInfo);
+    public void write(List<Family> families, CogInfo cogInfo) {
+        families.forEach(family -> printFamily(family, cogInfo));
     }
 
     @Override

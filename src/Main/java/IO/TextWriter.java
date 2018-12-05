@@ -11,6 +11,7 @@ import java.io.FileOutputStream;
 import java.io.PrintWriter;
 import java.math.RoundingMode;
 import java.text.DecimalFormat;
+import java.util.List;
 
 /**
  */
@@ -40,8 +41,8 @@ public class TextWriter implements PatternsWriter{
     }
 
     @Override
-    public void write(Family family, CogInfo cogInfo) {
-        printFamily(family, cogInfo);
+    public void write(List<Family> families, CogInfo cogInfo) {
+        families.forEach(family -> printFamily(family, cogInfo));
     }
 
     public void writeHeader(String header){
@@ -64,15 +65,12 @@ public class TextWriter implements PatternsWriter{
 
             catalogLine += DF.format(pattern.getScore()) + "\t"
                     + pattern.getInstancesPerGenome() + "\t"
-                    //+ pattern.getExactInstanceCount() + "\t"
                     + pattern.toString() + "\t";
 
             if (cogInfoExists) {
                 catalogLine += pattern.getMainFunctionalCategory() + "\t";
             }
-            //if (family. != null){
-                catalogLine += family.getFamilyId();
-            //}
+            catalogLine += family.getFamilyId();
 
             if (catalogFile != null) {
                 catalogFile.println(catalogLine);

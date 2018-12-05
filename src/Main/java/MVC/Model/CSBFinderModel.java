@@ -205,11 +205,7 @@ public class CSBFinderModel {
                 OutputType.valueOf(outputFileType));
 
         System.out.println("Writing to files");
-        for (Family family : families) {
-
-            writer.printFamily(family, gi, cogInfo);
-
-        }
+        writer.printFamilies(families, cogInfo);
         writer.closeFiles();
     }
 
