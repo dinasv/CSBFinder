@@ -1,8 +1,9 @@
 package MVC.View.Components.Panels;
 
 import MVC.View.Events.FamilyRowClickedEvent;
-import MVC.View.Listeners.FamilyRowClickedListener;
-import MVC.View.Models.FamilyTableModel;
+import MVC.View.Listeners.PatternRowClickedListener;
+import MVC.View.Models.PatternProperties;
+import MVC.View.Models.PatternsTableModel;
 import Core.Genomes.Pattern;
 import Core.PostProcess.Family;
 
@@ -12,25 +13,27 @@ import java.util.*;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class FamilyPanel extends JPanel {
+public class PatternsPanel extends JPanel {
 
     private JTable table;
-    private FamilyTableModel model;
+    private PatternsTableModel model;
     private JScrollPane scrollPane;
-    private FamilyRowClickedListener rowClickedListener;
+    private PatternRowClickedListener rowClickedListener;
 
-    public FamilyPanel() {
+    public PatternsPanel(PatternProperties[] columns) {
         setLayout(new BorderLayout());
-        model = new FamilyTableModel();
+
+        model = new PatternsTableModel(columns);
+
         table = new JTable(model);
         table.setAutoCreateRowSorter(true);
         table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         table.getSelectionModel().addListSelectionListener(e -> {
             if (!e.getValueIsAdjusting() && table.getSelectedRow() != -1) {
-                FamilyTableModel model = ((FamilyTableModel) table.getModel());
+                PatternsTableModel model = ((PatternsTableModel) table.getModel());
 
                 rowClickedListener.rowClickedOccurred(new FamilyRowClickedEvent(
-                        model.getPattern((String) table.getValueAt(table.getSelectedRow(), model.getIndexOfColumn(model.CSB)))
+                        model.getPattern((String) table.getValueAt(table.getSelectedRow(), model.getIndexOfColumn(PatternProperties.CSB)))
                 ));
             }
         });
@@ -55,16 +58,17 @@ public class FamilyPanel extends JPanel {
 
     private List<Family> getTopScoreCSBs(List<Family> families) {
         List<Family> topScoreCSBs = families.stream().map(Family::new).collect(Collectors.toList());
-        topScoreCSBs.forEach(family -> family.getPatterns().sort(Comparator.comparing(Pattern::getScore).reversed()));
+
         topScoreCSBs.forEach(family -> {
             ArrayList<Pattern> plist = new ArrayList<>();
-            plist.add(family.getPatterns().get(0));
+            plist.add(family.getTopScoringPattern());
             family.setPatterns(plist);
         });
+
         return topScoreCSBs;
     }
 
-    public void setRowClickedListener(FamilyRowClickedListener rowClickedListener) {
+    public void setRowClickedListener(PatternRowClickedListener rowClickedListener) {
         this.rowClickedListener = rowClickedListener;
     }
 

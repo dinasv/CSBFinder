@@ -1,40 +1,53 @@
 package MVC.View.Components.Panels;
 
-import MVC.View.Listeners.FamilyRowClickedListener;
+import MVC.View.Listeners.PatternRowClickedListener;
 import Core.PostProcess.Family;
+import MVC.View.Models.PatternProperties;
+import MVC.View.Models.PatternsTableModel;
 
 import javax.swing.*;
 import java.util.List;
 
 public class SummaryTabs extends JTabbedPane {
 
-    private FamilyPanel familyPanel;
-    private FamilyPanel familyTopScorePanel;
+    private PatternsPanel patternsPanel;
+    private PatternsPanel familyTopScorePanel;
+
+    private static PatternProperties[] columns = {
+            PatternProperties.ID,
+            PatternProperties.LENGTH,
+            PatternProperties.SCORE,
+            PatternProperties.INSTANCE_COUNT,
+            PatternProperties.CSB,
+            PatternProperties.MAIN_CATEGORY,
+            PatternProperties.FAMILY_ID,
+    };
 
     public SummaryTabs() {
-        familyPanel = new FamilyPanel();
-        familyTopScorePanel = new FamilyPanel();
-        addTab("CSBs", familyPanel);
+
+        patternsPanel = new PatternsPanel(columns);
+        familyTopScorePanel = new PatternsPanel(columns);
+        addTab("CSBs", patternsPanel);
         addTab("Top Scoring CSBs", familyTopScorePanel);
     }
 
     public void setFamilyData(List<Family> familyList) {
-        familyPanel.setData(familyList);
+        patternsPanel.setData(familyList);
         familyTopScorePanel.setTopScoreData(familyList);
     }
 
-    public void setFamilyRowClickedListener(FamilyRowClickedListener listener) {
-        familyPanel.setRowClickedListener(listener);
+    public void setFamilyRowClickedListener(PatternRowClickedListener listener) {
+        patternsPanel.setRowClickedListener(listener);
         familyTopScorePanel.setRowClickedListener(listener);
     }
 
     public void clearPanel(){
-        familyPanel.clearPanel();
+        patternsPanel.clearPanel();
         familyTopScorePanel.clearPanel();
     }
 
     public void fireTableDataChanged(){
-        familyPanel.fireTableDataChanged();
+        patternsPanel.fireTableDataChanged();
         familyTopScorePanel.fireTableDataChanged();
     }
 }

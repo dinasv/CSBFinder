@@ -1,6 +1,6 @@
 package MVC.View.Components.Panels;
 
-import MVC.View.Listeners.FamilyRowClickedListener;
+import MVC.View.Listeners.PatternRowClickedListener;
 import Core.PostProcess.Family;
 import Core.Genomes.COG;
 
@@ -32,7 +32,7 @@ public class SummaryPanel extends JSplitPane {
         tabs.setFamilyData(familyList);
     }
 
-    public void setFamilyRowClickedListener(FamilyRowClickedListener listener) {
+    public void setFamilyRowClickedListener(PatternRowClickedListener listener) {
         tabs.setFamilyRowClickedListener(listener);
     }
 

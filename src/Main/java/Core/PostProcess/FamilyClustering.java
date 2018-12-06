@@ -13,10 +13,10 @@ import Core.ClusterBy;
  */
 public class FamilyClustering {
 
-    public static List<Family> Cluster(List<Pattern> patterns, double threshold, ClusterBy cluster_by,
-                                            GenomesInfo gi, boolean non_directons){
+    public static List<Family> Cluster(List<Pattern> patterns, double threshold, ClusterBy clusterBy,
+                                            GenomesInfo gi, boolean nonDirectons){
 
-        List<Family> families = greedyClustering(patterns, threshold, cluster_by, gi, non_directons);
+        List<Family> families = greedyClustering(patterns, threshold, clusterBy, gi, nonDirectons);
 
         for (Family family: families){
             family.sortPatternsAndSetScore();
@@ -48,7 +48,7 @@ public class FamilyClustering {
     }
 
     private static List<Family> greedyClustering(List<Pattern> patterns, double threshold, ClusterBy clusterBy,
-                                                      GenomesInfo gi, boolean non_directons){
+                                                      GenomesInfo gi, boolean nonDirectons){
 
         Collections.sort(patterns, clusterBy.patternComparator);
 

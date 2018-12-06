@@ -350,7 +350,7 @@ public class MainFrame extends JFrame {
     }
 
     private void setFamilyRowClickedListener() {
-        summaryPanel.setFamilyRowClickedListener(new FamilyRowClickedListener() {
+        summaryPanel.setFamilyRowClickedListener(new PatternRowClickedListener() {
             @Override
             public void rowClickedOccurred(FamilyRowClickedEvent event) {
                 Pattern pattern = event.getPattern();

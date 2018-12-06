@@ -1,5 +1,6 @@
 package MVC.View.Models;
 
+import Core.Genomes.Instance;
 import Core.Genomes.Pattern;
 import Core.PostProcess.Family;
 
@@ -8,53 +9,30 @@ import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-public class FamilyTableModel extends AbstractTableModel {
+public class PatternsTableModel extends AbstractTableModel {
 
-    public final static String ID = "ID";
-    public final static String LENGTH = "Length";
-    public final static String SCORE = "Score";
-    public final static String INSTANCE_COUNT = "Instance_Count";
-    public final static String CSB = "CSB";
-    public final static String MAIN_CATEGORY = "Main_Category";
-    public final static String FAMILY_ID = "Family_ID";
-
-    public final static  String[] columns = new String[] {
-            ID,
-            LENGTH ,
-            SCORE,
-            INSTANCE_COUNT ,
-            CSB,
-            MAIN_CATEGORY ,
-            FAMILY_ID
-    };
-
+    private final PatternProperties[] columns;
 
     private List<Pattern> data;
     private Map<String, Pattern> strToPatternMap;
 
-    public FamilyTableModel(){
+    public PatternsTableModel(PatternProperties[] columns){
         super();
+
+        this.columns = columns;
         data = new ArrayList<>();
         strToPatternMap = new HashMap<>();
     }
     @Override
     public String getColumnName(int column) {
-        return columns[column];
+        return columns[column].toString();
     }
 
     @Override
     public Class<?> getColumnClass(int columnIndex) {
-        switch (columns[columnIndex]) {
-            case LENGTH:
-                return Integer.class;
-            case SCORE:
-                return Double.class;
-            case INSTANCE_COUNT:
-                return Integer.class;
-            case ID:
-                return Integer.class;
-            case FAMILY_ID:
-                return Integer.class;
+
+        if (columnIndex < columns.length){
+            return columns[columnIndex].returnType;
         }
 
         return String.class;
@@ -73,29 +51,17 @@ public class FamilyTableModel extends AbstractTableModel {
     @Override
     public Object getValueAt(int rowIndex, int columnIndex) {
         Pattern p = data.get(rowIndex);
-        switch (columns[columnIndex]) {
-            case ID:
-                return p.getPatternId();
-            case LENGTH:
-                return p.getLength();
-            case SCORE:
-                return p.getScore();
-            case INSTANCE_COUNT:
-                return p.getInstancesPerGenome();
-            case CSB:
-                return p.toString();
-            case MAIN_CATEGORY:
-                return p.getMainFunctionalCategory();
-            case FAMILY_ID:
-                return p.getFamilyId();
+
+        if(columnIndex < columns.length){
+            return columns[columnIndex].patternFunction.apply(p);
         }
         return null;
     }
 
-    public int getIndexOfColumn(String column) {
+    public int getIndexOfColumn(PatternProperties column) {
         int index = -1;
         for (int i = 0; i < columns.length; i++) {
-            if (columns[i].equalsIgnoreCase(column)) {
+            if (columns[i] == column) {
                 index = i;
                 break;
             }
