@@ -5,6 +5,7 @@ import Core.PostProcess.Family;
 
 import javax.swing.table.AbstractTableModel;
 import java.util.*;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 public class FamilyTableModel extends AbstractTableModel {
@@ -30,7 +31,6 @@ public class FamilyTableModel extends AbstractTableModel {
 
     private List<Pattern> data;
     private Map<String, Pattern> strToPatternMap;
-
 
     public FamilyTableModel(){
         super();
@@ -116,13 +116,18 @@ public class FamilyTableModel extends AbstractTableModel {
 
         clearData();
 
-        for (Family family: families) {
-            family.getPatterns().forEach(pattern -> {
-                pattern.setFamilyId(family.getFamilyId());
-                strToPatternMap.put(pattern.toString(), pattern);
-            });
-            data.addAll(family.getPatterns());
-        }
+        families.forEach(family -> family.getPatterns()
+                .forEach(pattern -> pattern.setFamilyId(family.getFamilyId())));
+
+        strToPatternMap.putAll(families.stream()
+                .map(Family::getPatterns)
+                .flatMap(List::stream)
+                .collect(Collectors.toMap(Pattern::toString, Function.identity())));
+
+        data.addAll(families.stream()
+                .map(Family::getPatterns)
+                .flatMap(List::stream)
+                .collect(Collectors.toList()));
     }
 
     public Pattern getPattern(String pattern) {
