@@ -53,11 +53,11 @@ public class CSBFinderController {
         return model.getCogInfo(genes);
     }
 
-    public Set<COG> getInsertedGenes(Map<String, Map<String, List<InstanceInfo>>> instances, List<COG> patternGenes){
-        return model.getInsertedGenes(instances, patternGenes);
+    public Set<COG> getInsertedGenes(Pattern pattern, List<COG> patternCOGs){
+        return model.getInsertedGenes(pattern, patternCOGs);
     }
 
-    public Map<String, Map<String, List<InstanceInfo>>> getInstances(Pattern pattern) { return model.getInstances(pattern); }
+    public void setInstancesInfo(Pattern pattern) { model.setInstancesInfo(pattern); }
 
     public Map<String, Genome> getGenomeMap() { return model.getGenomeMap(); }
 

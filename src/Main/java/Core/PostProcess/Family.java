@@ -95,6 +95,10 @@ public class Family {
         return patterns;
     }
 
+    public int size(){
+        return patterns.size();
+    }
+
     public void setPatterns(List<Pattern> plist) {
         this.patterns = plist;
     }

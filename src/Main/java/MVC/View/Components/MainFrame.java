@@ -2,7 +2,6 @@ package MVC.View.Components;
 
 import Core.OutputType;
 import MVC.Common.CSBFinderRequest;
-import MVC.Common.InstanceInfo;
 import MVC.Controller.CSBFinderController;
 import MVC.View.Components.Dialogs.InputParametersDialog;
 import MVC.View.Components.Dialogs.ProgressBar;
@@ -101,6 +100,7 @@ public class MainFrame extends JFrame {
     private void setEventListeners() {
         setInputsListener();
         setToolbarListener();
+        setPatternRowClickedListener();
         setFamilyRowClickedListener();
     }
 
@@ -349,18 +349,32 @@ public class MainFrame extends JFrame {
         });
     }
 
-    private void setFamilyRowClickedListener() {
-        summaryPanel.setFamilyRowClickedListener(new PatternRowClickedListener() {
+    private void setPatternRowClickedListener() {
+        summaryPanel.setPatternRowClickedListener(new RowClickedListener<Pattern>() {
             @Override
-            public void rowClickedOccurred(FamilyRowClickedEvent event) {
-                Pattern pattern = event.getPattern();
-                Map<String, Map<String, List<InstanceInfo>>> instances = controller.getInstances(pattern);
+            public void rowClickedOccurred(RowClickedEvent<Pattern> event) {
+                Pattern pattern = event.getRow();
+
+                controller.setInstancesInfo(pattern);
                 genomes.clearPanel();
-                genomes.displayInstances(pattern.getPatternGenes(), instances);
+                genomes.displayInstances(pattern);
 
                 List<COG> patternCOGs = controller.getCogInfo(pattern.getPatternGenes());
-                Set<COG> insertedGenes = controller.getInsertedGenes(instances, patternCOGs);
+                Set<COG> insertedGenes = controller.getInsertedGenes(pattern, patternCOGs);
                 summaryPanel.setCogInfo(patternCOGs, insertedGenes, genomes.getColorsUsed());
+            }
+        });
+    }
+
+    private void setFamilyRowClickedListener() {
+        summaryPanel.setFamilyRowClickedListener(new RowClickedListener<Family>() {
+            @Override
+            public void rowClickedOccurred(RowClickedEvent<Family> event) {
+                Family family = event.getRow();
+                summaryPanel.setFamilyPatternsData(family);
+
+                genomes.clearPanel();
+                genomes.displayPatterns(family.getPatterns());
             }
         });
     }

@@ -1,5 +1,8 @@
 package MVC.View.Components.Panels;
 
+import Core.Genomes.InstanceLocation;
+import Core.Genomes.Pattern;
+import Core.Genomes.PatternLocationsInGenome;
 import MVC.Common.InstanceInfo;
 import MVC.View.Components.Shapes.*;
 import MVC.View.Components.Shapes.Label;
@@ -16,13 +19,18 @@ public class InstancesPanel extends JPanel {
     private GridBagConstraints gc;
 
     private static final int CONTAINERS_DIST = 50;
-    Random rnd = new Random();
+    private static final int PADDING = 4;
+
+    private Random rnd = new Random();
 
     private  Map<String, Color> colorsUsed;
 
     private int rowHeight;
     private int firstRowHeight;
 
+    public static final Color LIGHT_GRAY = new Color(238,238,238);
+
+    private List<ShapesPanel> rows;
 
     public InstancesPanel(Map<String, Color> colorsUsed) {
 
@@ -32,14 +40,14 @@ public class InstancesPanel extends JPanel {
         this.rowHeight = 0;
         this.firstRowHeight = 0;
 
-        //setPreferredSize(new Dimension(1000, 500));
+        rows = new ArrayList<>();
 
         this.colorsUsed = colorsUsed;
 
     }
 
-    public void displayInstances(List<Gene> pattenGenes, List<Map<String,List<InstanceInfo>>>  instances, int scrollWidth) {
-        setData(instances, pattenGenes, scrollWidth);
+    public void displayInstances(int scrollWidth) {
+        showData(scrollWidth);
         revalidate();
         repaint();
     }
@@ -48,50 +56,76 @@ public class InstancesPanel extends JPanel {
         removeAll();
     }
 
-    private void setData(List<Map<String,List<InstanceInfo>>> instances, List<Gene> pattenGenes, int scrollWidth) {
+    public void setData(List<Pattern> patterns){
+        rows.clear();
 
-        int colIndex = 0;
+        for (Pattern pattern: patterns) {
+            ShapesPanel instancesRowPanel = createPatternRow(pattern.getPatternGenes());
+
+            if (instancesRowPanel != null) {
+                firstRowHeight = instancesRowPanel.getPanelHeight() + PADDING;
+            }
+
+            rows.add(instancesRowPanel);
+        }
+    }
+
+    public void setData(Pattern pattern) {
+
+        rows.clear();
+
+        ShapesPanel instancesRowPanel = createPatternRow(pattern.getPatternGenes());
+
+        if (instancesRowPanel != null) {
+            firstRowHeight = instancesRowPanel.getPanelHeight() + PADDING;
+        }
+        rows.add(instancesRowPanel);
+
+        List<ShapesInstance> shapesInstanceInnerList;
+        int x;
+        int y = 0;
+        for (Map.Entry<Integer, PatternLocationsInGenome> genomeInstances: pattern.getPatternLocations().entrySet()) {
+            x = 0;
+
+            PatternLocationsInGenome locationsInGenome = genomeInstances.getValue();
+            List<List<ShapesInstance>> genomeShapesInstances = new ArrayList<>();
+            for (List<InstanceLocation> repliconInstances : locationsInGenome.getSortedLocations().values()) {
+
+                shapesInstanceInnerList = new ArrayList<>();
+                x = getShapeInstanceList(repliconInstances, shapesInstanceInnerList, x, y);
+
+                genomeShapesInstances.add(shapesInstanceInnerList);
+
+            }
+
+            instancesRowPanel = getInstancesRowPanel(genomeShapesInstances, LIGHT_GRAY);
+            if (instancesRowPanel != null) {
+                rowHeight = instancesRowPanel.getPanelHeight() + PADDING;
+            }
+            rows.add(instancesRowPanel);
+        }
+    }
+
+    public void showData(int scrollWidth){
+        int rowIndex = 0;
+
+        for (ShapesPanel row: rows){
+            rowIndex = addInstancePanelRow(row, rowIndex, scrollWidth, row.getPanelHeight()+PADDING);
+        }
+    }
+
+    private ShapesPanel createPatternRow(List<Gene> pattenGenes){
 
         List<ShapesInstance> shapesInstanceInnerList = new ArrayList<>();
         shapesInstanceInnerList.add(getShapesCSB(pattenGenes, 0, 0));
         List<List<ShapesInstance>> shapesInstanceOuterList = new ArrayList<>();
         shapesInstanceOuterList.add(shapesInstanceInnerList);
-        ShapesPanel instancesRowPanel = getInstancesRowPanel(shapesInstanceOuterList,  Color.WHITE);
+        ShapesPanel patternRow = getInstancesRowPanel(shapesInstanceOuterList,  Color.WHITE);
 
-        if (instancesRowPanel != null) {
-            firstRowHeight = instancesRowPanel.getPanelHeight() + 4;
-        }
-        colIndex = setGenomePanelRow(instancesRowPanel, colIndex, scrollWidth, firstRowHeight);
-
-        Color light_gray = new Color(238,238,238);
-
-        int x;
-        int y;
-        for (Map<String, List<InstanceInfo>> genomeInstances: instances) {
-            x = 0;
-            y = 0;
-
-            List<List<ShapesInstance>> genomeShapesInstances = new ArrayList<>();
-            for (Map.Entry<String, List<InstanceInfo>> repliconInstances : genomeInstances.entrySet()) {
-                List<InstanceInfo> instancesList = repliconInstances.getValue();
-
-                shapesInstanceInnerList = new ArrayList<>();
-                x = getShapeInstanceList(instancesList, shapesInstanceInnerList, x, y);
-
-                genomeShapesInstances.add(shapesInstanceInnerList);
-
-            }
-            instancesRowPanel = getInstancesRowPanel(genomeShapesInstances, light_gray);
-            if (instancesRowPanel != null) {
-                rowHeight = instancesRowPanel.getPanelHeight() + 4;
-            }
-            colIndex = setGenomePanelRow(instancesRowPanel, colIndex, scrollWidth, rowHeight);
-        }
+        return patternRow;
     }
 
-
-
-    private int setGenomePanelRow(ShapesPanel instancesRowPanel, int colIndex, int scrollWidth, int height){
+    private int addInstancePanelRow(ShapesPanel instancesRowPanel, int rowIndex, int scrollWidth, int height){
 
         JScrollPane scrollPane = new JScrollPane(instancesRowPanel);
         scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_NEVER);
@@ -100,18 +134,17 @@ public class InstancesPanel extends JPanel {
         scrollWidth -= 10;
         scrollPane.setPreferredSize(new Dimension(scrollWidth, height));
 
-        gc.gridx = 0; gc.gridy = colIndex; gc.anchor = GridBagConstraints.FIRST_LINE_START; //gc.insets = insetList;
+        gc.gridx = 0; gc.gridy = rowIndex; gc.anchor = GridBagConstraints.FIRST_LINE_START;
         add(scrollPane, gc);
-        colIndex += 1;
 
-        return colIndex;
+        return rowIndex+1;
     }
 
 
-    private int getShapeInstanceList(List<InstanceInfo> instancesList,
+    private int getShapeInstanceList(List<InstanceLocation> instancesList,
                                                       List<ShapesInstance> shapesInstanceList, int x, int y){
 
-        for (InstanceInfo instance : instancesList) {
+        for (InstanceLocation instance : instancesList) {
             ShapesInstance shapesInstance = getShapesInstance(instance, x, y);
             shapesInstanceList.add(shapesInstance);
             x += shapesInstance.getWidth() + CONTAINERS_DIST;
@@ -136,12 +169,12 @@ public class InstancesPanel extends JPanel {
         return new ShapesInstance(geneShapesList, x, y);
     }
 
-    private ShapesInstance getShapesInstance(InstanceInfo instance, int x, int y){
+    private ShapesInstance getShapesInstance(InstanceLocation instance, int x, int y){
         List<GeneShape> geneShapesList = getGeneShapesList(instance.getGenes(), x, y);
 
-        Label instanceNameLabel = new Label(instance.getInstanceLocation().getRepliconName());
-        Label instanceStartIndexLabel = new Label(Integer.toString(instance.getInstanceLocation().getActualStartIndex()));
-        Label instanceEndIndexLabel = new Label(Integer.toString(instance.getInstanceLocation().getActualEndIndex()-1));
+        Label instanceNameLabel = new Label(instance.getRepliconName());
+        Label instanceStartIndexLabel = new Label(Integer.toString(instance.getActualStartIndex()));
+        Label instanceEndIndexLabel = new Label(Integer.toString(instance.getActualEndIndex()-1));
         return new ShapesInstance(geneShapesList, x, y, instanceNameLabel, instanceStartIndexLabel, instanceEndIndexLabel);
     }
 

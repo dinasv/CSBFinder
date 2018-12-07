@@ -33,4 +33,18 @@ public class PatternLocationsInGenome {
         return repliconToLocations;
     }
 
+    public String getGenomeName(){
+        String name = "";
+        if (repliconToLocations.size() > 0){
+            Iterator<Integer> it = repliconToLocations.keySet().iterator();
+            if (it.hasNext()){
+                List<InstanceLocation> locations = repliconToLocations.get(it.next());
+                if (locations.size() > 0){
+                    name = locations.get(0).getGenomeName();
+                }
+            }
+        }
+        return name;
+    }
+
 }

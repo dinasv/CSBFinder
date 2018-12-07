@@ -2,14 +2,12 @@ package MVC.View.Components.Panels;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.Iterator;
 import java.util.List;
 
 public class InstancesLabelsPanel extends JPanel {
 
     private GridBagConstraints gc;
-
-    public static final int GENOME_NAME_WIDTH = 300;
-
 
     public InstancesLabelsPanel() {
         setLayout(new GridBagLayout());
@@ -24,25 +22,33 @@ public class InstancesLabelsPanel extends JPanel {
         repaint();
     }
 
+    public int getPanelWidth(){
+        return (int)this.getPreferredSize().getWidth();
+    }
+
+
     public void clearPanel(){
         removeAll();
     }
 
-    private void setData(List<String> instances, int firstRowHeight, int rowHeight) {
+    private void setData(List<String> names, int firstRowHeight, int rowHeight) {
 
         int colIndex = 0;
 
         // For GridBagLayout
         Insets insetName = new Insets(0, 0, 0, 5);
 
-        JLabel genomeRowLabel = getGenomeRowLabelComponent("CSB", firstRowHeight);
-        colIndex = setLabelsRow(colIndex, insetName, genomeRowLabel);
+        Iterator<String> namesIt = names.iterator();
 
-        for (String genomeName: instances) {
+        JLabel rowLabel;
+        if (namesIt.hasNext()) {
+            rowLabel = getGenomeRowLabelComponent(namesIt.next(), firstRowHeight);
+            colIndex = setLabelsRow(colIndex, insetName, rowLabel);
+        }
 
-            genomeRowLabel = getGenomeRowLabelComponent(genomeName, rowHeight);
-            colIndex = setLabelsRow(colIndex, insetName, genomeRowLabel);
-
+        while (namesIt.hasNext()) {
+            rowLabel = getGenomeRowLabelComponent(namesIt.next(), rowHeight);
+            colIndex = setLabelsRow(colIndex, insetName, rowLabel);
         }
     }
 
@@ -60,7 +66,8 @@ public class InstancesLabelsPanel extends JPanel {
     private JLabel getGenomeRowLabelComponent(String label, int rowHeight) {
         JLabel genomeRowLabelComponent = new JLabel(label);
         genomeRowLabelComponent.setToolTipText(label);
-        genomeRowLabelComponent.setPreferredSize(new Dimension(GENOME_NAME_WIDTH, rowHeight));
+        int panelWidth = genomeRowLabelComponent.getPreferredSize().width;
+        genomeRowLabelComponent.setPreferredSize(new Dimension(panelWidth, rowHeight));
         return genomeRowLabelComponent;
     }
 

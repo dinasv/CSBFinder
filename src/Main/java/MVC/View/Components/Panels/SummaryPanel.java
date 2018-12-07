@@ -1,8 +1,9 @@
 package MVC.View.Components.Panels;
 
-import MVC.View.Listeners.PatternRowClickedListener;
+import Core.Genomes.Pattern;
 import Core.PostProcess.Family;
 import Core.Genomes.COG;
+import MVC.View.Listeners.RowClickedListener;
 
 import javax.swing.*;
 import java.awt.*;
@@ -12,28 +13,36 @@ import java.util.Map;
 
 public class SummaryPanel extends JSplitPane {
 
-    private SummaryTabs tabs;
+    private ResultsPanel resultsPanel;
     private CSBSummaryPanel csbSummaryPanel;
 
     public SummaryPanel() {
         csbSummaryPanel = new CSBSummaryPanel();
 
-        tabs = new SummaryTabs();
+        resultsPanel = new ResultsPanel();
 
         setOrientation(JSplitPane.HORIZONTAL_SPLIT);
         setDividerSize(2);
-        setLeftComponent(tabs);
+        setLeftComponent(resultsPanel);
         setRightComponent(csbSummaryPanel);
         setResizeWeight(0.7);
     }
 
-
     public void setFamilyData(List<Family> familyList) {
-        tabs.setFamilyData(familyList);
+        resultsPanel.setFamilyData(familyList);
+        resultsPanel.selectFamiliesFirstRow();
     }
 
-    public void setFamilyRowClickedListener(PatternRowClickedListener listener) {
-        tabs.setFamilyRowClickedListener(listener);
+    public void setFamilyPatternsData(Family family){
+        resultsPanel.setFamilyPatternsData(family);
+    }
+
+    public void setPatternRowClickedListener(RowClickedListener<Pattern> listener) {
+        resultsPanel.setPatternRowClickedListener(listener);
+    }
+
+    public void setFamilyRowClickedListener(RowClickedListener<Family> listener) {
+        resultsPanel.setFamilyRowClickedListener(listener);
     }
 
     public void setCogInfo(List<COG> patternGenes, Collection<COG> insertedGenes, Map<String, Color> colorsUsed) {
@@ -41,7 +50,7 @@ public class SummaryPanel extends JSplitPane {
     }
 
     public void clearPanel(){
-        tabs.clearPanel();
+        resultsPanel.clearPanel();
         csbSummaryPanel.clearPanel();
     }
 
@@ -50,6 +59,6 @@ public class SummaryPanel extends JSplitPane {
     }
 
     public void fireTableDataChanged(){
-        tabs.fireTableDataChanged();
+        resultsPanel.fireTableDataChanged();
     }
 }

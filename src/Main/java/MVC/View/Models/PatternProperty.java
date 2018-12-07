@@ -5,10 +5,9 @@ package MVC.View.Models;
 
 import Core.Genomes.Pattern;
 
-import java.util.Comparator;
 import java.util.function.Function;
 
-public enum PatternProperties {
+public enum PatternProperty implements ColumnProperty<Pattern> {
 
     ID(Pattern::getPatternId, Integer.class),
     LENGTH(Pattern::getLength, Integer.class),
@@ -18,11 +17,19 @@ public enum PatternProperties {
     MAIN_CATEGORY(Pattern::getMainFunctionalCategory, String.class),
     FAMILY_ID(Pattern::getFamilyId, Integer.class);
 
-    public final Function<Pattern, ?> patternFunction;
-    public final Class<?> returnType;
+    private final Function<Pattern, ?> patternFunction;
+    private final Class<?> returnType;
 
-    PatternProperties(Function<Pattern, ?> patternFunction, Class<?> returnType){
+    PatternProperty(Function<Pattern, ?> patternFunction, Class<?> returnType){
         this.patternFunction = patternFunction;
         this.returnType = returnType;
+    }
+
+    public Function<Pattern, ?> getFunction(){
+        return patternFunction;
+    }
+
+    public Class<?> getFunctionReturnType(){
+        return returnType;
     }
 }

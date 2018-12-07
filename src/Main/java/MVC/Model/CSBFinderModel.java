@@ -252,7 +252,7 @@ public class CSBFinderModel {
 
     private String createHeader(boolean include_families){
 
-        String header = "ID\tLength\tScore\tInstance_Count\tCSB";
+        String header = "FAMILY_ID\tLength\tScore\tInstance_Count\tCSB";
         if (cogInfo.cogInfoExists()){
             header += "\tMain_Category";
         }
@@ -302,17 +302,17 @@ public class CSBFinderModel {
         return currCogInfo;
     }
 
-    public Set<COG> getInsertedGenes(Map<String, Map<String, List<InstanceInfo>>> instances, List<COG> patternGenes) {
+    public Set<COG> getInsertedGenes(Pattern pattern, List<COG> patternCOGs) {
 
         Set<COG> insertedGenes = new HashSet<COG>();
 
         if (params.maxInsertion > 0) {
             Set<COG> patternGenesSet = new HashSet<>();
-            patternGenesSet.addAll(patternGenes);
+            patternGenesSet.addAll(patternCOGs);
 
-            for (Map<String, List<InstanceInfo>> instancesMap : instances.values()) {
-                for (List<InstanceInfo> instancesList : instancesMap.values()) {
-                    for (InstanceInfo instance : instancesList) {
+            for (PatternLocationsInGenome instancesMap : pattern.getPatternLocations().values()) {
+                for (List<InstanceLocation> instancesList : instancesMap.getSortedLocations().values()) {
+                    for (InstanceLocation instance : instancesList) {
                         List<COG> instanceGenes = getCogInfo(instance.getGenes());
                         Set<COG> instanceGenesSet = new HashSet<>();
                         instanceGenesSet.addAll(instanceGenes);
@@ -325,9 +325,8 @@ public class CSBFinderModel {
         return insertedGenes;
     }
 
-    public Map<String, Map<String, List<InstanceInfo>>> getInstances(Pattern pattern){
+    public void setInstancesInfo(Pattern pattern){
 
-        Map<String, Map<String, List<InstanceInfo>>> instances = new HashMap<>();
         Map<Integer, PatternLocationsInGenome> locationsPerGenome = pattern.getPatternLocations();
 
         for (Map.Entry<Integer, PatternLocationsInGenome> genomeToRepliconsLocations : locationsPerGenome.entrySet()) {
@@ -337,34 +336,23 @@ public class CSBFinderModel {
 
             PatternLocationsInGenome repliconInstanceLocations = genomeToRepliconsLocations.getValue();
 
-            Map<String, List<InstanceInfo>> repliconInstances = new HashMap<>();
-
             for (Map.Entry<Integer, List<InstanceLocation>> replicon2locations : repliconInstanceLocations.getSortedLocations().entrySet()) {
 
-                List<InstanceInfo> instanceLocations = new ArrayList<>();
-
                 int replicon_id = replicon2locations.getKey();
-                String replicon_name = genome.getReplicon(replicon2locations.getKey()).getName();
-                List<InstanceLocation> instances_locations = replicon2locations.getValue();
+                String repliconName = genome.getReplicon(replicon2locations.getKey()).getName();
 
-                for (InstanceLocation instance_location : instances_locations) {
-                    instance_location.setRepliconName(replicon_name);
-                    List<Gene> genes = getInstanceFromCogList(genomeName, replicon_id, instance_location.getActualStartIndex(),
-                            instance_location.getActualEndIndex());
+                List<InstanceLocation> instanceLocations = replicon2locations.getValue();
+                for (InstanceLocation instanceLocation : instanceLocations) {
+                    instanceLocation.setRepliconName(repliconName);
+                    instanceLocation.setGenomeName(genomeName);
+                    List<Gene> genes = getInstanceFromCogList(genomeName, replicon_id, instanceLocation.getActualStartIndex(),
+                            instanceLocation.getActualEndIndex());
                     if (genes != null) {
-                        instanceLocations.add(new InstanceInfo(instance_location, genes));
+                        instanceLocation.setGenes(genes);
                     }
                 }
-                if (instanceLocations.size() > 0) {
-                    repliconInstances.put(replicon_name, instanceLocations);
-                }
-            }
-            if (repliconInstances.size() > 0) {
-                instances.put(genomeName, repliconInstances);
             }
         }
-
-        return instances;
     }
 
     private List<Gene> getInstanceFromCogList(String genomeName, int replicon_id, int startIndex, int endIndex) {

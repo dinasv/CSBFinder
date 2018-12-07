@@ -13,7 +13,7 @@ public class InstanceNode extends SuffixNode {
     /**
      * Save for every genome in genomeToLocations, the position of the suffix of that string that ends at this node
      *
-     * key = genome ID
+     * key = genome FAMILY_ID
      * value = a list of locations of this substring in this genome
      */
     private Map<Integer, List<InstanceLocation>> genomeToLocations;

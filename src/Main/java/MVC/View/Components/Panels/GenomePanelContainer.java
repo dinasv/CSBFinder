@@ -1,6 +1,8 @@
 package MVC.View.Components.Panels;
 
 import Core.Genomes.Gene;
+import Core.Genomes.Pattern;
+import Core.Genomes.PatternLocationsInGenome;
 import MVC.Common.InstanceInfo;
 import MVC.View.Components.Shapes.*;
 
@@ -8,6 +10,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.util.*;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class GenomePanelContainer extends JPanel {
 
@@ -37,18 +40,38 @@ public class GenomePanelContainer extends JPanel {
 
     }
 
-    public void displayInstances(List<Gene> pattenGenes, Map<String, Map<String, List<InstanceInfo>>> instances,
-                                 int scrollWidth) {
+    public void displayPatterns(List<Pattern> patterns, int scrollWidth){
+
+        List<String> patternNames = patterns.stream()
+                                            .map(Pattern::getPatternId)
+                                            .map(String::valueOf)
+                                            .map(id -> "CSB " + id)
+                                            .collect(Collectors.toList());
+
+        instancesPanel.setData(patterns);
+        labelsPanel.displayInstancesLabels(patternNames, instancesPanel.getFirstRowHeight(), instancesPanel.getFirstRowHeight());
+        instancesPanel.showData(scrollWidth - labelsPanel.getPanelWidth());
+
+        revalidate();
+        repaint();
+    }
+
+    public void displayInstances(Pattern pattern, int scrollWidth) {
 
         List<String> genomeNames = new ArrayList<>();
-        List<Map<String,List<InstanceInfo>>> instancesList = new ArrayList<>();
-        for(Map.Entry<String, Map<String, List<InstanceInfo>>> entry: instances.entrySet()){
-            genomeNames.add(entry.getKey());
-            instancesList.add(entry.getValue());
-        }
+        genomeNames.add("CSB");//first label
 
-        instancesPanel.displayInstances(pattenGenes, instancesList, scrollWidth-InstancesLabelsPanel.GENOME_NAME_WIDTH);
+        genomeNames.addAll(pattern.getPatternLocations()
+                .values()
+                .stream()
+                .map(PatternLocationsInGenome::getGenomeName)
+                .collect(Collectors.toList()));
+
+        instancesPanel.setData(pattern);
         labelsPanel.displayInstancesLabels(genomeNames, instancesPanel.getFirstRowHeight(), instancesPanel.getRowHeight());
+
+        scrollWidth = scrollWidth-labelsPanel.getPanelWidth();
+        instancesPanel.displayInstances(scrollWidth);
 
         revalidate();
         repaint();

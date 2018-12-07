@@ -1,7 +1,6 @@
 package MVC.View.Components.Panels;
 
-import Core.Genomes.Gene;
-import MVC.Common.InstanceInfo;
+import Core.Genomes.Pattern;
 
 import javax.swing.*;
 import java.awt.*;
@@ -24,9 +23,17 @@ public class GenomePanel extends JPanel {
 
     }
 
-    public void displayInstances(List<Gene> pattenGenes, Map<String,Map<String,List<InstanceInfo>>> instances) {
-        int scroll_width = scroll.getViewport().getSize().width;
-        container.displayInstances(pattenGenes, instances, scroll_width);
+    public void displayInstances(Pattern pattern) {
+        int scrollWidth = scroll.getViewport().getSize().width;
+
+        container.displayInstances(pattern, scrollWidth);
+        container.revalidate();
+        container.repaint();
+    }
+
+    public void displayPatterns(List<Pattern> patterns) {
+        int scrollWidth = scroll.getViewport().getSize().width;
+        container.displayPatterns(patterns, scrollWidth);
         container.revalidate();
         container.repaint();
     }

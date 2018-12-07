@@ -1,5 +1,8 @@
 package Core.Genomes;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  *
  */
@@ -16,6 +19,8 @@ public class InstanceLocation{
     private int genomicSegmentStartIndex;
 
     private String repliconName;
+    private String genomeName;
+    private List<Gene> genes;
 
     public InstanceLocation(int repliconId, int genomeId, int relativeStartIndex, int length, Strand strand,
                             int genomicSegmentStartIndex, int genomicSegmentLength){
@@ -28,6 +33,8 @@ public class InstanceLocation{
         this.genomicSegmentStartIndex = genomicSegmentStartIndex;
 
         repliconName = "";
+        genomeName = "";
+        genes = new ArrayList<>();
     }
 
     public InstanceLocation(InstanceLocation other){
@@ -61,7 +68,6 @@ public class InstanceLocation{
         return relativeStartIndex + instanceLength;
     }
 
-
     public int getActualStartIndex(){
         int startIndex = genomicSegmentStartIndex + relativeStartIndex;
         if (strand == Strand.REVERSE){
@@ -82,8 +88,23 @@ public class InstanceLocation{
         return repliconName;
     }
 
-    public void setRepliconName(String repliconName) {
-        this.repliconName = repliconName;
+    public String getGenomeName() {
+        return genomeName;
+    }
+    public List<Gene> getGenes() {
+        return genes;
+    }
+
+    public void setRepliconName(String value) {
+        this.repliconName = value;
+    }
+
+    public void setGenomeName(String value) {
+        this.genomeName = value;
+    }
+
+    public void setGenes(List<Gene> genes) {
+        this.genes = genes;
     }
 
     public int getLength(){

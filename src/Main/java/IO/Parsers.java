@@ -13,13 +13,13 @@ import java.util.*;
 public class Parsers {
 
     final static String PATTERN_DELIMITER = ",";
-    final static String[] INSTANCE_HEADER = {"[ID]","[Length]","[Score]","[Count]","[Genes]","[Family ID]"};
+    final static String[] INSTANCE_HEADER = {"[FAMILY_ID]","[Length]","[Score]","[Count]","[Genes]","[Family FAMILY_ID]"};
     final static String INSTANCE_HEADER_DELIMITER = "TAB";
-    final static String[] GENOME_HEADER = {"[Genome name]","[Replicon ID]"};
+    final static String[] GENOME_HEADER = {"[Genome name]","[Replicon FAMILY_ID]"};
     final static String GENOME_HEADER_DELIMITER = "|";
-    final static String[] GENE_LINE = {"[Gene ID]","[Strand]"};
+    final static String[] GENE_LINE = {"[Gene FAMILY_ID]","[Strand]"};
     final static String GENE_LINE_DELIMITER = "TAB";
-    final static String[] COG_LINE = {"[COG ID]","[COG description]"};
+    final static String[] COG_LINE = {"[COG FAMILY_ID]","[COG description]"};
     final static String COG_LINE_DELIMITER = ";";
 
     final static String GENOMES_START = "<genomes>";
@@ -41,7 +41,7 @@ public class Parsers {
             while (line != null) {
                 if (line.charAt(0) == '>') {
 
-                    patternId = castToInteger(line.substring(1), "ID", lineNumber, inputPatternsFilePath);
+                    patternId = castToInteger(line.substring(1), "FAMILY_ID", lineNumber, inputPatternsFilePath);
 
                 } else {
                     List<Gene> genes = parseGenes(line, lineNumber, inputPatternsFilePath);
@@ -88,7 +88,7 @@ public class Parsers {
      * Parse {@code rawLine} containing a gene and its numericValue separated by TAB, and create {@link Genomes.Gene}.
      * A numericValue must be "+" or "-"
      * <p>
-     * Format: [Gene ID][TAB][Strand]
+     * Format: [Gene FAMILY_ID][TAB][Strand]
      * <p>
      * Valid examples:
      * COG1234[TAB]+
@@ -414,9 +414,9 @@ public class Parsers {
      * For each cog that is used in our data, save information of the functional category
      * <p>
      * Format of a line in the file:
-     * [COG ID];[COG description];[Functional letter X],[Functional letter Y],...;[Description of X];[Description of Y];...;[Gene ID]
+     * [COG FAMILY_ID];[COG description];[Functional letter X],[Functional letter Y],...;[Description of X];[Description of Y];...;[Gene FAMILY_ID]
      * <p>
-     * Optional: Functional letters and their description, Gene ID
+     * Optional: Functional letters and their description, Gene FAMILY_ID
      * <p>
      * Valid examples:
      * COG0001;Glutamate-1-semialdehyde aminotransferase;H;Coenzyme transport and metabolism;HemL;

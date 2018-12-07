@@ -141,7 +141,7 @@ public class ExcelWriter implements PatternsWriter{
     private int printPatternDescToExcelSheet(Sheet sheet, int rowNum, Pattern pattern, CogInfo cogInfo){
         try {
             Row row = sheet.createRow(rowNum++);
-            row.createCell(0).setCellValue("ID=");
+            row.createCell(0).setCellValue("FAMILY_ID=");
             row.createCell(1).setCellValue(pattern.getPatternId());
             row.createCell(2).setCellValue("Count=");
             row.createCell(3).setCellValue(pattern.getInstancesPerGenome());

@@ -102,7 +102,7 @@ public class Controller {
 
     private String createHeader(boolean include_families){
 
-        String header = "ID\tLength\tScore\tInstance_Count\tCSB";
+        String header = "FAMILY_ID\tLength\tScore\tInstance_Count\tCSB";
         if (cogInfo.cogInfoExists()){
             header += "\tMain_Category";
         }
