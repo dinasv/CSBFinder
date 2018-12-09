@@ -375,6 +375,12 @@ public class MainFrame extends JFrame {
 
                 genomes.clearPanel();
                 genomes.displayPatterns(family.getPatterns());
+
+                List<COG> patternCOGs = new ArrayList<>();
+                for (Pattern pattern: family.getPatterns()) {
+                    patternCOGs.addAll(controller.getCogInfo(pattern.getPatternGenes()));
+                }
+                summaryPanel.setCogInfo(patternCOGs, new HashSet<>(), genomes.getColorsUsed());
             }
         });
     }
