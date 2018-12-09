@@ -1,6 +1,6 @@
 package MVC.View.Components;
 
-import MVC.View.Components.Dialogs.GenomeFileChooser;
+import MVC.View.Components.Dialogs.InputFileChooser;
 import MVC.View.Events.LoadFileEvent;
 import MVC.View.Events.SaveOutputEvent;
 import MVC.View.Events.SelectParamsEvent;
@@ -10,8 +10,6 @@ import MVC.View.Listeners.SelectParamsListener;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 
 public class Toolbar extends JPanel {
 
@@ -49,7 +47,8 @@ public class Toolbar extends JPanel {
         add(saveFile);
 
         loadFile.addActionListener(e -> {
-            fileChooser.addChoosableFileFilter(new GenomeFileChooser());
+            fileChooser.addChoosableFileFilter(new InputFileChooser());
+            fileChooser.setAcceptAllFileFilterUsed(false);
 
             int value = fileChooser.showOpenDialog(this);
 
@@ -59,6 +58,8 @@ public class Toolbar extends JPanel {
         });
 
         importSession.addActionListener(e -> {
+            fileChooser.addChoosableFileFilter(new InputFileChooser());
+            fileChooser.setAcceptAllFileFilterUsed(false);
 
             int value = fileChooser.showOpenDialog(this);
 
@@ -68,6 +69,8 @@ public class Toolbar extends JPanel {
         });
 
         loadCogInfo.addActionListener(e -> {
+            fileChooser.addChoosableFileFilter(new InputFileChooser());
+            fileChooser.setAcceptAllFileFilterUsed(false);
 
             int value = fileChooser.showOpenDialog(this);
 

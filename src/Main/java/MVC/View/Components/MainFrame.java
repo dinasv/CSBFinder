@@ -305,7 +305,7 @@ public class MainFrame extends JFrame {
             @Override
             public void saveOutputOccurred(SaveOutputEvent e) {
 
-                String[] ops = new String[] {
+                String[] ops = {
                         String.valueOf(OutputType.XLSX),
                         String.valueOf(OutputType.TXT),
                         String.valueOf(OutputType.EXPORT)
