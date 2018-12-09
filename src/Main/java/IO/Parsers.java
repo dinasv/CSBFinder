@@ -13,14 +13,16 @@ import java.util.*;
 public class Parsers {
 
     final static String PATTERN_DELIMITER = ",";
-    final static String[] INSTANCE_HEADER = {"[FAMILY_ID]","[Length]","[Score]","[Count]","[Genes]","[Family FAMILY_ID]"};
-    final static String INSTANCE_HEADER_DELIMITER = "TAB";
-    final static String[] GENOME_HEADER = {"[Genome name]","[Replicon FAMILY_ID]"};
-    final static String GENOME_HEADER_DELIMITER = "|";
-    final static String[] GENE_LINE = {"[Gene FAMILY_ID]","[Strand]"};
-    final static String GENE_LINE_DELIMITER = "TAB";
-    final static String[] COG_LINE = {"[COG FAMILY_ID]","[COG description]"};
+    final static String[] INSTANCE_HEADER = {"[Family ID]", "[Length]", "[Score]", "[Count]", "[Genes]", "[Family FAMILY_ID]"};
+    final static String INSTANCE_HEADER_DELIMITER = "\t";
+    final static String[] GENOME_HEADER = {"[Genome name]", "[Replicon FAMILY_ID]"};
+    final static String GENOME_HEADER_DELIMITER = "\\|";
+    final static String[] GENE_LINE = {"[Gene Orthology Group ID]", "[Strand]"};
+    final static String GENE_LINE_DELIMITER = "\t";
+    final static String[] COG_LINE = {"[COG Orthology Group ID]", "[COG description]"};
     final static String COG_LINE_DELIMITER = ";";
+    final static String[] LOCATIONS_LINE = {"[Genome Name]", "[Replicon Name|[Start Index, End Index]]"};
+    final static String LOCATIONS_LINE_DELIMITER = "\t";
 
     final static String GENOMES_START = "<genomes>";
     final static String GENOMES_END = "<\\genomes>";
@@ -28,7 +30,7 @@ public class Parsers {
     final static String INSTANCES_END = "<\\instances>";
 
     public static List<Pattern> parsePatternsFile(String inputPatternsFilePath)
-            throws IOException, IllegalArgumentException{
+            throws IOException, IllegalArgumentException {
 
         List<Pattern> patterns = new ArrayList<>();
 
@@ -60,23 +62,23 @@ public class Parsers {
         return patterns;
     }
 
-    private static List<Gene> parseGenes(String line, int lineNumber, String inputPatternsFilePath) throws IllegalArgumentException{
+    private static List<Gene> parseGenes(String line, int lineNumber, String inputPatternsFilePath) throws IllegalArgumentException {
         String[] patternArr = line.split(PATTERN_DELIMITER);
         List<Gene> genes = new ArrayList<>();
         if (patternArr.length > 1) {
-            for (String gene: patternArr){
+            for (String gene : patternArr) {
                 if (gene.length() > 0) {
                     String lastChar = gene.substring(gene.length() - 1);
                     Strand strand = determineStrand(lastChar);
 
-                    if (strand != Strand.INVALID){
-                        gene = gene.substring(0, gene.length()-1);
+                    if (strand != Strand.INVALID) {
+                        gene = gene.substring(0, gene.length() - 1);
                     }
 
                     genes.add(new Gene(gene, strand));
                 }
             }
-        }else{
+        } else {
             throw new IllegalArgumentException(errorMessage(String.format("Genes delimited by \"%s\"", PATTERN_DELIMITER),
                     line, lineNumber, inputPatternsFilePath));
         }
@@ -103,8 +105,8 @@ public class Parsers {
         Objects.requireNonNull(rawLine, "rawLine is null");
         Objects.requireNonNull(filePath, "filePath is null");
 
-        String[] splitLine = rawLine.trim().split("\t");
-        if (splitLine.length < 2) {
+        String[] splitLine = rawLine.trim().split(GENE_LINE_DELIMITER);
+        if (splitLine.length < GENE_LINE.length) {
             throw new IllegalArgumentException(errorMessage(String.join(GENE_LINE_DELIMITER, GENE_LINE), rawLine,
                     lineNumber, filePath));
         }
@@ -133,15 +135,15 @@ public class Parsers {
      * @param rawTitle
      * @param replicon
      */
-    private static String[] parseGenomeTitle(String rawTitle, int lineNumber, String filePath) throws IllegalArgumentException{
+    private static String[] parseGenomeTitle(String rawTitle, int lineNumber, String filePath) throws IllegalArgumentException {
 
         Objects.requireNonNull(rawTitle, "rawTitle is null");
         Objects.requireNonNull(filePath, "filePath is null");
 
         String rawTitleSuffix = rawTitle.substring(1); //remove ">"
-        String[] title = rawTitleSuffix.trim().split("\\|");
-        if (title.length < 2) {
-            throw new IllegalArgumentException(errorMessage(">"+String.join(GENOME_HEADER_DELIMITER, GENOME_HEADER),
+        String[] title = rawTitleSuffix.trim().split(GENOME_HEADER_DELIMITER);
+        if (title.length < GENOME_HEADER.length) {
+            throw new IllegalArgumentException(errorMessage(">" + String.join(GENOME_HEADER_DELIMITER, GENOME_HEADER),
                     rawTitle, lineNumber, filePath));
         }
 
@@ -184,9 +186,9 @@ public class Parsers {
 
 
     public static String[] parseSessionFile(List<Family> families, String filePath, GenomesInfo genomesInfo)
-        throws IOException, IllegalArgumentException {
+            throws IOException, IllegalArgumentException {
 
-        if ( filePath == null) {
+        if (filePath == null) {
             throw new IllegalArgumentException();
         }
 
@@ -201,10 +203,10 @@ public class Parsers {
             String rawLine = br.readLine();
             lineNumber++;
             while (rawLine != null) {
-                if (rawLine.startsWith(GENOMES_START)){
+                if (rawLine.startsWith(GENOMES_START)) {
 
                     lineNumber = readGenomes(br, genomesInfo, filePath, GENOMES_END, lineNumber);
-                }else if (rawLine.startsWith(INSTANCES_START)){
+                } else if (rawLine.startsWith(INSTANCES_START)) {
                     readInstances(br, genomesInfo, filePath, INSTANCES_END, lineNumber, families);
                 }
                 rawLine = br.readLine();
@@ -228,7 +230,7 @@ public class Parsers {
     public static GenomesInfo parseGenomesFile(String filePath)
             throws IOException, IllegalArgumentException {
 
-        if ( filePath == null) {
+        if (filePath == null) {
             throw new IllegalArgumentException();
         }
 
@@ -250,7 +252,7 @@ public class Parsers {
 
     private static void readInstances(BufferedReader br, GenomesInfo genomesInfo, String filePath, String end,
                                       int lineNumber, List<Family> families)
-            throws IOException{
+            throws IOException {
 
         HashMap<Integer, Family> familiesMap = new HashMap<>();
 
@@ -264,45 +266,78 @@ public class Parsers {
 
                 pattern = parsePattern(rawLine, lineNumber, filePath);
 
-                Family family;
-                if (familiesMap.containsKey(pattern.getFamilyId())){
-                    family = familiesMap.get(pattern.getFamilyId());
-                    family.addPattern(pattern);
-                }else{
-                    family = new Family(pattern.getFamilyId(), pattern, genomesInfo);
-                }
-                familiesMap.put(pattern.getFamilyId(), family);
+                Family family = parseFamily(familiesMap, pattern, genomesInfo);
+                familiesMap.put(family.getFamilyId(), family);
 
             } else {
-                String[] locationsLine = rawLine.trim().split("\t");
-                String genomeName = locationsLine[0];
-                Genome genome = genomesInfo.getGenome(genomeName);
-                int genomeId = genome.getId();
-                for (int i = 1; i < locationsLine.length; i++) {
-                    String[] location = locationsLine[i].split("\\|");;
-                    String repliconName = location[0];
-                    int repliconId = genome.getReplicon(repliconName).getId();
-                    String[] indexes = location[1].substring(1, location[1].length()-1).split(",");
-                    int startIndex = castToInteger(indexes[0], "start index", lineNumber, filePath);
-                    int endIndex = castToInteger(indexes[1], "end index", lineNumber, filePath);
-
-                    InstanceLocation instanceLocation = new InstanceLocation(repliconId, genomeId, startIndex,
-                            endIndex-startIndex, Strand.FORWARD, 0, 0);
-                    pattern.addInstanceLocation(instanceLocation);
-                }
+                parseInstanceLocations(rawLine, genomesInfo, lineNumber, filePath, pattern);
             }
 
             rawLine = br.readLine();
         }
 
+        familiesMap.values().forEach(Family::sortPatternsAndSetScore);
+
         families.addAll(familiesMap.values());
     }
 
-    private static Pattern parsePattern(String rawLine, int lineNumber, String filePath) throws IllegalArgumentException{
-        String[] patternLine = rawLine.trim().substring(1).split("\t");
-        if (patternLine.length < 6) {
+    private static void parseInstanceLocations(String rawLine, GenomesInfo genomesInfo, int lineNumber, String filePath,
+                                               Pattern pattern) {
+
+        String[] locationsLine = rawLine.trim().split("\t");
+        if (locationsLine.length < LOCATIONS_LINE.length) {
             throw new IllegalArgumentException(
-                    errorMessage(">"+ String.join(INSTANCE_HEADER_DELIMITER, INSTANCE_HEADER),
+                    errorMessage(String.join(LOCATIONS_LINE_DELIMITER, LOCATIONS_LINE),
+                            rawLine, lineNumber, filePath));
+        }
+
+        String genomeName = locationsLine[0];
+        Genome genome = genomesInfo.getGenome(genomeName);
+
+        Objects.requireNonNull(genome, errorMessage("genome name to match one of the input genomes",
+                rawLine, lineNumber, filePath));
+
+        int genomeId = genome.getId();
+
+        for (int i = 1; i < locationsLine.length; i++) {
+
+            String[] location = locationsLine[i].split("\\|");
+
+            String repliconName = location[0];
+            Replicon replicon = genome.getReplicon(repliconName);
+
+            Objects.requireNonNull(genome, errorMessage("replicon name to match one of the input genomes",
+                    rawLine, lineNumber, filePath));
+
+            int repliconId = replicon.getId();
+
+            String[] indexes = location[1].substring(1, location[1].length() - 1).split(",");
+            int startIndex = castToInteger(indexes[0], "start index", lineNumber, filePath);
+            int endIndex = castToInteger(indexes[1], "end index", lineNumber, filePath);
+
+            InstanceLocation instanceLocation = new InstanceLocation(repliconId, genomeId, startIndex,
+                    endIndex - startIndex, Strand.FORWARD, 0, 0);
+            pattern.addInstanceLocation(instanceLocation);
+
+        }
+    }
+
+    private static Family parseFamily(HashMap<Integer, Family> familiesMap, Pattern pattern, GenomesInfo genomesInfo) {
+        Family family;
+        if (familiesMap.containsKey(pattern.getFamilyId())) {
+            family = familiesMap.get(pattern.getFamilyId());
+            family.addPattern(pattern);
+        } else {
+            family = new Family(pattern.getFamilyId(), pattern, genomesInfo);
+        }
+        return family;
+    }
+
+    private static Pattern parsePattern(String rawLine, int lineNumber, String filePath) throws IllegalArgumentException {
+        String[] patternLine = rawLine.trim().substring(1).split(INSTANCE_HEADER_DELIMITER);
+        if (patternLine.length < INSTANCE_HEADER.length) {
+            throw new IllegalArgumentException(
+                    errorMessage(">" + String.join(INSTANCE_HEADER_DELIMITER, INSTANCE_HEADER),
                             rawLine, lineNumber, filePath));
         }
 
@@ -327,11 +362,11 @@ public class Parsers {
     }
 
     private static int castToInteger(String value, String type, int lineNumber, String filePath)
-            throws IllegalArgumentException{
+            throws IllegalArgumentException {
         int result = -1;
         try {
             result = Integer.valueOf(value);
-        }catch(NumberFormatException e){
+        } catch (NumberFormatException e) {
             throw new IllegalArgumentException(
                     errorMessage(type + " type double",
                             value, lineNumber, filePath));
@@ -340,11 +375,11 @@ public class Parsers {
     }
 
     private static double castToDouble(String value, String type, int lineNumber, String filePath)
-            throws IllegalArgumentException{
+            throws IllegalArgumentException {
         double result = -1;
         try {
             result = Double.valueOf(value);
-        }catch(NumberFormatException e){
+        } catch (NumberFormatException e) {
             throw new IllegalArgumentException(
                     errorMessage(type + " type integer",
                             value, lineNumber, filePath));
@@ -353,14 +388,14 @@ public class Parsers {
     }
 
     private static void readGenomes(BufferedReader br, GenomesInfo genomesInfo, String filePath, String end)
-            throws IOException{
+            throws IOException {
         readGenomes(br, genomesInfo, filePath, end, 0);
     }
 
 
     private static int readGenomes(BufferedReader br, GenomesInfo genomesInfo, String filePath, String end,
-                                    int lineNumber)
-                                throws IOException{
+                                   int lineNumber)
+            throws IOException {
 
         String repliconName;
         String currGenomeName = "";
@@ -427,7 +462,7 @@ public class Parsers {
      * @throws FileNotFoundException
      */
     public static Map<String, COG> parseCogInfoTable(String cogInfoFilePath)
-            throws IOException, IllegalArgumentException{
+            throws IOException, IllegalArgumentException {
 
         Map<String, COG> cogInfo = new HashMap<>();
 
@@ -440,7 +475,7 @@ public class Parsers {
                 lineNumber++;
 
                 String[] cogLine = line.split(COG_LINE_DELIMITER);
-                if (cogLine.length < 2) {
+                if (cogLine.length < COG_LINE.length) {
                     throw new IllegalArgumentException(errorMessage(String.join(COG_LINE_DELIMITER, COG_LINE),
                             line, lineNumber, cogInfoFilePath));
                 }
@@ -455,21 +490,21 @@ public class Parsers {
                     String geneName = cogLine[2];
                     cog.setGeneName(geneName);
 
-                }else if (cogLine.length > 3){
+                } else if (cogLine.length > 3) {
 
                     String[] functionalLetters = cogLine[2].split(",");
 
                     if (cogLine.length < 3 + functionalLetters.length) {
                         throw new IllegalArgumentException(errorMessage(
                                 String.format("%d functional category descriptions", functionalLetters.length),
-                                String.format("%d in line %s", cogLine.length-3, line), lineNumber, cogInfoFilePath));
+                                String.format("%d in line %s", cogLine.length - 3, line), lineNumber, cogInfoFilePath));
                     }
 
                     String[] functional_categories = getFunctionalCategories(functionalLetters.length, 3, cogLine);
 
                     String geneName = "";
                     int valuesParsedSoFar = 3 + functionalLetters.length;
-                    if (cogLine.length == valuesParsedSoFar + 1){
+                    if (cogLine.length == valuesParsedSoFar + 1) {
                         geneName = cogLine[valuesParsedSoFar];
                     }
 
@@ -482,16 +517,15 @@ public class Parsers {
 
                 line = br.readLine();
             }
-        }catch(FileNotFoundException e){
+        } catch (FileNotFoundException e) {
             throw new FileNotFoundException("File " + cogInfoFilePath + " was not found.");
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
             throw new IOException("An exception occurred while reading " + cogInfoFilePath);
         }
         return cogInfo;
     }
 
-    private static String[] getFunctionalCategories(int numberOfFunctionalLetters, int startIndex, String[] cogLine){
+    private static String[] getFunctionalCategories(int numberOfFunctionalLetters, int startIndex, String[] cogLine) {
         String[] functionalCategories = new String[numberOfFunctionalLetters];
 
         for (int i = 0; i < numberOfFunctionalLetters; i++) {
