@@ -13,7 +13,7 @@ import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ResultsPanel extends JPanel {
+public class ResultsPanel extends JSplitPane {
 
     private TablePanel familiesPanel;
     private TablePanel familyPatternsPanel;
@@ -38,7 +38,11 @@ public class ResultsPanel extends JPanel {
         familiesPanel = new TablePanel(FamilyProperty.FAMILY_ID, new FamilyTableModel(familyColumns));
         familyPatternsPanel = new TablePanel(PatternProperty.ID, new PatternsTableModel(patternsColumns));
 
-        addPanels();
+        setOrientation(JSplitPane.HORIZONTAL_SPLIT);
+        setDividerSize(2);
+        setLeftComponent(familiesPanel);
+        setRightComponent(familyPatternsPanel);
+        setResizeWeight(0.2);
     }
 
     private void addPanels(){
