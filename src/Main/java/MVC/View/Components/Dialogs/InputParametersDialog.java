@@ -156,8 +156,7 @@ public class InputParametersDialog extends JDialog {
 
     private void initLabels() {
 
-        ImageIcon icon = createImageIcon("/question.png",
-                "question mark icon");
+        ImageIcon icon = createImageIcon("/question.png", "question mark icon");
 
         String labelName = "Quorum";
         String desc = "Minimal number of input sequences that must contain a CSB instance.";

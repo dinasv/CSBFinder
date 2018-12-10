@@ -5,6 +5,7 @@ import java.util.List;
 
 public class CSBFinderRequest {
 
+    private String inputGenomeFilesPath = "";
     private int quorum = 1;
     private int numberOfInsertions = 0;
     private int quorumWithoutInsertions = 1;
@@ -114,12 +115,19 @@ public class CSBFinderRequest {
         this.clusterType = clusterType;
     }
 
+    public String getInputGenomeFilesPath() {
+        return inputGenomeFilesPath;
+    }
+
+    public void setInputGenomeFilesPath(String inputGenomeFilesPath) {
+        this.inputGenomeFilesPath = inputGenomeFilesPath;
+    }
+
     public String[] toArgArray() {
         List<String> argList = new LinkedList<>();
 
-
         argList.add("-in");
-        argList.add("");
+        argList.add(inputGenomeFilesPath);
 
         argList.add("-q");
         argList.add(String.valueOf(quorum));

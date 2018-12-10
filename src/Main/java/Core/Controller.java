@@ -21,7 +21,7 @@ public class Controller {
     private Writer writer;
     CogInfo cogInfo;
 
-    private static String ARGS;
+    private String arguments;
     private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
 
     public Controller(String[] args){
@@ -42,7 +42,7 @@ public class Controller {
             printUsageAndExit(jcommander, 1);
         }
 
-        ARGS = String.join(" ", args);
+        arguments = String.join(" ", args);
         cogInfo = new CogInfo();
         outputPath = createOutputPath();
         logger = new MyLogger("output/", params.debug);
@@ -79,7 +79,7 @@ public class Controller {
                 break;
             case EXPORT:
                 SessionWriter sessionWriter = new SessionWriter(includeFamilies, catalogPath, genomesInfo);
-                sessionWriter.writeHeader(ARGS);
+                sessionWriter.writeHeader(arguments);
                 sessionWriter.writeGenomes(genomesInfo.getGenomesByName());
                 patternsWriter = sessionWriter;
                 break;
@@ -171,11 +171,11 @@ public class Controller {
 
         //read genomes
         GenomesInfo gi;
-        String genomes_file_path = params.inputFilePath;
+        String genomesFilePath = params.inputFilePath;
 
         try {
             printToScreen("Parsing input genomes file");
-            gi = Parsers.parseGenomesFile(genomes_file_path);
+            gi = Parsers.parseGenomesFile(genomesFilePath);
 
         }catch (IOException e){
             printToScreen("Input genome file is not valid. " + e.getMessage());

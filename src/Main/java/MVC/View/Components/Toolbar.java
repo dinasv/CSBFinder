@@ -1,6 +1,7 @@
 package MVC.View.Components;
 
 import MVC.View.Components.Dialogs.InputFileChooser;
+import MVC.View.Components.Dialogs.OutputTypeChooser;
 import MVC.View.Events.LoadFileEvent;
 import MVC.View.Events.SaveOutputEvent;
 import MVC.View.Events.SelectParamsEvent;
@@ -13,7 +14,11 @@ import java.awt.*;
 
 public class Toolbar extends JPanel {
 
-    private JButton loadFile;
+    private static String LOAD_GENOMES = "Load Input Genomes";
+    private static String LOAD_SESSION = "Import Session";
+    private static String LOAD_COG_INFO = "Load Orthology Information";
+
+    private JButton loadGenomes;
     private JButton importSession;
     private JButton loadCogInfo;
     private JButton saveFile;
@@ -26,13 +31,16 @@ public class Toolbar extends JPanel {
 
     private JFileChooser fileChooser;
 
+    OutputTypeChooser outputTypeChooser;
+
     public Toolbar(JFileChooser fileChooser) {
         this.fileChooser = fileChooser;
+        outputTypeChooser = new OutputTypeChooser();
 
         setBorder(BorderFactory.createEtchedBorder());
-        loadFile = new JButton("Load Input Genomes");
-        importSession = new JButton("Import Session");
-        loadCogInfo = new JButton("Load Orthology Info");
+        loadGenomes = new JButton(LOAD_GENOMES);
+        importSession = new JButton(LOAD_SESSION);
+        loadCogInfo = new JButton(LOAD_COG_INFO);
         saveFile =  new JButton("Save");
         saveFile.setEnabled(false);
         selectParams =  new JButton("Run");
@@ -40,17 +48,20 @@ public class Toolbar extends JPanel {
 
         setLayout(new FlowLayout(FlowLayout.LEFT));
 
-        add(loadFile);
+        add(loadGenomes);
         add(importSession);
         add(loadCogInfo);
         add(selectParams);
         add(saveFile);
 
-        loadFile.addActionListener(e -> {
+        loadGenomes.addActionListener(e -> {
+            fileChooser.resetChoosableFileFilters();
             fileChooser.addChoosableFileFilter(new InputFileChooser());
             fileChooser.setAcceptAllFileFilterUsed(false);
+            fileChooser.setAccessory(null);
+            fileChooser.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
 
-            int value = fileChooser.showOpenDialog(this);
+            int value = fileChooser.showDialog(this, LOAD_GENOMES);
 
             if (value == JFileChooser.APPROVE_OPTION) {
                 loadGenomesListener.loadFileEventOccurred(new LoadFileEvent(e, fileChooser.getSelectedFile()));
@@ -58,10 +69,13 @@ public class Toolbar extends JPanel {
         });
 
         importSession.addActionListener(e -> {
+            fileChooser.resetChoosableFileFilters();
             fileChooser.addChoosableFileFilter(new InputFileChooser());
             fileChooser.setAcceptAllFileFilterUsed(false);
+            fileChooser.setAccessory(null);
+            fileChooser.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
 
-            int value = fileChooser.showOpenDialog(this);
+            int value = fileChooser.showDialog(this, LOAD_SESSION);
 
             if (value == JFileChooser.APPROVE_OPTION) {
                 importSessionListener.loadFileEventOccurred(new LoadFileEvent(e, fileChooser.getSelectedFile()));
@@ -69,10 +83,13 @@ public class Toolbar extends JPanel {
         });
 
         loadCogInfo.addActionListener(e -> {
+            fileChooser.resetChoosableFileFilters();
             fileChooser.addChoosableFileFilter(new InputFileChooser());
             fileChooser.setAcceptAllFileFilterUsed(false);
+            fileChooser.setAccessory(null);
+            fileChooser.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
 
-            int value = fileChooser.showOpenDialog(this);
+            int value = fileChooser.showDialog(this, LOAD_COG_INFO);
 
             if (value == JFileChooser.APPROVE_OPTION) {
                 loadCogInfoListener.loadFileEventOccurred(new LoadFileEvent(e, fileChooser.getSelectedFile()));
@@ -80,7 +97,17 @@ public class Toolbar extends JPanel {
         });
 
         saveFile.addActionListener(e -> {
-            saveOutputListener.saveOutputOccurred(new SaveOutputEvent());
+            fileChooser.resetChoosableFileFilters();
+            fileChooser.setAcceptAllFileFilterUsed(true);
+
+            fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+            fileChooser.setAccessory(outputTypeChooser);
+
+            int action = fileChooser.showDialog(this, "Select Directory");
+
+            saveOutputListener.saveOutputOccurred(new SaveOutputEvent(e, outputTypeChooser.getChosenOutput(),
+                    fileChooser.getSelectedFile().getAbsolutePath(), action));
+
         });
 
         selectParams.addActionListener(e -> {
@@ -112,6 +139,7 @@ public class Toolbar extends JPanel {
     public void enableSaveFileBtn() {
         saveFile.setEnabled(true);
     }
+
     public void disableSaveFileBtn() {
         saveFile.setEnabled(false);
     }

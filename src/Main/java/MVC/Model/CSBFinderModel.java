@@ -23,25 +23,37 @@ public class CSBFinderModel {
     private GenomesInfo gi;
     CogInfo cogInfo;
 
-    private static String ARGS;
+    private String arguments;
+    private String inputGenomesPath;
 
     public CSBFinderModel() {
-        cogInfo = new CogInfo();
+
+        params = new Parameters();
+        workflow = null;
+        families = new ArrayList<>();
+
         gi = new GenomesInfo();
+        cogInfo = new CogInfo();
+        arguments = "";
+        inputGenomesPath = "";
     }
 
     public String getUNKchar(){
         return Alphabet.UNK_CHAR;
     }
 
-    public MyLogger logger = new MyLogger("",true);
+    public String getInputGenomesPath() {
+        return inputGenomesPath;
+    }
 
+    public MyLogger logger = new MyLogger("",true);
 
     public String loadInputGenomesFile(String path) {
 
         String msg = "";
         try {
             gi = Parsers.parseGenomesFile(path);
+            inputGenomesPath = path;
             msg = "Loaded " + gi.getNumberOfGenomes() + " genomes.";
             workflow = new CSBFinderWorkflow(gi);
         }catch(Exception e){
@@ -79,7 +91,7 @@ public class CSBFinderModel {
             jcommander = JCommander.newBuilder().addObject(params).build();
             jcommander.parse(args);
 
-            ARGS = String.join(" ", args);
+            arguments = String.join(" ", args);
 
             return jcommander;
 
@@ -202,7 +214,7 @@ public class CSBFinderModel {
                 break;
             case EXPORT:
                 SessionWriter sessionWriter = new SessionWriter(includeFamilies, catalogPath, gi);
-                sessionWriter.writeHeader(ARGS);
+                sessionWriter.writeHeader(arguments);
                 sessionWriter.writeGenomes(gi.getGenomesByName());
                 patternsWriter = sessionWriter;
                 break;
@@ -223,11 +235,11 @@ public class CSBFinderModel {
         return writer;
     }
 
-    private static String createOutputPath(){
+    private String createOutputPath(){
         Date dNow = new Date( );
         SimpleDateFormat ft = new SimpleDateFormat ("dd_MM_yyyy_hh_mm_ss_a");
 
-        String path = "output";
+        String path = params.outputDir;
         Writer.createOutputDirectory(path);
         path += "/"+ft.format(dNow)+"/";
         Writer.createOutputDirectory(path);
@@ -235,13 +247,13 @@ public class CSBFinderModel {
         return path;
     }
 
-    public String saveOutputFiles(String outputFileType) {
+    public String saveOutputFiles(OutputType outputFileType, String outputDir) {
         System.out.println("Writing to files");
 
         String msg = "";
         try {
-            Writer writer = createWriter(params.cogInfoFilePath != null && !"".equals(params.cogInfoFilePath),
-                    OutputType.valueOf(outputFileType));
+            params.outputDir = outputDir;
+            Writer writer = createWriter(cogInfo.cogInfoExists(), outputFileType);
             msg = "CSBs written to files.";
         }catch (Exception e){
             msg = e.getMessage();

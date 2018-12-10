@@ -37,7 +37,7 @@ public class MainFrame extends JFrame {
     public MainFrame(CSBFinderController controller) {
         super("CSBFinder");
 
-        setUIFont (new javax.swing.plaf.FontUIResource("Serif",Font.PLAIN,16));
+        setUIFont(new javax.swing.plaf.FontUIResource("Serif", Font.PLAIN, 16));
 
         fc = new JFileChooser(System.getProperty("user.dir"));
 
@@ -52,13 +52,13 @@ public class MainFrame extends JFrame {
 
     }
 
-    public static void setUIFont (javax.swing.plaf.FontUIResource f){
+    public static void setUIFont(javax.swing.plaf.FontUIResource f) {
         java.util.Enumeration keys = UIManager.getLookAndFeelDefaults().keys();
         while (keys.hasMoreElements()) {
             Object key = keys.nextElement();
-            Object value = UIManager.get (key);
+            Object value = UIManager.get(key);
             if (value instanceof javax.swing.plaf.FontUIResource)
-                UIManager.put (key, f);
+                UIManager.put(key, f);
         }
     }
 
@@ -69,7 +69,7 @@ public class MainFrame extends JFrame {
         this.setVisible(true);
     }
 
-    public void clearPanels(){
+    public void clearPanels() {
         genomes.clearPanel();
         summaryPanel.clearPanel();
     }
@@ -124,6 +124,7 @@ public class MainFrame extends JFrame {
                     @Override
                     protected Void doInBackground() throws Exception {
                         clearPanels();
+                        request.setInputGenomeFilesPath(controller.getInputGenomesPath());
                         msg = controller.findCSBs(request);
                         return null;
                     }
@@ -147,7 +148,7 @@ public class MainFrame extends JFrame {
         setSelectParamsListener();
     }
 
-    private void setSelectParamsListener(){
+    private void setSelectParamsListener() {
         toolbar.setSelectParamsListener(new SelectParamsListener() {
             @Override
             public void selectParamsOccurred(SelectParamsEvent e) {
@@ -194,7 +195,7 @@ public class MainFrame extends JFrame {
                             if (controller.getNumberOfGenomes() > 0) {
                                 inputParamsDialog.setGenomeData(controller.getNumberOfGenomes(), controller.getMaxGenomeSize());
                                 toolbar.enableSelectParamsBtn();
-                            }else{
+                            } else {
                                 toolbar.disableSelectParamsBtn();
                             }
                             progressBar.done("");
@@ -244,7 +245,7 @@ public class MainFrame extends JFrame {
                             if (controller.getNumberOfGenomes() > 0) {
                                 inputParamsDialog.setGenomeData(controller.getNumberOfGenomes(), controller.getMaxGenomeSize());
                                 toolbar.enableSelectParamsBtn();
-                            }else{
+                            } else {
                                 toolbar.disableSelectParamsBtn();
                             }
                             progressBar.done("");
@@ -302,26 +303,12 @@ public class MainFrame extends JFrame {
     private void setSaveButtonListener() {
         toolbar.setSaveOutputListener(new SaveOutputListener() {
             String msg = "";
+
             @Override
             public void saveOutputOccurred(SaveOutputEvent e) {
 
-                String[] ops = {
-                        String.valueOf(OutputType.XLSX),
-                        String.valueOf(OutputType.TXT),
-                        String.valueOf(OutputType.EXPORT)
-                };
-                int type = JOptionPane.showOptionDialog(
-                        MainFrame.this,
-                        "Please choose the desired type for the output files",
-                        "Choose Output Type", JOptionPane.DEFAULT_OPTION,
-                        JOptionPane.QUESTION_MESSAGE,
-                        null,
-                        ops,
-                        true);
+                if (e.getAction() == JFileChooser.APPROVE_OPTION) {
 
-                String strType = type == JOptionPane.CLOSED_OPTION ? "" : ops[type];
-
-                if (!strType.equals("")) {
                     SwingUtilities.invokeLater(new Runnable() {
                         @Override
                         public void run() {
@@ -329,10 +316,11 @@ public class MainFrame extends JFrame {
                         }
                     });
 
+
                     SwingWorker<Void, Void> swingWorker = new SwingWorker<Void, Void>() {
                         @Override
                         protected Void doInBackground() throws Exception {
-                            msg = controller.saveOutputFiles(strType);
+                            msg = controller.saveOutputFiles(e.getOutputType(), e.getOutputDirectory());
                             return null;
                         }
 
@@ -377,7 +365,7 @@ public class MainFrame extends JFrame {
                 genomes.displayPatterns(family.getPatterns());
 
                 List<COG> patternCOGs = new ArrayList<>();
-                for (Pattern pattern: family.getPatterns()) {
+                for (Pattern pattern : family.getPatterns()) {
                     patternCOGs.addAll(controller.getCogInfo(pattern.getPatternGenes()));
                 }
                 summaryPanel.setCogInfo(patternCOGs, new HashSet<>(), genomes.getColorsUsed());

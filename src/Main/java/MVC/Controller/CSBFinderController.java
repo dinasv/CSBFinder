@@ -2,6 +2,7 @@ package MVC.Controller;
 
 import Core.Genomes.Gene;
 import Core.Genomes.Genome;
+import Core.OutputType;
 import MVC.Common.*;
 import MVC.Model.CSBFinderModel;
 import MVC.View.Components.MainFrame;
@@ -43,7 +44,9 @@ public class CSBFinderController {
         return this.model.loadCogInfo(path);
     }
 
-    public String saveOutputFiles(String outputFileType) { return this.model.saveOutputFiles(outputFileType); }
+    public String saveOutputFiles(OutputType outputFileType, String outputDir) {
+        return this.model.saveOutputFiles(outputFileType, outputDir);
+    }
 
     public String findCSBs(CSBFinderRequest request) {
         return this.model.findCSBs(request);
@@ -71,6 +74,10 @@ public class CSBFinderController {
 
     public String getUNKchar(){
         return model.getUNKchar();
+    }
+
+    public String getInputGenomesPath(){
+        return model.getInputGenomesPath();
     }
 
 }
