@@ -11,12 +11,16 @@ import MVC.View.Listeners.SelectParamsListener;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
-public class Toolbar extends JPanel {
+public class Toolbar extends JPanel implements ActionListener{
 
-    private static String LOAD_GENOMES = "Load Input Genomes";
-    private static String LOAD_SESSION = "Import Session";
-    private static String LOAD_COG_INFO = "Load Orthology Information";
+    private static final String LOAD_GENOMES = "Load Input Genomes";
+    private static final String LOAD_SESSION = "Import Session";
+    private static final String LOAD_COG_INFO = "Load Orthology Information";
+    private static final String SAVE_FILES_DIALOG_NAME = "Select Directory";
+    private static final String SAVE_FILES_BTN_NAME = "Save";
 
     private JButton loadGenomes;
     private JButton importSession;
@@ -41,7 +45,7 @@ public class Toolbar extends JPanel {
         loadGenomes = new JButton(LOAD_GENOMES);
         importSession = new JButton(LOAD_SESSION);
         loadCogInfo = new JButton(LOAD_COG_INFO);
-        saveFile =  new JButton("Save");
+        saveFile =  new JButton(SAVE_FILES_BTN_NAME);
         saveFile.setEnabled(false);
         selectParams =  new JButton("Run");
         selectParams.setEnabled(false);
@@ -54,61 +58,10 @@ public class Toolbar extends JPanel {
         add(selectParams);
         add(saveFile);
 
-        loadGenomes.addActionListener(e -> {
-            fileChooser.resetChoosableFileFilters();
-            fileChooser.addChoosableFileFilter(new InputFileChooser());
-            fileChooser.setAcceptAllFileFilterUsed(false);
-            fileChooser.setAccessory(null);
-            fileChooser.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
-
-            int value = fileChooser.showDialog(this, LOAD_GENOMES);
-
-            if (value == JFileChooser.APPROVE_OPTION) {
-                loadGenomesListener.loadFileEventOccurred(new LoadFileEvent(e, fileChooser.getSelectedFile()));
-            }
-        });
-
-        importSession.addActionListener(e -> {
-            fileChooser.resetChoosableFileFilters();
-            fileChooser.addChoosableFileFilter(new InputFileChooser());
-            fileChooser.setAcceptAllFileFilterUsed(false);
-            fileChooser.setAccessory(null);
-            fileChooser.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
-
-            int value = fileChooser.showDialog(this, LOAD_SESSION);
-
-            if (value == JFileChooser.APPROVE_OPTION) {
-                importSessionListener.loadFileEventOccurred(new LoadFileEvent(e, fileChooser.getSelectedFile()));
-            }
-        });
-
-        loadCogInfo.addActionListener(e -> {
-            fileChooser.resetChoosableFileFilters();
-            fileChooser.addChoosableFileFilter(new InputFileChooser());
-            fileChooser.setAcceptAllFileFilterUsed(false);
-            fileChooser.setAccessory(null);
-            fileChooser.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
-
-            int value = fileChooser.showDialog(this, LOAD_COG_INFO);
-
-            if (value == JFileChooser.APPROVE_OPTION) {
-                loadCogInfoListener.loadFileEventOccurred(new LoadFileEvent(e, fileChooser.getSelectedFile()));
-            }
-        });
-
-        saveFile.addActionListener(e -> {
-            fileChooser.resetChoosableFileFilters();
-            fileChooser.setAcceptAllFileFilterUsed(true);
-
-            fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-            fileChooser.setAccessory(outputTypeChooser);
-
-            int action = fileChooser.showDialog(this, "Select Directory");
-
-            saveOutputListener.saveOutputOccurred(new SaveOutputEvent(e, outputTypeChooser.getChosenOutput(),
-                    fileChooser.getSelectedFile().getAbsolutePath(), action));
-
-        });
+        loadGenomes.addActionListener(this);
+        importSession.addActionListener(this);
+        loadCogInfo.addActionListener(this);
+        saveFile.addActionListener(this);
 
         selectParams.addActionListener(e -> {
             selectParamsListener.selectParamsOccurred(new SelectParamsEvent());
@@ -152,6 +105,55 @@ public class Toolbar extends JPanel {
     }
 
 
+    @Override
+    public void actionPerformed(ActionEvent e) {
+
+        switch (e.getActionCommand()){
+            case LOAD_GENOMES:
+                initInputFileChooser();
+                loadEventOccured(e, loadGenomesListener);
+
+                break;
+            case LOAD_SESSION:
+                initInputFileChooser();
+                loadEventOccured(e, importSessionListener);
+
+                break;
+            case LOAD_COG_INFO:
+                initInputFileChooser();
+                loadEventOccured(e, loadCogInfoListener);
+
+                break;
+            case SAVE_FILES_BTN_NAME:
+                initOutputFileChooser();
+                int action = fileChooser.showDialog(this, SAVE_FILES_DIALOG_NAME);
+                saveOutputListener.saveOutputOccurred(new SaveOutputEvent(e, outputTypeChooser.getChosenOutput(),
+                        fileChooser.getSelectedFile().getAbsolutePath(), action));
+
+                break;
+        }
+    }
+
+    private void initInputFileChooser(){
+        fileChooser.addChoosableFileFilter(new InputFileChooser());
+        fileChooser.setAcceptAllFileFilterUsed(false);
+        fileChooser.setAccessory(null);
+        fileChooser.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
+    }
+
+    private void loadEventOccured(ActionEvent e, LoadFileListener listener){
+        int action = fileChooser.showDialog(this, e.getActionCommand());
+
+        if (action == JFileChooser.APPROVE_OPTION) {
+            listener.loadFileEventOccurred(new LoadFileEvent(e, fileChooser.getSelectedFile()));
+        }
+    }
+
+    private void initOutputFileChooser(){
+        fileChooser.resetChoosableFileFilters();
+        fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+        fileChooser.setAccessory(outputTypeChooser);
+    }
 }
 
 
