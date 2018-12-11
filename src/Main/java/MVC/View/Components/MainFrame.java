@@ -320,7 +320,8 @@ public class MainFrame extends JFrame {
                     SwingWorker<Void, Void> swingWorker = new SwingWorker<Void, Void>() {
                         @Override
                         protected Void doInBackground() throws Exception {
-                            msg = controller.saveOutputFiles(e.getOutputType(), e.getOutputDirectory());
+                            msg = controller.saveOutputFiles(e.getOutputType(), e.getOutputDirectory(),
+                                    e.getDatasetName());
                             return null;
                         }
 

@@ -11,7 +11,6 @@ public class CSBFinderRequest {
     private int quorumWithoutInsertions = 1;
     private int minimalCSBLength = 2;
     private int maximumCSBLength = Integer.MAX_VALUE;
-    private String datasetName = "dataset1";
     private String csbPatternFilePath = null;
     private String geneInfoFilePath = null;
     private boolean multCount = true;
@@ -57,14 +56,6 @@ public class CSBFinderRequest {
 
     public void setMaximumCSBLength(int maximumCSBLength) {
         this.maximumCSBLength = maximumCSBLength;
-    }
-
-    public String getDatasetName() {
-        return datasetName;
-    }
-
-    public void setDatasetName(String datasetName) {
-        this.datasetName = datasetName;
     }
 
     public String getCsbPatternFilePath() {
@@ -143,9 +134,6 @@ public class CSBFinderRequest {
 
         argList.add("-lmax");
         argList.add(String.valueOf(maximumCSBLength));
-
-        argList.add("-ds");
-        argList.add(datasetName);
 
         if (csbPatternFilePath != null) {
             argList.add("-p");

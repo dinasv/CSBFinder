@@ -21,6 +21,7 @@ public class Toolbar extends JPanel implements ActionListener{
     private static final String LOAD_COG_INFO = "Load Orthology Information";
     private static final String SAVE_FILES_DIALOG_NAME = "Select Directory";
     private static final String SAVE_FILES_BTN_NAME = "Save";
+    private static final String SELECT_PARAMS_BTN_NAME = "Run";
 
     private JButton loadGenomes;
     private JButton importSession;
@@ -47,7 +48,7 @@ public class Toolbar extends JPanel implements ActionListener{
         loadCogInfo = new JButton(LOAD_COG_INFO);
         saveFile =  new JButton(SAVE_FILES_BTN_NAME);
         saveFile.setEnabled(false);
-        selectParams =  new JButton("Run");
+        selectParams =  new JButton(SELECT_PARAMS_BTN_NAME);
         selectParams.setEnabled(false);
 
         setLayout(new FlowLayout(FlowLayout.LEFT));
@@ -128,7 +129,7 @@ public class Toolbar extends JPanel implements ActionListener{
                 initOutputFileChooser();
                 int action = fileChooser.showDialog(this, SAVE_FILES_DIALOG_NAME);
                 saveOutputListener.saveOutputOccurred(new SaveOutputEvent(e, outputTypeChooser.getChosenOutput(),
-                        fileChooser.getSelectedFile().getAbsolutePath(), action));
+                        outputTypeChooser.getDatasetName(), fileChooser.getSelectedFile().getAbsolutePath(), action));
 
                 break;
         }

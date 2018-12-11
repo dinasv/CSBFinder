@@ -8,6 +8,7 @@ public class SaveOutputEvent extends EventObject {
 
     private OutputType outputType;
     private String outputDirectory;
+    private String datasetName;
     private int action;
 
     /**
@@ -20,9 +21,11 @@ public class SaveOutputEvent extends EventObject {
         super(source);
     }
 
-    public SaveOutputEvent(Object source, OutputType outputType, String outputDirectory, int action) {
+    public SaveOutputEvent(Object source, OutputType outputType,  String datasetName, String outputDirectory,
+                           int action) {
         super(source);
         this.outputType = outputType;
+        this.datasetName = datasetName;
         this.outputDirectory = outputDirectory;
         this.action = action;
     }
@@ -41,5 +44,9 @@ public class SaveOutputEvent extends EventObject {
 
     public int getAction() {
         return action;
+    }
+
+    public String getDatasetName() {
+        return datasetName;
     }
 }

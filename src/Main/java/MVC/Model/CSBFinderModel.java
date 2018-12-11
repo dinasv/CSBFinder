@@ -247,12 +247,13 @@ public class CSBFinderModel {
         return path;
     }
 
-    public String saveOutputFiles(OutputType outputFileType, String outputDir) {
+    public String saveOutputFiles(OutputType outputFileType, String outputDir, String datasetName) {
         System.out.println("Writing to files");
 
         String msg = "";
         try {
             params.outputDir = outputDir;
+            params.datasetName = datasetName;
             Writer writer = createWriter(cogInfo.cogInfoExists(), outputFileType);
             msg = "CSBs written to files.";
         }catch (Exception e){

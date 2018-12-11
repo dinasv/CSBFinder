@@ -23,12 +23,10 @@ public class InputParametersDialog extends JDialog {
     private JLabel quorumWithoutInsertionsLabel;
     private JLabel minCSBLengthLabel;
     private JLabel maxCSBLengthLabel;
-    private JLabel datasetNameLabel;
     private JLabel patternFilePathLabel;
     private JLabel bcountLabel;
     private JLabel familyClusterThresholdLabel;
     private JLabel segmentToDirectonsLabel;
-
 
     private JList clusterTypeField;
     private JSpinner quorum;
@@ -39,7 +37,6 @@ public class InputParametersDialog extends JDialog {
     private JSlider quorumWithoutInsertionsSlider;
     private JSpinner minCSBLength;
     private JSpinner maxCSBLength;
-    private JTextField datasetName;
     private JTextField patternFilePath;
     private JCheckBox bcount;
     private JSlider familyClusterThreshold;
@@ -95,7 +92,6 @@ public class InputParametersDialog extends JDialog {
         request.setQuorumWithoutInsertions((int) quorumWithoutInsertions.getValue());
         request.setMinimalCSBLength((int) minCSBLength.getValue());
         request.setMaximumCSBLength((int) maxCSBLength.getValue());
-        request.setDatasetName(datasetName.getText());
         String patternPath = patternFilePath.getText();
         request.setCsbPatternFilePath("optional".equals(patternPath) || "".equals(patternPath) ? null : patternFilePath.getText());
         request.setMultCount(bcount.isSelected());
@@ -124,8 +120,6 @@ public class InputParametersDialog extends JDialog {
         minCSBLength = new JSpinner();
 
         maxCSBLength = new JSpinner();
-
-        datasetName = new JTextField();
 
         patternFilePath = new JTextField();
 
@@ -177,10 +171,6 @@ public class InputParametersDialog extends JDialog {
         labelName = "CSB Max Length";
         desc = "Maximal length (number of gene) of a CSB.";
         maxCSBLengthLabel = initLabel(icon, labelName, desc);
-
-        labelName = "Dataset Name";
-        desc = "Dataset name - will be reflected in the output file name.";
-        datasetNameLabel = initLabel(icon, labelName, desc);
 
         labelName = "CSB Patterns File";
         desc = "If this option is used, CSBs are no longer extracted from the input sequences. " +
@@ -254,10 +244,6 @@ public class InputParametersDialog extends JDialog {
         maxCSBLength.setModel(new SpinnerNumberModel(Integer.MAX_VALUE, 2, Integer.MAX_VALUE, 1));
         ((JSpinner.DefaultEditor)maxCSBLength.getEditor()).getTextField().setColumns(3);
 
-        // dataset name
-        datasetName.setText("dataset");
-        datasetName.setColumns(20);
-
         // csb pattern file path
         patternFilePath.setText("optional");
         patternFilePath.setColumns(20);
@@ -310,9 +296,6 @@ public class InputParametersDialog extends JDialog {
         title = new JLabel("Advanced parameters:");
         title.setFont(new Font("Serif", Font.BOLD, 20));
         addComponentToGC(0, y++, 1, 0.6, insetLabel, title, LINE_START);
-
-        addComponentToGC(0, y, 1, 0.1, insetLabel, datasetNameLabel, LINE_START);
-        addComponentToGC(1, y++, 1, 0.2, insetField, datasetName, LINE_START);
 
         addComponentToGC(0, y, 1, 0.1, insetLabel, segmentToDirectonsLabel, LINE_START);
         addComponentToGC(1, y++, 1, 0.1, insetField, segmentToDirectons, LINE_START);
