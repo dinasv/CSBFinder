@@ -46,8 +46,6 @@ public class CSBFinderModel {
         return inputGenomesPath;
     }
 
-    public MyLogger logger = new MyLogger("",true);
-
     public String loadInputGenomesFile(String path) {
 
         String msg = "";
