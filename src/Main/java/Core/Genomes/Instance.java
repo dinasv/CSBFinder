@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * The motif instance starts from the root and ends in tha concat of lables to node instanceNode + the label on the edge
+ * The instance starts from the root and ends in tha concat of lables to node instanceNode + the label on the edge
  * that starts with ch and ends in edgeIndex
  */
 public class Instance implements Comparable<Instance>{
@@ -30,25 +30,22 @@ public class Instance implements Comparable<Instance>{
     //number of deletions in the Instance (gap chars)
     private int deletions;
 
-    private List<Integer> insertionIndexes;
-
     private String substring;
     private int length;
 
+    private int insertions;
+
     /**
-     * All the <em>different</em> instance_info that are stored in this
-     * node and in underlying ones (i.e. nodes that can be reached through paths
-     * starting from <tt>this</tt>.
-     * key = genome id
-     * value = a list of instance locations
-     *
-     * This must be calculated explicitly using computeAndCacheCount
+     * An index to make sure that the current instance is minimal.
+     * i.e., there is no other instance, which is a substring of the current instance.
+     * e.g. Pattern P=B, Instance BB. BB is not a minimal instance, because B is a substring of BB,
+     * and it is also an instance of P. When encountering the second letter of BB, (@code minimalInstanceIndex)
+     * should be 1. Hence, |P|==(@code minimalInstanceIndex), and the coressponding suffix node should not be traversed.
      */
-    //private Map<Integer, List<InstanceLocation>> instanceLocations;
+    private int minimalInstanceIndex;
 
-
-    public Instance(InstanceNode instanceNode, Edge e, int edgeIndex, int error, int deletions,
-                    List<Integer> insertionIndexes, String substring, int length){
+    public Instance(InstanceNode instanceNode, Edge e, int edgeIndex, int error, int deletions, int insertions,
+                    String substring, int length, int minimalInstanceIndex){
         this.instanceNode = instanceNode;
         this.edge = e;
         this.edgeIndex = edgeIndex;
@@ -56,18 +53,12 @@ public class Instance implements Comparable<Instance>{
         this.deletions = deletions;
         this.substring = substring;
         this.length = length;
-        this.insertionIndexes = new ArrayList<>();
-        this.insertionIndexes.addAll(insertionIndexes);
+        this.insertions = insertions;
+        this.minimalInstanceIndex = minimalInstanceIndex;
     }
 
-    public Instance(InstanceNode instanceNode, Edge e, int edgeIndex, int error, int deletions){
-        this(instanceNode, e, edgeIndex, error, deletions, new ArrayList<>(), "", 0);
-    }
-
-    public Instance(int deletions, String substring){
-        this(null, null, -2, -1, deletions);
-
-        this.substring = substring;
+    public Instance(InstanceNode instanceNode){
+        this(instanceNode, null, -1, 0, 0, 0, "", 0, 0);
     }
 
     public InstanceNode getNodeInstance(){
@@ -97,38 +88,23 @@ public class Instance implements Comparable<Instance>{
         return substring;
     }
 
-    public void addInsertionIndex(int index){
-        insertionIndexes.add(index);
-    }
-
-    public void addAllInsertionIndexes(List<Integer> indexes){
-        insertionIndexes.addAll(indexes);
-    }
-
     @Override
     public int compareTo(Instance o) {
-        InstanceNode instance_node_other = o.getNodeInstance();
+        InstanceNode instanceNodeOther = o.getNodeInstance();
         if (o.getEdge() != null) {
-            instance_node_other = (InstanceNode) o.getEdge().getDest();
+            instanceNodeOther = (InstanceNode) o.getEdge().getDest();
         }
 
-        InstanceNode instance_node_this = instanceNode;
+        InstanceNode instanceNodeThis = instanceNode;
         if (edge != null) {
-            instance_node_this = (InstanceNode) edge.getDest();
+            instanceNodeThis = (InstanceNode) edge.getDest();
         }
 
-        return instance_node_other.getCountInstancePerGenome() - instance_node_this.getCountInstancePerGenome();
-    }
-    @Override
-    public boolean equals(Object other) {
-        if (other == null) return false;
-        if (other == this) return true;
-        if (!(other instanceof Instance)) return false;
-        return ((Instance) other).getNodeInstance().getCountInstancePerGenome() == instanceNode.getCountInstancePerGenome();
+        return instanceNodeOther.getCountInstancePerGenome() - instanceNodeThis.getCountInstancePerGenome();
     }
 
     public int getInsertions() {
-        return insertionIndexes.size();
+        return insertions;
     }
 
     public int getLength() {
@@ -139,16 +115,16 @@ public class Instance implements Comparable<Instance>{
         this.length = length;
     }
 
-    public List<Integer> getInsertionIndexes(){
-        return insertionIndexes;
+    public Map<Integer, List<InstanceLocation>> getInstanceLocations() {
+        InstanceNode instanceNode = this.instanceNode;
+        if (edge != null) {
+            Edge edge = this.edge;
+            instanceNode = (InstanceNode) edge.getDest();
+        }
+        return instanceNode.getGenomeToLocationsInSubtree();
     }
 
-    public Map<Integer, List<InstanceLocation>> getInstanceLocations() {
-        InstanceNode instance_node = instanceNode;
-        if (edge != null) {
-            Edge temp_edge = edge;
-            instance_node = (InstanceNode) temp_edge.getDest();
-        }
-        return instance_node.getGenomeToLocationsInSubtree();
+    public int getMinimalInstanceIndex() {
+        return minimalInstanceIndex;
     }
 }

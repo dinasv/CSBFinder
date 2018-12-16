@@ -130,7 +130,7 @@ public class PatternNode {
         return copyCount;
     }
 
-    public void addInstance(Instance instance, int max_insertion){
+    public void addInstance(Instance instance){
 
         instances.add(instance);
         InstanceNode instance_node;
