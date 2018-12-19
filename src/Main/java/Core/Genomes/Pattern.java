@@ -10,6 +10,8 @@ import java.util.stream.Collectors;
  **/
 public class Pattern {
 
+    public static final String GENES_DELIMITER = ",";
+
     private List<Gene> patternGenes;
     private List<Gene> reverseComplimentPatternArr;
 
@@ -36,7 +38,7 @@ public class Pattern {
         this.patternGenes = new ArrayList<>();
         this.patternGenes.addAll(patternGenes);
         this.length = patternGenes.size();
-        this.instances = instances;
+        this.instances = new ArrayList<>();
 
         score = 0;
         mainFunctionalCategory = "";
@@ -59,11 +61,11 @@ public class Pattern {
         for (Instance instance: instances){
             Collection<List<InstanceLocation>> instanceLocations = instance.getInstanceLocations().values();
 
-            List<InstanceLocation> flatinstanceLocations = instanceLocations.stream()
+            List<InstanceLocation> flatInstanceLocations = instanceLocations.stream()
                                                             .flatMap(List::stream)
                                                             .collect(Collectors.toList());
 
-            for (InstanceLocation instanceLocation: flatinstanceLocations){
+            for (InstanceLocation instanceLocation: flatInstanceLocations){
 
                 InstanceLocation patternLocation = new InstanceLocation(instanceLocation);
                 patternLocation.setInstanceLength(instance.getLength());
@@ -190,10 +192,10 @@ public class Pattern {
     }
 
     public String toString(){
-        String str = "";
-        for (Gene gene: patternGenes){
-            str += gene.getCogId() + gene.getStrand() + ",";
-        }
+        String str = patternGenes.stream()
+                .map(gene -> gene.getCogId() + gene.getStrand())
+                .collect(Collectors.joining(GENES_DELIMITER));
+
         return str;
     }
 
