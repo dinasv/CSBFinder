@@ -199,7 +199,7 @@ public class CSBFinderModel {
         String instancesFileName = catalogFileName + "_instances";
 
         String catalogPath = outputPath + catalogFileName;
-        //TODO: add as input parameter
+        //TODO: addGene as input parameter
         boolean includeFamilies = true;
 
         PatternsWriter patternsWriter = null;

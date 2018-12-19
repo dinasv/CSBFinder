@@ -12,7 +12,7 @@ public class DatasetTree {
     private GenomesInfo genomesInfo;
     public boolean nonDirectons;
 
-    public DatasetTree(/*boolean nonDirectons, */GenomesInfo gi){
+    public DatasetTree(GenomesInfo gi){
         datasetTree = null;
 
         genomesInfo = gi;
@@ -28,20 +28,16 @@ public class DatasetTree {
     /**
      * Turns a genomicSegment (replicon or directon) into an array of genes and puts in in the @datasetTree
      * @param genomicSegment
-     * @param datasetTree
      * @param currGenomeIndex
      */
-    private void putWordInDataTree(GenomicSegment genomicSegment, int currGenomeIndex, boolean nonDirectons){
+    private void putWordInDataTree(GenomicSegment genomicSegment, int currGenomeIndex){
 
         List<Gene> genes = genomicSegment.getGenes();
         WordArray wordArray = genomesInfo.createWordArray(genes);
         InstanceLocation instanceLocation = new InstanceLocation(genomicSegment.getId(), currGenomeIndex,
                 0,genomicSegment.size(), genomicSegment.getStrand(), genomicSegment.getStartIndex(),
                 genomicSegment.size());
-        /*
-        if (genomicSegment.getStrand() == Strand.REVERSE){
-            instanceLocation.switchStartEndIndex();
-        }*/
+
         datasetTree.put(wordArray, currGenomeIndex, instanceLocation);
 
         genomesInfo.countParalogsInSeqs(wordArray, currGenomeIndex);
@@ -50,7 +46,6 @@ public class DatasetTree {
     /**
      * Insert replicon, or split the replicon to directons and then insert
      * @param replicon
-     * @param datasetTree
      * @param currGenomeIndex
      * @return
      */
@@ -58,19 +53,19 @@ public class DatasetTree {
 
         if (nonDirectons) {//put replicon and its reverseCompliment
 
-            putWordInDataTree(replicon, currGenomeIndex, nonDirectons);
+            putWordInDataTree(replicon, currGenomeIndex);
 
             //reverseCompliment replicon
             replicon = new Replicon(replicon);
             replicon.reverseCompliment();
-            putWordInDataTree(replicon, currGenomeIndex, nonDirectons);
+            putWordInDataTree(replicon, currGenomeIndex);
 
         }else{//split replicon to directons
 
             List<Directon> directons = replicon.splitRepliconToDirectons(Alphabet.UNK_CHAR);
 
             for (Directon directon: directons){
-                putWordInDataTree(directon, currGenomeIndex, nonDirectons);
+                putWordInDataTree(directon, currGenomeIndex);
             }
 
         }

@@ -29,6 +29,32 @@ public class Parsers {
     final static String INSTANCES_START = "<instances>";
     final static String INSTANCES_END = "<\\instances>";
 
+    public static List<Pattern> parseReferenceGenomesFile(GenomesInfo genomesInfo, String referenceGenomesPath)
+            throws IOException {
+
+        List<Pattern> patterns = new ArrayList<>();
+
+        try (BufferedReader br = new BufferedReader(new FileReader(referenceGenomesPath))) {
+            String line = br.readLine();
+            while (line != null) {
+                String genomeName = line.trim();
+                Genome genome = genomesInfo.getGenome(genomeName);
+                if (genome != null){
+                    for (Replicon replicon: genome.getReplicons()){
+                        Pattern pattern = new Pattern(-1, replicon.getGenes());
+                        patterns.add(pattern);
+                    }
+                }
+                line = br.readLine();
+            }
+        } catch (FileNotFoundException e) {
+            throw new FileNotFoundException("File " + referenceGenomesPath + " was not found.");
+        } catch (IOException e) {
+            throw new IOException("An exception occurred while reading " + referenceGenomesPath);
+        }
+
+        return patterns;
+    }
 
     public static List<Pattern> parsePatternsFile(String inputPatternsFilePath)
             throws IOException, IllegalArgumentException {
@@ -429,7 +455,7 @@ public class Parsers {
 
             } else {
                 Gene gene = parseGeneLine(rawLine, lineNumber, filePath);
-                replicon.add(gene);
+                replicon.addGene(gene);
             }
 
             rawLine = br.readLine();

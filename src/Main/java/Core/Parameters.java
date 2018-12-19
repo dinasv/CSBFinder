@@ -1,10 +1,7 @@
 package Core;
-import Core.Genomes.Pattern;
 import com.beust.jcommander.IParameterValidator;
 import com.beust.jcommander.Parameter;
 import com.beust.jcommander.ParameterException;
-
-import java.util.Comparator;
 
 public class Parameters {
 
@@ -86,7 +83,10 @@ public class Parameters {
     @Parameter(names={"-out-dir"}, description = "Path to output directory", order = 14)
     public String outputDir = "output";
 
-    @Parameter(names={"-alg"}, description = "Algorithm to use for finding CSBs", order = 15)
+    @Parameter(names={"-ref"}, description = "Path to reference genomes file", order = 15)
+    public String referenceGenomesPath = null;
+
+    @Parameter(names={"-alg"}, description = "Algorithm to use for finding CSBs", order = 16)
     public AlgorithmType algorithmType = AlgorithmType.SUFFIX_TREE;
 
     @Parameter(names={"--mismatch", "-err"}, description = "Maximal number of mismatches allowed", hidden = true)

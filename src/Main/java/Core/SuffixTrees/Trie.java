@@ -28,16 +28,15 @@ public class Trie {
         return root;
     }
 
-    public PatternNode put(WordArray str, int key, int UNK_CHAR_INDEX){
-        PatternNode last_node = put(str, root, true, UNK_CHAR_INDEX);
-        if (last_node != null && type == TreeType.STATIC){
-            last_node.setKey(key);
+    public void put(WordArray str, int key, int UNK_CHAR_INDEX){
+        PatternNode lastNode = put(str, root, false, UNK_CHAR_INDEX);
+        if (lastNode != null && type == TreeType.STATIC){
+            lastNode.setKey(key);
         }
-        return last_node;
     }
 
     public PatternNode put(WordArray str, int UNK_CHAR_INDEX){
-        return put(str, root, true, UNK_CHAR_INDEX);
+        return put(str, root, false, UNK_CHAR_INDEX);
     }
 
     public PatternNode addNode(int ch, PatternNode src_node){
@@ -49,22 +48,30 @@ public class Trie {
         return target_node;
     }
 
-    public PatternNode put(WordArray str, PatternNode src_node, boolean include_unknown_char, int UNK_CHAR_INDEX){
+    public PatternNode put(WordArray str, PatternNode srcNode, boolean includeUnknownChar, int UNK_CHAR_INDEX){
+        PatternNode currNode = null;
         if (str.getLength() > 0) {
-            PatternNode curr_node = src_node;
+            currNode = srcNode;
             for (int i = 0; i < str.getLength(); i++) {
-                int str_char = str.getLetter(i);
-                if (include_unknown_char || (!include_unknown_char && str_char != UNK_CHAR_INDEX )) {
-                    curr_node = addNode(str_char, curr_node);
+                int strChar = str.getLetter(i);
+                if (includeUnknownChar || (!includeUnknownChar && strChar != UNK_CHAR_INDEX )) {
+                    currNode = addNode(strChar, currNode);
 
-                    if (/*type == TreeType.VIRTUAL &&*/ curr_node.getPatternKey() <= 0) {
-                        curr_node.setKey(++lastKey);
+                    if (currNode.getPatternKey() <= 0) {
+                        currNode.setKey(++lastKey);
                     }
                 }
             }
-            return curr_node;
         }
-        return null;
+
+        if (str.getLength() > 1) {
+            //put the suffix of str
+            str = new WordArray(str);
+            str.addToStartIndex(1);
+
+            put(str, root, includeUnknownChar, UNK_CHAR_INDEX);
+        }
+        return currNode;
     }
 
     /**
@@ -74,30 +81,29 @@ public class Trie {
      * @param key the key of that string
      * @throws IllegalStateException if an invalid index is passed as input
      */
-    public PatternNode put(WordArray str, int key, PatternNode extended_str_node) throws IllegalStateException {
+    public PatternNode put(WordArray str, int key, PatternNode extendedStrNode) throws IllegalStateException {
         if (str.getLength() > 0) {
-            PatternNode curr_node = root;
+            PatternNode currNode = root;
             int index = 0;
             //as long as the infix of str is in the tree, go on
             for (int i = 0; i < str.getLength(); i++) {
-                int str_char = str.getLetter(i);
+                int letter = str.getLetter(i);
 
-                PatternNode target_node = curr_node.getTargetNode(str_char);
-                //there is no outgoing edge with str_char
+                PatternNode target_node = currNode.getTargetNode(letter);
+                //there is no outgoing edge with letter
                 if (target_node == null) {
                     break;
                 }
-                curr_node = target_node;
+                currNode = target_node;
 
-                if (type == TreeType.VIRTUAL && curr_node.getPatternKey() <= 0){
-                    curr_node.setKey(++lastKey);
+                if (currNode.getPatternKey() <= 0){
+                    currNode.setKey(++lastKey);
                 }
 
                 //advance the node
-                if (extended_str_node != null) {
-                    extended_str_node = extended_str_node.getTargetNode(str_char);
-                    extended_str_node.setSuffix(curr_node);
-
+                if (extendedStrNode != null) {
+                    extendedStrNode = extendedStrNode.getTargetNode(letter);
+                    extendedStrNode.setSuffix(currNode);
                 }
 
                 index++;
@@ -105,43 +111,43 @@ public class Trie {
 
             //insert to the tree the rest of str
             for (int i = index; i < str.getLength(); i++) {
-                int str_char = str.getLetter(i);
+                int letter = str.getLetter(i);
 
-                PatternNode next_node = new PatternNode(type);
-                curr_node.addTargetNode(str_char, next_node);
+                PatternNode nextNode = new PatternNode(type);
+                currNode.addTargetNode(letter, nextNode);
 
-                curr_node = next_node;
+                currNode = nextNode;
 
-                if (type == TreeType.VIRTUAL && curr_node.getPatternKey() <= 0){
-                    curr_node.setKey(++lastKey);
+                if (currNode.getPatternKey() <= 0){
+                    currNode.setKey(++lastKey);
                 }
 
-                if (extended_str_node != null) {
-                    extended_str_node = extended_str_node.getTargetNode(str_char);
-                    extended_str_node.setSuffix(curr_node);
+                if (extendedStrNode != null) {
+                    extendedStrNode = extendedStrNode.getTargetNode(letter);
+                    extendedStrNode.setSuffix(currNode);
                 }
             }
 
 
-            if (extended_str_node == null && type == TreeType.STATIC) {
-                curr_node.setKey(key);
+            if (extendedStrNode == null && type == TreeType.STATIC) {
+                currNode.setKey(key);
             }
 
-            /*
+
             //continue recursively adding all suffixes
-            if (type.equals("enumeration")) {
-                if (index != str.getLength()) {
-                    //put the suffix of str
-                    extended_str_node = root.getTargetNode(str.getLetter(0));
-                    extended_str_node.setSuffix(root);
-                    str = new WordArray(str);
-                    str.addToStartIndex(1);
+            //if (type.equals("enumeration")) {
+            if (index != str.getLength()) {
+                //put the suffix of str
+                extendedStrNode = root.getTargetNode(str.getLetter(0));
+                extendedStrNode.setSuffix(root);
+                str = new WordArray(str);
+                str.addToStartIndex(1);
 
-                    put(str, key, extended_str_node);
-                }
-            }*/
+                put(str, key, extendedStrNode);
+            }
+            //}
 
-            return curr_node;
+            return currNode;
         }
         return null;
     }

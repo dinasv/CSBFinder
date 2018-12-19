@@ -41,8 +41,12 @@ public abstract class GenomicSegment {
         return genes.size();
     }
 
-    public void add(Gene gene){
+    public void addGene(Gene gene){
         genes.add(gene);
+    }
+
+    public void addAllGenes(List<Gene> genes){
+        this.genes.addAll(genes);
     }
 
     public Strand getStrand() {

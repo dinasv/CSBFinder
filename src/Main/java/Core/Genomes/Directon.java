@@ -55,7 +55,7 @@ public class Directon extends GenomicSegment {
                 .toArray(new String[genes.size()]);
     }
 
-    public void add(Gene gene){
+    public void addGene(Gene gene){
         if(getStrand() == Strand.REVERSE) {
             genes.add(0, gene);
         }else{

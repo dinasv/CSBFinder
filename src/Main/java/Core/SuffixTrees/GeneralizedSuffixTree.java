@@ -202,12 +202,12 @@ public class GeneralizedSuffixTree  implements Serializable{
 
         }
 
-        // add leaf suffix link, if necessary
+        // addGene leaf suffix link, if necessary
         if (null == activeLeaf.getSuffix() && activeLeaf != root && activeLeaf != s) {
             activeLeaf.setSuffix(s);
         }
 
-        //add recursively the genomeId and indexes to the nodes corresponding to this string
+        //addGene recursively the genomeId and indexes to the nodes corresponding to this string
 
         if (fullStringNode instanceof InstanceNode)
             ((InstanceNode)fullStringNode).addLocationToGenome(genomeId, instanceLocation);
@@ -228,7 +228,7 @@ public class GeneralizedSuffixTree  implements Serializable{
      * @param inputs the starting node
      * @param stringPart the string to search
      * @param t the following character
-     * @param remainder the remainder of the string to add to the index
+     * @param remainder the remainder of the string to addGene to the index
      * @return a pair containing
      * true/false depending on whether (stringPart + t) is contained in the subtree starting in inputs
      * the last node that can be reached by following the path denoted by stringPart starting from inputs
@@ -366,7 +366,7 @@ public class GeneralizedSuffixTree  implements Serializable{
          *   added so far.
          *
          * @param inputNode the node to start from
-         * @param stringPart the string to add to the tree
+         * @param stringPart the string to addGene to the tree
          * @param rest the rest of the string
          */
         private Pair<SuffixNode, WordArray> update (SuffixNode inputNode, WordArray stringPart, WordArray rest){

@@ -192,10 +192,13 @@ public class Pattern {
     }
 
     public String toString(){
-        String str = patternGenes.stream()
+        return toString(patternGenes);
+    }
+
+    public static String toString(List<Gene> genes){
+        String str = genes.stream()
                 .map(gene -> gene.getCogId() + gene.getStrand())
                 .collect(Collectors.joining(GENES_DELIMITER));
-
         return str;
     }
 

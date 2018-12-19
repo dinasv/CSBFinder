@@ -65,7 +65,7 @@ public class Controller {
         String instancesFileName = catalogFileName + "_instances";
 
         String catalogPath = outputPath + catalogFileName;
-        //TODO: add as input parameter
+        //TODO: addGene as input parameter
         boolean includeFamilies = true;
 
         PatternsWriter patternsWriter = null;
@@ -142,18 +142,27 @@ public class Controller {
     }
 
     /**
-     * Read patterns from a file if a file is given, and put them in a suffix trie
+     * Read patterns from a file if a file is given
      * @return
      */
     private List<Pattern> readPatternsFromFile() throws Exception{
         List<Pattern> patterns = new ArrayList<>();
-        if (params.inputPatternsFilePath != null) {
-            //these arguments are not valid when input patterns are give
-            params.minPatternLength = 2;
-            params.maxPatternLength = Integer.MAX_VALUE;
+        String path = params.inputPatternsFilePath;
 
-            String path = params.inputPatternsFilePath;
+        if (path != null) {
+
             patterns = Parsers.parsePatternsFile(path);
+        }
+        return patterns;
+    }
+
+    private List<Pattern> readPatternsReferenceGenomesFile(GenomesInfo genomesInfo) throws Exception{
+        List<Pattern> patterns = new ArrayList<>();
+        String path = params.referenceGenomesPath;
+
+        if (path != null) {
+
+            patterns = Parsers.parseReferenceGenomesFile(genomesInfo, path);
         }
         return patterns;
     }
@@ -212,6 +221,9 @@ public class Controller {
             List<Pattern> patternsFromFile = new ArrayList<>();
             try {
                 patternsFromFile = readPatternsFromFile();
+                if (patternsFromFile.size() == 0 ){
+                    patternsFromFile = readPatternsReferenceGenomesFile(gi);
+                }
             }catch (Exception e){
                 System.out.println(e.getMessage());
             }

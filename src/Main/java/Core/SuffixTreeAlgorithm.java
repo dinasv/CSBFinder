@@ -109,7 +109,7 @@ public class SuffixTreeAlgorithm implements Algorithm {
 
     private void setPatternTreeRoot() {
         if (patternsFromFile.size() > 0) {
-            PatternsTree patternsTree = new PatternsTree(patternsFromFile, gi);
+            PatternsTree patternsTree = new PatternsTree(patternsFromFile, gi, nonDirectons);
             Trie patternTrie = patternsTree.getTrie();
             patternTreeRoot = patternTrie.getRoot();
         } else {//all patterns will be extracted from the data tree
@@ -155,7 +155,7 @@ public class SuffixTreeAlgorithm implements Algorithm {
      * Therefore it is sufficient to remove each pattern suffix if it has the same instance count
      */
     private void removeRedundantPatterns() {
-        if (patternTreeRoot.getType() == TreeType.VIRTUAL) {
+        //if (patternTreeRoot.getType() == TreeType.VIRTUAL) {
             HashSet<String> patternsToRemove = new HashSet<>();
             for (Map.Entry<String, Pattern> entry : patterns.entrySet()) {
 
@@ -163,7 +163,7 @@ public class SuffixTreeAlgorithm implements Algorithm {
                 List<Gene> patternGenes = pattern.getPatternGenes();
                 List<Gene> patternSuffix = new ArrayList<>(patternGenes);
                 patternSuffix.remove(0);
-                String suffixStr = patternSuffix.toString();
+                String suffixStr = Pattern.toString(patternSuffix);
 
                 Pattern suffix = patterns.get(suffixStr);
 
@@ -180,16 +180,16 @@ public class SuffixTreeAlgorithm implements Algorithm {
                 }
             }
             patterns.keySet().removeAll(patternsToRemove);
-        }
+        //}
     }
 
     private void removeReverseCompliments(Pattern pattern, HashSet<String> patternsToRemove) {
 
         List<Gene> reversePatternGenes = pattern.getReverseComplimentPattern();
-        String reversedPatternStr = reversePatternGenes.toString();
+        String reversedPatternStr = Pattern.toString(reversePatternGenes);
         Pattern reversedPattern = patterns.get(reversedPatternStr);
 
-        String patternStr = pattern.getPatternGenes().toString();
+        String patternStr = pattern.toString();
         if (reversedPattern != null && !patternsToRemove.contains(patternStr)) {
             patternsToRemove.add(reversedPatternStr);
         }
@@ -228,7 +228,7 @@ public class SuffixTreeAlgorithm implements Algorithm {
      * Adds a character to str
      *
      * @param str
-     * @param ch  the index of the character to add, converted to a letter
+     * @param ch  the index of the character to addGene, converted to a letter
      * @return the extended str
      */
     private List<Gene> appendChar(List<Gene> str, int ch) {
@@ -254,7 +254,7 @@ public class SuffixTreeAlgorithm implements Algorithm {
      */
     private int spellPatterns(PatternNode patternNode, List<Gene> pattern, int pattern_length, int pattern_wildcard_count) {
         if (pattern_wildcard_count < maxWildcards && patternNode.getType() == TreeType.VIRTUAL) {
-            //add to patternNode an edge with "_", pointing to a new node that will save the instances
+            //addGene to patternNode an edge with "_", pointing to a new node that will save the instances
             addWildcardEdge(patternNode, true);
         }
 
@@ -401,7 +401,7 @@ public class SuffixTreeAlgorithm implements Algorithm {
 
 
     /**
-     * Extend pattern recursively by one character, if it passes the q1 and q2 - add to pattern list
+     * Extend pattern recursively by one character, if it passes the q1 and q2 - addGene to pattern list
      *
      * @param alpha          the char to append
      * @param wildcard_count how many wildcard in the pattern
@@ -546,7 +546,7 @@ public class SuffixTreeAlgorithm implements Algorithm {
                     nextEdgeIndex++;
                     nextEdgeInstance = nodeInstance.getEdge(ch);
                     nextNodeInstance = nodeInstance;
-                    //Exists an instanceEdge starting with ch, add it to instances
+                    //Exists an instanceEdge starting with ch, addGene it to instances
                     if (nextEdgeInstance != null) {
                         exactInstanceCount = ((InstanceNode) nextEdgeInstance.getDest()).getCountInstancePerGenome();
                         //The label contains only 1 char, go to next nodeInstance
@@ -591,7 +591,7 @@ public class SuffixTreeAlgorithm implements Algorithm {
                 }
             }
 
-            //if the char is equal add anyway
+            //if the char is equal addGene anyway
             if (nextCh == ch) {
                 exactInstanceCount = ((InstanceNode) instanceEdge.getDest()).getCountInstancePerGenome();
                 addInstanceToPattern(extendedPattern, instance, nextCh, nextNodeInstance, nextEdgeInstance, nextEdgeIndex, error,
@@ -601,7 +601,7 @@ public class SuffixTreeAlgorithm implements Algorithm {
                     addInstanceToPattern(extendedPattern, instance, nextCh, nextNodeInstance, nextEdgeInstance, nextEdgeIndex, error,
                             deletions);
                 } else {
-                    if (error < maxError) {//check if the error is not maximal, to add not equal char
+                    if (error < maxError) {//check if the error is not maximal, to addGene not equal char
                         addInstanceToPattern(extendedPattern, instance, nextCh, nextNodeInstance, nextEdgeInstance, nextEdgeIndex,
                                 error + 1, deletions);
                     }

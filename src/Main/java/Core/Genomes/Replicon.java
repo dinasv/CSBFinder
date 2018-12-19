@@ -3,7 +3,6 @@ package Core.Genomes;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  */
@@ -60,10 +59,10 @@ public class Replicon extends GenomicSegment {
             if (directon.size() == 0) {
                 if (!gene.getCogId().equals(UNK_CHAR) && !endDirecton) {
                     directon.setStrand(gene.getStrand());
-                    directon.add(new Gene(gene.getCogId(), Strand.INVALID));
+                    directon.addGene(new Gene(gene.getCogId(), Strand.INVALID));
                 }
             } else {
-                directon.add(new Gene(gene.getCogId(), Strand.INVALID));
+                directon.addGene(new Gene(gene.getCogId(), Strand.INVALID));
 
                 if (endDirecton){//directon.size()>0
 

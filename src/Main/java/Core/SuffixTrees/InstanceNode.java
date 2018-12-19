@@ -66,7 +66,7 @@ public class InstanceNode extends SuffixNode {
         locations.add(instanceLocation);
         genomeToLocations.put(genomeId, locations);
 
-        // add this reference to all the suffixes as well
+        // addGene this reference to all the suffixes as well
         addIndexToSuffix(this, genomeId, instanceLocation);
 
     }
@@ -114,7 +114,7 @@ public class InstanceNode extends SuffixNode {
     private Map<Integer, List<InstanceLocation>> computeAndCacheCountRecursive() {
         countInstancePerGenome = 0;
         countMultipleInstancesPerGenome = 0;
-        //add all data_indexes to genomeToLocationsInSubtree
+        //addGene all data_indexes to genomeToLocationsInSubtree
         countMultipleInstancesPerGenome += multimapAddAll(genomeToLocationsInSubtree, genomeToLocations);
 
         Map<Integer, Edge> edges = getEdges();
