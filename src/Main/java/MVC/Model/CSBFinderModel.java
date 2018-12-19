@@ -133,7 +133,6 @@ public class CSBFinderModel {
         }
 
         long startTime = System.nanoTime();
-        Map<String, COG> cogInfoTable = null;
 
         List<Pattern> patternsFromFile = new ArrayList<>();
         try {
@@ -142,6 +141,8 @@ public class CSBFinderModel {
             msg = e.getMessage();
             return msg;
         }
+
+        workflow.setPatternsFromFile(patternsFromFile);
 
         Algorithm algorithm = new SuffixTreeAlgorithm();
         workflow.setAlgorithm(algorithm);
@@ -281,9 +282,9 @@ public class CSBFinderModel {
     private List<Pattern> readPatternsFromFile() throws Exception{
         List<Pattern> patterns = new ArrayList<>();
         if (params.inputPatternsFilePath != null) {
-            //these arguments are not valid when input patterns are give
-            params.minPatternLength = 2;
-            params.maxPatternLength = Integer.MAX_VALUE;
+            //these arguments are not valid when input patterns are given
+            //params.minPatternLength = 2;
+            //params.maxPatternLength = Integer.MAX_VALUE;
 
             String path = params.inputPatternsFilePath;
             patterns = Parsers.parsePatternsFile(path);

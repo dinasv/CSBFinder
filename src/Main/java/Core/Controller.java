@@ -215,6 +215,8 @@ public class Controller {
             }catch (Exception e){
                 System.out.println(e.getMessage());
             }
+            workflow.setPatternsFromFile(patternsFromFile);
+
             List<Family> families;
 
             printToScreen(String.format("Extracting CSBs from %d input sequences.", gi.getNumberOfGenomes()));

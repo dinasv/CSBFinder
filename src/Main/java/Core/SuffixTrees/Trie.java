@@ -14,7 +14,6 @@ public class Trie {
     private boolean debug;
     private TreeType type;
     private int lastKey;
-    private int UNK_CHAR_INDEX;
 
     public Trie(TreeType type){
         root = new PatternNode(type);
@@ -58,7 +57,7 @@ public class Trie {
                 if (include_unknown_char || (!include_unknown_char && str_char != UNK_CHAR_INDEX )) {
                     curr_node = addNode(str_char, curr_node);
 
-                    if (type == TreeType.VIRTUAL && curr_node.getPatternKey() <= 0) {
+                    if (/*type == TreeType.VIRTUAL &&*/ curr_node.getPatternKey() <= 0) {
                         curr_node.setKey(++lastKey);
                     }
                 }

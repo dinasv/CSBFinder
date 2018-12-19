@@ -22,7 +22,7 @@ public class PatternsTree {
 
     /**
      * Builds a Trie of patterns, given in a list of patterns.
-     * @param patternTree the patterns are inserted to this GST
+     * @param patterns the patterns are inserted to this GST
      */
     public void buildPatternsTree(List<Pattern> patterns) {
 

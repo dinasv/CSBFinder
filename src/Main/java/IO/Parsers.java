@@ -29,6 +29,7 @@ public class Parsers {
     final static String INSTANCES_START = "<instances>";
     final static String INSTANCES_END = "<\\instances>";
 
+
     public static List<Pattern> parsePatternsFile(String inputPatternsFilePath)
             throws IOException, IllegalArgumentException {
 
@@ -87,7 +88,7 @@ public class Parsers {
 
 
     /**
-     * Parse {@code rawLine} containing a gene and its numericValue separated by TAB, and create {@link Genomes.Gene}.
+     * Parse {@code rawLine} containing a gene and its numericValue separated by TAB, and create {@link Core.Genomes.Gene}.
      * A numericValue must be "+" or "-"
      * <p>
      * Format: [Gene FAMILY_ID][TAB][Strand]
@@ -133,7 +134,6 @@ public class Parsers {
      * Acaryochloris_marina_MBIC11017_uid58167|NC_009927
      *
      * @param rawTitle
-     * @param replicon
      */
     private static String[] parseGenomeTitle(String rawTitle, int lineNumber, String filePath) throws IllegalArgumentException {
 
@@ -224,8 +224,8 @@ public class Parsers {
 
 
     /**
-     * @param input_file_path path to input file with input sequences
-     * @return number of input sequences
+     * @param filePath path to input file with input sequences
+     * @return all information obtained from the file, stored in GenomesInfo
      */
     public static GenomesInfo parseGenomesFile(String filePath)
             throws IOException, IllegalArgumentException {

@@ -46,7 +46,7 @@ public class CSBFinderWorkflow {
         algorithm.setGenomesInfo(gi);
     }
 
-    public List<Family> run(Parameters params/*, List<Pattern> patternsFromFile*/){
+    public List<Family> run(Parameters params){
         if (algorithm == null || params == null){
             return new ArrayList<>();
         }
