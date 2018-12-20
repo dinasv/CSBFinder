@@ -40,23 +40,22 @@ public class MatchPointAlgorithm implements Algorithm {
 
         for (Genome genome : genomesInfo.getGenomes()) {
 
-            int genomeId = genome.getId();
             for (Replicon replicon : genome.getReplicons()) {
                 if (nonDirectons) {//put replicon and its reverseCompliment
 
-                    createMatchLists(replicon, genome.getId(), nonDirectons);
+                    createMatchLists(replicon, genome.getId());
 
                     //reverseCompliment replicon
                     replicon = new Replicon(replicon);
                     replicon.reverseCompliment();
-                    createMatchLists(replicon, genome.getId(), nonDirectons);
+                    createMatchLists(replicon, genome.getId());
 
                 } else {//split replicon to directons
 
                     List<Directon> directons = replicon.splitRepliconToDirectons(Alphabet.UNK_CHAR);
 
                     for (Directon directon : directons) {
-                        createMatchLists(directon, genome.getId(), nonDirectons);
+                        createMatchLists(directon, genome.getId());
                     }
 
                 }
@@ -64,7 +63,7 @@ public class MatchPointAlgorithm implements Algorithm {
         }
     }
 
-    private void createMatchLists(GenomicSegment genomicSegment, int currGenomeId, boolean nonDirectons) {
+    private void createMatchLists(GenomicSegment genomicSegment, int currGenomeId) {
 
         genomicSegments.add(genomicSegment);
 
@@ -128,33 +127,65 @@ public class MatchPointAlgorithm implements Algorithm {
 
         initialize();
 
-        for (GenomicSegment genomicSegment : genomicSegments) {
+        if (patternsFromFile.size() > 0){
+            for (Pattern pattern : patternsFromFile){
 
-            List<Gene> genes = genomicSegment.getGenes();
-            WordArray wordArray = genomesInfo.createWordArray(genes);
+                List<Gene> genes = pattern.getPatternGenes();
 
-            //go over all possible start indices of a pattern
-            for (int patternStart = 0; patternStart < wordArray.getLength(); patternStart++) {
+                Replicon replicon = new Replicon();
+                replicon.addAllGenes(genes);
 
-                List<Gene> patternGenes = genomicSegment.getGenes().subList(patternStart, patternStart + 1);
-                Pattern pattern = new Pattern(patternId++, patternGenes);
+                if(parameters.nonDirectons) {
 
-                int letter = wordArray.getLetter(patternStart);
-                if (letter == Alphabet.UNK_CHAR_INDEX) {//There can't be an unkonwn char in a pattern
-                    continue;
+                    extractPatterns(genes);
+
+                    replicon.reverseCompliment();
+
+                    extractPatterns(replicon.getGenes());
+                }else{
+
+                    List<Directon> directons = replicon.splitRepliconToDirectons(Alphabet.UNK_CHAR);
+
+                    for (Directon directon : directons) {
+                        extractPatterns(directon.getGenes());
+                    }
                 }
 
-                initializePattern(letter, pattern);
+            }
+        }else {
+            for (GenomicSegment genomicSegment : genomicSegments) {
 
-                //extend pattern to length > 1, one character at a time
-                extendPattern(pattern, patternStart, wordArray, genomicSegment);
+                List<Gene> genes = genomicSegment.getGenes();
+                extractPatterns(genes);
+
             }
         }
 
         removeRedundantPatterns();
     }
 
-    private void extendPattern(Pattern pattern, int patternStart, WordArray wordArray, GenomicSegment genomicSegment) {
+    private void extractPatterns(List<Gene> genes){
+        WordArray wordArray = genomesInfo.createWordArray(genes);
+
+        //go over all possible start indices of a pattern
+        for (int patternStart = 0; patternStart < wordArray.getLength(); patternStart++) {
+
+            List<Gene> patternGenes = genes.subList(patternStart, patternStart + 1);
+            Pattern pattern = new Pattern(patternId++, patternGenes);
+
+            int letter = wordArray.getLetter(patternStart);
+            if (letter == Alphabet.UNK_CHAR_INDEX) {//There can't be an unkonwn char in a pattern
+                continue;
+            }
+
+            initializePattern(letter, pattern);
+
+            //extend pattern to length > 1, one character at a time
+            extendPattern(pattern, patternStart, wordArray, genes);
+        }
+    }
+
+    private void extendPattern(Pattern pattern, int patternStart, WordArray wordArray, List<Gene> genes) {
 
         for (int patternEnd = patternStart + 1; patternEnd < wordArray.getLength(); patternEnd++) {
 
@@ -164,7 +195,7 @@ public class MatchPointAlgorithm implements Algorithm {
                 break;
             }
 
-            List<Gene> extendedPatternGenes = genomicSegment.getGenes().subList(patternStart, patternEnd + 1);
+            List<Gene> extendedPatternGenes = genes.subList(patternStart, patternEnd + 1);
             Pattern extendedPattern = new Pattern(patternId++, extendedPatternGenes);
 
             if (patterns.containsKey(extendedPattern.toString())) {

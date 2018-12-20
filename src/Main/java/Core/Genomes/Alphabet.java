@@ -1,9 +1,6 @@
 package Core.Genomes;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  */
@@ -60,22 +57,27 @@ public class Alphabet {
         return indexToLetter.size();
     }
 
+    public int addLetter(Gene gene){
+        int letterIndex = getLetter(gene);
+        if (letterIndex == -1) {
+            letterIndex = alphabetSize();
+            indexToLetter.add(gene);
+            letterToIndex.put(gene, letterIndex);
+        }
+        return letterIndex;
+    }
+
     /**
      * Converts an array of strings to wordArray, using letterToIndex
-     * @param genes each gene will we converted to a chracter with index
+     * @param genes each gene will we converted to a character with index
      * @return WordArray representing genes
      */
-    public WordArray createWordArray(List<Gene> genes/*, boolean nonDirectons*/){
+    public WordArray createWordArray(List<Gene> genes){
         int[] word = new int[genes.size()];
         int i = 0;
         for(Gene gene: genes){
 
-            int letterIndex = getLetter(gene);
-            if (letterIndex == -1) {
-                letterIndex = alphabetSize();
-                indexToLetter.add(gene);
-                letterToIndex.put(gene, letterIndex);
-            }
+            int letterIndex = addLetter(gene);
 
             word[i] = letterIndex;
             i++;

@@ -232,11 +232,9 @@ public class Controller {
             }
             workflow.setPatternsFromFile(patternsFromFile);
 
-            List<Family> families;
-
             printToScreen(String.format("Extracting CSBs from %d input sequences.", gi.getNumberOfGenomes()));
 
-            families = workflow.run(params);
+            List<Family> families = workflow.run(params);
 
             printToScreen(String.format("%d CSBs found.", workflow.getPatternsCount()));
 

@@ -43,8 +43,20 @@ public class GenomesInfo {
         alphabet = new Alphabet();
     }
 
-    public WordArray createWordArray(List<Gene> genes/*, boolean nonDirectons*/){
-        return alphabet.createWordArray(genes/*, nonDirectons*/);
+    public void addLetter(Gene gene){
+        alphabet.addLetter(gene);
+    }
+
+    public void initAlphabet(){
+        cogToContainingGenomes = new HashMap<>();
+
+        genomeToCogParalogCount = new HashMap<>();
+
+        alphabet = new Alphabet();
+    }
+
+    public WordArray createWordArray(List<Gene> genes){
+        return alphabet.createWordArray(genes);
     }
 
     public Gene getLetter(int index){
