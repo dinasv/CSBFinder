@@ -70,12 +70,6 @@ public class Alphabet {
         int i = 0;
         for(Gene gene: genes){
 
-            /*
-            Gene letter = gene;
-            if (!nonDirectons){
-                letter = new Gene(gene.getCogId(), Strand.INVALID);
-            }*/
-
             int letterIndex = getLetter(gene);
             if (letterIndex == -1) {
                 letterIndex = alphabetSize();

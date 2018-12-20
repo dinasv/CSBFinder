@@ -3,7 +3,7 @@ package MVC.View.Models;
 /**
  */
 
-import Core.Genomes.Pattern;
+import Core.Patterns.Pattern;
 
 import java.util.function.Function;
 

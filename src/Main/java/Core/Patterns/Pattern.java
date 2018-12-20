@@ -1,6 +1,8 @@
-package Core.Genomes;
+package Core.Patterns;
 
-import Core.CogInfo;
+import Core.OrthologyGroups.COG;
+import Core.OrthologyGroups.CogInfo;
+import Core.Genomes.*;
 
 import java.util.*;
 import java.util.stream.Collectors;

@@ -1,16 +1,22 @@
-package Core;
+package Core.SuffixTreePatternFinder;
 
+import Core.Algorithm;
 import Core.Genomes.WordArray;
-import Core.SuffixTrees.*;
+import Core.MemoryUtils;
+import Core.Parameters;
+import Core.Patterns.Instance;
+import Core.Patterns.Pattern;
+import Core.SuffixTreePatternFinder.SuffixTrees.*;
 
 import java.util.*;
 
 import Core.Genomes.*;
 
 /**
- * Suffix Tree based algorithmType for CSB pattern discovery
+ * Suffix Tree based algorithm for CSB pattern discovery
  * <p>
- * A CSB is a substring of at least quorum1 input sequences and must have instance in at least quorum2 input sequences
+ * A CSB is a substring of at least (@code q1) input sequences and must have instance in at least (@code q2)
+ * input sequences
  * An instance can differ from a CSB by at most k insertions
  */
 public class SuffixTreeAlgorithm implements Algorithm {

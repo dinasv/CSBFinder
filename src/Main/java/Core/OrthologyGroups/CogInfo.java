@@ -1,6 +1,4 @@
-package Core;
-
-import Core.Genomes.COG;
+package Core.OrthologyGroups;
 
 import java.util.Map;
 

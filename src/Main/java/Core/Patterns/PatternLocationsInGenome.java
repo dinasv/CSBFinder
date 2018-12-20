@@ -1,4 +1,6 @@
-package Core.Genomes;
+package Core.Patterns;
+
+import Core.Patterns.InstanceLocation;
 
 import java.util.*;
 

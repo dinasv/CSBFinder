@@ -1,6 +1,5 @@
 package MVC.View.Components;
 
-import Core.OutputType;
 import MVC.Common.CSBFinderRequest;
 import MVC.Controller.CSBFinderController;
 import MVC.View.Components.Dialogs.InputParametersDialog;
@@ -9,8 +8,8 @@ import MVC.View.Events.*;
 import MVC.View.Listeners.*;
 import MVC.View.Components.Panels.GenomePanel;
 import MVC.View.Components.Panels.SummaryPanel;
-import Core.Genomes.COG;
-import Core.Genomes.Pattern;
+import Core.OrthologyGroups.COG;
+import Core.Patterns.Pattern;
 import Core.PostProcess.Family;
 
 import javax.swing.*;

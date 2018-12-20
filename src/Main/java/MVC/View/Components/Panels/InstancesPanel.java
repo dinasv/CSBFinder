@@ -1,9 +1,8 @@
 package MVC.View.Components.Panels;
 
-import Core.Genomes.InstanceLocation;
-import Core.Genomes.Pattern;
-import Core.Genomes.PatternLocationsInGenome;
-import MVC.Common.InstanceInfo;
+import Core.Patterns.InstanceLocation;
+import Core.Patterns.Pattern;
+import Core.Patterns.PatternLocationsInGenome;
 import MVC.View.Components.Shapes.*;
 import MVC.View.Components.Shapes.Label;
 import Core.Genomes.Gene;

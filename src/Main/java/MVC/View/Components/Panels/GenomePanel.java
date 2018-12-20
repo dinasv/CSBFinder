@@ -1,6 +1,6 @@
 package MVC.View.Components.Panels;
 
-import Core.Genomes.Pattern;
+import Core.Patterns.Pattern;
 
 import javax.swing.*;
 import java.awt.*;

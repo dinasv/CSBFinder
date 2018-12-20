@@ -1,10 +1,7 @@
 package MVC.View.Components.Panels;
 
-import Core.Genomes.Gene;
-import Core.Genomes.Pattern;
-import Core.Genomes.PatternLocationsInGenome;
-import MVC.Common.InstanceInfo;
-import MVC.View.Components.Shapes.*;
+import Core.Patterns.Pattern;
+import Core.Patterns.PatternLocationsInGenome;
 
 import javax.swing.*;
 import java.awt.*;

@@ -5,8 +5,8 @@ import Core.PostProcess.Family;
 import Core.PostProcess.FamilyClustering;
 
 import Core.Genomes.GenomesInfo;
-import Core.Genomes.Pattern;
-import Core.Genomes.PatternScore;
+import Core.Patterns.Pattern;
+import Core.Patterns.PatternScore;
 
 import java.util.ArrayList;
 import java.util.List;

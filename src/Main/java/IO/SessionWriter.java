@@ -1,7 +1,8 @@
 package IO;
 
-import Core.CogInfo;
+import Core.OrthologyGroups.CogInfo;
 import Core.Genomes.*;
+import Core.Patterns.Pattern;
 import Core.PostProcess.Family;
 
 import java.io.PrintWriter;

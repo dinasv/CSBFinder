@@ -1,10 +1,9 @@
 package IO;
 
-import Core.CogInfo;
-import Core.Genomes.COG;
+import Core.OrthologyGroups.CogInfo;
+import Core.OrthologyGroups.COG;
 import Core.Genomes.Gene;
-import Core.Genomes.GenomesInfo;
-import Core.Genomes.Pattern;
+import Core.Patterns.Pattern;
 import Core.PostProcess.Family;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;

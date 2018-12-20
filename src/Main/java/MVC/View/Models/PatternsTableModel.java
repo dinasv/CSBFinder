@@ -1,6 +1,6 @@
 package MVC.View.Models;
 
-import Core.Genomes.Pattern;
+import Core.Patterns.Pattern;
 import Core.PostProcess.Family;
 
 import java.util.*;

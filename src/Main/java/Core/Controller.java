@@ -1,5 +1,8 @@
 package Core;
 
+import Core.OrthologyGroups.COG;
+import Core.OrthologyGroups.CogInfo;
+import Core.Patterns.Pattern;
 import IO.*;
 import Core.PostProcess.Family;
 import Core.Genomes.*;

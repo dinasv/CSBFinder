@@ -6,8 +6,8 @@ import Core.OutputType;
 import MVC.Common.*;
 import MVC.Model.CSBFinderModel;
 import MVC.View.Components.MainFrame;
-import Core.Genomes.COG;
-import Core.Genomes.Pattern;
+import Core.OrthologyGroups.COG;
+import Core.Patterns.Pattern;
 
 import java.io.IOException;
 import java.util.List;

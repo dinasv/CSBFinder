@@ -2,7 +2,7 @@ package Core.PostProcess;
 
 import Core.Genomes.Gene;
 import Core.Genomes.GenomesInfo;
-import Core.Genomes.Pattern;
+import Core.Patterns.Pattern;
 
 import java.util.*;
 

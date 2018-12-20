@@ -1,6 +1,5 @@
 package MVC.View.Components.Panels;
 
-import Core.Genomes.Pattern;
 import Core.PostProcess.Family;
 import MVC.View.Events.RowClickedEvent;
 import MVC.View.Listeners.RowClickedListener;
@@ -8,12 +7,8 @@ import MVC.View.Models.ColumnProperty;
 import MVC.View.Models.TableModel;
 
 import javax.swing.*;
-import javax.swing.table.TableCellRenderer;
-import javax.swing.table.TableColumn;
 import java.awt.*;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class TablePanel extends JPanel {
 

@@ -1,6 +1,6 @@
-package Core.SuffixTrees;
+package Core.SuffixTreePatternFinder.SuffixTrees;
 
-import Core.Genomes.InstanceLocation;
+import Core.Patterns.InstanceLocation;
 import Core.Genomes.WordArray;
 
 import java.io.Serializable;

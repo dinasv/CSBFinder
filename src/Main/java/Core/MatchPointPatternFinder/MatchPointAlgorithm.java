@@ -1,12 +1,13 @@
-package Core;
+package Core.MatchPointPatternFinder;
 
+import Core.Algorithm;
 import Core.Genomes.*;
+import Core.Parameters;
+import Core.Patterns.InstanceLocation;
+import Core.Patterns.Pattern;
+import Core.Patterns.PatternLocationsInGenome;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
+import java.util.*;
 
 /**
  */
@@ -18,11 +19,18 @@ public class MatchPointAlgorithm implements Algorithm {
     private Parameters parameters;
     private Map<String, Pattern> patterns;
 
+    private int patternId;
+
+    private List<Pattern> patternsFromFile;
+
     public MatchPointAlgorithm() {
         matchLists = new HashMap<>();
         genomesInfo = null;
         genomicSegments = new ArrayList<>();
         patterns = new HashMap<>();
+        patternsFromFile = new ArrayList<>();
+
+        patternId = 1;
     }
 
     private void createMatchLists(boolean nonDirectons) {
@@ -99,7 +107,17 @@ public class MatchPointAlgorithm implements Algorithm {
 
     @Override
     public void setPatternsFromFile(List<Pattern> patternsFromFile) {
+        this.patternsFromFile = patternsFromFile;
+    }
 
+    private void initialize() {
+
+        if (matchLists.size() == 0) {
+            createMatchLists(parameters.nonDirectons);
+        }
+
+        patterns = new HashMap<>();
+        patternId = 1;
     }
 
     @Override
@@ -108,63 +126,64 @@ public class MatchPointAlgorithm implements Algorithm {
             return;
         }
 
-        if (matchLists.size() == 0) {
-            createMatchLists(parameters.nonDirectons);
-        }
+        initialize();
 
-        patterns = new HashMap<>();
-
-        int matchPointCounter = 0;
         for (GenomicSegment genomicSegment : genomicSegments) {
 
             List<Gene> genes = genomicSegment.getGenes();
-            WordArray cogWord = genomesInfo.createWordArray(genes);
-
-            int patternId = 0;
+            WordArray wordArray = genomesInfo.createWordArray(genes);
 
             //go over all possible start indices of a pattern
-            for (int i = 0; i < cogWord.getLength(); i++) {
+            for (int patternStart = 0; patternStart < wordArray.getLength(); patternStart++) {
 
-                List<Gene> patternGenes = genomicSegment.getGenes().subList(i, i + 1);
-                Pattern pattern = new Pattern(patternId, patternGenes);
+                List<Gene> patternGenes = genomicSegment.getGenes().subList(patternStart, patternStart + 1);
+                Pattern pattern = new Pattern(patternId++, patternGenes);
 
-                int letter = cogWord.getLetter(i);
-                if (letter == Alphabet.UNK_CHAR_INDEX) {//There can't be an unkonwn char in a motif
+                int letter = wordArray.getLetter(patternStart);
+                if (letter == Alphabet.UNK_CHAR_INDEX) {//There can't be an unkonwn char in a pattern
                     continue;
                 }
 
-                initializePattern(letter, genomicSegment, pattern);
+                initializePattern(letter, pattern);
 
                 //extend pattern to length > 1, one character at a time
-                for (int j = i + 1; j < cogWord.getLength(); j++) {
-                    letter = cogWord.getLetter(j);
-
-                    if (letter == Alphabet.UNK_CHAR_INDEX) {//There can't be an unkonwn char in a pattern
-                        break;
-                    }
-                    patternId++;
-
-                    List<Gene> extendedPatternGenes = genomicSegment.getGenes().subList(i, j + 1);
-                    Pattern extendedPattern = new Pattern(patternId, extendedPatternGenes);
-
-                    if (patterns.containsKey(extendedPattern.toString())) {
-                        pattern = patterns.get(extendedPattern.toString());
-                        continue;
-                    }
-
-                    extendPattern(cogWord, patternId, letter, pattern, extendedPattern);
-
-                    pattern = extendedPattern;
-                    //pruning
-                    if (extendedPattern.getInstancesPerGenome() < parameters.quorum2) {
-                        break;
-                    }
-                }
+                extendPattern(pattern, patternStart, wordArray, genomicSegment);
             }
         }
+
+        removeRedundantPatterns();
     }
 
-    private void initializePattern(int letter, GenomicSegment genomicSegment, Pattern pattern) {
+    private void extendPattern(Pattern pattern, int patternStart, WordArray wordArray, GenomicSegment genomicSegment) {
+
+        for (int patternEnd = patternStart + 1; patternEnd < wordArray.getLength(); patternEnd++) {
+
+            int letter = wordArray.getLetter(patternEnd);
+
+            if (letter == Alphabet.UNK_CHAR_INDEX) {//There can't be an unkonwn char in a pattern
+                break;
+            }
+
+            List<Gene> extendedPatternGenes = genomicSegment.getGenes().subList(patternStart, patternEnd + 1);
+            Pattern extendedPattern = new Pattern(patternId++, extendedPatternGenes);
+
+            if (patterns.containsKey(extendedPattern.toString())) {
+                pattern = patterns.get(extendedPattern.toString());
+                continue;
+            }
+
+            extendPattern(letter, pattern, extendedPattern);
+
+            pattern = extendedPattern;
+            //pruning
+            if (pattern.getInstancesPerGenome() < parameters.quorum2) {
+                return;
+            }
+        }
+
+    }
+
+    private void initializePattern(int letter, Pattern pattern) {
 
         Map<Integer, List<MatchPoint>> matchList = matchLists.get(letter);
         List<MatchPoint> currGenomeMatchList;
@@ -194,7 +213,7 @@ public class MatchPointAlgorithm implements Algorithm {
         }
     }
 
-    private void extendPattern(WordArray wordArray, int patternId, int letter, Pattern pattern, Pattern extendedPattern) {
+    private void extendPattern(int letter, Pattern pattern, Pattern extendedPattern) {
 
         String extendedPatternStr = extendedPattern.toString();
 
@@ -270,6 +289,66 @@ public class MatchPointAlgorithm implements Algorithm {
                     }
                 }
             }
+        }
+    }
+
+    private void removeRedundantPatterns() {
+
+        HashSet<String> patternsToRemove = new HashSet<>();
+        for (Map.Entry<String, Pattern> entry : patterns.entrySet()) {
+
+            Pattern pattern = entry.getValue();
+
+            String suffixStr = getSuffix(pattern);
+            addSubPatternToRemoveList(suffixStr, pattern, patternsToRemove);
+
+            String prefixStr = getPrefix(pattern);
+            addSubPatternToRemoveList(prefixStr, pattern, patternsToRemove);
+
+            if (parameters.nonDirectons) {
+                removeReverseCompliments(pattern, patternsToRemove);
+            }
+        }
+        patterns.keySet().removeAll(patternsToRemove);
+    }
+
+    private String getSuffix(Pattern pattern){
+
+        List<Gene> suffix = new ArrayList<>(pattern.getPatternGenes());
+        suffix.remove(0);
+
+        return Pattern.toString(suffix);
+    }
+
+    private String getPrefix(Pattern pattern){
+
+        List<Gene> prefix = new ArrayList<>(pattern.getPatternGenes());
+        prefix.remove(prefix.size()-1);
+
+        return Pattern.toString(prefix);
+    }
+
+    private void addSubPatternToRemoveList(String subPatternStr, Pattern pattern, HashSet<String> patternsToRemove){
+        Pattern subPattern = patterns.get(subPatternStr);
+
+        if (subPattern != null) {
+            int patternCount = pattern.getInstancesPerGenome();
+            int suffixCount = subPattern.getInstancesPerGenome();
+            if (suffixCount == patternCount) {
+                patternsToRemove.add(subPatternStr);
+            }
+        }
+    }
+
+    private void removeReverseCompliments(Pattern pattern, HashSet<String> patternsToRemove) {
+
+        List<Gene> reversePatternGenes = pattern.getReverseComplimentPattern();
+        String reversedPatternStr = Pattern.toString(reversePatternGenes);
+        Pattern reversedPattern = patterns.get(reversedPatternStr);
+
+        String patternStr = pattern.toString();
+        if (reversedPattern != null && !patternsToRemove.contains(patternStr)) {
+            patternsToRemove.add(reversedPatternStr);
         }
     }
 

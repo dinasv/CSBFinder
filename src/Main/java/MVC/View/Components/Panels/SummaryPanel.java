@@ -1,8 +1,8 @@
 package MVC.View.Components.Panels;
 
-import Core.Genomes.Pattern;
+import Core.Patterns.Pattern;
 import Core.PostProcess.Family;
-import Core.Genomes.COG;
+import Core.OrthologyGroups.COG;
 import MVC.View.Listeners.RowClickedListener;
 
 import javax.swing.*;

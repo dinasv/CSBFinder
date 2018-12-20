@@ -1,12 +1,15 @@
 package IO;
 
-import Core.CogInfo;
+import Core.OrthologyGroups.CogInfo;
 import Core.Genomes.*;
 
 import java.io.*;
 import java.text.DecimalFormat;
 import java.util.*;
 
+import Core.Patterns.InstanceLocation;
+import Core.Patterns.Pattern;
+import Core.Patterns.PatternLocationsInGenome;
 import Core.PostProcess.Family;
 
 import java.util.logging.Logger;

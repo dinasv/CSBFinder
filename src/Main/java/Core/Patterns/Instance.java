@@ -1,9 +1,8 @@
-package Core.Genomes;
+package Core.Patterns;
 
-import Core.SuffixTrees.InstanceNode;
-import Core.SuffixTrees.Edge;
+import Core.SuffixTreePatternFinder.SuffixTrees.InstanceNode;
+import Core.SuffixTreePatternFinder.SuffixTrees.Edge;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 

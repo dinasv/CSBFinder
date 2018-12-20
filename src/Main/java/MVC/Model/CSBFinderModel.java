@@ -1,6 +1,12 @@
 package MVC.Model;
 
 import Core.Genomes.*;
+import Core.OrthologyGroups.COG;
+import Core.OrthologyGroups.CogInfo;
+import Core.Patterns.InstanceLocation;
+import Core.Patterns.Pattern;
+import Core.Patterns.PatternLocationsInGenome;
+import Core.SuffixTreePatternFinder.SuffixTreeAlgorithm;
 import IO.*;
 import MVC.Common.*;
 import Core.*;

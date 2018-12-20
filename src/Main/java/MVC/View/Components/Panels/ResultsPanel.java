@@ -1,6 +1,6 @@
 package MVC.View.Components.Panels;
 
-import Core.Genomes.Pattern;
+import Core.Patterns.Pattern;
 import Core.PostProcess.Family;
 import MVC.View.Listeners.RowClickedListener;
 import MVC.View.Models.FamilyProperty;

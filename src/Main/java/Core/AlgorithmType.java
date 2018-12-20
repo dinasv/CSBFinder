@@ -1,6 +1,7 @@
 package Core;
 
-import Core.Genomes.Pattern;
+import Core.MatchPointPatternFinder.MatchPointAlgorithm;
+import Core.SuffixTreePatternFinder.SuffixTreeAlgorithm;
 
 /**
  */

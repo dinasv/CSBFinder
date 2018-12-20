@@ -1,4 +1,4 @@
-package Core.Genomes;
+package Core.Patterns;
 
 import org.apache.commons.math3.special.Beta;
 

@@ -1,13 +1,9 @@
 package IO;
 
-import Core.CogInfo;
-import Core.Genomes.GenomesInfo;
-import Core.Genomes.Pattern;
-import Core.OutputType;
+import Core.OrthologyGroups.CogInfo;
+import Core.Patterns.Pattern;
 import Core.PostProcess.Family;
-import org.apache.poi.xssf.streaming.SXSSFWorkbook;
 
-import java.io.FileOutputStream;
 import java.io.PrintWriter;
 import java.math.RoundingMode;
 import java.text.DecimalFormat;

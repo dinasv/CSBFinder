@@ -1,7 +1,6 @@
 package IO;
 
-import Core.CogInfo;
-import Core.Genomes.GenomesInfo;
+import Core.OrthologyGroups.CogInfo;
 import Core.PostProcess.Family;
 
 import java.util.List;

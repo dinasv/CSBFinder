@@ -1,4 +1,4 @@
-package Core.Genomes;
+package Core.OrthologyGroups;
 
 import java.util.Arrays;
 

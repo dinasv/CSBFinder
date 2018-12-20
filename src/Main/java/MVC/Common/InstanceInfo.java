@@ -1,7 +1,7 @@
 package MVC.Common;
 
 import Core.Genomes.Gene;
-import Core.Genomes.InstanceLocation;
+import Core.Patterns.InstanceLocation;
 
 import java.util.List;
 

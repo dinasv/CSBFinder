@@ -1,4 +1,4 @@
-package Core.SuffixTrees;
+package Core.SuffixTreePatternFinder.SuffixTrees;
 
 /**
  * Defines the type of the GST

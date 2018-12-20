@@ -1,7 +1,6 @@
-package Core.SuffixTrees;
+package Core.SuffixTreePatternFinder.SuffixTrees;
 
-import Core.Genomes.InstanceLocation;
-import Core.Genomes.Strand;
+import Core.Patterns.InstanceLocation;
 
 import java.util.*;
 

@@ -1,4 +1,4 @@
-package Core.SuffixTrees;
+package Core.SuffixTreePatternFinder.SuffixTrees;
 
 import java.util.HashMap;
 import java.util.Map;

@@ -1,9 +1,8 @@
 package Core;
 
 import Core.Genomes.GenomesInfo;
-import Core.Genomes.Pattern;
+import Core.Patterns.Pattern;
 
-import java.lang.reflect.Parameter;
 import java.util.List;
 
 /**

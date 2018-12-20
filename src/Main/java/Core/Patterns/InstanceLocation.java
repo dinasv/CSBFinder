@@ -1,4 +1,7 @@
-package Core.Genomes;
+package Core.Patterns;
+
+import Core.Genomes.Gene;
+import Core.Genomes.Strand;
 
 import java.util.ArrayList;
 import java.util.List;

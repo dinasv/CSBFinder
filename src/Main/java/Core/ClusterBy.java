@@ -1,6 +1,6 @@
 package Core;
 
-import Core.Genomes.Pattern;
+import Core.Patterns.Pattern;
 
 import java.util.Comparator;
 

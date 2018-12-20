@@ -1,6 +1,9 @@
 package IO;
 
 import Core.Genomes.*;
+import Core.OrthologyGroups.COG;
+import Core.Patterns.InstanceLocation;
+import Core.Patterns.Pattern;
 import Core.PostProcess.Family;
 
 import java.io.BufferedReader;
