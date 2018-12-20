@@ -89,10 +89,10 @@ public class WordArray{
         wordArray[startIndex + index] = letter;
     }
 
-    public void setStartIndex(int start_index) throws ArrayIndexOutOfBoundsException{
-        if(start_index >= 0 && start_index <= endIndex) {
-            this.startIndex = start_index;
-            length = endIndex - start_index;
+    public void setStartIndex(int startIndex) throws ArrayIndexOutOfBoundsException{
+        if(startIndex >= 0 && startIndex <= endIndex) {
+            this.startIndex = startIndex;
+            length = endIndex - startIndex;
         }else{
             throw new ArrayIndexOutOfBoundsException();
         }
@@ -100,20 +100,20 @@ public class WordArray{
 
     //adds diff to startIndex, if it's legal, else throws exception
     public void addToStartIndex(int diff) throws ArrayIndexOutOfBoundsException{
-        int new_start_index = startIndex + diff;
-        if(new_start_index >= 0 && new_start_index <= endIndex) {
-            this.startIndex = new_start_index;
+        int newStartIndex = startIndex + diff;
+        if(newStartIndex >= 0 && newStartIndex <= endIndex) {
+            this.startIndex = newStartIndex;
             length = endIndex - startIndex;
         }else{
             throw new ArrayIndexOutOfBoundsException();
         }
     }
 
-    public void setEndIndex(int end_index) throws ArrayIndexOutOfBoundsException{
-        end_index = startIndex + end_index;
-        if(end_index >= startIndex && end_index <= wordArray.length) {
-            this.endIndex = end_index;
-            length = end_index - startIndex;
+    public void setEndIndex(int endIndex) throws ArrayIndexOutOfBoundsException{
+        endIndex = startIndex + endIndex;
+        if(endIndex >= startIndex && endIndex <= wordArray.length) {
+            this.endIndex = endIndex;
+            length = endIndex - startIndex;
         }else{
             throw new ArrayIndexOutOfBoundsException();
         }
@@ -125,9 +125,9 @@ public class WordArray{
      * @throws ArrayIndexOutOfBoundsException
      */
     public void addToEndIndex(int diff) throws ArrayIndexOutOfBoundsException{
-        int new_end_index = endIndex + diff;
-        if(new_end_index >= startIndex && new_end_index <= wordArray.length) {
-            this.endIndex = new_end_index;
+        int newEndIndex = endIndex + diff;
+        if(newEndIndex >= startIndex && newEndIndex <= wordArray.length) {
+            this.endIndex = newEndIndex;
             length = endIndex - startIndex;
         }else{
             throw new ArrayIndexOutOfBoundsException();
@@ -139,8 +139,8 @@ public class WordArray{
      * @return
      */
     public WordArray getCopy(){
-         int[] word_copy = Arrays.copyOfRange(wordArray, startIndex, length);
-         return new WordArray(word_copy, startIndex, endIndex);
+         int[] wordCopy = Arrays.copyOfRange(wordArray, startIndex, length);
+         return new WordArray(wordCopy, startIndex, endIndex);
     }
 
     /**
@@ -204,6 +204,4 @@ public class WordArray{
         }
         return true;
     }
-
-
 }
