@@ -230,7 +230,7 @@ public class CSBFinderModel {
                 outputPath, patternsWriter);
 
         if (outputType != OutputType.EXPORT){
-            writer.printInstances(families, gi, cogInfo);
+            writer.printInstances(families, gi);
             writer.writeHeader(createHeader(includeFamilies));
         }
 

@@ -159,14 +159,14 @@ public class Writer {
         patternsWriter.write(families, cogInfo);
     }
 
-    public void printInstances(Family family, GenomesInfo gi, CogInfo cogInfo){
+    public void printInstances(Family family, GenomesInfo gi){
         createInstancesFile();
         family.getPatterns().forEach(pattern -> printInstances(pattern, family.getFamilyId(), gi, instancesFile));
     }
 
-    public void printInstances(List<Family> families, GenomesInfo gi, CogInfo cogInfo){
+    public void printInstances(List<Family> families, GenomesInfo gi){
         createInstancesFile();
-        families.forEach(family -> printInstances(family, gi, cogInfo));
+        families.forEach(family -> printInstances(family, gi));
     }
 
 }

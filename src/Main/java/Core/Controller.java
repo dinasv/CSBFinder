@@ -93,7 +93,7 @@ public class Controller {
                 outputPath, patternsWriter);
 
         if (params.outputFileType != OutputType.EXPORT){
-            writer.printInstances(families, genomesInfo, cogInfo);
+            writer.printInstances(families, genomesInfo);
             writer.writeHeader(createHeader(includeFamilies));
         }
 

@@ -32,45 +32,45 @@ public class PatternScore {
 
     public Map<Integer, Map<Integer, Integer>> genomeToCogParalogCount;
 
-    public PatternScore(int max_genome_size, int numberOfGenomes, int dataset_length_sum,
+    public PatternScore(int maxGenomeSize, int numberOfGenomes, int datasetLengthSum,
                         Map<Integer, Set<Integer>> cogToContainingGenomes,
                         Map<Integer, Map<Integer, Integer>> genomeToCogParalogCount){
 
-        pValues = new double[max_genome_size+1];
+        pValues = new double[maxGenomeSize+1];
         this.numberOfGenomes = numberOfGenomes;
         this.cogToContainingGenomes = cogToContainingGenomes;
         this.genomeToCogParalogCount = genomeToCogParalogCount;
 
         avgGenomeSize = 1;
         if (numberOfGenomes > 0 ) {
-            avgGenomeSize = dataset_length_sum / numberOfGenomes;
+            avgGenomeSize = datasetLengthSum / numberOfGenomes;
         }
     }
 
-    public double computePatternScore(List<Integer> patternLetters, int max_insertions, int pattern_occs_keys_size){
+    public double computePatternScore(List<Integer> patternLetters, int maxInsertions, int patternOccsKeysSize){
 
         Set<Integer> intersectionOfGenomesWithPatternChars = new HashSet<>(cogToContainingGenomes.get(patternLetters.get(0)));
         for (int ch: patternLetters) {
             intersectionOfGenomesWithPatternChars.retainAll(cogToContainingGenomes.get(ch));
         }
 
-        int paralog_count_product_sum = 0;
-        int paralog_count_product;
+        int paralogCountProductSum = 0;
+        int paralogCountProduct;
         for (int seq_key: intersectionOfGenomesWithPatternChars) {
 
             Map<Integer, Integer> curr_seq_paralog_count = genomeToCogParalogCount.get(seq_key);
-            paralog_count_product = 1;
+            paralogCountProduct = 1;
             for (int cog : patternLetters) {
                 int curr_cog_paralog_count = curr_seq_paralog_count.get(cog);
-                paralog_count_product *= curr_cog_paralog_count;
+                paralogCountProduct *= curr_cog_paralog_count;
             }
-            paralog_count_product_sum += paralog_count_product;
+            paralogCountProductSum += paralogCountProduct;
         }
 
-        int average_paralog_count = paralog_count_product_sum/intersectionOfGenomesWithPatternChars.size();
+        int averageParalogCount = paralogCountProductSum/intersectionOfGenomesWithPatternChars.size();
 
-        return pval_cross_genome(patternLetters.size(), max_insertions,
-                average_paralog_count, pattern_occs_keys_size);
+        return pvalCrossGenome(patternLetters.size(), maxInsertions,
+                averageParalogCount, patternOccsKeysSize);
     }
 
     /**
@@ -81,7 +81,7 @@ public class PatternScore {
      * @param g number of genomes containing an instance of the pattern
      * @return ranking score
      */
-    private double pval_cross_genome(int w, int k, int h, int g){
+    private double pvalCrossGenome(int w, int k, int h, int g){
         int G = numberOfGenomes;
         int n = avgGenomeSize;
         double result = 0;

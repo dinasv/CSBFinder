@@ -288,7 +288,7 @@ public class Parsers {
         Pattern pattern = new Pattern();
 
         String rawLine = br.readLine();
-        while (!rawLine.equals(end)) {
+        while (rawLine != null && !rawLine.equals(end)) {
             lineNumber++;
 
             if (rawLine.startsWith(">")) {
@@ -397,7 +397,7 @@ public class Parsers {
             result = Integer.valueOf(value);
         } catch (NumberFormatException e) {
             throw new IllegalArgumentException(
-                    errorMessage(type + " type double",
+                    errorMessage(type + " type integer",
                             value, lineNumber, filePath));
         }
         return result;
@@ -405,13 +405,15 @@ public class Parsers {
 
     private static double castToDouble(String value, String type, int lineNumber, String filePath)
             throws IllegalArgumentException {
-        double result = -1;
+        double result = Integer.MAX_VALUE;
         try {
             result = Double.valueOf(value);
         } catch (NumberFormatException e) {
+            /*
             throw new IllegalArgumentException(
-                    errorMessage(type + " type integer",
+                    errorMessage(type + " type double",
                             value, lineNumber, filePath));
+            */
         }
         return result;
     }
