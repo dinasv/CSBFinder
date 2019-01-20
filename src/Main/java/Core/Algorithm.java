@@ -9,18 +9,18 @@ import java.util.List;
  */
 public interface Algorithm {
 
-    public void setParameters(Parameters params);
+    void setParameters(Parameters params);
 
-    public void setGenomesInfo(GenomesInfo gi);
+    void setGenomesInfo(GenomesInfo gi);
 
-    public void setPatternsFromFile(List<Pattern> patternsFromFile);
+    void setPatternsFromFile(List<Pattern> patternsFromFile);
 
-    public void findPatterns();
+    void findPatterns();
 
-    public List<Pattern> getPatterns();
+    List<Pattern> getPatterns();
 
-    public int getPatternsCount();
+    int getPatternsCount();
 
-    public Parameters getParameters();
+    Parameters getParameters();
 
 }

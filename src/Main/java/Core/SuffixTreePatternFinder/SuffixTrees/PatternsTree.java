@@ -52,7 +52,7 @@ public class PatternsTree {
 
     private void putWordInTree(List<Gene> genes){
         WordArray word = genomesInfo.createWordArray(genes);
-        patternsTree.put(word, Alphabet.UNK_CHAR_INDEX);
+        patternsTree.putWithSuffix(word, Alphabet.UNK_CHAR_INDEX);
     }
 
     private void putWordInTree(List<Gene> genes, int id){

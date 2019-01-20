@@ -282,7 +282,7 @@ public class CSBFinderModel {
     }
 
     /**
-     * Read patterns from a file if a file is given, and put them in a suffix trie
+     * Read patterns from a file if a file is given, and putWithSuffix them in a suffix trie
      * @return
      */
     private List<Pattern> readPatternsFromFile() throws Exception{

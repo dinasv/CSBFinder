@@ -469,7 +469,8 @@ public class SuffixTreeAlgorithm implements Algorithm {
                 if (alpha != Alphabet.WC_CHAR_INDEX && !(startsWithWildcard(extendedPattern))) {
                     //make sure that extendedPattern is right maximal, if extendedPattern has the same number of
                     // instances as the longer pattern, prefer the longer pattern
-                    if (instancesCount > ret || debug) {// instancesCount >= ret always
+                    if ((instancesCount > ret && extendedPatternNode.getPatternKey() != -1) || debug) {// instancesCount >= ret always
+
                         Pattern newPattern = new Pattern(extendedPatternNode.getPatternKey(),
                                 extendedPattern);
 

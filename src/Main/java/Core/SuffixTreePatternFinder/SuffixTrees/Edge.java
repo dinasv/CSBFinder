@@ -8,9 +8,9 @@ import java.io.Serializable;
  * Represents an Edge in the Suffix Tree and a Trie.
  * It has a label and a destination Node
  */
-public class Edge implements Serializable{
+public class Edge{
     private WordArray label;
-    private SuffixNode dest;
+    private InstanceNode dest;
 
     public WordArray getLabel() {
         return label;
@@ -20,15 +20,15 @@ public class Edge implements Serializable{
         this.label = label;
     }
 
-    public SuffixNode getDest() {
+    public InstanceNode getDest() {
         return dest;
     }
 
-    public void setDest(SuffixNode dest) {
+    public void setDest(InstanceNode dest) {
         this.dest = dest;
     }
 
-    public Edge(WordArray label, SuffixNode dest) {
+    public Edge(WordArray label, InstanceNode dest) {
         this.label =  new WordArray(label);
         this.dest = dest;
     }

@@ -204,4 +204,11 @@ public class WordArray{
         }
         return true;
     }
+
+    @Override
+    public String toString() {
+        return "WordArray{" +
+                "wordArray=" + Arrays.toString(wordArray) +
+                '}';
+    }
 }

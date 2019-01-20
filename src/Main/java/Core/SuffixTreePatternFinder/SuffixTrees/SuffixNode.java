@@ -57,7 +57,7 @@ public class SuffixNode{
         substringLength = 0;
     }
     /**
-     * Creates a copy of thie node, deep copies edges
+     * Creates a copy of this node, deep copies edges
      * @param other
      */
     public SuffixNode(SuffixNode other) {

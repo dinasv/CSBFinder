@@ -35,8 +35,8 @@ public class Trie {
         }
     }
 
-    public PatternNode put(WordArray str, int UNK_CHAR_INDEX){
-        return put(str, root, false, UNK_CHAR_INDEX);
+    public PatternNode putWithSuffix(WordArray str, int UNK_CHAR_INDEX){
+        return putWithSuffix(str, root, false, UNK_CHAR_INDEX);
     }
 
     public PatternNode addNode(int ch, PatternNode src_node){
@@ -48,7 +48,21 @@ public class Trie {
         return target_node;
     }
 
-    public PatternNode put(WordArray str, PatternNode srcNode, boolean includeUnknownChar, int UNK_CHAR_INDEX){
+    public PatternNode put(WordArray str, PatternNode srcNode, boolean includeUnknownChar, int UNK_CHAR_INDEX) {
+        PatternNode currNode = null;
+        if (str.getLength() > 0) {
+            currNode = srcNode;
+            for (int i = 0; i < str.getLength(); i++) {
+                int strChar = str.getLetter(i);
+                if (includeUnknownChar || (!includeUnknownChar && strChar != UNK_CHAR_INDEX)) {
+                    currNode = addNode(strChar, currNode);
+                }
+            }
+        }
+        return currNode;
+    }
+
+    public PatternNode putWithSuffix(WordArray str, PatternNode srcNode, boolean includeUnknownChar, int UNK_CHAR_INDEX){
         PatternNode currNode = null;
         if (str.getLength() > 0) {
             currNode = srcNode;
@@ -65,11 +79,11 @@ public class Trie {
         }
 
         if (str.getLength() > 1) {
-            //put the suffix of str
+            //putWithSuffix the suffix of str
             str = new WordArray(str);
             str.addToStartIndex(1);
 
-            put(str, root, includeUnknownChar, UNK_CHAR_INDEX);
+            putWithSuffix(str, root, includeUnknownChar, UNK_CHAR_INDEX);
         }
         return currNode;
     }
@@ -137,7 +151,7 @@ public class Trie {
             //continue recursively adding all suffixes
             //if (type.equals("enumeration")) {
             if (index != str.getLength()) {
-                //put the suffix of str
+                //putWithSuffix the suffix of str
                 extendedStrNode = root.getTargetNode(str.getLetter(0));
                 extendedStrNode.setSuffix(root);
                 str = new WordArray(str);

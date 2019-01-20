@@ -41,7 +41,7 @@ public class MatchPointAlgorithm implements Algorithm {
         for (Genome genome : genomesInfo.getGenomes()) {
 
             for (Replicon replicon : genome.getReplicons()) {
-                if (nonDirectons) {//put replicon and its reverseCompliment
+                if (nonDirectons) {//putWithSuffix replicon and its reverseCompliment
 
                     createMatchLists(replicon, genome.getId());
 

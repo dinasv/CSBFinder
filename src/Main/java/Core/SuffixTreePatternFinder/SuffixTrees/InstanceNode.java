@@ -5,14 +5,13 @@ import Core.Patterns.InstanceLocation;
 import java.util.*;
 
 /**
- * Created by Dina on 7/20/2016.
  */
 public class InstanceNode extends SuffixNode {
 
     /**
      * Save for every genome in genomeToLocations, the position of the suffix of that string that ends at this node
      *
-     * key = genome FAMILY_ID
+     * key = genome ID
      * value = a list of locations of this substring in this genome
      */
     private Map<Integer, List<InstanceLocation>> genomeToLocations;
@@ -42,31 +41,31 @@ public class InstanceNode extends SuffixNode {
 
 
     public InstanceNode(){
-        genomeToLocationsInSubtree = new HashMap<Integer, List<InstanceLocation>>();
-        genomeToLocations = new HashMap<Integer, List<InstanceLocation>>();
+        genomeToLocationsInSubtree = new HashMap<>();
+        genomeToLocations = new HashMap<>();
     }
 
     public InstanceNode(InstanceNode other){
         super(other);
 
-        genomeToLocationsInSubtree = new HashMap<Integer, List<InstanceLocation>>();
-        genomeToLocations = new HashMap<Integer, List<InstanceLocation>>();
+        genomeToLocationsInSubtree = new HashMap<>();
+        genomeToLocations = new HashMap<>();
     }
 
     /**
      * Add the location of the suffix (the starting index) in genome with the id {@code genomeId}
      */
-    void addLocationToGenome(int genomeId, InstanceLocation instanceLocation) {
+    void addLocationToGenome(InstanceLocation instanceLocation) {
 
-        List<InstanceLocation> locations = genomeToLocations.get(genomeId);
+        List<InstanceLocation> locations = genomeToLocations.get(instanceLocation.getGenomeId());
         if (locations == null){
-            locations = new ArrayList<InstanceLocation>();
+            locations = new ArrayList<>();
         }
         locations.add(instanceLocation);
-        genomeToLocations.put(genomeId, locations);
+        genomeToLocations.put(instanceLocation.getGenomeId(), locations);
 
         // addGene this reference to all the suffixes as well
-        addIndexToSuffix(this, genomeId, instanceLocation);
+        addIndexToSuffix(this, instanceLocation.getGenomeId(), instanceLocation);
 
     }
 
@@ -74,19 +73,13 @@ public class InstanceNode extends SuffixNode {
         InstanceNode iter = node.getSuffix();
         if (iter != null) {
             while (iter.getSuffix() != null) {
-                //Strand strand = instanceLocation.getStrand();
-                //int startIndex = instanceLocation.getRelativeStartIndex();
-                //int endIndex = instanceLocation.getEndIndex();
 
-                //int repliconId = instanceLocation.getRepliconId();
-                //startIndex = startIndex + strand.numericValue;
                 instanceLocation = new InstanceLocation(instanceLocation);
                 instanceLocation.incrementRelativeStartIndex();
-                //instanceLocation = new InstanceLocation(repliconId, genomeId, startIndex, endIndex, strand);
 
                 List<InstanceLocation> key_indexes = iter.genomeToLocations.get(genomeId);
                 if (key_indexes == null){
-                    key_indexes = new ArrayList<InstanceLocation>();
+                    key_indexes = new ArrayList<>();
                     iter.genomeToLocations.put(genomeId, key_indexes);
                 }
                 key_indexes.add(instanceLocation);
@@ -113,13 +106,13 @@ public class InstanceNode extends SuffixNode {
     private Map<Integer, List<InstanceLocation>> computeAndCacheCountRecursive() {
         countInstancePerGenome = 0;
         countMultipleInstancesPerGenome = 0;
-        //addGene all data_indexes to genomeToLocationsInSubtree
+        //add all data_indexes to genomeToLocationsInSubtree
         countMultipleInstancesPerGenome += multimapAddAll(genomeToLocationsInSubtree, genomeToLocations);
 
         Map<Integer, Edge> edges = getEdges();
         for (Map.Entry<Integer, Edge> entry : edges.entrySet()) {
             Edge e = entry.getValue();
-            InstanceNode destNode = (InstanceNode)e.getDest();
+            InstanceNode destNode = e.getDest();
             Map<Integer, List<InstanceLocation>> dest_data_indexes = destNode.computeAndCacheCountRecursive();
 
             countMultipleInstancesPerGenome += multimapAddAll(genomeToLocationsInSubtree, dest_data_indexes);
@@ -136,7 +129,7 @@ public class InstanceNode extends SuffixNode {
 
             List<InstanceLocation> indexSet =  multimap_to.get(key);
             if (indexSet == null) {
-                indexSet = new ArrayList<InstanceLocation>();
+                indexSet = new ArrayList<>();
                 multimap_to.put(key, indexSet);
             }
 

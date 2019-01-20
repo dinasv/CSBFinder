@@ -15,6 +15,10 @@ public class InstanceLocation{
     private int genomeId;
     private Strand strand;
 
+    /**
+     * Start index relative to the (@code genomicSegmentStartIndex) if it is the forward strand,
+     * or relative to the (@code genomicSegmentStartIndex) + (@code genomicSegmentLength) if it is the reverse strand
+     */
     private int relativeStartIndex;
     private int instanceLength;
 
@@ -94,6 +98,7 @@ public class InstanceLocation{
     public String getGenomeName() {
         return genomeName;
     }
+
     public List<Gene> getGenes() {
         return genes;
     }
@@ -114,15 +119,31 @@ public class InstanceLocation{
         return instanceLength;
     }
 
-    public void setRelativeStartIndex(int relativeStartIndex){
-        this.relativeStartIndex = relativeStartIndex;
-    }
-
     public void incrementRelativeStartIndex(){
         if (instanceLength > 0) {
             relativeStartIndex++;
             instanceLength--;
         }
+    }
+
+    public boolean equals(Object other) {
+        if (this == other) {
+            return true;
+        }
+        if (other instanceof InstanceLocation) {
+            InstanceLocation otherInstanceLoc = (InstanceLocation) other;
+            return repliconId == otherInstanceLoc.repliconId &&
+                    genomeId == otherInstanceLoc.getGenomeId() &&
+                    strand == otherInstanceLoc.getStrand() &&
+                    relativeStartIndex == otherInstanceLoc.relativeStartIndex &&
+                    instanceLength == otherInstanceLoc.instanceLength &&
+                    genomicSegmentLength == otherInstanceLoc.genomicSegmentLength &&
+                    genomicSegmentStartIndex == otherInstanceLoc.genomicSegmentStartIndex &&
+                    repliconName.equals(otherInstanceLoc.repliconName) &&
+                    genomeName.equals(otherInstanceLoc.genomeName) &&
+                    genes.equals(otherInstanceLoc.genes);
+        }
+        return false;
     }
 
 }

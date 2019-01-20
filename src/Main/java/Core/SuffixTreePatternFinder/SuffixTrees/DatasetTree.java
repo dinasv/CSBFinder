@@ -39,7 +39,7 @@ public class DatasetTree {
                 0,genomicSegment.size(), genomicSegment.getStrand(), genomicSegment.getStartIndex(),
                 genomicSegment.size());
 
-        datasetTree.put(wordArray, currGenomeIndex, instanceLocation);
+        datasetTree.put(wordArray, instanceLocation);
 
         genomesInfo.countParalogsInSeqs(wordArray, currGenomeIndex);
     }
@@ -52,7 +52,7 @@ public class DatasetTree {
      */
     private void updateDataTree(Replicon replicon, int currGenomeIndex, boolean nonDirectons){
 
-        if (nonDirectons) {//put replicon and its reverseCompliment
+        if (nonDirectons) {//putWithSuffix replicon and its reverseCompliment
 
             putWordInDataTree(replicon, currGenomeIndex);
 

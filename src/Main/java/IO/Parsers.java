@@ -73,7 +73,7 @@ public class Parsers {
             while (line != null) {
                 if (line.charAt(0) == '>') {
 
-                    patternId = castToInteger(line.substring(1), "FAMILY_ID", lineNumber, inputPatternsFilePath);
+                    patternId = castToInteger(line.substring(1), "PATTERN_ID", lineNumber, inputPatternsFilePath);
 
                 } else {
                     List<Gene> genes = parseGenes(line, lineNumber, inputPatternsFilePath);
