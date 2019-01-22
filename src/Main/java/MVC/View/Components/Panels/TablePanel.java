@@ -30,7 +30,7 @@ public class TablePanel extends JPanel {
                 TableModel model = ((TableModel) table.getModel());
 
                 rowClickedListener.rowClickedOccurred(new RowClickedEvent(
-                        model.getDataObject((Integer) table.getValueAt(table.getSelectedRow(),
+                        model.getDataObject(table.getValueAt(table.getSelectedRow(),
                                 model.getIndexOfColumn(selectionBy)))
                 ));
             }

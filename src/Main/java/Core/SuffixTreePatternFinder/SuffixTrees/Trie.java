@@ -28,7 +28,7 @@ public class Trie {
         return root;
     }
 
-    public void put(WordArray str, int key, int UNK_CHAR_INDEX){
+    public void put(WordArray str, String key, int UNK_CHAR_INDEX){
         PatternNode lastNode = put(str, root, false, UNK_CHAR_INDEX);
         if (lastNode != null && type == TreeType.STATIC){
             lastNode.setKey(key);
@@ -39,11 +39,11 @@ public class Trie {
         return putWithSuffix(str, root, false, UNK_CHAR_INDEX);
     }
 
-    public PatternNode addNode(int ch, PatternNode src_node){
-        PatternNode target_node = src_node.getTargetNode(ch);
+    public PatternNode addNode(int ch, PatternNode srcNode){
+        PatternNode target_node = srcNode.getTargetNode(ch);
         if (target_node == null){
             target_node = new PatternNode(type);
-            src_node.addTargetNode(ch, target_node);
+            srcNode.addTargetNode(ch, target_node);
         }
         return target_node;
     }
@@ -71,8 +71,8 @@ public class Trie {
                 if (includeUnknownChar || (!includeUnknownChar && strChar != UNK_CHAR_INDEX )) {
                     currNode = addNode(strChar, currNode);
 
-                    if (currNode.getPatternKey() <= 0) {
-                        currNode.setKey(++lastKey);
+                    if (currNode.getPatternKey() == null) {
+                        currNode.setKey(Integer.toString(++lastKey));
                     }
                 }
             }
@@ -95,7 +95,7 @@ public class Trie {
      * @param key the key of that string
      * @throws IllegalStateException if an invalid index is passed as input
      */
-    public PatternNode put(WordArray str, int key, PatternNode extendedStrNode) throws IllegalStateException {
+    public PatternNode put(WordArray str, String key, PatternNode extendedStrNode) throws IllegalStateException {
         if (str.getLength() > 0) {
             PatternNode currNode = root;
             int index = 0;
@@ -110,8 +110,8 @@ public class Trie {
                 }
                 currNode = target_node;
 
-                if (currNode.getPatternKey() <= 0){
-                    currNode.setKey(++lastKey);
+                if (currNode.getPatternKey() == null){
+                    currNode.setKey(Integer.toString(++lastKey));
                 }
 
                 //advance the node
@@ -132,8 +132,8 @@ public class Trie {
 
                 currNode = nextNode;
 
-                if (currNode.getPatternKey() <= 0){
-                    currNode.setKey(++lastKey);
+                if (currNode.getPatternKey() == null){
+                    currNode.setKey(Integer.toString(++lastKey));
                 }
 
                 if (extendedStrNode != null) {
@@ -146,7 +146,6 @@ public class Trie {
             if (extendedStrNode == null && type == TreeType.STATIC) {
                 currNode.setKey(key);
             }
-
 
             //continue recursively adding all suffixes
             //if (type.equals("enumeration")) {

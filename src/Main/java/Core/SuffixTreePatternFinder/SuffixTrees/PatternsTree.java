@@ -27,7 +27,7 @@ public class PatternsTree {
     private void buildPatternsTree(List<Pattern> patterns) {
 
         for (Pattern pattern: patterns){
-            if (pattern.getPatternId() != -1){
+            if (pattern.getPatternId() != null){
                 putWordInTree(pattern.getPatternGenes(), pattern.getPatternId());
             }else {
                 if (nonDirectons) {
@@ -55,7 +55,7 @@ public class PatternsTree {
         patternsTree.putWithSuffix(word, Alphabet.UNK_CHAR_INDEX);
     }
 
-    private void putWordInTree(List<Gene> genes, int id){
+    private void putWordInTree(List<Gene> genes, String id){
         WordArray word = genomesInfo.createWordArray(genes);
         patternsTree.put(word, id, Alphabet.UNK_CHAR_INDEX);
     }

@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-public class FamilyTableModel extends TableModel<Family> {
+public class FamilyTableModel extends TableModel<Integer, Family> {
 
     public FamilyTableModel(ColumnProperty[] columns){
         super(columns);

@@ -44,7 +44,7 @@ public class Parsers {
                 Genome genome = genomesInfo.getGenome(genomeName);
                 if (genome != null){
                     for (Replicon replicon: genome.getReplicons()){
-                        Pattern pattern = new Pattern(-1, replicon.getGenes());
+                        Pattern pattern = new Pattern(replicon.getGenes());
                         patterns.add(pattern);
                     }
                 }
@@ -69,11 +69,11 @@ public class Parsers {
             String line = br.readLine();
             int lineNumber = 0;
 
-            int patternId = 0;
+            String patternId = "";
             while (line != null) {
                 if (line.charAt(0) == '>') {
 
-                    patternId = castToInteger(line.substring(1), "PATTERN_ID", lineNumber, inputPatternsFilePath);
+                    patternId = line.substring(1);
 
                 } else {
                     List<Gene> genes = parseGenes(line, lineNumber, inputPatternsFilePath);
@@ -371,7 +371,7 @@ public class Parsers {
         }
 
         int i = 0;
-        int id = castToInteger(patternLine[i], INSTANCE_HEADER[i], lineNumber, filePath);
+        String id = patternLine[i];
         i++;
         int length = castToInteger(patternLine[i], INSTANCE_HEADER[i], lineNumber, filePath);
         i++;

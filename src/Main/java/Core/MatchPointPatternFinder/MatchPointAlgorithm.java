@@ -171,7 +171,7 @@ public class MatchPointAlgorithm implements Algorithm {
         for (int patternStart = 0; patternStart < wordArray.getLength(); patternStart++) {
 
             List<Gene> patternGenes = genes.subList(patternStart, patternStart + 1);
-            Pattern pattern = new Pattern(patternId++, patternGenes);
+            Pattern pattern = new Pattern(Integer.toString(patternId++), patternGenes);
 
             int letter = wordArray.getLetter(patternStart);
             if (letter == Alphabet.UNK_CHAR_INDEX) {//There can't be an unkonwn char in a pattern
@@ -196,7 +196,7 @@ public class MatchPointAlgorithm implements Algorithm {
             }
 
             List<Gene> extendedPatternGenes = genes.subList(patternStart, patternEnd + 1);
-            Pattern extendedPattern = new Pattern(patternId++, extendedPatternGenes);
+            Pattern extendedPattern = new Pattern(Integer.toString(patternId++), extendedPatternGenes);
 
             if (patterns.containsKey(extendedPattern.toString())) {
                 pattern = patterns.get(extendedPattern.toString());

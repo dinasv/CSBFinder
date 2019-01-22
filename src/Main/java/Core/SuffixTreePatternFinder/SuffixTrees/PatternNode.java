@@ -12,7 +12,7 @@ public class PatternNode {
     /**
      * Contains the key of the string concatenation from the root
      */
-    private int patternKey;
+    private String patternKey;
 
     private int copyCount;
 
@@ -50,7 +50,7 @@ public class PatternNode {
         targetNodes = new HashMap<Integer, PatternNode>();
         suffix = null;
 
-        patternKey = -1;
+        patternKey = null;
         copyCount = 0;
         this.type = type;
 
@@ -118,11 +118,11 @@ public class PatternNode {
         this.type = type;
     }
 
-    public int getPatternKey(){
+    public String getPatternKey(){
         return patternKey;
     }
 
-    public void setKey(int key){
+    public void setKey(String key){
         patternKey = key;
     }
 

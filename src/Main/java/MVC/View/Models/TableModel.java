@@ -8,12 +8,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public abstract class TableModel<T> extends AbstractTableModel {
+public abstract class TableModel<K, V> extends AbstractTableModel {
 
     private final ColumnProperty[] columns;
 
-    private List<T> data;
-    private Map<Integer, T> idToRow;
+    private List<V> data;
+    private Map<K, V> idToRow;
 
     public TableModel(ColumnProperty[] columns){
         super();
@@ -49,7 +49,7 @@ public abstract class TableModel<T> extends AbstractTableModel {
 
     @Override
     public Object getValueAt(int rowIndex, int columnIndex) {
-        T dataAtRow = data.get(rowIndex);
+        V dataAtRow = data.get(rowIndex);
 
         if(columnIndex < columns.length){
             return columns[columnIndex].getFunction().apply(dataAtRow);
@@ -69,7 +69,7 @@ public abstract class TableModel<T> extends AbstractTableModel {
         return index;
     }
 
-    public T getRowAt(int index) {
+    public V getRowAt(int index) {
         if (this.getRowCount() <= index) {
             return null;
         }
@@ -77,19 +77,19 @@ public abstract class TableModel<T> extends AbstractTableModel {
         return this.data.get(index);
     }
 
-    public void setData(List<T> data) {
+    public void setData(List<V> data) {
         this.data.clear();
 
         this.data.addAll(data);
     }
 
-    public void setIdToRow(Map<Integer, T> idToRow){
+    public void setIdToRow(Map<K, V> idToRow){
         this.idToRow.clear();
 
         this.idToRow.putAll(idToRow);
     }
 
-    public T getDataObject(int id) {
+    public V getDataObject(K id) {
         return idToRow.get(id);
     }
 

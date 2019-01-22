@@ -17,7 +17,7 @@ public class Pattern {
     private List<Gene> patternGenes;
     private List<Gene> reverseComplimentPatternArr;
 
-    private int patternId;
+    private String patternId;
 
     private int length;
     private List<Instance> instances;
@@ -31,10 +31,12 @@ public class Pattern {
     private Map<Integer, PatternLocationsInGenome> genomeToInstanceLocations;
 
     public Pattern(){
-        this(-1, new ArrayList<>());
+        this(null, new ArrayList<>());
     }
 
-    public Pattern(int patternId, List<Gene> patternGenes){
+    public Pattern(List<Gene> patternGenes) { this(null, patternGenes); }
+
+    public Pattern(String patternId, List<Gene> patternGenes){
 
         this.patternId = patternId;
         this.patternGenes = new ArrayList<>();
@@ -50,11 +52,11 @@ public class Pattern {
     }
 
 
-    public void setPatternId(int pattern_id){
+    public void setPatternId(String pattern_id){
         this.patternId = pattern_id;
     }
 
-    public int getPatternId(){
+    public String getPatternId(){
         return patternId;
     }
 

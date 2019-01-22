@@ -9,7 +9,7 @@ import java.util.function.Function;
 
 public enum PatternProperty implements ColumnProperty<Pattern> {
 
-    ID(Pattern::getPatternId, Integer.class),
+    ID(Pattern::getPatternId, String.class),
     LENGTH(Pattern::getLength, Integer.class),
     SCORE(Pattern::getScore, Double.class),
     INSTANCE_COUNT(Pattern::getInstancesPerGenome, Integer.class),

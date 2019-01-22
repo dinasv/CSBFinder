@@ -120,7 +120,7 @@ public class SuffixTreeAlgorithm implements Algorithm {
             patternTreeRoot = patternTrie.getRoot();
         } else {//all patterns will be extracted from the data tree
             patternTreeRoot = new PatternNode(TreeType.VIRTUAL);
-            patternTreeRoot.setKey(++lastPatternKey);
+            patternTreeRoot.setKey(Integer.toString(++lastPatternKey));
         }
     }
 
@@ -367,7 +367,7 @@ public class SuffixTreeAlgorithm implements Algorithm {
                     } else {
 
                         targetNode = new PatternNode(TreeType.VIRTUAL);
-                        targetNode.setKey(++lastPatternKey);
+                        targetNode.setKey(Integer.toString(++lastPatternKey));
 
                         numOfDiffInstances = extendPattern(alpha, dataEdgeIndex + 1, dataNode, dataEdge,
                                 wildcardCount, pattern, targetNode, patternNode, instances, patternLength);
@@ -388,7 +388,7 @@ public class SuffixTreeAlgorithm implements Algorithm {
                 if (alpha != Alphabet.UNK_CHAR_INDEX) {
 
                     targetNode = new PatternNode(TreeType.VIRTUAL);
-                    targetNode.setKey(++lastPatternKey);
+                    targetNode.setKey(Integer.toString(++lastPatternKey));
 
                     numOfDiffInstances = extendPattern(alpha, dataEdgeIndex + 1, dataNode, dataEdge,
                             wildcardCount, pattern, targetNode, patternNode, instances, patternLength);
@@ -469,7 +469,7 @@ public class SuffixTreeAlgorithm implements Algorithm {
                 if (alpha != Alphabet.WC_CHAR_INDEX && !(startsWithWildcard(extendedPattern))) {
                     //make sure that extendedPattern is right maximal, if extendedPattern has the same number of
                     // instances as the longer pattern, prefer the longer pattern
-                    if ((instancesCount > ret && extendedPatternNode.getPatternKey() != -1) || debug) {// instancesCount >= ret always
+                    if ((instancesCount > ret && extendedPatternNode.getPatternKey() != null) || debug) {// instancesCount >= ret always
 
                         Pattern newPattern = new Pattern(extendedPatternNode.getPatternKey(),
                                 extendedPattern);
