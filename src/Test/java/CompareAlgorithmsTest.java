@@ -36,7 +36,7 @@ public class CompareAlgorithmsTest {
         workflow.setAlgorithm(AlgorithmType.MATCH_POINTS.algorithm);
         List<Family> familiesAlg2 = workflow.run(params);
 
-        Assert.assertEquals(familiesAlg1.size(), familiesAlg2.size());
+        Assert.assertEquals(familiesAlg1, familiesAlg2);
     }
 
     private List<Pattern> readPatternsReferenceGenomesFile(GenomesInfo genomesInfo) throws Exception{

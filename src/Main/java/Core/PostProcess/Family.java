@@ -118,4 +118,15 @@ public class Family {
         }
         return null;
     }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (!(obj instanceof Family))
+            return false;
+        if (obj == this)
+            return true;
+
+        Family other = (Family) obj;
+        return other.patterns.equals(this.patterns);
+    }
 }

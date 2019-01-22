@@ -3,6 +3,7 @@ package Core.Patterns;
 import Core.OrthologyGroups.COG;
 import Core.OrthologyGroups.CogInfo;
 import Core.Genomes.*;
+import org.apache.commons.lang3.builder.EqualsBuilder;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -20,7 +21,6 @@ public class Pattern {
     private String patternId;
 
     private int length;
-    private List<Instance> instances;
 
     private double score;
 
@@ -42,7 +42,6 @@ public class Pattern {
         this.patternGenes = new ArrayList<>();
         this.patternGenes.addAll(patternGenes);
         this.length = patternGenes.size();
-        this.instances = new ArrayList<>();
 
         score = 0;
         mainFunctionalCategory = "";
@@ -223,6 +222,17 @@ public class Pattern {
             if (o2.getScore() > o1.getScore()) return 1;
             return 0;
         }
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (!(obj instanceof Pattern))
+            return false;
+        if (obj == this)
+            return true;
+
+        Pattern other = (Pattern) obj;
+        return other.patternGenes.equals(this.patternGenes);
     }
 
 }
