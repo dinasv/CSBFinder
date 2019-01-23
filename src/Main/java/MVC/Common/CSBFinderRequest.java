@@ -1,5 +1,8 @@
 package MVC.Common;
 
+import Core.AlgorithmType;
+import Core.ClusterBy;
+
 import java.util.LinkedList;
 import java.util.List;
 
@@ -16,7 +19,8 @@ public class CSBFinderRequest {
     private boolean multCount = true;
     private boolean nonDirectons = false;
     private float familyClusterThreshold = 0.8f;
-    private String clusterType = "score";
+    private ClusterBy clusterType = ClusterBy.SCORE;
+    private AlgorithmType algorithmType = AlgorithmType.SUFFIX_TREE;
 
     public int getQuorum() {
         return quorum;
@@ -98,12 +102,16 @@ public class CSBFinderRequest {
         this.familyClusterThreshold = familyClusterThreshold;
     }
 
-    public String getClusterType() {
+    public ClusterBy getClusterType() {
         return clusterType;
     }
 
-    public void setClusterType(String clusterType) {
+    public void setClusterType(ClusterBy clusterType) {
         this.clusterType = clusterType;
+    }
+
+    public void setAlgorithm(AlgorithmType algorithm) {
+        this.algorithmType = algorithm;
     }
 
     public String getInputGenomeFilesPath() {
@@ -149,7 +157,10 @@ public class CSBFinderRequest {
         argList.add(String.valueOf(familyClusterThreshold));
 
         argList.add("-clust-by");
-        argList.add(clusterType);
+        argList.add(clusterType.toString());
+
+        argList.add("-alg");
+        argList.add(algorithmType.toString());
 
         if (nonDirectons) {
             argList.add("-non-directons");

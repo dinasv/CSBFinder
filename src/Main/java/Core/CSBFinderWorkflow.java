@@ -85,8 +85,7 @@ public class CSBFinderWorkflow {
                 patternLetters.add(gi.getLetter(gene));
             }
 
-            double score = PatternScore.computePatternScore(patternScore, patternLetters, params.maxInsertion, params.maxError,
-                    params.maxDeletion, pattern.getInstancesPerGenome());
+            double score = patternScore.computePatternScore(patternLetters, params.maxInsertion, pattern.getInstancesPerGenome());
             pattern.setScore(score);
         }
     }

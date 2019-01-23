@@ -58,10 +58,12 @@ public class ShapesPanel extends JPanel{
                 x2 = x + containersDist - (int) (containersDist * 0.2);
                 y2 = shapesInstance.getGeneY();
 
+                // diagonal lines between two instances on the same replicon
                 if (j < repliconInstances.size()) {
                     addShape(new DiagLinesShape(x1, y1, x2, y2));
                 }
             }
+            // parallel line between two instances in different replicons
             if (i < shapesInstanceList.size()){
                 x1 = x + (int) (containersDist * 0.4);
 

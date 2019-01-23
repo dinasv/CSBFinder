@@ -1,6 +1,7 @@
 package Core.Patterns;
 
 import org.apache.commons.math3.special.Beta;
+import org.apache.commons.math3.analysis.function.Expm1;
 
 import java.util.HashSet;
 import java.util.List;
@@ -25,6 +26,8 @@ public class PatternScore {
     int numberOfGenomes;
     int avgGenomeSize;
 
+    Expm1 expm1 = new Expm1();
+
     /**
      * for each cog, a set of genomes (bac_index) in which the cog appears
      */
@@ -47,129 +50,105 @@ public class PatternScore {
         }
     }
 
-    public double computePatternScore(List<Integer> patternLetters, int maxInsertions, int patternOccsKeysSize){
-
+    private Set<Integer> genomesWithPatternChars(List<Integer> patternLetters){
         Set<Integer> intersectionOfGenomesWithPatternChars = new HashSet<>(cogToContainingGenomes.get(patternLetters.get(0)));
         for (int ch: patternLetters) {
             intersectionOfGenomesWithPatternChars.retainAll(cogToContainingGenomes.get(ch));
         }
+        return intersectionOfGenomesWithPatternChars;
+    }
 
+    private int computeAverageParalogCount(Set<Integer> intersectionOfGenomesWithPatternChars, List<Integer> patternLetters){
         int paralogCountProductSum = 0;
         int paralogCountProduct;
         for (int seq_key: intersectionOfGenomesWithPatternChars) {
 
-            Map<Integer, Integer> curr_seq_paralog_count = genomeToCogParalogCount.get(seq_key);
-            paralogCountProduct = 1;
-            for (int cog : patternLetters) {
-                int curr_cog_paralog_count = curr_seq_paralog_count.get(cog);
-                paralogCountProduct *= curr_cog_paralog_count;
-            }
+            Map<Integer, Integer> currSeqParalogCount = genomeToCogParalogCount.get(seq_key);
+            paralogCountProduct = patternLetters.stream()
+                    .map(cog -> currSeqParalogCount.get(cog))
+                    .reduce(1, (a, b) -> a*b);
+
             paralogCountProductSum += paralogCountProduct;
         }
 
-        int averageParalogCount = paralogCountProductSum/intersectionOfGenomesWithPatternChars.size();
+        return paralogCountProductSum/intersectionOfGenomesWithPatternChars.size();
+    }
 
-        return pvalCrossGenome(patternLetters.size(), maxInsertions,
-                averageParalogCount, patternOccsKeysSize);
+    public double computePatternScore(List<Integer> patternLetters, int maxInsertions, int genomesWithInstance){
+
+        Set<Integer> intersectionOfGenomesWithPatternChars = genomesWithPatternChars(patternLetters);
+
+        int averageParalogCount = computeAverageParalogCount(intersectionOfGenomesWithPatternChars, patternLetters);
+
+        return pvalCrossGenome(patternLetters.size(), maxInsertions, averageParalogCount, genomesWithInstance);
     }
 
     /**
      * Computes a ranking score for a given pattern
-     * @param w pattern length
-     * @param k maximal number of allowed insertions
-     * @param h product of average paralog frequency for each gene in the pattern
-     * @param g number of genomes containing an instance of the pattern
+     * @param patternLength pattern length
+     * @param maxInsertions maximal number of allowed insertions
+     * @param averageParalogFrequency product of average paralog frequency for each gene in the pattern
+     * @param genomesWithInstance number of genomes containing an instance of the pattern
      * @return ranking score
      */
-    private double pvalCrossGenome(int w, int k, int h, int g){
+    public double pvalCrossGenome(int patternLength, int maxInsertions, int averageParalogFrequency,
+                                  int genomesWithInstance){
+
         int G = numberOfGenomes;
         int n = avgGenomeSize;
         double result = 0;
 
-        double q = q_homologs(n, w, k, h);
+        double logPval = logPvalInsertions(n, patternLength, maxInsertions) + Math.log(averageParalogFrequency);
 
-        double a = g/(double)G;
+        double a = (double)genomesWithInstance/G;
         if ( a == 1){
-            result = -G*Math.log(q);
-        } else if (q < a && q > 0 && a < 1){
-            result = G*H(a, q);
+            result = -G*logPval;
+        } else if (logPval < Math.log(a) && logPval < 0 && a < 1){
+            result = G*H(a, logPval);
         }else{
-            result = binomialCDF(G, g, q);
+            result = binomialCDF(G, genomesWithInstance, Math.exp(logPval));
             //base e
-            result = -Math.log(result);
+            result = result <= 0 ? 0 : -Math.log(result);
         }
 
-        if ( (Double.isNaN(result)) || (result < 0) ){
+        if ( (Double.isNaN(result)) || (result < 1) ){
             result = 0;
         }
 
         return result;
     }
-    private static double H(double a, double p){
-        return a*Math.log(a/p) + (1-a)*Math.log((1-a)/(1-p));
+
+    private double H(double a, double logP){
+        return a*(Math.log(a) - logP) + (1-a)*(Math.log(1-a) - Math.log(-expm1.value(logP)));
     }
 
-    public double q_homologs(int n, int w, int k, int h){
-        double q_result = q_insert(n, w, k);
-
-        /*if (error_type.equals("insert")) {
-            q_result = q_insert(n, w, k, q_val);
-        }else if(error_type.equals("mismatch")){
-            q_result = q_mismatch(n, w, k, q_val);
-        }else if(error_type.equals("deletion")){
-            q_result =  q_deletion(n, w, k, q_val);
-        }*/
-
-        return q_result*h;
-
-    }
-    public static double q_mismatch(int n, int w, int k, double[] q_val){
+    private double logPvalInsertions(int n, int patternLength, int maxInsertions){
         double result = 0;
-        if ( q_val[w] != 0){
-            result = q_val[w];
+        if (pValues[patternLength] != 0){
+            result = pValues[patternLength];
         }else {
-            for (int i = 0; i < k + 1; i++) {
-                long numerator = (n-w+1) * binomialCoefficient(w, i);
-                result += divide_by_product(numerator, n - w + i + 1, n);
+            long binomial = binomialCoefficient(patternLength+maxInsertions-2, patternLength-2);
+            int instanceStartIndexes = n - patternLength + 1;
+            double numerator = Math.log(binomial) + Math.log(instanceStartIndexes - maxInsertions);
+
+            int denominator = instanceStartIndexes;
+            double logMaxInsertions = maxInsertions > 0 ? maxInsertions : 1;
+            result = logMaxInsertions + numerator - logSum(denominator, n);
+
+            if (binomial <= 0 || instanceStartIndexes <= 0 || instanceStartIndexes - maxInsertions <= 0){
+                result = 0;
             }
-            q_val[w] = result;
+
+            pValues[patternLength] = result;
         }
+
         return result;
     }
 
-    public static double q_deletion(int n, int w, int k, double[] q_val){
+    private static double logSum(int start, int end){
         double result = 0;
-        if ( q_val[w] != 0){
-            result = q_val[w];
-        }else {
-            for (int i = 0; i < k + 1; i++) {
-                long numerator = binomialCoefficient(w, w-i);
-                result += divide_by_product(numerator, n - w + 2 + i, n);
-            }
-            q_val[w] = result;
-        }
-        return result;
-    }
-
-    private double q_insert(int n, int w, int k){
-        double result = 0;
-        if (pValues[w] != 0){
-            result = pValues[w];
-        }else {
-            for (int i = 0; i < k + 1; i++) {
-                long numerator = (n - w - i + 1) * binomialCoefficient(w+i-2, w-2);
-                result += divide_by_product(numerator, n - w + 1, n);
-            }
-            pValues[w] = result;
-        }
-        return result;
-    }
-
-
-    public static double divide_by_product(long val, int start, int end){
-        double result = val;
         for (int i = start; i < end + 1; i++) {
-            result /= (double)i;
+            result += Math.log(i);
         }
         return result;
     }
@@ -177,15 +156,6 @@ public class PatternScore {
     //P(x>=k)
     private static double binomialCDF(int n, int k, double p){
         return Beta.regularizedBeta(p, k, n-k+1);
-    }
-
-    public static double computePatternScore(PatternScore patternScore, List<Integer> patternLetters, int maxInsertions,
-                                             int maxError, int maxDeletions, int patternOccsKeysSize){
-
-        if (patternScore != null){
-            return patternScore.computePatternScore(patternLetters, maxInsertions, patternOccsKeysSize);
-        }
-        return -1;
     }
 
 }

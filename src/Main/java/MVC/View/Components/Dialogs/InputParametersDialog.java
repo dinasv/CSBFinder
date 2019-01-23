@@ -1,5 +1,7 @@
 package MVC.View.Components.Dialogs;
 
+import Core.AlgorithmType;
+import Core.ClusterBy;
 import MVC.Common.CSBFinderRequest;
 import MVC.View.Events.RunEvent;
 import MVC.View.Listeners.RunListener;
@@ -27,8 +29,10 @@ public class InputParametersDialog extends JDialog {
     private JLabel bcountLabel;
     private JLabel familyClusterThresholdLabel;
     private JLabel segmentToDirectonsLabel;
+    private JLabel algorithmLabel;
 
     private JList clusterTypeField;
+    private JList algorithmField;
     private JSpinner quorum;
     private JSlider quorumSlider;
     private RunListener runListener;
@@ -96,7 +100,8 @@ public class InputParametersDialog extends JDialog {
         request.setCsbPatternFilePath("optional".equals(patternPath) || "".equals(patternPath) ? null : patternFilePath.getText());
         request.setMultCount(bcount.isSelected());
         request.setFamilyClusterThreshold(familyClusterThreshold.getValue() / 10.0f);
-        request.setClusterType((String) clusterTypeField.getSelectedValue());
+        request.setClusterType(ClusterBy.valueOf((String)clusterTypeField.getSelectedValue()));
+        request.setAlgorithm(AlgorithmType.valueOf((String)algorithmField.getSelectedValue()));
         request.setNonDirectons(!segmentToDirectons.isSelected());
 
     }
@@ -108,6 +113,7 @@ public class InputParametersDialog extends JDialog {
     private void initInputComponents() {
 
         clusterTypeField = new JList();
+        algorithmField = new JList();
 
         quorum = new JSpinner();
         quorumSlider = new JSlider();
@@ -190,6 +196,10 @@ public class InputParametersDialog extends JDialog {
         desc = "In the greedy CSB clustering to families, CSBs are sorted based on 'score' or 'length'.";
         clusterTypeLabel = initLabel(icon, labelName, desc);
 
+        labelName = "Algorithm";
+        desc = "The algorithm used for finding CSBs.";
+        algorithmLabel = initLabel(icon, labelName, desc);
+
         labelName = "Segment genomes to directons";
         desc = "If checked, genomes will be segmented to directons - consecutive genes on the same strand.";
         segmentToDirectonsLabel = initLabel(icon, labelName, desc);
@@ -266,10 +276,17 @@ public class InputParametersDialog extends JDialog {
 
         // Cluster Type
         DefaultListModel clusterModel = new DefaultListModel();
-        clusterModel.addElement("Score");
-        clusterModel.addElement("Length");
+        clusterModel.addElement(ClusterBy.SCORE.toString());
+        clusterModel.addElement(ClusterBy.LENGTH.toString());
         clusterTypeField.setModel(clusterModel);
         clusterTypeField.setSelectedIndex(0);
+
+        // Algorithm
+        DefaultListModel algModel = new DefaultListModel();
+        algModel.addElement(AlgorithmType.SUFFIX_TREE.toString());
+        algModel.addElement(AlgorithmType.MATCH_POINTS.toString());
+        algorithmField.setModel(algModel);
+        algorithmField.setSelectedIndex(0);
 
         //directon segmantation
         segmentToDirectons.setSelected(true);
@@ -323,6 +340,11 @@ public class InputParametersDialog extends JDialog {
 
         addComponentToGC(0, y, 1, 0.2, insetLabel, clusterTypeLabel, FIRST_LINE_START);
         addComponentToGC(1, y++, 1, 0.2, insetField, clusterTypeField, FIRST_LINE_START);
+        addComponentToGC(1, y++, 1, 1, insetField, new JLabel(""), FIRST_LINE_START);
+        addComponentToGC(1, y, 1, 2, insetField, run, LINE_START);
+
+        addComponentToGC(0, y, 1, 0.2, insetLabel, algorithmLabel, FIRST_LINE_START);
+        addComponentToGC(1, y++, 1, 0.2, insetField, algorithmField, FIRST_LINE_START);
         addComponentToGC(1, y++, 1, 1, insetField, new JLabel(""), FIRST_LINE_START);
         addComponentToGC(1, y, 1, 2, insetField, run, LINE_START);
     }
