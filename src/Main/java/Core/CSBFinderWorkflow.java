@@ -16,9 +16,9 @@ import java.util.Objects;
  */
 public class CSBFinderWorkflow {
 
-    Algorithm algorithm;
+    private Algorithm algorithm;
 
-    List<Pattern> patternsFromFile;
+    private List<Pattern> patternsFromFile;
 
     private Parameters params;
     private GenomesInfo gi;

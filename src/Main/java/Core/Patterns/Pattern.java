@@ -232,7 +232,8 @@ public class Pattern {
             return true;
 
         Pattern other = (Pattern) obj;
-        return other.patternGenes.equals(this.patternGenes);
+        return other.patternGenes.equals(this.patternGenes) ||
+                other.patternGenes.equals(this.reverseComplimentPatternArr);
     }
 
 }

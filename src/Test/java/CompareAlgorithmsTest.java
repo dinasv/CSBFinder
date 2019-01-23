@@ -26,7 +26,7 @@ public class CompareAlgorithmsTest {
         GenomesInfo gi = Parsers.parseGenomesFile(GENOMES_FILE_PATH);
         CSBFinderWorkflow workflow = new CSBFinderWorkflow(gi);
 
-        List<Pattern> patternsFromFile = readPatternsReferenceGenomesFile(gi);
+        List<Pattern> patternsFromFile = Parsers.parseReferenceGenomesFile(gi, REF_GENOMES_FILE_PATH);
         workflow.setPatternsFromFile(patternsFromFile);
 
         workflow.setAlgorithm(AlgorithmType.SUFFIX_TREE.algorithm);
@@ -37,16 +37,6 @@ public class CompareAlgorithmsTest {
         List<Family> familiesAlg2 = workflow.run(params);
 
         Assert.assertEquals(familiesAlg1, familiesAlg2);
-    }
 
-    private List<Pattern> readPatternsReferenceGenomesFile(GenomesInfo genomesInfo) throws Exception{
-        List<Pattern> patterns = new ArrayList<>();
-        String path = REF_GENOMES_FILE_PATH;
-
-        if (path != null) {
-
-            patterns = Parsers.parseReferenceGenomesFile(genomesInfo, path);
-        }
-        return patterns;
     }
 }

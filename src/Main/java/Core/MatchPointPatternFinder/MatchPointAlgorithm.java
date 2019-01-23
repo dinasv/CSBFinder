@@ -291,22 +291,22 @@ public class MatchPointAlgorithm implements Algorithm {
                 matchPoint = matchList_y.get(matchPointPtr);
                 relativeMatchPointIndex = matchPoint.getPosition();
 
-                //match point is in an earlier word in this sequence
+                //match point is in an earlier genomic segment in this sequence
                 if (matchPoint.getGenomicSegment().getId() < currInstance.getRepliconId()) {
                     matchPointPtr++;
-                    //The match point is in a later word in this sequence
+                    //The match point is in a later genomic segment in this sequence
                 } else if (matchPoint.getGenomicSegment().getId() > currInstance.getRepliconId()) {
                     instancePtr++;
-                } else {//matchPoint.getWordId() == currInstance.getWordId()
+                } else {
                     //the match point index is too small to extend curr instance
-                    if (relativeMatchPointIndex < currInstance.getRelativeStartIndex()) {
+                    if (relativeMatchPointIndex < currInstance.getRelativeEndIndex()) {
                         matchPointPtr++;
                         //The match point is closer to next instance
                     } else if (nextInstance != null &&
                             matchPoint.getGenomicSegment().getId() == nextInstance.getRepliconId() &&
                             relativeMatchPointIndex >= nextInstance.getRelativeEndIndex()) {
                         instancePtr++;
-                    } else {//The match point is > currInstance.getEnd()
+                    } else {//The match point is >= currInstance.getRelativeEndIndex()
                         int instanceLength = relativeMatchPointIndex - currInstance.getRelativeStartIndex() + 1;
                         int numOfInsertions = instanceLength - extendedPattern.getLength();
                         if (numOfInsertions <= parameters.maxInsertion) {
