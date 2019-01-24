@@ -1,31 +1,25 @@
 package MVC.View.Components;
 
-import MVC.View.Components.Dialogs.InputFileChooser;
-import MVC.View.Components.Dialogs.OutputTypeChooser;
-import MVC.View.Events.LoadFileEvent;
-import MVC.View.Events.SaveOutputEvent;
 import MVC.View.Events.SelectParamsEvent;
-import MVC.View.Listeners.LoadFileListener;
-import MVC.View.Listeners.SaveOutputListener;
 import MVC.View.Listeners.SelectParamsListener;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 
 public class Toolbar extends JPanel{
 
-    private static final String SELECT_PARAMS_BTN_NAME = "Run";
+    private static final String SELECT_PARAMS_BTN_NAME = "Find CSBs";
 
     private JButton selectParams;
     private SelectParamsListener selectParamsListener;
 
-    public Toolbar() {
+    public Toolbar(ImageIcon runIcon) {
 
         setBorder(BorderFactory.createEtchedBorder());
-        selectParams =  new JButton(SELECT_PARAMS_BTN_NAME);
+        selectParams =  new JButton(runIcon);
+        selectParams.setBorder(BorderFactory.createEmptyBorder());
         selectParams.setEnabled(false);
+        selectParams.setToolTipText(SELECT_PARAMS_BTN_NAME);
 
         setLayout(new FlowLayout(FlowLayout.LEFT));
 

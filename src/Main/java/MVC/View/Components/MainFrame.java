@@ -5,6 +5,7 @@ import MVC.Controller.CSBFinderController;
 import MVC.View.Components.Dialogs.InputParametersDialog;
 import MVC.View.Components.Dialogs.ProgressBar;
 import MVC.View.Events.*;
+import MVC.View.Images.Icons;
 import MVC.View.Listeners.*;
 import MVC.View.Components.Panels.GenomePanel;
 import MVC.View.Components.Panels.SummaryPanel;
@@ -35,12 +36,16 @@ public class MainFrame extends JFrame {
 
     private JFileChooser fc;
 
+    private Icons icons;
+
     public MainFrame(CSBFinderController controller) {
         super("CSBFinder");
 
         setUIFont(new javax.swing.plaf.FontUIResource("Serif", Font.PLAIN, 16));
 
         fc = new JFileChooser(System.getProperty("user.dir"));
+
+        icons = new Icons();
 
         this.controller = controller;
 
@@ -79,9 +84,9 @@ public class MainFrame extends JFrame {
         Map<String, Color> colorsUsed = new HashMap<>();
         colorsUsed.put(controller.getUNKchar(), Color.lightGray);
 
-        inputParamsDialog = new InputParametersDialog(fc);
+        inputParamsDialog = new InputParametersDialog(fc, icons.getQuestionMark());
 
-        toolbar = new Toolbar();
+        toolbar = new Toolbar(icons.getRunIcon());
         genomes = new GenomePanel(colorsUsed);
         summaryPanel = new SummaryPanel();
 

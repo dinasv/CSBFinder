@@ -57,9 +57,12 @@ public class InputParametersDialog extends JDialog {
 
     JFileChooser fc;
 
-    public InputParametersDialog(JFileChooser fc) {
+    ImageIcon questionMark;
+
+    public InputParametersDialog(JFileChooser fc, ImageIcon questionMark) {
 
         this.fc = fc;
+        this.questionMark = questionMark;
         setTitle("Parameters");
 
         initLabels();
