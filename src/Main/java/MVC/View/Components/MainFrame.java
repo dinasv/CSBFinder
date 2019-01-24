@@ -31,6 +31,8 @@ public class MainFrame extends JFrame {
 
     private ProgressBar progressBar;
 
+    private Menu menuBar;
+
     private JFileChooser fc;
 
     public MainFrame(CSBFinderController controller) {
@@ -79,9 +81,12 @@ public class MainFrame extends JFrame {
 
         inputParamsDialog = new InputParametersDialog(fc);
 
-        toolbar = new Toolbar(fc);
+        toolbar = new Toolbar();
         genomes = new GenomePanel(colorsUsed);
         summaryPanel = new SummaryPanel();
+
+        menuBar = new Menu(fc, this);
+        menuBar.disableSaveFileBtn();
 
         setEventListeners();
 
@@ -94,10 +99,12 @@ public class MainFrame extends JFrame {
         split.setResizeWeight(0.5);
         add(split, BorderLayout.CENTER);
 
+
     }
 
     private void setEventListeners() {
         setInputsListener();
+        setMenuListeners();
         setToolbarListener();
         setPatternRowClickedListener();
         setFamilyRowClickedListener();
@@ -139,11 +146,13 @@ public class MainFrame extends JFrame {
         });
     }
 
-    private void setToolbarListener() {
+    private void setMenuListeners(){
         setLoadButtonListener();
         setImportSessionButtonListener();
         setLoadCogInfoButtonListener();
         setSaveButtonListener();
+    }
+    private void setToolbarListener() {
         setSelectParamsListener();
     }
 
@@ -160,7 +169,7 @@ public class MainFrame extends JFrame {
     }
 
     private void setLoadButtonListener() {
-        toolbar.setLoadGenomesListener(new LoadFileListener() {
+        menuBar.setLoadGenomesListener(new LoadFileListener() {
 
             @Override
             public void loadFileEventOccurred(LoadFileEvent e) {
@@ -189,7 +198,7 @@ public class MainFrame extends JFrame {
                         protected void done() {
 
                             clearPanels();
-                            toolbar.disableSaveFileBtn();
+                            menuBar.disableSaveFileBtn();
 
                             if (controller.getNumberOfGenomes() > 0) {
                                 inputParamsDialog.setGenomeData(controller.getNumberOfGenomes(), controller.getMaxGenomeSize());
@@ -209,7 +218,7 @@ public class MainFrame extends JFrame {
     }
 
     private void setImportSessionButtonListener() {
-        toolbar.setImportSessionListener(new LoadFileListener() {
+        menuBar.setImportSessionListener(new LoadFileListener() {
 
             @Override
             public void loadFileEventOccurred(LoadFileEvent e) {
@@ -238,7 +247,7 @@ public class MainFrame extends JFrame {
                         @Override
                         protected void done() {
 
-                            toolbar.enableSaveFileBtn();
+                            menuBar.enableSaveFileBtn();
                             toolbar.enableSelectParamsBtn();
 
                             if (controller.getNumberOfGenomes() > 0) {
@@ -258,7 +267,7 @@ public class MainFrame extends JFrame {
     }
 
     private void setLoadCogInfoButtonListener() {
-        toolbar.setLoadCogInfoListener(new LoadFileListener() {
+        menuBar.setLoadCogInfoListener(new LoadFileListener() {
 
             @Override
             public void loadFileEventOccurred(LoadFileEvent e) {
@@ -300,7 +309,7 @@ public class MainFrame extends JFrame {
 
 
     private void setSaveButtonListener() {
-        toolbar.setSaveOutputListener(new SaveOutputListener() {
+        menuBar.setSaveOutputListener(new SaveOutputListener() {
             String msg = "";
 
             @Override
@@ -374,7 +383,7 @@ public class MainFrame extends JFrame {
     }
 
     public void displayFamilyTable(List<Family> familyList) {
-        toolbar.enableSaveFileBtn();
+        menuBar.enableSaveFileBtn();
         summaryPanel.setFamilyData(familyList);
     }
 }
