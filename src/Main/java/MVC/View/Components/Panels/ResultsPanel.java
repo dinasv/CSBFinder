@@ -61,6 +61,7 @@ public class ResultsPanel extends JPanel {
     public void setFilterRequest(FilterRequest filterRequest){
         patternsSorter.clear();
         patternsSorter.setCSBLength(filterRequest.getMinCSBLength(), filterRequest.getMaxCSBLength());
+        patternsSorter.setScore(filterRequest.getMinScore(), filterRequest.getMaxScore());
         familyPatternsPanel.setSorter(patternsSorter.getSorter());
     }
 

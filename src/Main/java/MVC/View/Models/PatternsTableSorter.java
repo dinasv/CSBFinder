@@ -19,12 +19,18 @@ public class PatternsTableSorter {
     }
 
     public void setCSBLength(int from, int to){
+        addFromToFilters(from, to, PatternProperty.LENGTH);
+    }
 
+    public void setScore(int from, int to){
+        addFromToFilters(from, to, PatternProperty.SCORE);
+    }
+
+    private void addFromToFilters(double from, double to, PatternProperty property){
         filters.add(RowFilter.numberFilter(RowFilter.ComparisonType.AFTER, from-1,
-                model.getIndexOfColumn(PatternProperty.LENGTH)));
+                model.getIndexOfColumn(property)));
         filters.add(RowFilter.numberFilter(RowFilter.ComparisonType.BEFORE, to+1,
-                model.getIndexOfColumn(PatternProperty.LENGTH)));
-
+                model.getIndexOfColumn(property)));
     }
 
     public TableRowSorter<TableModel> getSorter(){

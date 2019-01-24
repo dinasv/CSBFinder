@@ -8,10 +8,6 @@ public class RunEvent<T extends Request> extends EventObject {
 
     private T request;
 
-    //public RunEvent(Object source) {
-    //    super(source);
-    //}
-
     public RunEvent(Object source, T request) {
         super(source);
         this.request = request;

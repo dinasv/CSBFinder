@@ -16,10 +16,13 @@ import static java.awt.GridBagConstraints.LINE_START;
  */
 public class FilterDialog extends JDialog{
 
-    private JLabel CSBLengthLabel1;
-    private JLabel CSBLengthLabel2;
+    private JLabel CSBLengthLabel;
     private JSpinner minCSBLength;
     private JSpinner maxCSBLength;
+
+    private JLabel scoreLabel;
+    private JSpinner minScore;
+    private JSpinner maxScore;
 
     private GridBagConstraints gc;
 
@@ -31,30 +34,17 @@ public class FilterDialog extends JDialog{
     JPanel fields;
 
     public FilterDialog(){
-        fields = new JPanel();
-        fields.setLayout(new GridBagLayout());
+
         setTitle("Filter Table");
 
         applyFilter = new JButton("Apply");
-        applyFilter.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                FilterRequest request = new FilterRequest();
-                initRequest(request);
-
-                RunEvent<FilterRequest> runEvent = new RunEvent<>(this, request);
-
-                if (applyFilterListener != null) {
-                    applyFilterListener.runEventOccurred(runEvent);
-                }
-            }
-        });
+        setApplyFilterActionListener();
 
         clearAll = new JButton("Clear All");
-        clearAll.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                initFields();
-            }
-        });
+        setClearAllActionListner();
+
+        fields = new JPanel();
+        fields.setLayout(new GridBagLayout());
         gc = new GridBagConstraints();
         gc.fill = GridBagConstraints.NONE;
 
@@ -73,20 +63,46 @@ public class FilterDialog extends JDialog{
         pack();
     }
 
+    private void setClearAllActionListner(){
+        clearAll.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                initFields();
+            }
+        });
+    }
+
+    private void setApplyFilterActionListener(){
+        applyFilter.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                FilterRequest request = new FilterRequest();
+                initRequest(request);
+
+                RunEvent<FilterRequest> runEvent = new RunEvent<>(this, request);
+
+                if (applyFilterListener != null) {
+                    applyFilterListener.runEventOccurred(runEvent);
+                }
+            }
+        });
+    }
+
     private void initRequest(FilterRequest filterRequest){
         filterRequest.setMinCSBLength((int)minCSBLength.getValue());
         filterRequest.setMaxCSBLength((int)maxCSBLength.getValue());
+        filterRequest.setMinScore((int)minScore.getValue());
+        filterRequest.setMaxScore((int)maxScore.getValue());
     }
 
     private void initComponents(){
         minCSBLength = new JSpinner();
         maxCSBLength = new JSpinner();
+        minScore = new JSpinner();
+        maxScore = new JSpinner();
     }
 
     private void initLabels(){
-        CSBLengthLabel1 = new JLabel("CSB length between:");
-        CSBLengthLabel2 = new JLabel(" and ");
-
+        CSBLengthLabel = new JLabel("CSB length between:");
+        scoreLabel = new JLabel("Score between:");
     }
 
     private void initFields(){
@@ -95,19 +111,28 @@ public class FilterDialog extends JDialog{
         // CSB max length
         maxCSBLength.setModel(new SpinnerNumberModel(Integer.MAX_VALUE, 2, Integer.MAX_VALUE, 1));
 
+        // CSB min length
+        minScore.setModel(new SpinnerNumberModel(0, 0, Integer.MAX_VALUE, 1));
+        // CSB max length
+        maxScore.setModel(new SpinnerNumberModel(Integer.MAX_VALUE, 0, Integer.MAX_VALUE, 1));
+
     }
 
     private void addComponentsToGC(){
+        int y = 0;
+
+        addIntervalComponentToGC(y++, CSBLengthLabel, minCSBLength, maxCSBLength);
+        addIntervalComponentToGC(y++, scoreLabel, minScore, maxScore);
+    }
+
+    private void addIntervalComponentToGC(int y, JLabel label, JSpinner minSpinner, JSpinner maxSpinner){
         Insets insetLabel = new Insets(0, 10, 5, 5);
         Insets insetField = new Insets(0, 0, 5, 5);
 
-        int y = 0;
-
-        addComponentToGC(0, y, 1, 0.2, insetLabel, CSBLengthLabel1, LINE_START);
-        addComponentToGC(1, y, 1, 0.2, insetField, minCSBLength, LINE_START);
-        addComponentToGC(2, y, 1, 0.2, insetField, CSBLengthLabel2, CENTER);
-        addComponentToGC(3, y++, 1, 0.2, insetField, maxCSBLength, LINE_START);
-
+        addComponentToGC(0, y, 1, 0.2, insetLabel, label, LINE_START);
+        addComponentToGC(1, y, 1, 0.2, insetField, minSpinner, LINE_START);
+        addComponentToGC(2, y, 1, 0.2, insetField, new JLabel("and"), CENTER);
+        addComponentToGC(3, y, 1, 0.2, insetField, maxSpinner, LINE_START);
     }
 
     private void addComponentToGC(int x, int y, double weightx, double weighty, Insets insets, Component c, int anchor) {
