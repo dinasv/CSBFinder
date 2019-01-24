@@ -30,12 +30,12 @@ public class InputParametersDialog extends JDialog {
     private JLabel familyClusterThresholdLabel;
     private JLabel segmentToDirectonsLabel;
     private JLabel algorithmLabel;
+    private JLabel thresholdLabel;
 
     private JList clusterTypeField;
     private JList algorithmField;
     private JSpinner quorum;
     private JSlider quorumSlider;
-    private RunListener runListener;
     private JSpinner numOfInsertions;
     private JSpinner quorumWithoutInsertions;
     private JSlider quorumWithoutInsertionsSlider;
@@ -45,13 +45,10 @@ public class InputParametersDialog extends JDialog {
     private JCheckBox bcount;
     private JSlider familyClusterThreshold;
     private JCheckBox segmentToDirectons;
-
-
-    private JLabel thresholdLabel;
-
     private JButton loadPatternBtn;
 
     private JButton run;
+    private RunListener runListener;
 
     private GridBagConstraints gc;
 
@@ -74,7 +71,7 @@ public class InputParametersDialog extends JDialog {
                 CSBFinderRequest request = new CSBFinderRequest();
                 initRequest(request);
 
-                RunEvent runEvent = new RunEvent(this, request);
+                RunEvent<CSBFinderRequest> runEvent = new RunEvent<>(this, request);
 
                 if (runListener != null) {
                     runListener.runEventOccurred(runEvent);
@@ -159,7 +156,7 @@ public class InputParametersDialog extends JDialog {
 
     private void initLabels() {
 
-        ImageIcon icon = createImageIcon("/question.png", "question mark icon");
+        ImageIcon icon = questionMark;
 
         String labelName = "Quorum";
         String desc = "Minimal number of input sequences that must contain a CSB instance.";
@@ -217,18 +214,6 @@ public class InputParametersDialog extends JDialog {
         return label;
     }
 
-    /** Returns an ImageIcon, or null if the path was invalid. */
-    protected ImageIcon createImageIcon(String path,
-                                        String description) {
-        java.net.URL imgURL = getClass().getResource(path);
-
-        if (imgURL != null) {
-            return new ImageIcon(imgURL, description);
-        } else {
-            System.err.println("Couldn't find file: " + path);
-            return null;
-        }
-    }
 
     public void initFields() {
 
@@ -255,7 +240,7 @@ public class InputParametersDialog extends JDialog {
 
         // CSB max length
         maxCSBLength.setModel(new SpinnerNumberModel(Integer.MAX_VALUE, 2, Integer.MAX_VALUE, 1));
-        ((JSpinner.DefaultEditor)maxCSBLength.getEditor()).getTextField().setColumns(3);
+        //((JSpinner.DefaultEditor)maxCSBLength.getEditor()).getTextField().setColumns(3);
 
         // csb pattern file path
         patternFilePath.setText("optional");
@@ -302,7 +287,7 @@ public class InputParametersDialog extends JDialog {
         int y = 0;
 
         JLabel title = new JLabel("Basic Parameters:");
-        title.setFont(new Font("Serif", Font.BOLD, 20));
+        title.setFont(new Font(title.getFont().getName(), Font.BOLD, 20));
 
         addComponentToGC(0, y++, 1, 0.6, insetLabel, title, LINE_START);
 
@@ -314,7 +299,7 @@ public class InputParametersDialog extends JDialog {
         addComponentToGC(1, y++, 1, 0.1, insetField, numOfInsertions, LINE_START);
 
         title = new JLabel("Advanced parameters:");
-        title.setFont(new Font("Serif", Font.BOLD, 20));
+        title.setFont(new Font(title.getFont().getName(), Font.BOLD, 20));
         addComponentToGC(0, y++, 1, 0.6, insetLabel, title, LINE_START);
 
         addComponentToGC(0, y, 1, 0.1, insetLabel, segmentToDirectonsLabel, LINE_START);
@@ -327,8 +312,8 @@ public class InputParametersDialog extends JDialog {
         addComponentToGC(0, y, 1, 0.1, insetLabel, minCSBLengthLabel, LINE_START);
         addComponentToGC(1, y++, 1, 0.1, insetField, minCSBLength, LINE_START);
 
-        addComponentToGC(0, y, 1, 0.1, insetLabel, maxCSBLengthLabel, FIRST_LINE_START);
-        addComponentToGC(1, y++, 1, 0.1, insetField, maxCSBLength, FIRST_LINE_START);
+        addComponentToGC(0, y, 1, 0.1, insetLabel, maxCSBLengthLabel, LINE_START);
+        addComponentToGC(1, y++, 1, 0.1, insetField, maxCSBLength, LINE_START);
 
         addComponentToGC(0, y, 1, 0.2, insetLabel, patternFilePathLabel, LINE_START);
         addComponentToGC(1, y, 1, 0.2, insetField, patternFilePath, LINE_START);
@@ -344,11 +329,11 @@ public class InputParametersDialog extends JDialog {
         addComponentToGC(0, y, 1, 0.2, insetLabel, clusterTypeLabel, FIRST_LINE_START);
         addComponentToGC(1, y++, 1, 0.2, insetField, clusterTypeField, FIRST_LINE_START);
         addComponentToGC(1, y++, 1, 1, insetField, new JLabel(""), FIRST_LINE_START);
-        addComponentToGC(1, y, 1, 2, insetField, run, LINE_START);
 
         addComponentToGC(0, y, 1, 0.2, insetLabel, algorithmLabel, FIRST_LINE_START);
         addComponentToGC(1, y++, 1, 0.2, insetField, algorithmField, FIRST_LINE_START);
         addComponentToGC(1, y++, 1, 1, insetField, new JLabel(""), FIRST_LINE_START);
+
         addComponentToGC(1, y, 1, 2, insetField, run, LINE_START);
     }
 

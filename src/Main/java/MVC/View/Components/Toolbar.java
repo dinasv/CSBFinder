@@ -25,9 +25,7 @@ public class Toolbar extends JPanel{
 
         add(selectParams);
 
-        selectParams.addActionListener(e -> {
-            selectParamsListener.selectParamsOccurred(new SelectParamsEvent());
-        });
+        selectParams.addActionListener(e -> selectParamsListener.selectParamsOccurred(new SelectParamsEvent()));
     }
 
 

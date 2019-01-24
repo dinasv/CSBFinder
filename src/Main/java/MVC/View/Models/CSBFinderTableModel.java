@@ -8,14 +8,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public abstract class TableModel<K, V> extends AbstractTableModel {
+public abstract class CSBFinderTableModel<K, V> extends AbstractTableModel {
 
     private final ColumnProperty[] columns;
 
     private List<V> data;
     private Map<K, V> idToRow;
 
-    public TableModel(ColumnProperty[] columns){
+    public CSBFinderTableModel(ColumnProperty[] columns){
         super();
 
         this.columns = columns;

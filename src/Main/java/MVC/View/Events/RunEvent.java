@@ -1,27 +1,27 @@
 package MVC.View.Events;
 
-import MVC.Common.CSBFinderRequest;
+import MVC.View.Requests.Request;
 
 import java.util.EventObject;
 
-public class RunEvent extends EventObject {
+public class RunEvent<T extends Request> extends EventObject {
 
-    private CSBFinderRequest request;
+    private T request;
 
-    public RunEvent(Object source) {
-        super(source);
-    }
+    //public RunEvent(Object source) {
+    //    super(source);
+    //}
 
-    public RunEvent(Object source, CSBFinderRequest request) {
+    public RunEvent(Object source, T request) {
         super(source);
         this.request = request;
     }
 
-    public CSBFinderRequest getRequest() {
+    public T getRequest() {
         return request;
     }
 
-    public void setRequest(CSBFinderRequest request) {
+    public void setRequest(T request) {
         this.request = request;
     }
 }

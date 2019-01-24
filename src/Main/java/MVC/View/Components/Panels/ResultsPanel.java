@@ -2,21 +2,27 @@ package MVC.View.Components.Panels;
 
 import Core.Patterns.Pattern;
 import Core.PostProcess.Family;
+import MVC.View.Listeners.FilterTableListener;
 import MVC.View.Listeners.RowClickedListener;
-import MVC.View.Models.FamilyProperty;
-import MVC.View.Models.FamilyTableModel;
-import MVC.View.Models.PatternProperty;
-import MVC.View.Models.PatternsTableModel;
+import MVC.View.Listeners.RunListener;
+import MVC.View.Models.*;
+import MVC.View.Requests.FilterRequest;
 
 import javax.swing.*;
+import javax.swing.table.TableModel;
+import javax.swing.table.TableRowSorter;
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
-public class ResultsPanel extends JSplitPane {
+public class ResultsPanel extends JPanel {
 
     private TablePanel familiesPanel;
     private TablePanel familyPatternsPanel;
+    private TableButtonsPanel tableButtonsPanel;
+
+    private PatternsTableSorter patternsSorter;
 
     private static PatternProperty[] patternsColumns = {
             PatternProperty.ID,
@@ -33,34 +39,48 @@ public class ResultsPanel extends JSplitPane {
             FamilyProperty.MEMBERS,
     };
 
-    public ResultsPanel() {
+    public ResultsPanel(ImageIcon filterIcon) {
 
-        familiesPanel = new TablePanel(FamilyProperty.FAMILY_ID, new FamilyTableModel(familyColumns));
-        familyPatternsPanel = new TablePanel(PatternProperty.ID, new PatternsTableModel(patternsColumns));
+        PatternsTableModel patternsTableModel = new PatternsTableModel(patternsColumns);
+        FamilyTableModel familyTableModel = new FamilyTableModel(familyColumns);
 
-        setOrientation(JSplitPane.HORIZONTAL_SPLIT);
-        setDividerSize(2);
-        setLeftComponent(familiesPanel);
-        setRightComponent(familyPatternsPanel);
-        setResizeWeight(0.2);
+
+        familiesPanel = new TablePanel(FamilyProperty.FAMILY_ID, familyTableModel);
+        familyPatternsPanel = new TablePanel(PatternProperty.ID, patternsTableModel);
+
+        patternsSorter = new PatternsTableSorter(patternsTableModel);
+
+        setLayout(new BorderLayout(2,2));
+        setSplitPane();
+
+        tableButtonsPanel = new TableButtonsPanel(filterIcon);
+        add(tableButtonsPanel, BorderLayout.LINE_END);
+
     }
 
-    private void addPanels(){
-        setLayout(new GridBagLayout());
-        GridBagConstraints gridBagConstraints = new GridBagConstraints();
+    public void setFilterRequest(FilterRequest filterRequest){
+        patternsSorter.clear();
+        patternsSorter.setCSBLength(filterRequest.getMinCSBLength(), filterRequest.getMaxCSBLength());
+        familyPatternsPanel.setSorter(patternsSorter.getSorter());
+    }
 
-        gridBagConstraints.fill = GridBagConstraints.HORIZONTAL;
-        gridBagConstraints.weightx = 0.05;
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 0;
-        add(familiesPanel, gridBagConstraints);
+    private void setSplitPane(){
+        JSplitPane splitPane = new JSplitPane();
+        splitPane.setOrientation(JSplitPane.HORIZONTAL_SPLIT);
+        splitPane.setDividerSize(2);
+        splitPane.setLeftComponent(familiesPanel);
+        splitPane.setRightComponent(familyPatternsPanel);
+        splitPane.setResizeWeight(0.2);
 
-        gridBagConstraints.fill = GridBagConstraints.HORIZONTAL;
-        gridBagConstraints.weightx = 0.95;
-        gridBagConstraints.gridx = 1;
-        gridBagConstraints.gridy = 0;
-        add(familyPatternsPanel, gridBagConstraints);
+        add(splitPane, BorderLayout.CENTER);
+    }
 
+    public void setPatternsTableSorter(TableRowSorter<TableModel> sorter){
+        familyPatternsPanel.setSorter(sorter);
+    }
+
+    public void setFilterTableListener(FilterTableListener filterTableListener) {
+        tableButtonsPanel.setFilterTableListener(filterTableListener);
     }
 
     public void setFamilyData(List<Family> familyList) {

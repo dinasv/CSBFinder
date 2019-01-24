@@ -2,11 +2,12 @@ package MVC.Common;
 
 import Core.AlgorithmType;
 import Core.ClusterBy;
+import MVC.View.Requests.Request;
 
 import java.util.LinkedList;
 import java.util.List;
 
-public class CSBFinderRequest {
+public class CSBFinderRequest implements Request{
 
     private String inputGenomeFilesPath = "";
     private int quorum = 1;

@@ -3,9 +3,14 @@ package MVC.View.Components.Panels;
 import Core.Patterns.Pattern;
 import Core.PostProcess.Family;
 import Core.OrthologyGroups.COG;
+import MVC.View.Listeners.FilterTableListener;
 import MVC.View.Listeners.RowClickedListener;
+import MVC.View.Listeners.RunListener;
+import MVC.View.Requests.FilterRequest;
 
 import javax.swing.*;
+import javax.swing.table.TableModel;
+import javax.swing.table.TableRowSorter;
 import java.awt.*;
 import java.util.Collection;
 import java.util.List;
@@ -16,16 +21,24 @@ public class SummaryPanel extends JSplitPane {
     private ResultsPanel resultsPanel;
     private CSBSummaryPanel csbSummaryPanel;
 
-    public SummaryPanel() {
+    public SummaryPanel(ImageIcon filterIcon) {
         csbSummaryPanel = new CSBSummaryPanel();
 
-        resultsPanel = new ResultsPanel();
+        resultsPanel = new ResultsPanel(filterIcon);
 
         setOrientation(JSplitPane.HORIZONTAL_SPLIT);
         setDividerSize(2);
         setLeftComponent(resultsPanel);
         setRightComponent(csbSummaryPanel);
         setResizeWeight(0.7);
+    }
+
+    public void setFilterRequest(FilterRequest filterRequest){
+        resultsPanel.setFilterRequest(filterRequest);
+    }
+
+    public void setFilterTableListener(FilterTableListener filterTableListener) {
+        resultsPanel.setFilterTableListener(filterTableListener);
     }
 
     public void setFamilyData(List<Family> familyList) {

@@ -30,16 +30,16 @@ public class CSBSummaryPanel extends JPanel {
         setLayout(new BorderLayout());
         summary = new JTextPane();
         summary.setEditable(false);
-        summary.setFont(new Font("Serif", Font.PLAIN, 16));
+        //summary.setFont(new Font("Serif", Font.PLAIN, 16));
 
 
         titleStyle = summary.addStyle("Title", null);
-        StyleConstants.setFontFamily(titleStyle, "Serif");
+        //StyleConstants.setFontFamily(titleStyle, "Serif");
         StyleConstants.setFontSize(titleStyle, 20);
         StyleConstants.setBold(titleStyle, true);
 
         textStyle = summary.addStyle("Title", null);
-        StyleConstants.setFontFamily(textStyle, "Serif");
+        //StyleConstants.setFontFamily(textStyle, "Serif");
         StyleConstants.setFontSize(textStyle, 16);
 
 

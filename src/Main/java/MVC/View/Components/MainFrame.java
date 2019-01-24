@@ -2,6 +2,7 @@ package MVC.View.Components;
 
 import MVC.Common.CSBFinderRequest;
 import MVC.Controller.CSBFinderController;
+import MVC.View.Components.Dialogs.FilterDialog;
 import MVC.View.Components.Dialogs.InputParametersDialog;
 import MVC.View.Components.Dialogs.ProgressBar;
 import MVC.View.Events.*;
@@ -12,6 +13,7 @@ import MVC.View.Components.Panels.SummaryPanel;
 import Core.OrthologyGroups.COG;
 import Core.Patterns.Pattern;
 import Core.PostProcess.Family;
+import MVC.View.Requests.FilterRequest;
 
 import javax.swing.*;
 import java.awt.*;
@@ -26,7 +28,8 @@ public class MainFrame extends JFrame {
     private Toolbar toolbar;
     private GenomePanel genomes;
 
-    InputParametersDialog inputParamsDialog;
+    private InputParametersDialog inputParamsDialog;
+    private FilterDialog filterDialog;
 
     private SummaryPanel summaryPanel;
 
@@ -41,7 +44,7 @@ public class MainFrame extends JFrame {
     public MainFrame(CSBFinderController controller) {
         super("CSBFinder");
 
-        setUIFont(new javax.swing.plaf.FontUIResource("Serif", Font.PLAIN, 16));
+        //setUIFont(new javax.swing.plaf.FontUIResource("Serif", Font.PLAIN, 16));
 
         fc = new JFileChooser(System.getProperty("user.dir"));
 
@@ -85,10 +88,11 @@ public class MainFrame extends JFrame {
         colorsUsed.put(controller.getUNKchar(), Color.lightGray);
 
         inputParamsDialog = new InputParametersDialog(fc, icons.getQuestionMark());
+        filterDialog = new FilterDialog();
 
         toolbar = new Toolbar(icons.getRunIcon());
         genomes = new GenomePanel(colorsUsed);
-        summaryPanel = new SummaryPanel();
+        summaryPanel = new SummaryPanel(icons.getFilterIcon());
 
         menuBar = new Menu(fc, this);
         menuBar.disableSaveFileBtn();
@@ -104,28 +108,56 @@ public class MainFrame extends JFrame {
         split.setResizeWeight(0.5);
         add(split, BorderLayout.CENTER);
 
-
     }
 
     private void setEventListeners() {
-        setInputsListener();
+        setRunCSBFinderListener();
         setMenuListeners();
         setToolbarListener();
         setPatternRowClickedListener();
         setFamilyRowClickedListener();
+        setFilterTableListener();
+        setApplyFilterListener();
     }
 
-    private void setInputsListener() {
-        inputParamsDialog.setRunListener(new RunListener() {
-            public void runEventOccurred(RunEvent e) {
+    private void setApplyFilterListener() {
+        filterDialog.setApplyFilterListener(new RunListener<FilterRequest>() {
+            public void runEventOccurred(RunEvent<FilterRequest> e) {
+                FilterRequest request = e.getRequest();
+
+                SwingUtilities.invokeLater(() -> {
+                    filterDialog.setVisible(false);
+                });
+
+                SwingWorker<Void, Void> swingWorker = new SwingWorker<Void, Void>() {
+
+                    @Override
+                    protected Void doInBackground() throws Exception {
+                        summaryPanel.setFilterRequest(request);
+                        return null;
+                    }
+
+                    /*
+                    @Override
+                    protected void done() {
+                        progressBar.done("");
+                        JOptionPane.showMessageDialog(MainFrame.this, msg);
+                    }*/
+                };
+                swingWorker.execute();
+            }
+        });
+    }
+
+
+    private void setRunCSBFinderListener() {
+        inputParamsDialog.setRunListener(new RunListener<CSBFinderRequest>() {
+            public void runEventOccurred(RunEvent<CSBFinderRequest> e) {
                 CSBFinderRequest request = e.getRequest();
 
-                SwingUtilities.invokeLater(new Runnable() {
-                    @Override
-                    public void run() {
-                        inputParamsDialog.setVisible(false);
-                        progressBar.start("Running");
-                    }
+                SwingUtilities.invokeLater(() -> {
+                    inputParamsDialog.setVisible(false);
+                    progressBar.start("Running");
                 });
 
                 SwingWorker<Void, Void> swingWorker = new SwingWorker<Void, Void>() {
@@ -172,6 +204,17 @@ public class MainFrame extends JFrame {
             }
         });
     }
+
+    private void setFilterTableListener() {
+        summaryPanel.setFilterTableListener(new FilterTableListener() {
+            @Override
+            public void filterTableOccurred(FilterTableEvent e) {
+                filterDialog.setLocationRelativeTo(null);
+                filterDialog.setVisible(true);
+            }
+        });
+    }
+
 
     private void setLoadButtonListener() {
         menuBar.setLoadGenomesListener(new LoadFileListener() {
