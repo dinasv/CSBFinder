@@ -94,17 +94,17 @@ public class Menu implements ActionListener {
 
         switch (e.getActionCommand()){
             case LOAD_GENOMES:
-                initInputFileChooser();
+                initInputFileChooser(e.getActionCommand());
                 loadEventOccured(e, loadGenomesListener);
 
                 break;
             case LOAD_SESSION:
-                initInputFileChooser();
+                initInputFileChooser(e.getActionCommand());
                 loadEventOccured(e, importSessionListener);
 
                 break;
             case LOAD_COG_INFO:
-                initInputFileChooser();
+                initInputFileChooser(e.getActionCommand());
                 loadEventOccured(e, loadCogInfoListener);
 
                 break;
@@ -118,15 +118,19 @@ public class Menu implements ActionListener {
         }
     }
 
-    private void initInputFileChooser(){
+    private void initInputFileChooser(String action){
+
         fileChooser.addChoosableFileFilter(new InputFileChooser());
         fileChooser.setAcceptAllFileFilterUsed(false);
         fileChooser.setAccessory(null);
         fileChooser.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
+        fileChooser.setDialogTitle(action);
+
     }
 
     private void loadEventOccured(ActionEvent e, LoadFileListener listener){
-        int action = fileChooser.showDialog(mainFrame, e.getActionCommand());
+
+        int action = fileChooser.showDialog(mainFrame, "Import");
 
         if (action == JFileChooser.APPROVE_OPTION) {
             listener.loadFileEventOccurred(new LoadFileEvent(e, fileChooser.getSelectedFile()));
