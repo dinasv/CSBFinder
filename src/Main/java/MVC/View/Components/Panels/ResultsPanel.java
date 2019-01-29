@@ -4,17 +4,14 @@ import Core.Patterns.Pattern;
 import Core.PostProcess.Family;
 import MVC.View.Listeners.FilterTableListener;
 import MVC.View.Listeners.RowClickedListener;
-import MVC.View.Listeners.RunListener;
 import MVC.View.Models.*;
+import MVC.View.Models.Filters.PatternsTableSorter;
 import MVC.View.Requests.FilterRequest;
 
 import javax.swing.*;
-import javax.swing.table.TableModel;
-import javax.swing.table.TableRowSorter;
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 public class ResultsPanel extends JPanel {
 
@@ -44,7 +41,6 @@ public class ResultsPanel extends JPanel {
         PatternsTableModel patternsTableModel = new PatternsTableModel(patternsColumns);
         FamilyTableModel familyTableModel = new FamilyTableModel(familyColumns);
 
-
         familiesPanel = new TablePanel(FamilyProperty.FAMILY_ID, familyTableModel);
         familyPatternsPanel = new TablePanel(PatternProperty.ID, patternsTableModel);
 
@@ -60,8 +56,11 @@ public class ResultsPanel extends JPanel {
 
     public void setFilterRequest(FilterRequest filterRequest){
         patternsSorter.clear();
+
         patternsSorter.setCSBLength(filterRequest.getMinCSBLength(), filterRequest.getMaxCSBLength());
         patternsSorter.setScore(filterRequest.getMinScore(), filterRequest.getMaxScore());
+        patternsSorter.setStrandFilter(filterRequest.getPatternStrand());
+
         familyPatternsPanel.setSorter(patternsSorter.getSorter());
     }
 
@@ -76,9 +75,6 @@ public class ResultsPanel extends JPanel {
         add(splitPane, BorderLayout.CENTER);
     }
 
-    public void setPatternsTableSorter(TableRowSorter<TableModel> sorter){
-        familyPatternsPanel.setSorter(sorter);
-    }
 
     public void setFilterTableListener(FilterTableListener filterTableListener) {
         tableButtonsPanel.setFilterTableListener(filterTableListener);

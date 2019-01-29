@@ -399,9 +399,6 @@ public class CSBFinderModel {
         return gi.getNumberOfGenomes();
     }
 
-    public Map<String, Genome> getGenomeMap() {
-        return gi.getGenomesByName();
-    }
 
     public Genome getGenome(String genomeName){
         return gi.getGenome(genomeName);

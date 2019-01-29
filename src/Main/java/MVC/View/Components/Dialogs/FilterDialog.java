@@ -1,7 +1,9 @@
 package MVC.View.Components.Dialogs;
 
+import Core.OutputType;
 import MVC.View.Events.RunEvent;
 import MVC.View.Listeners.RunListener;
+import MVC.View.Models.Filters.PatternStrand;
 import MVC.View.Requests.FilterRequest;
 
 import javax.swing.*;
@@ -9,20 +11,24 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-import static java.awt.GridBagConstraints.CENTER;
-import static java.awt.GridBagConstraints.LINE_START;
+import static java.awt.GridBagConstraints.*;
 
 /**
  */
 public class FilterDialog extends JDialog{
 
-    private JLabel CSBLengthLabel;
+    private final JLabel CSB_LENGTH_LABEL = new JLabel("CSB length between:");
     private JSpinner minCSBLength;
     private JSpinner maxCSBLength;
 
-    private JLabel scoreLabel;
+    private final JLabel SCORE_LABEL = new JLabel("Score between:");
     private JSpinner minScore;
     private JSpinner maxScore;
+
+    private JLabel STRAND_LABEL = new JLabel("Patterns strand:");
+    private ButtonGroup strandBtns;
+    private JRadioButton allStrandTypesBtn;
+    private JPanel patternStrandPanel;
 
     private GridBagConstraints gc;
 
@@ -31,25 +37,27 @@ public class FilterDialog extends JDialog{
 
     private RunListener applyFilterListener;
 
-    JPanel fields;
+    private JPanel fields;
+
 
     public FilterDialog(){
 
         setTitle("Filter Table");
 
+        //buttons
         applyFilter = new JButton("Apply");
         setApplyFilterActionListener();
 
         clearAll = new JButton("Clear All");
         setClearAllActionListner();
 
+        //fields panel
         fields = new JPanel();
         fields.setLayout(new GridBagLayout());
         gc = new GridBagConstraints();
         gc.fill = GridBagConstraints.NONE;
 
         initComponents();
-        initLabels();
         addComponentsToGC();
         initFields();
 
@@ -57,10 +65,36 @@ public class FilterDialog extends JDialog{
         buttons.add(applyFilter);
         buttons.add(clearAll);
 
-        setLayout(new BorderLayout());
-        add(fields, BorderLayout.PAGE_START);
-        add(buttons, BorderLayout.LINE_END);
+        setLayout(new GridLayout(3,0));
+        add(patternStrandPanel);
+        add(fields);
+        add(buttons);
         pack();
+    }
+
+    private void initStrandBtns(){
+
+        strandBtns = new ButtonGroup();
+        allStrandTypesBtn = new JRadioButton(PatternStrand.ALL.description);
+        allStrandTypesBtn.setActionCommand(PatternStrand.ALL.toString());
+
+        JRadioButton btn2 = new JRadioButton(PatternStrand.MULTI_STRAND.description);
+        btn2.setActionCommand(PatternStrand.MULTI_STRAND.toString());
+
+        JRadioButton btn3 = new JRadioButton(PatternStrand.SINGLE_STRAND.description);
+        btn3.setActionCommand(PatternStrand.SINGLE_STRAND.toString());
+
+        strandBtns.add(allStrandTypesBtn);
+        strandBtns.add(btn2);
+        strandBtns.add(btn3);
+
+        //Put the radio buttons in a column in a panel.
+        patternStrandPanel = new JPanel(new FlowLayout());
+        patternStrandPanel.add(STRAND_LABEL);
+        patternStrandPanel.add(allStrandTypesBtn);
+        patternStrandPanel.add(btn2);
+        patternStrandPanel.add(btn3);
+
     }
 
     private void setClearAllActionListner(){
@@ -87,47 +121,48 @@ public class FilterDialog extends JDialog{
     }
 
     private void initRequest(FilterRequest filterRequest){
+
         filterRequest.setMinCSBLength((int)minCSBLength.getValue());
         filterRequest.setMaxCSBLength((int)maxCSBLength.getValue());
         filterRequest.setMinScore((int)minScore.getValue());
         filterRequest.setMaxScore((int)maxScore.getValue());
+
+        filterRequest.setPatternStrand(PatternStrand.valueOf(strandBtns.getSelection().getActionCommand()));
     }
 
     private void initComponents(){
+
+        initStrandBtns();
+
         minCSBLength = new JSpinner();
         maxCSBLength = new JSpinner();
         minScore = new JSpinner();
         maxScore = new JSpinner();
     }
 
-    private void initLabels(){
-        CSBLengthLabel = new JLabel("CSB length between:");
-        scoreLabel = new JLabel("Score between:");
-    }
-
     private void initFields(){
-        // CSB min length
+
+        allStrandTypesBtn.setSelected(true);
+
         minCSBLength.setModel(new SpinnerNumberModel(2, 2, Integer.MAX_VALUE, 1));
-        // CSB max length
         maxCSBLength.setModel(new SpinnerNumberModel(Integer.MAX_VALUE, 2, Integer.MAX_VALUE, 1));
 
-        // CSB min length
         minScore.setModel(new SpinnerNumberModel(0, 0, Integer.MAX_VALUE, 1));
-        // CSB max length
         maxScore.setModel(new SpinnerNumberModel(Integer.MAX_VALUE, 0, Integer.MAX_VALUE, 1));
 
     }
 
     private void addComponentsToGC(){
-        int y = 0;
-
-        addIntervalComponentToGC(y++, CSBLengthLabel, minCSBLength, maxCSBLength);
-        addIntervalComponentToGC(y++, scoreLabel, minScore, maxScore);
-    }
-
-    private void addIntervalComponentToGC(int y, JLabel label, JSpinner minSpinner, JSpinner maxSpinner){
         Insets insetLabel = new Insets(0, 10, 5, 5);
         Insets insetField = new Insets(0, 0, 5, 5);
+        int y = 0;
+
+        addIntervalComponentToGC(y++, CSB_LENGTH_LABEL, minCSBLength, maxCSBLength, insetLabel, insetField);
+        addIntervalComponentToGC(y++, SCORE_LABEL, minScore, maxScore, insetLabel, insetField);
+    }
+
+    private void addIntervalComponentToGC(int y, JLabel label, JSpinner minSpinner, JSpinner maxSpinner,
+                                          Insets insetLabel, Insets insetField){
 
         addComponentToGC(0, y, 1, 0.2, insetLabel, label, LINE_START);
         addComponentToGC(1, y, 1, 0.2, insetField, minSpinner, LINE_START);

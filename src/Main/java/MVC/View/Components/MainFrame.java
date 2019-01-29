@@ -6,7 +6,7 @@ import MVC.View.Components.Dialogs.FilterDialog;
 import MVC.View.Components.Dialogs.InputParametersDialog;
 import MVC.View.Components.Dialogs.ProgressBar;
 import MVC.View.Events.*;
-import MVC.View.Images.Icons;
+import MVC.View.Images.Icon;
 import MVC.View.Listeners.*;
 import MVC.View.Components.Panels.GenomePanel;
 import MVC.View.Components.Panels.SummaryPanel;
@@ -39,7 +39,7 @@ public class MainFrame extends JFrame {
 
     private JFileChooser fc;
 
-    private Icons icons;
+    //private Icon icon;
 
     public MainFrame(CSBFinderController controller) {
         super("CSBFinder");
@@ -48,7 +48,7 @@ public class MainFrame extends JFrame {
 
         fc = new JFileChooser(System.getProperty("user.dir"));
 
-        icons = new Icons();
+
 
         this.controller = controller;
 
@@ -87,12 +87,12 @@ public class MainFrame extends JFrame {
         Map<String, Color> colorsUsed = new HashMap<>();
         colorsUsed.put(controller.getUNKchar(), Color.lightGray);
 
-        inputParamsDialog = new InputParametersDialog(fc, icons.getQuestionMark());
+        inputParamsDialog = new InputParametersDialog(fc, Icon.QUESTION_MARK.getIcon());
         filterDialog = new FilterDialog();
 
-        toolbar = new Toolbar(icons.getRunIcon());
+        toolbar = new Toolbar(Icon.RUN.getIcon());
         genomes = new GenomePanel(colorsUsed);
-        summaryPanel = new SummaryPanel(icons.getFilterIcon());
+        summaryPanel = new SummaryPanel(Icon.FILTER.getIcon());
 
         menuBar = new Menu(fc, this);
         menuBar.disableSaveFileBtn();

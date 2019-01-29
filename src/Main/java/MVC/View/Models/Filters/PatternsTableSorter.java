@@ -1,10 +1,14 @@
-package MVC.View.Models;
+package MVC.View.Models.Filters;
+
+import MVC.View.Models.PatternProperty;
+import MVC.View.Models.PatternsTableModel;
 
 import javax.swing.*;
 import javax.swing.table.TableModel;
 import javax.swing.table.TableRowSorter;
 import java.util.ArrayList;
 import java.util.List;
+
 
 /**
  */
@@ -16,6 +20,11 @@ public class PatternsTableSorter {
     public PatternsTableSorter(PatternsTableModel model){
         filters = new ArrayList<>();
         this.model = model;
+    }
+
+    public void setStrandFilter(PatternStrand patternStrand){
+        RowFilter strandFilter = new StrandFilter(patternStrand);
+        filters.add(strandFilter);
     }
 
     public void setCSBLength(int from, int to){

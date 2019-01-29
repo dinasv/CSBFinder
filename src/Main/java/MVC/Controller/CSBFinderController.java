@@ -23,12 +23,7 @@ public class CSBFinderController {
         this.model = new CSBFinderModel();
         this.view = new MainFrame(this);
 
-        this.model.setCSBFinderDoneListener(new CSBFinderDoneListener() {
-            @Override
-            public void CSBFinderDoneOccurred(CSBFinderDoneEvent e) {
-                view.displayFamilyTable(e.getFamilyList());
-            }
-        });
+        this.model.setCSBFinderDoneListener(e -> view.displayFamilyTable(e.getFamilyList()));
     }
 
     public String loadInputGenomesFile(String filePath) {
@@ -61,8 +56,6 @@ public class CSBFinderController {
     }
 
     public void setInstancesInfo(Pattern pattern) { model.setInstancesInfo(pattern); }
-
-    public Map<String, Genome> getGenomeMap() { return model.getGenomeMap(); }
 
     public int getMaxGenomeSize(){
         return model.getMaxGenomeSize();

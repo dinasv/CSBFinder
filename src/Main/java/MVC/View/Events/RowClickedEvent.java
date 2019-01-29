@@ -1,7 +1,5 @@
 package MVC.View.Events;
 
-import Core.PostProcess.Family;
-
 public class RowClickedEvent<T> {
 
     private T row;
