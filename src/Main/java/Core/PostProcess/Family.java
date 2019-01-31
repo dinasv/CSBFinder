@@ -43,6 +43,15 @@ public class Family {
         familyId = family.familyId;
     }
 
+    public Family(Family family, List<Pattern> patterns) {
+        this.patterns = new ArrayList<>(patterns);
+
+        genomesInfo = family.genomesInfo;
+        familyId = family.familyId;
+
+        sortPatternsAndSetScore();
+    }
+
     private void addCharsToCharsSet(Pattern pattern){
 
         List<Gene> patternGenes = pattern.getPatternGenes();

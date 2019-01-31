@@ -13,6 +13,7 @@ public class FilterRequest implements Request{
     private int minInstanceCount = 1;
     private int maxInstanceCount = Integer.MAX_VALUE;
     private PatternStrand patternStrand = PatternStrand.ALL;
+    private String patternId = "";
 
     public void setMinCSBLength(int minCSBLength) {
         this.minCSBLength = minCSBLength;
@@ -68,5 +69,13 @@ public class FilterRequest implements Request{
 
     public void setPatternStrand(PatternStrand patternStrand) {
         this.patternStrand = patternStrand;
+    }
+
+    public String getPatternId() {
+        return patternId;
+    }
+
+    public void setPatternId(String patternId) {
+        this.patternId = patternId;
     }
 }

@@ -25,7 +25,7 @@ public enum FamilyProperty implements ColumnProperty<Family> {
         return familyFunction;
     }
 
-    public Class<?> getFunctionReturnType(){
+    public Class<?> getFunctionReturnClass(){
         return returnType;
     }
 }

@@ -10,5 +10,5 @@ public interface ColumnProperty<T> {
 
     Function<T, ?> getFunction();
 
-    Class<?> getFunctionReturnType();
+    Class<?> getFunctionReturnClass();
 }

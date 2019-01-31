@@ -5,7 +5,7 @@ import Core.PostProcess.Family;
 import MVC.View.Listeners.FilterTableListener;
 import MVC.View.Listeners.RowClickedListener;
 import MVC.View.Models.*;
-import MVC.View.Models.Filters.PatternsTableSorter;
+import MVC.View.Models.Filters.FamiliesFilter;
 import MVC.View.Requests.FilterRequest;
 
 import javax.swing.*;
@@ -15,11 +15,11 @@ import java.util.List;
 
 public class ResultsPanel extends JPanel {
 
-    private TablePanel familiesPanel;
-    private TablePanel familyPatternsPanel;
+    private TablePanel<Integer, Family> familiesPanel;
+    private TablePanel<String, Pattern> familyPatternsPanel;
     private TableButtonsPanel tableButtonsPanel;
 
-    private PatternsTableSorter patternsSorter;
+    private FamiliesFilter familiesFilter;
 
     private static PatternProperty[] patternsColumns = {
             PatternProperty.ID,
@@ -41,10 +41,10 @@ public class ResultsPanel extends JPanel {
         PatternsTableModel patternsTableModel = new PatternsTableModel(patternsColumns);
         FamilyTableModel familyTableModel = new FamilyTableModel(familyColumns);
 
-        familiesPanel = new TablePanel(FamilyProperty.FAMILY_ID, familyTableModel);
-        familyPatternsPanel = new TablePanel(PatternProperty.ID, patternsTableModel);
+        familiesPanel = new TablePanel<>(FamilyProperty.FAMILY_ID, familyTableModel);
+        familyPatternsPanel = new TablePanel<>(PatternProperty.ID, patternsTableModel);
 
-        patternsSorter = new PatternsTableSorter(patternsTableModel);
+        familiesFilter = new FamiliesFilter();
 
         setLayout(new BorderLayout(2,2));
         setSplitPane();
@@ -55,13 +55,18 @@ public class ResultsPanel extends JPanel {
     }
 
     public void setFilterRequest(FilterRequest filterRequest){
-        patternsSorter.clear();
 
-        patternsSorter.setCSBLength(filterRequest.getMinCSBLength(), filterRequest.getMaxCSBLength());
-        patternsSorter.setScore(filterRequest.getMinScore(), filterRequest.getMaxScore());
-        patternsSorter.setStrandFilter(filterRequest.getPatternStrand());
+        familiesFilter.clear();
 
-        familyPatternsPanel.setSorter(patternsSorter.getSorter());
+        familiesFilter.setPatternLength(filterRequest.getMinCSBLength(), filterRequest.getMaxCSBLength());
+        familiesFilter.setPatternScore(filterRequest.getMinScore(), filterRequest.getMaxScore());
+        familiesFilter.setId(filterRequest.getPatternId());
+        familiesFilter.setStrand(filterRequest.getPatternStrand());
+
+        familiesPanel.setData(familiesFilter.applyFilters());
+        familiesPanel.selectFirstRow();
+
+        fireTableDataChanged();
     }
 
     private void setSplitPane(){
@@ -82,6 +87,7 @@ public class ResultsPanel extends JPanel {
 
     public void setFamilyData(List<Family> familyList) {
         familiesPanel.setData(familyList);
+        familiesFilter.setFamilies(familyList);
     }
 
     public void selectFamiliesFirstRow(){

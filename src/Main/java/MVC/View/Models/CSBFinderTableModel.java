@@ -13,14 +13,14 @@ public abstract class CSBFinderTableModel<K, V> extends AbstractTableModel {
     private final ColumnProperty[] columns;
 
     private List<V> data;
-    private Map<K, V> idToRow;
+    private Map<K, V> idToObject;
 
     public CSBFinderTableModel(ColumnProperty[] columns){
         super();
 
         this.columns = columns;
         data = new ArrayList<>();
-        idToRow = new HashMap<>();
+        idToObject = new HashMap<>();
     }
     @Override
     public String getColumnName(int column) {
@@ -31,7 +31,7 @@ public abstract class CSBFinderTableModel<K, V> extends AbstractTableModel {
     public Class<?> getColumnClass(int columnIndex) {
 
         if (columnIndex < columns.length){
-            return columns[columnIndex].getFunctionReturnType();
+            return columns[columnIndex].getFunctionReturnClass();
         }
 
         return String.class;
@@ -69,13 +69,6 @@ public abstract class CSBFinderTableModel<K, V> extends AbstractTableModel {
         return index;
     }
 
-    public V getRowAt(int index) {
-        if (this.getRowCount() <= index) {
-            return null;
-        }
-
-        return this.data.get(index);
-    }
 
     public void setData(List<V> data) {
         this.data.clear();
@@ -83,19 +76,19 @@ public abstract class CSBFinderTableModel<K, V> extends AbstractTableModel {
         this.data.addAll(data);
     }
 
-    public void setIdToRow(Map<K, V> idToRow){
-        this.idToRow.clear();
+    public void setIdToObject(Map<K, V> idToObject){
+        this.idToObject.clear();
 
-        this.idToRow.putAll(idToRow);
+        this.idToObject.putAll(idToObject);
     }
 
     public V getDataObject(K id) {
-        return idToRow.get(id);
+        return idToObject.get(id);
     }
 
     public void clearData(){
         data.clear();
-        idToRow.clear();
+        idToObject.clear();
     }
 
     public abstract void setFamilies(List<Family> families);

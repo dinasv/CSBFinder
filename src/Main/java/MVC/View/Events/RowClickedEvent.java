@@ -1,14 +1,14 @@
 package MVC.View.Events;
 
-public class RowClickedEvent<T> {
+public class RowClickedEvent<V> {
 
-    private T row;
+    private V row;
 
-    public RowClickedEvent(T row) {
+    public RowClickedEvent(V row) {
         this.row = row;
     }
 
-    public T getRow() {
+    public V getRow() {
         return row;
     }
 }

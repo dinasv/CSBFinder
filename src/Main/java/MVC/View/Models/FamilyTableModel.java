@@ -15,7 +15,7 @@ public class FamilyTableModel extends CSBFinderTableModel<Integer, Family> {
     public void setFamilies(List<Family> families) {
 
         setData(families);
-        setIdToRow(families.stream()
+        setIdToObject(families.stream()
                 .collect(Collectors.toMap(Family::getFamilyId, Function.identity())));
     }
 

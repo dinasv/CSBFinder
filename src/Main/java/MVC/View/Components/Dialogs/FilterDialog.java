@@ -1,6 +1,5 @@
 package MVC.View.Components.Dialogs;
 
-import Core.OutputType;
 import MVC.View.Events.RunEvent;
 import MVC.View.Listeners.RunListener;
 import MVC.View.Models.Filters.PatternStrand;
@@ -25,10 +24,13 @@ public class FilterDialog extends JDialog{
     private JSpinner minScore;
     private JSpinner maxScore;
 
-    private JLabel STRAND_LABEL = new JLabel("Patterns strand:");
+    private final JLabel STRAND_LABEL = new JLabel("Patterns strand:");
     private ButtonGroup strandBtns;
     private JRadioButton allStrandTypesBtn;
     private JPanel patternStrandPanel;
+
+    private final JLabel PATTERN_ID_LABEL = new JLabel("Pattern ID:");
+    private JTextField patternId;
 
     private GridBagConstraints gc;
 
@@ -126,6 +128,7 @@ public class FilterDialog extends JDialog{
         filterRequest.setMaxCSBLength((int)maxCSBLength.getValue());
         filterRequest.setMinScore((int)minScore.getValue());
         filterRequest.setMaxScore((int)maxScore.getValue());
+        filterRequest.setPatternId(patternId.getText());
 
         filterRequest.setPatternStrand(PatternStrand.valueOf(strandBtns.getSelection().getActionCommand()));
     }
@@ -138,6 +141,7 @@ public class FilterDialog extends JDialog{
         maxCSBLength = new JSpinner();
         minScore = new JSpinner();
         maxScore = new JSpinner();
+        patternId = new JTextField();
     }
 
     private void initFields(){
@@ -150,6 +154,7 @@ public class FilterDialog extends JDialog{
         minScore.setModel(new SpinnerNumberModel(0, 0, Integer.MAX_VALUE, 1));
         maxScore.setModel(new SpinnerNumberModel(Integer.MAX_VALUE, 0, Integer.MAX_VALUE, 1));
 
+        patternId.setText("");
     }
 
     private void addComponentsToGC(){
@@ -159,6 +164,11 @@ public class FilterDialog extends JDialog{
 
         addIntervalComponentToGC(y++, CSB_LENGTH_LABEL, minCSBLength, maxCSBLength, insetLabel, insetField);
         addIntervalComponentToGC(y++, SCORE_LABEL, minScore, maxScore, insetLabel, insetField);
+
+        addComponentToGC(0, y, 1, 0.2, insetLabel, PATTERN_ID_LABEL, LINE_START);
+        patternId.setColumns(12);
+        "fdsf".matches("123");
+        addComponentToGC(1, y++, 1, 0.2, insetLabel, patternId, LINE_START);
     }
 
     private void addIntervalComponentToGC(int y, JLabel label, JSpinner minSpinner, JSpinner maxSpinner,

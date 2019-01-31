@@ -25,11 +25,11 @@ public enum PatternProperty implements ColumnProperty<Pattern> {
         this.returnType = returnType;
     }
 
-    public Function<Pattern, ?> getFunction(){
+    public Function<Pattern, ? extends Object> getFunction(){
         return patternFunction;
     }
 
-    public Class<?> getFunctionReturnType(){
+    public Class<?> getFunctionReturnClass(){
         return returnType;
     }
 }

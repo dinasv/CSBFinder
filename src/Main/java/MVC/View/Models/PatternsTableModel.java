@@ -17,7 +17,7 @@ public class PatternsTableModel extends CSBFinderTableModel<String, Pattern> {
         families.forEach(family -> family.getPatterns()
                 .forEach(pattern -> pattern.setFamilyId(family.getFamilyId())));
 
-        setIdToRow(families.stream()
+        setIdToObject(families.stream()
                 .map(Family::getPatterns)
                 .flatMap(List::stream)
                 .collect(Collectors.toMap(Pattern::getPatternId, Function.identity())));

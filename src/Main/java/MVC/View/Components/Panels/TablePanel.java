@@ -9,36 +9,29 @@ import MVC.View.Models.CSBFinderTableModel;
 import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
 import java.awt.*;
-import java.util.ArrayList;
 import java.util.List;
-import javax.swing.table.TableModel;
-import javax.swing.table.TableRowSorter;
 
 
-public class TablePanel extends JPanel {
+public class TablePanel<K, V> extends JPanel {
 
     private JTable table;
-    private CSBFinderTableModel model;
+    private CSBFinderTableModel<K, V> model;
     private JScrollPane scrollPane;
-    private RowClickedListener rowClickedListener;
+    private RowClickedListener<V> rowClickedListener;
+    private ColumnProperty selectionBy;
 
-    public TablePanel(ColumnProperty selectionBy, CSBFinderTableModel tableModel) {
+    public TablePanel(ColumnProperty selectionBy, CSBFinderTableModel<K, V> tableModel) {
         setLayout(new BorderLayout());
 
         model = tableModel;
-
+        this.selectionBy = selectionBy;
         table = new JTable(model);
 
         table.setAutoCreateRowSorter(true);
         table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         table.getSelectionModel().addListSelectionListener((ListSelectionEvent e) -> {
             if (!e.getValueIsAdjusting() && table.getSelectedRow() != -1) {
-                CSBFinderTableModel model = ((CSBFinderTableModel) table.getModel());
-
-                rowClickedListener.rowClickedOccurred(new RowClickedEvent(
-                        model.getDataObject(table.getValueAt(table.getSelectedRow(),
-                                model.getIndexOfColumn(selectionBy)))
-                ));
+                rowClickedListener.rowClickedOccurred(new RowClickedEvent<>(getSelectedRowObject()));
             }
         });
         scrollPane = new JScrollPane(table);
@@ -47,8 +40,16 @@ public class TablePanel extends JPanel {
         add(scrollPane, BorderLayout.CENTER);
     }
 
-    public void setSorter(TableRowSorter<TableModel> sorter){
-        table.setRowSorter(sorter);
+    private void select(){
+        K selectedKey = (K)table.getValueAt(table.getSelectedRow(), model.getIndexOfColumn(selectionBy));
+
+        table.setRowSelectionInterval(0, 0);
+    }
+    private V getSelectedRowObject(){
+
+        return model.getDataObject((K)table.getValueAt(table.getSelectedRow(),
+                model.getIndexOfColumn(selectionBy)));
+
     }
 
     public void setData(List<Family> families) {
@@ -61,6 +62,8 @@ public class TablePanel extends JPanel {
             table.setRowSelectionInterval(0, 0);
         }
     }
+
+
 
     public void setRowClickedListener(RowClickedListener rowClickedListener) {
         this.rowClickedListener = rowClickedListener;
