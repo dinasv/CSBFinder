@@ -2,6 +2,7 @@ package MVC.Controller;
 
 import Core.Genomes.Gene;
 import Core.Genomes.Genome;
+import Core.Genomes.GenomesInfo;
 import Core.OutputType;
 import MVC.Common.*;
 import MVC.Model.CSBFinderModel;
@@ -63,6 +64,10 @@ public class CSBFinderController {
 
     public int getNumberOfGenomes() {
         return model.getNumberOfGenomes();
+    }
+
+    public GenomesInfo getGenomeInfo(){
+        return model.getGenomeInfo();
     }
 
     public String getUNKchar(){

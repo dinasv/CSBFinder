@@ -1,5 +1,6 @@
 package MVC.View.Components;
 
+import Core.Genomes.GenomesInfo;
 import MVC.Common.CSBFinderRequest;
 import MVC.Controller.CSBFinderController;
 import MVC.View.Components.Dialogs.FilterDialog;
@@ -39,16 +40,10 @@ public class MainFrame extends JFrame {
 
     private JFileChooser fc;
 
-    //private Icon icon;
-
     public MainFrame(CSBFinderController controller) {
         super("CSBFinder");
 
-        //setUIFont(new javax.swing.plaf.FontUIResource("Serif", Font.PLAIN, 16));
-
         fc = new JFileChooser(System.getProperty("user.dir"));
-
-
 
         this.controller = controller;
 
@@ -57,7 +52,6 @@ public class MainFrame extends JFrame {
         init();
 
         progressBar = new ProgressBar(this);
-
 
     }
 
@@ -400,9 +394,9 @@ public class MainFrame extends JFrame {
             public void rowClickedOccurred(RowClickedEvent<Pattern> event) {
                 Pattern pattern = event.getRow();
 
-                controller.setInstancesInfo(pattern);
+                GenomesInfo genomesInfo = controller.getGenomeInfo();
                 genomes.clearPanel();
-                genomes.displayInstances(pattern);
+                genomes.displayInstances(pattern, genomesInfo, 3);
 
                 List<COG> patternCOGs = controller.getCogInfo(pattern.getPatternGenes());
                 Set<COG> insertedGenes = controller.getInsertedGenes(pattern, patternCOGs);

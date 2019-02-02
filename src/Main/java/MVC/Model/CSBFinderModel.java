@@ -322,7 +322,7 @@ public class CSBFinderModel {
 
     public Set<COG> getInsertedGenes(Pattern pattern, List<COG> patternCOGs) {
 
-        Set<COG> insertedGenes = new HashSet<COG>();
+        Set<COG> insertedGenes = new HashSet<>();
 
         if (params.maxInsertion > 0) {
             Set<COG> patternGenesSet = new HashSet<>();
@@ -356,39 +356,40 @@ public class CSBFinderModel {
 
             for (Map.Entry<Integer, List<InstanceLocation>> replicon2locations : repliconInstanceLocations.getSortedLocations().entrySet()) {
 
-                int replicon_id = replicon2locations.getKey();
+                int repliconId = replicon2locations.getKey();
                 String repliconName = genome.getReplicon(replicon2locations.getKey()).getName();
 
                 List<InstanceLocation> instanceLocations = replicon2locations.getValue();
                 for (InstanceLocation instanceLocation : instanceLocations) {
+                    /*
                     instanceLocation.setRepliconName(repliconName);
                     instanceLocation.setGenomeName(genomeName);
-                    List<Gene> genes = getInstanceFromCogList(genomeName, replicon_id, instanceLocation.getActualStartIndex(),
-                            instanceLocation.getActualEndIndex());
+
                     if (genes != null) {
                         instanceLocation.setGenes(genes);
-                    }
+                    }*/
+                    List<Gene> genes = getInstanceFromCogList(genomeName, repliconId, instanceLocation.getActualStartIndex(),
+                            instanceLocation.getActualEndIndex());
+                    /*
+                    InstanceVisualInfo instanceVisualInfo = new InstanceVisualInfo(repliconName, genomeName, genes,
+                            instanceLocation.getActualStartIndex(), instanceLocation.getActualEndIndex());
+                    */
                 }
             }
         }
     }
 
-    private List<Gene> getInstanceFromCogList(String genomeName, int replicon_id, int startIndex, int endIndex) {
+    private List<Gene> getInstanceFromCogList(String genomeName, int repliconId, int startIndex, int endIndex) {
         List<Gene> instanceList = null;
         Genome genome = getGenome(genomeName);
-        Replicon replicon = genome.getReplicon(replicon_id);
+        Replicon replicon = genome.getReplicon(repliconId);
         List<Gene> repliconGenes = replicon.getGenes();
         if (repliconGenes != null) {
             if (startIndex >= 0 && startIndex < repliconGenes.size() &&
                     endIndex >= 0 && endIndex <= repliconGenes.size()) {
 
                 instanceList = repliconGenes.subList(startIndex, endIndex);
-            } else {
-//                writer.writeLogger(String.format("WARNING: replicon is out of bound in sequence %s, start: %s,length: %s",
-//                        genomeName, startIndex, instanceLength));
             }
-        } else {
-//            writer.writeLogger(String.format("WARNING: Genome %s not found", genomeName));
         }
 
         return instanceList;
@@ -399,6 +400,9 @@ public class CSBFinderModel {
         return gi.getNumberOfGenomes();
     }
 
+    public GenomesInfo getGenomeInfo(){
+        return gi;
+    }
 
     public Genome getGenome(String genomeName){
         return gi.getGenome(genomeName);

@@ -20,10 +20,14 @@ public class GeneShape implements Shape{
     private int width;
     private int height;
 
-    int labelWidth;
-    int labelHeight;
+    private int labelWidth;
+    private int labelHeight;
 
-    int rectWidth;
+    private int rectWidth;
+
+    public GeneShape(Color color, Gene gene, Graphics graphics) {
+        this(0, 0, color, gene, graphics);
+    }
 
     public GeneShape(int x, int y, Color color, Gene gene, Graphics graphics) {
         this.x = x;

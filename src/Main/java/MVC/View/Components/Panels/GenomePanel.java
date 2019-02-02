@@ -1,5 +1,6 @@
 package MVC.View.Components.Panels;
 
+import Core.Genomes.GenomesInfo;
 import Core.Patterns.Pattern;
 
 import javax.swing.*;
@@ -23,10 +24,10 @@ public class GenomePanel extends JPanel {
 
     }
 
-    public void displayInstances(Pattern pattern) {
+    public void displayInstances(Pattern pattern, GenomesInfo genomesInfo, int numOfNeighbors) {
         int scrollWidth = scroll.getViewport().getSize().width;
 
-        container.displayInstances(pattern, scrollWidth);
+        container.displayInstances(pattern, scrollWidth, genomesInfo, numOfNeighbors);
         container.revalidate();
         container.repaint();
     }

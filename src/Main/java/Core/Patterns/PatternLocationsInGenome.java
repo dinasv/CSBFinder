@@ -1,7 +1,5 @@
 package Core.Patterns;
 
-import Core.Patterns.InstanceLocation;
-
 import java.util.*;
 
 /**
@@ -12,7 +10,7 @@ public class PatternLocationsInGenome {
     Map<Integer, List<InstanceLocation>> repliconToLocations;
 
     public PatternLocationsInGenome(){
-        repliconToLocations = new TreeMap<Integer, List<InstanceLocation>>();
+        repliconToLocations = new TreeMap<>();
     }
 
     public void addLocation(InstanceLocation instanceLocation){
@@ -28,7 +26,7 @@ public class PatternLocationsInGenome {
 
     }
 
-    public Map<Integer, List<InstanceLocation>>  getSortedLocations(){
+    public Map<Integer, List<InstanceLocation>> getSortedLocations(){
         for (List<InstanceLocation> locations: repliconToLocations.values()){
             locations.sort(Comparator.comparing(InstanceLocation::getActualStartIndex));
         }

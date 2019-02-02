@@ -1,71 +1,107 @@
 package MVC.View.Components.Shapes;
 
 import java.awt.*;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
  */
 public class ShapesInstance implements Shape{
 
-    private List<GeneShape> geneShapesList;
+    private List<GeneShape> instanceShapesList;
+    private List<GeneShape> leftNeighborsShapeList;
+    private List<GeneShape> rightNeighborsShapeList;
+
+    private int instanceShapesWidth;
+
     private int x;
     private int y;
 
     //the distance between shapes
     private int DIST_SHAPES = 10;
     private int NAME_LABEL_HEIGHT = 22;
+    private int NAME_LABEL_PADDING = 2;
     private int LOCATION_LABELS_HEIGHT = 15;
 
-    private LabelShape nameLabel;
-    private LabelShape startIndexLabel;
-    private LabelShape endIndexLabel;
+    private LabelShape repliconNameLabel;
+    private LabelShape startLocationLabel;
+    private LabelShape endLocationLabel;
 
     int width;
     int height;
 
-    public ShapesInstance(List<GeneShape> geneShapesList, int x, int y){
+    public ShapesInstance(List<GeneShape> instanceShapesList, int x, int y){
+        this(instanceShapesList, new ArrayList<>(), new ArrayList<>(), x, y,
+                null, null, null);
 
-        this.geneShapesList = geneShapesList;
+        /*
+        this.instanceShapesList = instanceShapesList;
         this.x = x;
         this.y = y;
         height = 0;
 
-        width = calcWidth();
 
-        if (geneShapesList.size()>0){
-            height = geneShapesList.get(0).getHeight();
+        if (instanceShapesList.size()>0){
+            height = instanceShapesList.get(0).getHeight();
         }
 
-        nameLabel = null;
-        startIndexLabel = null;
-        endIndexLabel = null;
+        repliconNameLabel = null;
+        startLocationLabel = null;
+        endLocationLabel = null;
 
+        leftNeighborsShapeList = new ArrayList<>();
+        rightNeighborsShapeList = new ArrayList<>();
+
+
+        width = calcWidth();*/
     }
 
-    public ShapesInstance(List<GeneShape> geneShapesList, int x, int y, Label nameLabel, Label startIndexLabel,
-                          Label endIndexLabel){
+    public ShapesInstance(List<GeneShape> instanceShapesList, List<GeneShape> leftNeighborsShapeList,
+                          List<GeneShape> rightNeighborsShapeList, int x, int y, Label repliconNameLabel,
+                          Label startLocationLabel, Label endLocationLabel){
 
-        this(geneShapesList, x, y);
+        this.instanceShapesList = instanceShapesList;
+        this.leftNeighborsShapeList = leftNeighborsShapeList;
+        this.rightNeighborsShapeList = rightNeighborsShapeList;
+        this.x = x;
+        this.y = y;
 
-        int labelStartX = x + 2;
-
-        this.nameLabel = new LabelShape(labelStartX, y + (int)(NAME_LABEL_HEIGHT*0.75), nameLabel);
-
-        if (geneShapesList.size()>0){
-            height = geneShapesList.get(0).getHeight() + NAME_LABEL_HEIGHT + LOCATION_LABELS_HEIGHT;
+        height = 0;
+        if (instanceShapesList.size()>0){
+            height = instanceShapesList.get(0).getHeight();
+            height += repliconNameLabel == null ? 0 : NAME_LABEL_HEIGHT;
+            height += startLocationLabel == null ? 0 : LOCATION_LABELS_HEIGHT;
         }
 
-        this.startIndexLabel = new LabelShape(labelStartX, y + height, startIndexLabel);
-        this.endIndexLabel = new LabelShape(x, y + height, endIndexLabel);
+        int labelStartX = x + NAME_LABEL_PADDING;
+        this.repliconNameLabel = repliconNameLabel == null ? null :
+                new LabelShape(labelStartX, y + (int) (NAME_LABEL_HEIGHT * 0.75), repliconNameLabel);
 
+        this.startLocationLabel = startLocationLabel == null ? null :
+                new LabelShape(labelStartX, y + height, startLocationLabel);
+
+        this.endLocationLabel = endLocationLabel == null ? null : new LabelShape(x, y + height, endLocationLabel);
+
+
+        width = calcWidth();
     }
 
     private int calcWidth(){
         int width = 0;
-        for (GeneShape geneShape: geneShapesList){
-            width += geneShape.getWidth();
-        }
-        width += DIST_SHAPES * (geneShapesList.size()-1);
+        instanceShapesWidth = calcGeneShapeListWidth(instanceShapesList);
+        width += instanceShapesWidth;
+        width += calcGeneShapeListWidth(leftNeighborsShapeList);
+        width += calcGeneShapeListWidth(rightNeighborsShapeList);
+
+        //width += DIST_SHAPES * (instanceShapesList.size()+leftNeighborsShapeList.size()+rightNeighborsShapeList.size()-1);
+        return width - DIST_SHAPES;
+    }
+
+    private int calcGeneShapeListWidth(List<GeneShape> geneShapes){
+
+        int width = geneShapes.stream().mapToInt(GeneShape::getWidth).sum();
+        width += DIST_SHAPES * geneShapes.size();
+
         return width;
     }
 
@@ -85,8 +121,8 @@ public class ShapesInstance implements Shape{
         return y + height - LOCATION_LABELS_HEIGHT;
     }
 
-    public List<GeneShape> getGeneShapesList(){
-        return geneShapesList;
+    public List<GeneShape> getInstanceShapesList(){
+        return instanceShapesList;
     }
 
     public int getWidth(){
@@ -99,35 +135,52 @@ public class ShapesInstance implements Shape{
 
     public void draw(Graphics g) {
 
-        int curr_x = x;
-        int curr_y = y;
+        int currX = x;
+        int currY = y;
 
-        if (nameLabel != null) {
-            curr_y += NAME_LABEL_HEIGHT;
+        if (repliconNameLabel != null) {
+            currY += NAME_LABEL_HEIGHT;
         }
 
-        for (GeneShape geneShape : geneShapesList) {
-            geneShape.setX(curr_x);
-            geneShape.setY(curr_y);
+        currX = drawGenes(g, currX, currY, leftNeighborsShapeList);
+
+        g.setColor(Color.WHITE);
+        g.fillRect(currX-DIST_SHAPES/2, y, instanceShapesWidth, height);
+        g.setColor(Color.black);
+        g.drawRect(currX-DIST_SHAPES/2, y, instanceShapesWidth, height);
+
+        currX = drawGenes(g, currX, currY, instanceShapesList);
+
+        drawGenes(g, currX, currY, rightNeighborsShapeList);
+
+        drawLabels(g);
+
+    }
+
+    private int drawGenes(Graphics g, int currX, int currY, List<GeneShape> genes){
+        for (GeneShape geneShape : genes) {
+            geneShape.setX(currX);
+            geneShape.setY(currY);
 
             geneShape.draw(g);
 
-            curr_x += geneShape.getWidth() + DIST_SHAPES;
+            currX += geneShape.getWidth() + DIST_SHAPES;
         }
+        return currX;
+    }
 
+    private void drawLabels(Graphics g){
+        if (endLocationLabel != null) {
+            int endLabelWidth = endLocationLabel.getLabelWidth(g);
 
-        if (endIndexLabel != null) {
-            int endLabelWidth = endIndexLabel.getLabelWidth(g);
-
-            endIndexLabel.setX(x + width - endLabelWidth);
-            endIndexLabel.draw(g);
+            endLocationLabel.setX(x + width - endLabelWidth);
+            endLocationLabel.draw(g);
         }
-        if (nameLabel != null) {
-            nameLabel.draw(g);
+        if (repliconNameLabel != null) {
+            repliconNameLabel.draw(g);
         }
-        if (startIndexLabel != null) {
-            startIndexLabel.draw(g);
+        if (startLocationLabel != null) {
+            startLocationLabel.draw(g);
         }
-
     }
 }

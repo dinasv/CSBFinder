@@ -1,5 +1,6 @@
 package MVC.View.Components.Panels;
 
+import Core.Genomes.GenomesInfo;
 import Core.Patterns.Pattern;
 import Core.Patterns.PatternLocationsInGenome;
 
@@ -53,18 +54,18 @@ public class GenomePanelContainer extends JPanel {
         repaint();
     }
 
-    public void displayInstances(Pattern pattern, int scrollWidth) {
+    public void displayInstances(Pattern pattern, int scrollWidth, GenomesInfo genomesInfo, int numOfNeighbors) {
 
         List<String> genomeNames = new ArrayList<>();
         genomeNames.add("CSB");//first label
 
         genomeNames.addAll(pattern.getPatternLocations()
-                .values()
+                .keySet()
                 .stream()
-                .map(PatternLocationsInGenome::getGenomeName)
+                .map(key -> genomesInfo.getGenomeName(key))
                 .collect(Collectors.toList()));
 
-        instancesPanel.setData(pattern);
+        instancesPanel.setData(pattern, genomesInfo, numOfNeighbors);
         labelsPanel.displayInstancesLabels(genomeNames, instancesPanel.getFirstRowHeight(), instancesPanel.getRowHeight());
 
         scrollWidth = scrollWidth-labelsPanel.getPanelWidth();

@@ -39,36 +39,44 @@ public class ShapesPanel extends JPanel{
     }
 
     private void addShapes(){
-        int i = 0;
+        int diffRepliconInstanceCount = 0;
         int x = 0;
-        int x1, x2, y1, y2;
 
         for (List<ShapesInstance> repliconInstances : shapesInstanceList) {
-            i++;
-            int j = 0;
+            diffRepliconInstanceCount++;
+            int sameRepliconInstanceCount = 0;
             for (ShapesInstance shapesInstance : repliconInstances) {
-                j++;
+                sameRepliconInstanceCount++;
 
-                addShape(shapesInstance);
+                shapes.add(shapesInstance);
 
                 x = shapesInstance.getX() + shapesInstance.getWidth();
 
-                x1 = x + (int) (containersDist * 0.2);
-                y1 = shapesInstance.getGeneEndY();
-                x2 = x + containersDist - (int) (containersDist * 0.2);
-                y2 = shapesInstance.getGeneY();
-
                 // diagonal lines between two instances on the same replicon
-                if (j < repliconInstances.size()) {
-                    addShape(new DiagLinesShape(x1, y1, x2, y2));
-                }
+                addDiagonalLine(x, sameRepliconInstanceCount, shapesInstance, repliconInstances);
+
             }
             // parallel line between two instances in different replicons
-            if (i < shapesInstanceList.size()){
-                x1 = x + (int) (containersDist * 0.4);
+            if (diffRepliconInstanceCount < shapesInstanceList.size()){
+                int x1 = x + (int) (containersDist * 0.4);
 
-                addShape(new RectShape(x1, 0, 5, panelHeight, Color.black));
+                shapes.add(new RectShape(x1, 0, 5, panelHeight, Color.black));
             }
+        }
+        repaint();
+    }
+
+    private void addDiagonalLine(int x, int sameRepliconInstanceCount, ShapesInstance shapesInstance,
+                                 List<ShapesInstance> repliconInstances){
+
+        int x1 = x + (int) (containersDist * 0.2);
+        int y1 = shapesInstance.getGeneEndY();
+        int x2 = x + containersDist - (int) (containersDist * 0.2);
+        int y2 = shapesInstance.getGeneY();
+
+        // diagonal lines between two instances on the same replicon
+        if (sameRepliconInstanceCount < repliconInstances.size()) {
+            shapes.add(new DiagLinesShape(x1, y1, x2, y2));
         }
     }
 
@@ -97,12 +105,6 @@ public class ShapesPanel extends JPanel{
         }
 
     }
-
-    private void addShape(Shape shape){
-        shapes.add(shape);
-        repaint();
-    }
-
 
     public int getPanelHeight(){
         return panelHeight;

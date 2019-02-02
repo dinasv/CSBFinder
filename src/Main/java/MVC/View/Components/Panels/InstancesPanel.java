@@ -1,5 +1,8 @@
 package MVC.View.Components.Panels;
 
+import Core.Genomes.Genome;
+import Core.Genomes.GenomesInfo;
+import Core.Genomes.Replicon;
 import Core.Patterns.InstanceLocation;
 import Core.Patterns.Pattern;
 import Core.Patterns.PatternLocationsInGenome;
@@ -69,17 +72,13 @@ public class InstancesPanel extends JPanel {
         }
     }
 
-    public void setData(Pattern pattern) {
+    public void setData(Pattern pattern, GenomesInfo genomesInfo, int numOfNeighbors) {
 
         rows.clear();
 
-        ShapesPanel instancesRowPanel = createPatternRow(pattern.getPatternGenes());
+        addPatternRow(pattern);
 
-        if (instancesRowPanel != null) {
-            firstRowHeight = instancesRowPanel.getPanelHeight() + PADDING;
-        }
-        rows.add(instancesRowPanel);
-
+        ShapesPanel instancesRowPanel;
         List<ShapesInstance> shapesInstanceInnerList;
         int x;
         int y = 0;
@@ -91,7 +90,7 @@ public class InstancesPanel extends JPanel {
             for (List<InstanceLocation> repliconInstances : locationsInGenome.getSortedLocations().values()) {
 
                 shapesInstanceInnerList = new ArrayList<>();
-                x = getShapeInstanceList(repliconInstances, shapesInstanceInnerList, x, y);
+                x = addShapeInstanceList(repliconInstances, shapesInstanceInnerList, x, y, genomesInfo, numOfNeighbors);
 
                 genomeShapesInstances.add(shapesInstanceInnerList);
 
@@ -105,6 +104,15 @@ public class InstancesPanel extends JPanel {
         }
     }
 
+    private void addPatternRow(Pattern pattern){
+        ShapesPanel instancesRowPanel = createPatternRow(pattern.getPatternGenes());
+
+        if (instancesRowPanel != null) {
+            firstRowHeight = instancesRowPanel.getPanelHeight() + PADDING;
+        }
+        rows.add(instancesRowPanel);
+    }
+
     public void showData(int scrollWidth){
         int rowIndex = 0;
 
@@ -113,13 +121,13 @@ public class InstancesPanel extends JPanel {
         }
     }
 
-    private ShapesPanel createPatternRow(List<Gene> pattenGenes){
+    private ShapesPanel createPatternRow(List<Gene> patternGenes){
 
         List<ShapesInstance> shapesInstanceInnerList = new ArrayList<>();
-        shapesInstanceInnerList.add(getShapesCSB(pattenGenes, 0, 0));
+        shapesInstanceInnerList.add(getShapesCSB(patternGenes, 0, 0));
         List<List<ShapesInstance>> shapesInstanceOuterList = new ArrayList<>();
         shapesInstanceOuterList.add(shapesInstanceInnerList);
-        ShapesPanel patternRow = getInstancesRowPanel(shapesInstanceOuterList,  Color.WHITE);
+        ShapesPanel patternRow = getInstancesRowPanel(shapesInstanceOuterList,  LIGHT_GRAY);
 
         return patternRow;
     }
@@ -140,11 +148,11 @@ public class InstancesPanel extends JPanel {
     }
 
 
-    private int getShapeInstanceList(List<InstanceLocation> instancesList,
-                                                      List<ShapesInstance> shapesInstanceList, int x, int y){
+    private int addShapeInstanceList(List<InstanceLocation> instancesList, List<ShapesInstance> shapesInstanceList,
+                                     int x, int y, GenomesInfo genomesInfo, int numOfNeighbors){
 
         for (InstanceLocation instance : instancesList) {
-            ShapesInstance shapesInstance = getShapesInstance(instance, x, y);
+            ShapesInstance shapesInstance = getShapesInstance(instance, x, y, genomesInfo, numOfNeighbors);
             shapesInstanceList.add(shapesInstance);
             x += shapesInstance.getWidth() + CONTAINERS_DIST;
         }
@@ -163,21 +171,51 @@ public class InstancesPanel extends JPanel {
     }
 
     private ShapesInstance getShapesCSB(List<Gene> genes, int x, int y){
-        List<GeneShape> geneShapesList = getGeneShapesList(genes, x, y);
+
+        List<GeneShape> geneShapesList = getGeneShapesList(genes);
 
         return new ShapesInstance(geneShapesList, x, y);
     }
 
-    private ShapesInstance getShapesInstance(InstanceLocation instance, int x, int y){
-        List<GeneShape> geneShapesList = getGeneShapesList(instance.getGenes(), x, y);
+    private ShapesInstance getShapesInstance(InstanceLocation instance, int x, int y, GenomesInfo genomesInfo,
+                                             int numOfNeighbors){
 
-        Label instanceNameLabel = new Label(instance.getRepliconName());
-        Label instanceStartIndexLabel = new Label(Integer.toString(instance.getActualStartIndex()));
-        Label instanceEndIndexLabel = new Label(Integer.toString(instance.getActualEndIndex()-1));
-        return new ShapesInstance(geneShapesList, x, y, instanceNameLabel, instanceStartIndexLabel, instanceEndIndexLabel);
+        Genome genome = genomesInfo.getGenome(instance.getGenomeId());
+        Replicon replicon = genome.getReplicon(instance.getRepliconId());
+        String repliconName = replicon.getName();
+
+        int instanceStartIndex = instance.getActualStartIndex();
+        int instanceEndIndex = instance.getActualEndIndex();
+
+        int leftStartIndex = Math.max(0, instanceStartIndex - numOfNeighbors);
+        int rightEndIndex = Math.min(instanceEndIndex + numOfNeighbors, replicon.size());
+
+        List<GeneShape> leftNeighbors = getGeneShapesList(getGenes(replicon, leftStartIndex, instanceStartIndex));
+        List<GeneShape> instanceShapesList = getGeneShapesList(getGenes(replicon, instanceStartIndex, instanceEndIndex));
+        List<GeneShape> rightNeighbors = getGeneShapesList(getGenes(replicon, instanceEndIndex, rightEndIndex));
+
+        Label instanceNameLabel = new Label(repliconName);
+
+        Label instanceStartIndexLabel = new Label(Integer.toString(leftStartIndex));
+        Label instanceEndIndexLabel = new Label(Integer.toString(rightEndIndex-1));
+
+        return new ShapesInstance(instanceShapesList, leftNeighbors, rightNeighbors, x, y, instanceNameLabel,
+                instanceStartIndexLabel, instanceEndIndexLabel);
     }
 
-    private List<GeneShape> getGeneShapesList(List<Gene> genes, int x, int y){
+    private List<Gene> getGenes(Replicon replicon, int startIndex, int endIndex){
+        List<Gene> instanceList = new ArrayList<>();
+
+        List<Gene> repliconGenes = replicon.getGenes();
+
+        if (repliconGenes != null) {
+            instanceList = repliconGenes.subList(startIndex, endIndex);
+        }
+
+        return instanceList;
+    }
+
+    private List<GeneShape> getGeneShapesList(List<Gene> genes){
         List<GeneShape> geneShapesList = new ArrayList<>();
         for (Gene gene : genes) {
 
@@ -188,7 +226,7 @@ public class InstancesPanel extends JPanel {
             }else {
                 color = getRandomColor();
             }
-            GeneShape geneShape = new GeneShape(x, y, color, gene, getGraphics());
+            GeneShape geneShape = new GeneShape(color, gene, getGraphics());
 
             geneShapesList.add(geneShape);
             colorsUsed.put(gene.getCogId(), color);

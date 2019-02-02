@@ -18,8 +18,6 @@ public class LabelShape implements Shape{
         g.setColor(label.getColor());
         g.setFont(label.getFont());
 
-        //int labelWidth = g.getFontMetrics().stringWidth(label.getText());
-
         g.drawString(label.getText(), x, y);
 
     }
