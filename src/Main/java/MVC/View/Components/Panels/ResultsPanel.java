@@ -60,6 +60,7 @@ public class ResultsPanel extends JPanel {
 
         familiesFilter.setPatternLength(filterRequest.getMinCSBLength(), filterRequest.getMaxCSBLength());
         familiesFilter.setPatternScore(filterRequest.getMinScore(), filterRequest.getMaxScore());
+        familiesFilter.setPatternCount(filterRequest.getMinInstanceCount(), filterRequest.getMaxInstanceCount());
         familiesFilter.setId(filterRequest.getPatternId());
         familiesFilter.setStrand(filterRequest.getPatternStrand());
 

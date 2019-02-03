@@ -24,6 +24,10 @@ public class FilterDialog extends JDialog{
     private JSpinner minScore;
     private JSpinner maxScore;
 
+    private final JLabel COUNT_LABEL = new JLabel("Instance count between:");
+    private JSpinner minCount;
+    private JSpinner maxCount;
+
     private final JLabel STRAND_LABEL = new JLabel("Patterns strand:");
     private ButtonGroup strandBtns;
     private JRadioButton allStrandTypesBtn;
@@ -128,6 +132,8 @@ public class FilterDialog extends JDialog{
         filterRequest.setMaxCSBLength((int)maxCSBLength.getValue());
         filterRequest.setMinScore((int)minScore.getValue());
         filterRequest.setMaxScore((int)maxScore.getValue());
+        filterRequest.setMaxInstanceCount((int)maxCount.getValue());
+        filterRequest.setMinInstanceCount((int)minCount.getValue());
         filterRequest.setPatternId(patternId.getText());
 
         filterRequest.setPatternStrand(PatternStrand.valueOf(strandBtns.getSelection().getActionCommand()));
@@ -141,6 +147,9 @@ public class FilterDialog extends JDialog{
         maxCSBLength = new JSpinner();
         minScore = new JSpinner();
         maxScore = new JSpinner();
+        minCount = new JSpinner();
+        maxCount = new JSpinner();
+
         patternId = new JTextField();
     }
 
@@ -154,6 +163,9 @@ public class FilterDialog extends JDialog{
         minScore.setModel(new SpinnerNumberModel(0, 0, Integer.MAX_VALUE, 1));
         maxScore.setModel(new SpinnerNumberModel(Integer.MAX_VALUE, 0, Integer.MAX_VALUE, 1));
 
+        minCount.setModel(new SpinnerNumberModel(1, 1, Integer.MAX_VALUE, 1));
+        maxCount.setModel(new SpinnerNumberModel(Integer.MAX_VALUE, 0, Integer.MAX_VALUE, 1));
+
         patternId.setText("");
     }
 
@@ -164,10 +176,10 @@ public class FilterDialog extends JDialog{
 
         addIntervalComponentToGC(y++, CSB_LENGTH_LABEL, minCSBLength, maxCSBLength, insetLabel, insetField);
         addIntervalComponentToGC(y++, SCORE_LABEL, minScore, maxScore, insetLabel, insetField);
+        addIntervalComponentToGC(y++, COUNT_LABEL, minCount, maxCount, insetLabel, insetField);
 
         addComponentToGC(0, y, 1, 0.2, insetLabel, PATTERN_ID_LABEL, LINE_START);
         patternId.setColumns(12);
-        "fdsf".matches("123");
         addComponentToGC(1, y++, 1, 0.2, insetLabel, patternId, LINE_START);
     }
 

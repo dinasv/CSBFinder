@@ -42,6 +42,10 @@ public class FamiliesFilter {
         filters.add(new NumberFilter(from, to, PatternProperty.SCORE));
     }
 
+    public void setPatternCount(int from, int to) {
+        filters.add(new NumberFilter(from, to, PatternProperty.INSTANCE_COUNT));
+    }
+
     public void clear() {
         filters.clear();
     }
@@ -114,7 +118,8 @@ public class FamiliesFilter {
 
         @Override
         public boolean include(Pattern pattern) {
-            if (isMultiStrand(pattern.getPatternGenes()) == patternStrand.isMultiStrand) {
+            if (patternStrand == PatternStrand.ALL ||
+                    isMultiStrand(pattern.getPatternGenes()) == patternStrand.isMultiStrand) {
                 return true;
             }
             return false;
