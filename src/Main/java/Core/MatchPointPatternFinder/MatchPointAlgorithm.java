@@ -6,6 +6,7 @@ import Core.Parameters;
 import Core.Patterns.InstanceLocation;
 import Core.Patterns.Pattern;
 import Core.Patterns.PatternLocationsInGenome;
+import Core.Patterns.PatternLocationsInReplicon;
 
 import java.util.*;
 
@@ -258,8 +259,8 @@ public class MatchPointAlgorithm implements Algorithm {
 
                 PatternLocationsInGenome instanceLocationsInGenome = genomeToInstanceLocations.getValue();
                 if (instanceLocationsInGenome != null) {
-                    for (Map.Entry<Integer, List<InstanceLocation>> entry : instanceLocationsInGenome.getSortedLocations().entrySet()) {
-                        extendInstances(entry.getValue(), matchList_y, extendedPattern);
+                    for (Map.Entry<Integer, PatternLocationsInReplicon> entry : instanceLocationsInGenome.getRepliconToLocations().entrySet()) {
+                        extendInstances(entry.getValue().getSortedLocations(), matchList_y, extendedPattern);
                     }
                 }
             }

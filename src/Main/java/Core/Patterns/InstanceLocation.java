@@ -25,10 +25,6 @@ public class InstanceLocation{
     private int genomicSegmentLength;
     private int genomicSegmentStartIndex;
 
-    private String repliconName;
-    private String genomeName;
-    private List<Gene> genes;
-
     public InstanceLocation(int repliconId, int genomeId, int relativeStartIndex, int length, Strand strand,
                             int genomicSegmentStartIndex, int genomicSegmentLength){
         this.repliconId = repliconId;
@@ -39,9 +35,6 @@ public class InstanceLocation{
         this.genomicSegmentLength = genomicSegmentLength;
         this.genomicSegmentStartIndex = genomicSegmentStartIndex;
 
-        repliconName = "";
-        genomeName = "";
-        genes = new ArrayList<>();
     }
 
     public InstanceLocation(InstanceLocation other){
@@ -51,7 +44,6 @@ public class InstanceLocation{
         relativeStartIndex = other.relativeStartIndex;
         instanceLength = other.instanceLength;
         genomicSegmentLength = other.genomicSegmentLength;
-        repliconName = other.repliconName;
         genomicSegmentStartIndex = other.genomicSegmentStartIndex;
     }
 
@@ -91,30 +83,6 @@ public class InstanceLocation{
         this.instanceLength = length;
     }
 
-    public String getRepliconName() {
-        return repliconName;
-    }
-
-    public String getGenomeName() {
-        return genomeName;
-    }
-
-    public List<Gene> getGenes() {
-        return genes;
-    }
-
-    public void setRepliconName(String value) {
-        this.repliconName = value;
-    }
-
-    public void setGenomeName(String value) {
-        this.genomeName = value;
-    }
-
-    public void setGenes(List<Gene> genes) {
-        this.genes = genes;
-    }
-
     public int getLength(){
         return instanceLength;
     }
@@ -138,10 +106,7 @@ public class InstanceLocation{
                     relativeStartIndex == otherInstanceLoc.relativeStartIndex &&
                     instanceLength == otherInstanceLoc.instanceLength &&
                     genomicSegmentLength == otherInstanceLoc.genomicSegmentLength &&
-                    genomicSegmentStartIndex == otherInstanceLoc.genomicSegmentStartIndex &&
-                    repliconName.equals(otherInstanceLoc.repliconName) &&
-                    genomeName.equals(otherInstanceLoc.genomeName) &&
-                    genes.equals(otherInstanceLoc.genes);
+                    genomicSegmentStartIndex == otherInstanceLoc.genomicSegmentStartIndex;
         }
         return false;
     }

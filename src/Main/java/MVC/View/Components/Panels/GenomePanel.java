@@ -11,41 +11,52 @@ import java.util.List;
 public class GenomePanel extends JPanel {
 
     private JScrollPane scroll;
-    private GenomePanelContainer container;
+    private GenomePanelContainer viewInstancesPanel;
 
     public GenomePanel(Map<String, Color> colorsUsed ) {
         setLayout(new BorderLayout());
 
-        container = new GenomePanelContainer(colorsUsed);
-        scroll = new JScrollPane(container);
+        viewInstancesPanel = new GenomePanelContainer(colorsUsed);
+        scroll = new JScrollPane(viewInstancesPanel);
         scroll.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
 
         add(scroll, BorderLayout.CENTER);
 
     }
 
-    public void displayInstances(Pattern pattern, GenomesInfo genomesInfo, int numOfNeighbors) {
+    public void setGenomesInfo(GenomesInfo genomesInfo){
+        viewInstancesPanel.setGenomesInfo(genomesInfo);
+    }
+
+    public void setNumOfNeighbors(int numOfNeighbors){
+
+        viewInstancesPanel.setNumOfNeighbors(numOfNeighbors);
+        viewInstancesPanel.revalidate();
+        viewInstancesPanel.repaint();
+    }
+
+    public void displayInstances(Pattern pattern) {
         int scrollWidth = scroll.getViewport().getSize().width;
 
-        container.displayInstances(pattern, scrollWidth, genomesInfo, numOfNeighbors);
-        container.revalidate();
-        container.repaint();
+        viewInstancesPanel.displayInstances(pattern, scrollWidth);
+        viewInstancesPanel.revalidate();
+        viewInstancesPanel.repaint();
     }
 
     public void displayPatterns(List<Pattern> patterns) {
         int scrollWidth = scroll.getViewport().getSize().width;
-        container.displayPatterns(patterns, scrollWidth);
-        container.revalidate();
-        container.repaint();
+        viewInstancesPanel.displayPatterns(patterns, scrollWidth);
+        viewInstancesPanel.revalidate();
+        viewInstancesPanel.repaint();
     }
 
     public void clearPanel(){
-        container.clearPanel();
-        container.revalidate();
-        container.repaint();
+        viewInstancesPanel.clearPanel();
+        viewInstancesPanel.revalidate();
+        viewInstancesPanel.repaint();
     }
 
     public Map<String,Color> getColorsUsed(){
-        return container.getColorsUsed();
+        return viewInstancesPanel.getColorsUsed();
     }
 }

@@ -6,6 +6,7 @@ import Core.Genomes.Replicon;
 import Core.Patterns.InstanceLocation;
 import Core.Patterns.Pattern;
 import Core.Patterns.PatternLocationsInGenome;
+import Core.Patterns.PatternLocationsInReplicon;
 import MVC.View.Components.Shapes.*;
 import MVC.View.Components.Shapes.Label;
 import Core.Genomes.Gene;
@@ -30,9 +31,14 @@ public class InstancesPanel extends JPanel {
     private int rowHeight;
     private int firstRowHeight;
 
+    private GenomesInfo genomesInfo;
+
     public static final Color LIGHT_GRAY = new Color(238,238,238);
 
     private List<ShapesPanel> rows;
+
+    private int numOfNeighbors;
+
 
     public InstancesPanel(Map<String, Color> colorsUsed) {
 
@@ -46,9 +52,12 @@ public class InstancesPanel extends JPanel {
 
         this.colorsUsed = colorsUsed;
 
+        this.numOfNeighbors = 0;
+
     }
 
     public void displayInstances(int scrollWidth) {
+        clearPanel();
         showData(scrollWidth);
         revalidate();
         repaint();
@@ -58,7 +67,16 @@ public class InstancesPanel extends JPanel {
         removeAll();
     }
 
+    public void setNumOfNeighbors(int numOfNeighbors){
+        this.numOfNeighbors = numOfNeighbors;
+    }
+
+    public void setGenomesInfo(GenomesInfo genomesInfo) {
+        this.genomesInfo = genomesInfo;
+    }
+
     public void setData(List<Pattern> patterns){
+
         rows.clear();
 
         for (Pattern pattern: patterns) {
@@ -72,7 +90,7 @@ public class InstancesPanel extends JPanel {
         }
     }
 
-    public void setData(Pattern pattern, GenomesInfo genomesInfo, int numOfNeighbors) {
+    public void setData(Pattern pattern) {
 
         rows.clear();
 
@@ -87,10 +105,11 @@ public class InstancesPanel extends JPanel {
 
             PatternLocationsInGenome locationsInGenome = genomeInstances.getValue();
             List<List<ShapesInstance>> genomeShapesInstances = new ArrayList<>();
-            for (List<InstanceLocation> repliconInstances : locationsInGenome.getSortedLocations().values()) {
+            for (PatternLocationsInReplicon repliconInstances : locationsInGenome.getRepliconToLocations().values()) {
 
                 shapesInstanceInnerList = new ArrayList<>();
-                x = addShapeInstanceList(repliconInstances, shapesInstanceInnerList, x, y, genomesInfo, numOfNeighbors);
+                x = addShapeInstanceList(repliconInstances.getSortedLocations(), shapesInstanceInnerList, x, y,
+                        genomesInfo, numOfNeighbors);
 
                 genomeShapesInstances.add(shapesInstanceInnerList);
 
@@ -260,4 +279,6 @@ public class InstancesPanel extends JPanel {
     public int getFirstRowHeight(){
         return firstRowHeight;
     }
+
+
 }

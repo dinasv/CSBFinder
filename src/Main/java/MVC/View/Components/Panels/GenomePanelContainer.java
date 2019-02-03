@@ -15,10 +15,14 @@ public class GenomePanelContainer extends JPanel {
     private InstancesLabelsPanel labelsPanel;
     private InstancesPanel instancesPanel;
 
-    GridBagConstraints gc;
+    private GridBagConstraints gc;
 
+    private Map<String, Color> colorsUsed;
+    private GenomesInfo genomesInfo;
 
-    Map<String, Color> colorsUsed;
+    private ViewMode viewMode;
+    private int scrollWidth;
+    private Pattern patternInView;
 
     public GenomePanelContainer(Map<String, Color> colorsUsed){
 
@@ -36,10 +40,31 @@ public class GenomePanelContainer extends JPanel {
         gc.gridx = 1; gc.gridy = 0; gc.weightx = 0.8; gc.anchor = GridBagConstraints.FIRST_LINE_START;
         add(instancesPanel, gc);
 
+        viewMode = ViewMode.NONE;
+
+        genomesInfo = null;
+        patternInView = null;
+
+        scrollWidth = 0;
+    }
+
+    public void setGenomesInfo(GenomesInfo genomesInfo){
+        this.genomesInfo = genomesInfo;
+        instancesPanel.setGenomesInfo(genomesInfo);
+    }
+
+    public void setNumOfNeighbors(int numOfNeighbors){
+        instancesPanel.setNumOfNeighbors(numOfNeighbors);
+
+        if (viewMode == ViewMode.INSTANCES){
+            instancesPanel.setData(patternInView);
+            instancesPanel.displayInstances(scrollWidth);
+        }
+
     }
 
     public void displayPatterns(List<Pattern> patterns, int scrollWidth){
-
+        viewMode = ViewMode.PATTERNS;
         List<String> patternNames = patterns.stream()
                                             .map(Pattern::getPatternId)
                                             .map(String::valueOf)
@@ -48,13 +73,18 @@ public class GenomePanelContainer extends JPanel {
 
         instancesPanel.setData(patterns);
         labelsPanel.displayInstancesLabels(patternNames, instancesPanel.getFirstRowHeight(), instancesPanel.getFirstRowHeight());
-        instancesPanel.showData(scrollWidth - labelsPanel.getPanelWidth());
+
+        this.scrollWidth = scrollWidth - labelsPanel.getPanelWidth();
+        instancesPanel.showData(this.scrollWidth);
 
         revalidate();
         repaint();
     }
 
-    public void displayInstances(Pattern pattern, int scrollWidth, GenomesInfo genomesInfo, int numOfNeighbors) {
+    public void displayInstances(Pattern pattern, int scrollWidth) {
+
+        viewMode = ViewMode.INSTANCES;
+        patternInView = pattern;
 
         List<String> genomeNames = new ArrayList<>();
         genomeNames.add("CSB");//first label
@@ -65,11 +95,11 @@ public class GenomePanelContainer extends JPanel {
                 .map(key -> genomesInfo.getGenomeName(key))
                 .collect(Collectors.toList()));
 
-        instancesPanel.setData(pattern, genomesInfo, numOfNeighbors);
+        instancesPanel.setData(pattern);
         labelsPanel.displayInstancesLabels(genomeNames, instancesPanel.getFirstRowHeight(), instancesPanel.getRowHeight());
 
-        scrollWidth = scrollWidth-labelsPanel.getPanelWidth();
-        instancesPanel.displayInstances(scrollWidth);
+        this.scrollWidth = scrollWidth-labelsPanel.getPanelWidth();
+        instancesPanel.displayInstances(this.scrollWidth);
 
         revalidate();
         repaint();
@@ -86,5 +116,11 @@ public class GenomePanelContainer extends JPanel {
 
     public Map<String,Color> getColorsUsed(){
         return instancesPanel.getColorsUsed();
+    }
+
+    private enum ViewMode {
+        PATTERNS,
+        INSTANCES,
+        NONE
     }
 }

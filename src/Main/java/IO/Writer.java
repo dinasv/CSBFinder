@@ -10,6 +10,7 @@ import java.util.*;
 import Core.Patterns.InstanceLocation;
 import Core.Patterns.Pattern;
 import Core.Patterns.PatternLocationsInGenome;
+import Core.Patterns.PatternLocationsInReplicon;
 import Core.PostProcess.Family;
 
 import java.util.logging.Logger;
@@ -131,8 +132,8 @@ public class Writer {
                 instancesFile.print(genomeName);
 
                 PatternLocationsInGenome patternLocationsInGenome = entry.getValue();
-                for (List<InstanceLocation> instanceLocationsInReplicon : patternLocationsInGenome.getSortedLocations().values()){
-                    for (InstanceLocation instanceLocation: instanceLocationsInReplicon) {
+                for (PatternLocationsInReplicon instanceLocationsInReplicon : patternLocationsInGenome.getRepliconToLocations().values()){
+                    for (InstanceLocation instanceLocation: instanceLocationsInReplicon.getSortedLocations()) {
 
                         repliconName = genome.getReplicon(instanceLocation.getRepliconId()).getName();
 

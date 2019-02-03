@@ -56,7 +56,6 @@ public class CSBFinderController {
         return model.getInsertedGenes(pattern, patternCOGs);
     }
 
-    public void setInstancesInfo(Pattern pattern) { model.setInstancesInfo(pattern); }
 
     public int getMaxGenomeSize(){
         return model.getMaxGenomeSize();

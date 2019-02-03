@@ -27,7 +27,7 @@ public class MainFrame extends JFrame {
     private CSBFinderController controller;
 
     private Toolbar toolbar;
-    private GenomePanel genomes;
+    private GenomePanel genomesPanel;
 
     private InputParametersDialog inputParamsDialog;
     private FilterDialog filterDialog;
@@ -73,7 +73,7 @@ public class MainFrame extends JFrame {
     }
 
     public void clearPanels() {
-        genomes.clearPanel();
+        genomesPanel.clearPanel();
         summaryPanel.clearPanel();
     }
 
@@ -85,7 +85,7 @@ public class MainFrame extends JFrame {
         filterDialog = new FilterDialog();
 
         toolbar = new Toolbar(Icon.RUN.getIcon());
-        genomes = new GenomePanel(colorsUsed);
+        genomesPanel = new GenomePanel(colorsUsed);
         summaryPanel = new SummaryPanel(Icon.FILTER.getIcon());
 
         menuBar = new Menu(fc, this);
@@ -96,7 +96,7 @@ public class MainFrame extends JFrame {
         add(toolbar, BorderLayout.NORTH);
 
         JPanel top = new JPanel(new BorderLayout());
-        top.add(genomes, BorderLayout.CENTER);
+        top.add(genomesPanel, BorderLayout.CENTER);
 
         JSplitPane split = new JSplitPane(JSplitPane.VERTICAL_SPLIT, true, top, summaryPanel);
         split.setResizeWeight(0.5);
@@ -182,6 +182,7 @@ public class MainFrame extends JFrame {
         setImportSessionButtonListener();
         setLoadCogInfoButtonListener();
         setSaveButtonListener();
+        setNumOfNeighborsListener();
     }
     private void setToolbarListener() {
         setSelectParamsListener();
@@ -197,6 +198,10 @@ public class MainFrame extends JFrame {
 
             }
         });
+    }
+
+    private void setNumOfNeighborsListener() {
+        toolbar.setSetNumOfNeighborsListener(e -> genomesPanel.setNumOfNeighbors(e.getNumOfNeighbors()));
     }
 
     private void setFilterTableListener() {
@@ -244,6 +249,7 @@ public class MainFrame extends JFrame {
 
                             if (controller.getNumberOfGenomes() > 0) {
                                 inputParamsDialog.setGenomeData(controller.getNumberOfGenomes(), controller.getMaxGenomeSize());
+                                genomesPanel.setGenomesInfo(controller.getGenomeInfo());
                                 toolbar.enableSelectParamsBtn();
                             } else {
                                 toolbar.disableSelectParamsBtn();
@@ -294,6 +300,7 @@ public class MainFrame extends JFrame {
 
                             if (controller.getNumberOfGenomes() > 0) {
                                 inputParamsDialog.setGenomeData(controller.getNumberOfGenomes(), controller.getMaxGenomeSize());
+                                genomesPanel.setGenomesInfo(controller.getGenomeInfo());
                                 toolbar.enableSelectParamsBtn();
                             } else {
                                 toolbar.disableSelectParamsBtn();
@@ -394,13 +401,13 @@ public class MainFrame extends JFrame {
             public void rowClickedOccurred(RowClickedEvent<Pattern> event) {
                 Pattern pattern = event.getRow();
 
-                GenomesInfo genomesInfo = controller.getGenomeInfo();
-                genomes.clearPanel();
-                genomes.displayInstances(pattern, genomesInfo, 3);
+                genomesPanel.clearPanel();
+                genomesPanel.setNumOfNeighbors(toolbar.getNumOfNeighbors());
+                genomesPanel.displayInstances(pattern);
 
                 List<COG> patternCOGs = controller.getCogInfo(pattern.getPatternGenes());
                 Set<COG> insertedGenes = controller.getInsertedGenes(pattern, patternCOGs);
-                summaryPanel.setCogInfo(patternCOGs, insertedGenes, genomes.getColorsUsed());
+                summaryPanel.setCogInfo(patternCOGs, insertedGenes, genomesPanel.getColorsUsed());
             }
         });
     }
@@ -412,14 +419,14 @@ public class MainFrame extends JFrame {
                 Family family = event.getRow();
                 summaryPanel.setFamilyPatternsData(family);
 
-                genomes.clearPanel();
-                genomes.displayPatterns(family.getPatterns());
+                genomesPanel.clearPanel();
+                genomesPanel.displayPatterns(family.getPatterns());
 
                 List<COG> patternCOGs = new ArrayList<>();
                 for (Pattern pattern : family.getPatterns()) {
                     patternCOGs.addAll(controller.getCogInfo(pattern.getPatternGenes()));
                 }
-                summaryPanel.setCogInfo(patternCOGs, new HashSet<>(), genomes.getColorsUsed());
+                summaryPanel.setCogInfo(patternCOGs, new HashSet<>(), genomesPanel.getColorsUsed());
             }
         });
     }

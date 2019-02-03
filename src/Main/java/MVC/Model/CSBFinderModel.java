@@ -6,6 +6,7 @@ import Core.OrthologyGroups.CogInfo;
 import Core.Patterns.InstanceLocation;
 import Core.Patterns.Pattern;
 import Core.Patterns.PatternLocationsInGenome;
+import Core.Patterns.PatternLocationsInReplicon;
 import Core.SuffixTreePatternFinder.SuffixTreeAlgorithm;
 import IO.*;
 import MVC.Common.*;
@@ -205,7 +206,7 @@ public class CSBFinderModel {
         String instancesFileName = catalogFileName + "_instances";
 
         String catalogPath = outputPath + catalogFileName;
-        //TODO: addGene as input parameter
+        //TODO: add as input parameter
         boolean includeFamilies = true;
 
         PatternsWriter patternsWriter = null;
@@ -329,9 +330,9 @@ public class CSBFinderModel {
             patternGenesSet.addAll(patternCOGs);
 
             for (PatternLocationsInGenome instancesMap : pattern.getPatternLocations().values()) {
-                for (List<InstanceLocation> instancesList : instancesMap.getSortedLocations().values()) {
-                    for (InstanceLocation instance : instancesList) {
-                        List<COG> instanceGenes = getCogInfo(instance.getGenes());
+                for (PatternLocationsInReplicon patternLocationsInReplicon : instancesMap.getRepliconToLocations().values()) {
+                    for (InstanceLocation instance : patternLocationsInReplicon.getSortedLocations()) {
+                        List<COG> instanceGenes = getCogInfo(getGenes(instance));
                         Set<COG> instanceGenesSet = new HashSet<>();
                         instanceGenesSet.addAll(instanceGenes);
                         instanceGenesSet.removeAll(patternGenesSet);
@@ -343,58 +344,19 @@ public class CSBFinderModel {
         return insertedGenes;
     }
 
-    public void setInstancesInfo(Pattern pattern){
+    private List<Gene> getGenes(InstanceLocation instance){
+        Genome genome = gi.getGenome(instance.getGenomeId());
+        Replicon replicon = genome.getReplicon(instance.getRepliconId());
 
-        Map<Integer, PatternLocationsInGenome> locationsPerGenome = pattern.getPatternLocations();
-
-        for (Map.Entry<Integer, PatternLocationsInGenome> genomeToRepliconsLocations : locationsPerGenome.entrySet()) {
-
-            Genome genome = gi.getGenome(genomeToRepliconsLocations.getKey());
-            String genomeName = genome.getName();
-
-            PatternLocationsInGenome repliconInstanceLocations = genomeToRepliconsLocations.getValue();
-
-            for (Map.Entry<Integer, List<InstanceLocation>> replicon2locations : repliconInstanceLocations.getSortedLocations().entrySet()) {
-
-                int repliconId = replicon2locations.getKey();
-                String repliconName = genome.getReplicon(replicon2locations.getKey()).getName();
-
-                List<InstanceLocation> instanceLocations = replicon2locations.getValue();
-                for (InstanceLocation instanceLocation : instanceLocations) {
-                    /*
-                    instanceLocation.setRepliconName(repliconName);
-                    instanceLocation.setGenomeName(genomeName);
-
-                    if (genes != null) {
-                        instanceLocation.setGenes(genes);
-                    }*/
-                    List<Gene> genes = getInstanceFromCogList(genomeName, repliconId, instanceLocation.getActualStartIndex(),
-                            instanceLocation.getActualEndIndex());
-                    /*
-                    InstanceVisualInfo instanceVisualInfo = new InstanceVisualInfo(repliconName, genomeName, genes,
-                            instanceLocation.getActualStartIndex(), instanceLocation.getActualEndIndex());
-                    */
-                }
-            }
-        }
-    }
-
-    private List<Gene> getInstanceFromCogList(String genomeName, int repliconId, int startIndex, int endIndex) {
-        List<Gene> instanceList = null;
-        Genome genome = getGenome(genomeName);
-        Replicon replicon = genome.getReplicon(repliconId);
+        List<Gene> instanceList = new ArrayList<>();
         List<Gene> repliconGenes = replicon.getGenes();
-        if (repliconGenes != null) {
-            if (startIndex >= 0 && startIndex < repliconGenes.size() &&
-                    endIndex >= 0 && endIndex <= repliconGenes.size()) {
 
-                instanceList = repliconGenes.subList(startIndex, endIndex);
-            }
+        if (repliconGenes != null) {
+            instanceList = repliconGenes.subList(instance.getActualStartIndex(), instance.getActualEndIndex());
         }
 
         return instanceList;
     }
-
 
     public int getNumberOfGenomes() {
         return gi.getNumberOfGenomes();
