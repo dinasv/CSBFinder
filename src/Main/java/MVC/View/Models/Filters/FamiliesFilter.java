@@ -6,13 +6,16 @@ import Core.PostProcess.Family;
 import MVC.View.Models.PatternProperty;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.function.Function;
-import java.util.regex.Matcher;
+import java.util.stream.Collectors;
 
 /**
  */
 public class FamiliesFilter {
+
+    public static final String SEPARATOR = ",";
 
     private List<Family> families;
     private List<PatternFilter> filters;
@@ -26,8 +29,11 @@ public class FamiliesFilter {
         this.families = families;
     }
 
-    public void setId(String patternId){
-        filters.add(new RegexFilter(patternId, PatternProperty.ID));
+    public void setId(String patternIds) {
+        String[] ids = patternIds.split(SEPARATOR);
+        List<PatternFilter> matchFilters = Arrays.stream(ids).map(id -> new MatchStringFilter(id, PatternProperty.ID)).collect(Collectors.toList());
+        OrFilter orFilter = new OrFilter(matchFilters);
+        filters.add(orFilter);
     }
 
     public void setStrand(PatternStrand patternStrand) {
@@ -44,6 +50,12 @@ public class FamiliesFilter {
 
     public void setPatternCount(int from, int to) {
         filters.add(new NumberFilter(from, to, PatternProperty.INSTANCE_COUNT));
+    }
+
+    public void setGenes(String genes){
+        String[] ids = genes.split(SEPARATOR);
+        filters.addAll(Arrays.stream(ids).map(gene -> new ContainsStringFilter(gene,
+                PatternProperty.CSB)).collect(Collectors.toList()));
     }
 
     public void clear() {
@@ -126,36 +138,83 @@ public class FamiliesFilter {
         }
     }
 
-    private class RegexFilter implements PatternFilter {
+    private abstract class StringFilter implements PatternFilter {
 
-        //private Matcher matcher;
-        String toMatch;
-        private PatternProperty patternProperty;
+        protected String strToFind;
 
-        RegexFilter(String str, PatternProperty patternProperty) {
-            //java.util.regex.Pattern regex = java.util.regex.Pattern.compile(str);
-            //matcher = regex.matcher("");
-            toMatch = str;
-            this.patternProperty = patternProperty;
+        protected Function<Pattern, ? extends Object> patternPropertyFunction;
+
+        StringFilter(String str, PatternProperty patternProperty) {
+            strToFind = str;
+            this.patternPropertyFunction = patternProperty.getFunction();
+        }
+    }
+
+    private class MatchStringFilter extends StringFilter {
+
+        public MatchStringFilter(String str, PatternProperty patternProperty) {
+            super(str, patternProperty);
         }
 
-        @Override
         public boolean include(Pattern pattern) {
-            Function<Pattern, ? extends Object> function = patternProperty.getFunction();
-            Object result = function.apply(pattern);
+
+            Object result = patternPropertyFunction.apply(pattern);
 
             if (result instanceof String) {
-                String strToFind = (String) result;
-                //matcher.reset(strToFind);
-                //return matcher.find();
-                if (toMatch.equals("")){
+
+                String patternStr = (String) result;
+
+                if (this.strToFind.equals("")) {
                     return true;
                 }
-                return toMatch.matches(strToFind);
+                return this.strToFind.matches(patternStr);
             }
 
             return false;
         }
+    }
 
+    private class ContainsStringFilter extends StringFilter {
+
+        public ContainsStringFilter(String str, PatternProperty patternProperty) {
+            super(str, patternProperty);
+        }
+
+        public boolean include(Pattern pattern) {
+
+            Object result = patternPropertyFunction.apply(pattern);
+
+            if (result instanceof String) {
+
+                String patternStr = (String) result;
+
+                if (this.strToFind.equals("")) {
+                    return true;
+                }
+
+                return patternStr.contains(this.strToFind);
+            }
+
+            return false;
+        }
+    }
+
+    private class OrFilter implements PatternFilter {
+
+        private List<PatternFilter> filters;
+
+        public OrFilter(List<PatternFilter> filters){
+            this.filters = filters;
+        }
+
+        @Override
+        public boolean include(Pattern pattern) {
+            for (PatternFilter filter: filters){
+                if(filter.include(pattern)){
+                    return true;
+                }
+            }
+            return false;
+        }
     }
 }

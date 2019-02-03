@@ -56,6 +56,21 @@ public class ResultsPanel extends JPanel {
 
     public void setFilterRequest(FilterRequest filterRequest){
 
+        clearPanel();
+
+        Family selectedFamily = familiesPanel.getSelectedRowObject();
+
+        setFilters(filterRequest);
+
+        int row = 0;
+        if (selectedFamily != null) {
+            row = familiesPanel.getObjectRow(selectedFamily.getFamilyId());
+            row = row == -1 ? 0 : row;
+        }
+        familiesPanel.select(row);
+    }
+
+    private void setFilters(FilterRequest filterRequest){
         familiesFilter.clear();
 
         familiesFilter.setPatternLength(filterRequest.getMinCSBLength(), filterRequest.getMaxCSBLength());
@@ -63,11 +78,11 @@ public class ResultsPanel extends JPanel {
         familiesFilter.setPatternCount(filterRequest.getMinInstanceCount(), filterRequest.getMaxInstanceCount());
         familiesFilter.setId(filterRequest.getPatternId());
         familiesFilter.setStrand(filterRequest.getPatternStrand());
+        familiesFilter.setGenes(filterRequest.getPatternGenes());
 
-        familiesPanel.setData(familiesFilter.applyFilters());
-        familiesPanel.selectFirstRow();
+        List<Family> filteredFamilies = familiesFilter.applyFilters();
+        familiesPanel.setData(filteredFamilies);
 
-        fireTableDataChanged();
     }
 
     private void setSplitPane(){

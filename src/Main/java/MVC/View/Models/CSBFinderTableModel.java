@@ -47,6 +47,7 @@ public abstract class CSBFinderTableModel<K, V> extends AbstractTableModel {
         return columns.length;
     }
 
+
     @Override
     public Object getValueAt(int rowIndex, int columnIndex) {
         V dataAtRow = data.get(rowIndex);
@@ -89,6 +90,14 @@ public abstract class CSBFinderTableModel<K, V> extends AbstractTableModel {
     public void clearData(){
         data.clear();
         idToObject.clear();
+    }
+
+    public int getRowOfObject(K objKey){
+        V obj = idToObject.get(objKey);
+        if (obj != null) {
+            return data.indexOf(obj);
+        }
+        return -1;
     }
 
     public abstract void setFamilies(List<Family> families);

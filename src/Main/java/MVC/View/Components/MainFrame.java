@@ -1,6 +1,5 @@
 package MVC.View.Components;
 
-import Core.Genomes.GenomesInfo;
 import MVC.Common.CSBFinderRequest;
 import MVC.Controller.CSBFinderController;
 import MVC.View.Components.Dialogs.FilterDialog;
@@ -126,17 +125,15 @@ public class MainFrame extends JFrame {
                 SwingWorker<Void, Void> swingWorker = new SwingWorker<Void, Void>() {
 
                     @Override
-                    protected Void doInBackground() throws Exception {
-                        summaryPanel.setFilterRequest(request);
+                    protected Void doInBackground() {
+                        try {
+                            genomesPanel.clearPanel();
+                            summaryPanel.setFilterRequest(request);
+                        }catch (Exception e){
+                            e.printStackTrace();
+                        }
                         return null;
                     }
-
-                    /*
-                    @Override
-                    protected void done() {
-                        progressBar.done("");
-                        JOptionPane.showMessageDialog(MainFrame.this, msg);
-                    }*/
                 };
                 swingWorker.execute();
             }

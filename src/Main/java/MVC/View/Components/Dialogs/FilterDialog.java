@@ -36,12 +36,15 @@ public class FilterDialog extends JDialog{
     private final JLabel PATTERN_ID_LABEL = new JLabel("Pattern ID:");
     private JTextField patternId;
 
+    private final JLabel PATTERN_GENES_LABEL = new JLabel("Pattern with genes:");
+    private JTextField patternGenes;
+
     private GridBagConstraints gc;
 
     private JButton applyFilter;
     private JButton clearAll;
 
-    private RunListener applyFilterListener;
+    private RunListener<FilterRequest> applyFilterListener;
 
     private JPanel fields;
 
@@ -135,6 +138,7 @@ public class FilterDialog extends JDialog{
         filterRequest.setMaxInstanceCount((int)maxCount.getValue());
         filterRequest.setMinInstanceCount((int)minCount.getValue());
         filterRequest.setPatternId(patternId.getText());
+        filterRequest.setPatternGenes(patternGenes.getText());
 
         filterRequest.setPatternStrand(PatternStrand.valueOf(strandBtns.getSelection().getActionCommand()));
     }
@@ -151,6 +155,7 @@ public class FilterDialog extends JDialog{
         maxCount = new JSpinner();
 
         patternId = new JTextField();
+        patternGenes = new JTextField();
     }
 
     private void initFields(){
@@ -167,6 +172,7 @@ public class FilterDialog extends JDialog{
         maxCount.setModel(new SpinnerNumberModel(Integer.MAX_VALUE, 0, Integer.MAX_VALUE, 1));
 
         patternId.setText("");
+        patternGenes.setText("");
     }
 
     private void addComponentsToGC(){
@@ -181,6 +187,10 @@ public class FilterDialog extends JDialog{
         addComponentToGC(0, y, 1, 0.2, insetLabel, PATTERN_ID_LABEL, LINE_START);
         patternId.setColumns(12);
         addComponentToGC(1, y++, 1, 0.2, insetLabel, patternId, LINE_START);
+
+        addComponentToGC(0, y, 1, 0.2, insetLabel, PATTERN_GENES_LABEL, LINE_START);
+        patternGenes.setColumns(12);
+        addComponentToGC(1, y++, 1, 0.2, insetLabel, patternGenes, LINE_START);
     }
 
     private void addIntervalComponentToGC(int y, JLabel label, JSpinner minSpinner, JSpinner maxSpinner,

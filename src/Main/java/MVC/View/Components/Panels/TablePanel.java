@@ -40,16 +40,30 @@ public class TablePanel<K, V> extends JPanel {
         add(scrollPane, BorderLayout.CENTER);
     }
 
-    private void select(){
-        K selectedKey = (K)table.getValueAt(table.getSelectedRow(), model.getIndexOfColumn(selectionBy));
-
-        table.setRowSelectionInterval(0, 0);
+    public void select(int row){
+        if (row >= 0 && row < table.getRowCount()) {
+            table.setRowSelectionInterval(row, row);
+        }
     }
-    private V getSelectedRowObject(){
 
-        return model.getDataObject((K)table.getValueAt(table.getSelectedRow(),
-                model.getIndexOfColumn(selectionBy)));
+    public V getSelectedRowObject(){
+        K key = getSelectedObjectKey();
+        if (key != null) {
+            return model.getDataObject(getSelectedObjectKey());
+        }
+        return null;
 
+    }
+    public K getSelectedObjectKey(){
+        int selectedRowIndex = table.getSelectedRow();
+        if (selectedRowIndex != -1) {
+            return (K) table.getValueAt(selectedRowIndex, model.getIndexOfColumn(selectionBy));
+        }
+        return null;
+    }
+
+    public int getObjectRow(K objKey){
+        return model.getRowOfObject(objKey);
     }
 
     public void setData(List<Family> families) {
@@ -62,8 +76,6 @@ public class TablePanel<K, V> extends JPanel {
             table.setRowSelectionInterval(0, 0);
         }
     }
-
-
 
     public void setRowClickedListener(RowClickedListener rowClickedListener) {
         this.rowClickedListener = rowClickedListener;
