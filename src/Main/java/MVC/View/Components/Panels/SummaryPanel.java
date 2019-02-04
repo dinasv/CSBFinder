@@ -74,4 +74,12 @@ public class SummaryPanel extends JSplitPane {
     public void fireTableDataChanged(){
         resultsPanel.fireTableDataChanged();
     }
+
+    public void disableFilterBtn(){
+        resultsPanel.disableFilterBtn();
+    }
+
+    public void enableFilterBtn(){
+        resultsPanel.enableFilterBtn();
+    }
 }

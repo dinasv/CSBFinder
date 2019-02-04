@@ -133,4 +133,13 @@ public class ResultsPanel extends JPanel {
         familiesPanel.fireTableDataChanged();
         familyPatternsPanel.fireTableDataChanged();
     }
+
+    public void disableFilterBtn(){
+        tableButtonsPanel.disableFilterBtn();
+    }
+
+    public void enableFilterBtn(){
+        tableButtonsPanel.enableFilterBtn();
+    }
+
 }

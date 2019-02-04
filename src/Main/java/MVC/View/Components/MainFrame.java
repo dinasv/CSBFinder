@@ -86,6 +86,7 @@ public class MainFrame extends JFrame {
         toolbar = new Toolbar(Icon.RUN.getIcon());
         genomesPanel = new GenomePanel(colorsUsed);
         summaryPanel = new SummaryPanel(Icon.FILTER.getIcon());
+        summaryPanel.disableFilterBtn();
 
         menuBar = new Menu(fc, this);
         menuBar.disableSaveFileBtn();
@@ -105,12 +106,23 @@ public class MainFrame extends JFrame {
 
     private void setEventListeners() {
         setRunCSBFinderListener();
-        setMenuListeners();
         setToolbarListener();
         setPatternRowClickedListener();
         setFamilyRowClickedListener();
         setFilterTableListener();
         setApplyFilterListener();
+        setNumOfNeighborsListener();
+        setCSBFinderDoneListener();
+
+        setMenuListeners();
+    }
+
+    private void setMenuListeners() {
+        setLoadButtonListener();
+        setImportSessionButtonListener();
+        setLoadCogInfoButtonListener();
+        setSaveButtonListener();
+
     }
 
     private void setApplyFilterListener() {
@@ -129,7 +141,7 @@ public class MainFrame extends JFrame {
                         try {
                             genomesPanel.clearPanel();
                             summaryPanel.setFilterRequest(request);
-                        }catch (Exception e){
+                        } catch (Exception e) {
                             e.printStackTrace();
                         }
                         return null;
@@ -144,7 +156,6 @@ public class MainFrame extends JFrame {
     private void setRunCSBFinderListener() {
         inputParamsDialog.setRunListener(new RunListener<CSBFinderRequest>() {
             public void runEventOccurred(RunEvent<CSBFinderRequest> e) {
-                CSBFinderRequest request = e.getRequest();
 
                 SwingUtilities.invokeLater(() -> {
                     inputParamsDialog.setVisible(false);
@@ -153,6 +164,7 @@ public class MainFrame extends JFrame {
 
                 SwingWorker<Void, Void> swingWorker = new SwingWorker<Void, Void>() {
 
+                    CSBFinderRequest request = e.getRequest();
                     String msg = "";
 
                     @Override
@@ -174,13 +186,8 @@ public class MainFrame extends JFrame {
         });
     }
 
-    private void setMenuListeners(){
-        setLoadButtonListener();
-        setImportSessionButtonListener();
-        setLoadCogInfoButtonListener();
-        setSaveButtonListener();
-        setNumOfNeighborsListener();
-    }
+
+
     private void setToolbarListener() {
         setSelectParamsListener();
     }
@@ -240,20 +247,12 @@ public class MainFrame extends JFrame {
 
                         @Override
                         protected void done() {
-
                             clearPanels();
-                            menuBar.disableSaveFileBtn();
 
-                            if (controller.getNumberOfGenomes() > 0) {
-                                inputParamsDialog.setGenomeData(controller.getNumberOfGenomes(), controller.getMaxGenomeSize());
-                                genomesPanel.setGenomesInfo(controller.getGenomeInfo());
-                                toolbar.enableSelectParamsBtn();
-                            } else {
-                                toolbar.disableSelectParamsBtn();
-                            }
+                            setGenomesData();
+
                             progressBar.done("");
                             JOptionPane.showMessageDialog(MainFrame.this, msg);
-
                         }
                     };
                     swingWorker.execute();
@@ -292,16 +291,8 @@ public class MainFrame extends JFrame {
                         @Override
                         protected void done() {
 
-                            menuBar.enableSaveFileBtn();
-                            toolbar.enableSelectParamsBtn();
+                            setGenomesData();
 
-                            if (controller.getNumberOfGenomes() > 0) {
-                                inputParamsDialog.setGenomeData(controller.getNumberOfGenomes(), controller.getMaxGenomeSize());
-                                genomesPanel.setGenomesInfo(controller.getGenomeInfo());
-                                toolbar.enableSelectParamsBtn();
-                            } else {
-                                toolbar.disableSelectParamsBtn();
-                            }
                             progressBar.done("");
                             JOptionPane.showMessageDialog(MainFrame.this, msg);
                         }
@@ -310,6 +301,17 @@ public class MainFrame extends JFrame {
                 }
             }
         });
+    }
+
+    private void setGenomesData(){
+        if (controller.getNumberOfGenomes() > 0) {
+            inputParamsDialog.setGenomeData(controller.getNumberOfGenomes(), controller.getMaxGenomeSize());
+            genomesPanel.setGenomesInfo(controller.getGenomeInfo());
+            toolbar.enableSelectParamsBtn();
+        } else {
+            toolbar.disableSelectParamsBtn();
+            menuBar.disableSaveFileBtn();
+        }
     }
 
     private void setLoadCogInfoButtonListener() {
@@ -428,8 +430,16 @@ public class MainFrame extends JFrame {
         });
     }
 
+    private void setCSBFinderDoneListener() {
+        controller.setCSBFinderDoneListener(e -> displayFamilyTable(e.getFamilyList()));
+    }
+
     public void displayFamilyTable(List<Family> familyList) {
-        menuBar.enableSaveFileBtn();
-        summaryPanel.setFamilyData(familyList);
+        if (familyList.size() > 0) {
+            menuBar.enableSaveFileBtn();
+            summaryPanel.enableFilterBtn();
+
+            summaryPanel.setFamilyData(familyList);
+        }
     }
 }

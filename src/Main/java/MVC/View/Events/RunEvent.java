@@ -16,8 +16,4 @@ public class RunEvent<T extends Request> extends EventObject {
     public T getRequest() {
         return request;
     }
-
-    public void setRequest(T request) {
-        this.request = request;
-    }
 }

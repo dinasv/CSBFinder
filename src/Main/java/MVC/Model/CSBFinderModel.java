@@ -62,6 +62,7 @@ public class CSBFinderModel {
             msg = "Loaded " + gi.getNumberOfGenomes() + " genomes.";
             workflow = new CSBFinderWorkflow(gi);
         }catch(Exception e){
+            gi = new GenomesInfo();
             msg = e.getMessage();
         }
 
@@ -78,6 +79,7 @@ public class CSBFinderModel {
             parseArgs(args);
 
             workflow = new CSBFinderWorkflow(gi);
+
             csbFinderDoneListener.CSBFinderDoneOccurred(new CSBFinderDoneEvent(families));
             msg = "Loaded session file.";
         }catch(Exception e){
@@ -131,11 +133,9 @@ public class CSBFinderModel {
 
         if (gi == null || gi.getNumberOfGenomes() == 0){
             msg = "Need to read genomes first.";
-            System.out.println(msg);
             return msg;
         }else if(workflow == null){
             msg = "CSBFinder workflow was not created yet.";
-            System.out.println(msg);
             return msg;
         }
 

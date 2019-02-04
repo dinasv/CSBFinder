@@ -23,8 +23,10 @@ public class CSBFinderController {
     public CSBFinderController() {
         this.model = new CSBFinderModel();
         this.view = new MainFrame(this);
+    }
 
-        this.model.setCSBFinderDoneListener(e -> view.displayFamilyTable(e.getFamilyList()));
+    public void setCSBFinderDoneListener(CSBFinderDoneListener listener){
+        model.setCSBFinderDoneListener(listener);
     }
 
     public String loadInputGenomesFile(String filePath) {
@@ -55,7 +57,6 @@ public class CSBFinderController {
     public Set<COG> getInsertedGenes(Pattern pattern, List<COG> patternCOGs){
         return model.getInsertedGenes(pattern, patternCOGs);
     }
-
 
     public int getMaxGenomeSize(){
         return model.getMaxGenomeSize();
