@@ -23,6 +23,8 @@ import java.util.List;
 
 public class MainFrame extends JFrame {
 
+    private static final String PROGRAM_NAME = "CSBFinder";
+
     private CSBFinderController controller;
 
     private Toolbar toolbar;
@@ -40,7 +42,7 @@ public class MainFrame extends JFrame {
     private JFileChooser fc;
 
     public MainFrame(CSBFinderController controller) {
-        super("CSBFinder");
+        super(PROGRAM_NAME);
 
         fc = new JFileChooser(System.getProperty("user.dir"));
 
@@ -249,7 +251,7 @@ public class MainFrame extends JFrame {
                         protected void done() {
                             clearPanels();
 
-                            setGenomesData();
+                            setGenomesData(f.getPath());
 
                             progressBar.done("");
                             JOptionPane.showMessageDialog(MainFrame.this, msg);
@@ -291,7 +293,7 @@ public class MainFrame extends JFrame {
                         @Override
                         protected void done() {
 
-                            setGenomesData();
+                            setGenomesData(f.getPath());
 
                             progressBar.done("");
                             JOptionPane.showMessageDialog(MainFrame.this, msg);
@@ -303,11 +305,13 @@ public class MainFrame extends JFrame {
         });
     }
 
-    private void setGenomesData(){
+    private void setGenomesData(String filePath){
         if (controller.getNumberOfGenomes() > 0) {
             inputParamsDialog.setGenomeData(controller.getNumberOfGenomes(), controller.getMaxGenomeSize());
             genomesPanel.setGenomesInfo(controller.getGenomeInfo());
             toolbar.enableSelectParamsBtn();
+
+            setTitle(String.format("%s - %s", PROGRAM_NAME, filePath));
         } else {
             toolbar.disableSelectParamsBtn();
             menuBar.disableSaveFileBtn();
