@@ -4,6 +4,7 @@ import Core.Genomes.Gene;
 import Core.Genomes.Genome;
 import Core.Genomes.GenomesInfo;
 import Core.OutputType;
+import Core.PostProcess.Family;
 import MVC.Common.*;
 import MVC.Model.CSBFinderModel;
 import MVC.View.Components.MainFrame;
@@ -42,8 +43,9 @@ public class CSBFinderController {
         return this.model.loadCogInfo(path);
     }
 
-    public String saveOutputFiles(OutputType outputFileType, String outputDir, String datasetName) {
-        return this.model.saveOutputFiles(outputFileType, outputDir, datasetName);
+    public String saveOutputFiles(OutputType outputFileType, String outputDir, String datasetName,
+                                  List<Family> families) {
+        return this.model.saveOutputFiles(outputFileType, outputDir, datasetName, families);
     }
 
     public String findCSBs(CSBFinderRequest request) {

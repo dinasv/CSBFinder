@@ -5,12 +5,9 @@ import Core.PostProcess.Family;
 import Core.OrthologyGroups.COG;
 import MVC.View.Listeners.FilterTableListener;
 import MVC.View.Listeners.RowClickedListener;
-import MVC.View.Listeners.RunListener;
 import MVC.View.Requests.FilterRequest;
 
 import javax.swing.*;
-import javax.swing.table.TableModel;
-import javax.swing.table.TableRowSorter;
 import java.awt.*;
 import java.util.Collection;
 import java.util.List;
@@ -33,8 +30,8 @@ public class SummaryPanel extends JSplitPane {
         setResizeWeight(0.7);
     }
 
-    public void setFilterRequest(FilterRequest filterRequest){
-        resultsPanel.setFilterRequest(filterRequest);
+    public void setFilteredFamilies(List<Family> filteredFamilies){
+        resultsPanel.setFilteredFamilies(filteredFamilies);
     }
 
     public void setFilterTableListener(FilterTableListener filterTableListener) {

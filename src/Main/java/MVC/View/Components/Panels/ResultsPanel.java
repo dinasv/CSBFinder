@@ -19,8 +19,6 @@ public class ResultsPanel extends JPanel {
     private TablePanel<String, Pattern> familyPatternsPanel;
     private TableButtonsPanel tableButtonsPanel;
 
-    private FamiliesFilter familiesFilter;
-
     private static PatternProperty[] patternsColumns = {
             PatternProperty.ID,
             PatternProperty.LENGTH,
@@ -44,8 +42,6 @@ public class ResultsPanel extends JPanel {
         familiesPanel = new TablePanel<>(FamilyProperty.FAMILY_ID, familyTableModel);
         familyPatternsPanel = new TablePanel<>(PatternProperty.ID, patternsTableModel);
 
-        familiesFilter = new FamiliesFilter();
-
         setLayout(new BorderLayout(2,2));
         setSplitPane();
 
@@ -54,13 +50,13 @@ public class ResultsPanel extends JPanel {
 
     }
 
-    public void setFilterRequest(FilterRequest filterRequest){
+    public void setFilteredFamilies(List<Family> filteredFamilies){
 
         clearPanel();
 
         Family selectedFamily = familiesPanel.getSelectedRowObject();
 
-        setFilters(filterRequest);
+        familiesPanel.setData(filteredFamilies);
 
         int row = 0;
         if (selectedFamily != null) {
@@ -70,20 +66,6 @@ public class ResultsPanel extends JPanel {
         familiesPanel.select(row);
     }
 
-    private void setFilters(FilterRequest filterRequest){
-        familiesFilter.clear();
-
-        familiesFilter.setPatternLength(filterRequest.getMinCSBLength(), filterRequest.getMaxCSBLength());
-        familiesFilter.setPatternScore(filterRequest.getMinScore(), filterRequest.getMaxScore());
-        familiesFilter.setPatternCount(filterRequest.getMinInstanceCount(), filterRequest.getMaxInstanceCount());
-        familiesFilter.setId(filterRequest.getPatternId());
-        familiesFilter.setStrand(filterRequest.getPatternStrand());
-        familiesFilter.setGenes(filterRequest.getPatternGenes());
-
-        List<Family> filteredFamilies = familiesFilter.applyFilters();
-        familiesPanel.setData(filteredFamilies);
-
-    }
 
     private void setSplitPane(){
         JSplitPane splitPane = new JSplitPane();
@@ -103,7 +85,6 @@ public class ResultsPanel extends JPanel {
 
     public void setFamilyData(List<Family> familyList) {
         familiesPanel.setData(familyList);
-        familiesFilter.setFamilies(familyList);
     }
 
     public void selectFamiliesFirstRow(){

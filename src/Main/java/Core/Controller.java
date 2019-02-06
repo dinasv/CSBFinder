@@ -88,7 +88,7 @@ public class Controller {
                 break;
         }
 
-        Writer writer = new Writer(params.debug, catalogFileName,
+        Writer writer = new Writer(params.debug,
                 instancesFileName, includeFamilies, cog_info_exists,
                 outputPath, patternsWriter);
 
@@ -105,7 +105,7 @@ public class Controller {
 
     private String createHeader(boolean include_families){
 
-        String header = "FAMILY_ID\tLength\tScore\tInstance_Count\tCSB";
+        String header = "CSB_ID\tLength\tScore\tInstance_Count\tCSB";
         if (cogInfo.cogInfoExists()){
             header += "\tMain_Category";
         }

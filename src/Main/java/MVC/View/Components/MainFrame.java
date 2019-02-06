@@ -13,6 +13,7 @@ import MVC.View.Components.Panels.SummaryPanel;
 import Core.OrthologyGroups.COG;
 import Core.Patterns.Pattern;
 import Core.PostProcess.Family;
+import MVC.View.Models.Filters.FamiliesFilter;
 import MVC.View.Requests.FilterRequest;
 
 import javax.swing.*;
@@ -27,17 +28,17 @@ public class MainFrame extends JFrame {
 
     private CSBFinderController controller;
 
+    private Menu menuBar;
     private Toolbar toolbar;
+
     private GenomePanel genomesPanel;
+    private SummaryPanel summaryPanel;
+    private ProgressBar progressBar;
 
     private InputParametersDialog inputParamsDialog;
     private FilterDialog filterDialog;
 
-    private SummaryPanel summaryPanel;
-
-    private ProgressBar progressBar;
-
-    private Menu menuBar;
+    private FamiliesFilter familiesFilter;
 
     private JFileChooser fc;
 
@@ -45,6 +46,7 @@ public class MainFrame extends JFrame {
         super(PROGRAM_NAME);
 
         fc = new JFileChooser(System.getProperty("user.dir"));
+        familiesFilter = new FamiliesFilter();
 
         this.controller = controller;
 
@@ -133,6 +135,7 @@ public class MainFrame extends JFrame {
             summaryPanel.enableFilterBtn();
 
             summaryPanel.setFamilyData(familyList);
+            familiesFilter.setFamilies(familyList);
         }
     }
 
@@ -147,6 +150,22 @@ public class MainFrame extends JFrame {
             toolbar.disableSelectParamsBtn();
             menuBar.disableSaveFileBtn();
         }
+    }
+
+    private void setFilters(FilterRequest filterRequest){
+        familiesFilter.clear();
+
+        familiesFilter.setPatternLength(filterRequest.getMinCSBLength(), filterRequest.getMaxCSBLength());
+        familiesFilter.setPatternScore(filterRequest.getMinScore(), filterRequest.getMaxScore());
+        familiesFilter.setPatternCount(filterRequest.getMinInstanceCount(), filterRequest.getMaxInstanceCount());
+        familiesFilter.setId(filterRequest.getPatternId());
+        familiesFilter.setStrand(filterRequest.getPatternStrand());
+        familiesFilter.setGenes(filterRequest.getPatternGenes());
+
+        familiesFilter.applyFilters();
+
+        summaryPanel.setFilteredFamilies(familiesFilter.getFilteredFamilies());
+
     }
 
     private void setApplyFilterListener() {
@@ -164,7 +183,7 @@ public class MainFrame extends JFrame {
                     protected Void doInBackground() {
                         try {
                             genomesPanel.clearPanel();
-                            summaryPanel.setFilterRequest(request);
+                            setFilters(request);
                         } catch (Exception e) {
                             e.printStackTrace();
                         }
@@ -386,7 +405,7 @@ public class MainFrame extends JFrame {
                         @Override
                         protected Void doInBackground() throws Exception {
                             msg = controller.saveOutputFiles(e.getOutputType(), e.getOutputDirectory(),
-                                    e.getDatasetName());
+                                    e.getDatasetName(), familiesFilter.getFilteredFamilies());
                             return null;
                         }
 

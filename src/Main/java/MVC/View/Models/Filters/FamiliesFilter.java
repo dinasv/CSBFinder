@@ -18,10 +18,13 @@ public class FamiliesFilter {
     public static final String SEPARATOR = ",";
 
     private List<Family> families;
+    private List<Family> filteredFamilies;
     private List<PatternFilter> filters;
 
     public FamiliesFilter() {
         this.families = new ArrayList<>();
+        filteredFamilies = new ArrayList<>(families);
+
         filters = new ArrayList<>();
     }
 
@@ -62,12 +65,12 @@ public class FamiliesFilter {
         filters.clear();
     }
 
-    public List<Family> applyFilters() {
+    public void applyFilters() {
         if (filters.size() == 0) {
-            return families;
+            return;
         }
 
-        List<Family> filteredFamilies = new ArrayList<>();
+        filteredFamilies.clear();
         for (Family family : families) {
             List<Pattern> filteredPatterns = new ArrayList<>();
             for (Pattern pattern : family.getPatterns()) {
@@ -86,7 +89,6 @@ public class FamiliesFilter {
                 filteredFamilies.add(new Family(family, filteredPatterns));
             }
         }
-        return filteredFamilies;
     }
 
     private class NumberFilter implements PatternFilter {
@@ -216,5 +218,9 @@ public class FamiliesFilter {
             }
             return false;
         }
+    }
+
+    public List<Family> getFilteredFamilies() {
+        return filteredFamilies;
     }
 }

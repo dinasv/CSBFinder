@@ -34,11 +34,7 @@ public class Writer {
 
     private static final DecimalFormat DF = new DecimalFormat("#.####");
 
-    public Logger logger = null;
-
-    //String header;
-
-    public Writer(boolean debug, String catalogFileName,
+    public Writer(boolean debug,
                   String instancesFileName, boolean includeFamilies,
                   boolean cogInfoExists, String outputPath,
                   PatternsWriter patternsWriter){
@@ -160,7 +156,7 @@ public class Writer {
         patternsWriter.write(families, cogInfo);
     }
 
-    public void printInstances(Family family, GenomesInfo gi){
+    private void printInstances(Family family, GenomesInfo gi){
         createInstancesFile();
         family.getPatterns().forEach(pattern -> printInstances(pattern, family.getFamilyId(), gi, instancesFile));
     }

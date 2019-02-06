@@ -28,7 +28,7 @@ public class CSBFinderModel {
     private List<Family> families;
 
     private GenomesInfo gi;
-    CogInfo cogInfo;
+    private CogInfo cogInfo;
 
     private String arguments;
     private String inputGenomesPath;
@@ -197,7 +197,7 @@ public class CSBFinderModel {
         }
     }
 
-    private Writer createWriter(boolean cogInfoExists, OutputType outputType){
+    private Writer createWriter(boolean cogInfoExists, OutputType outputType, List<Family> families){
 
         String outputPath = createOutputPath();
 
@@ -226,7 +226,7 @@ public class CSBFinderModel {
                 break;
         }
 
-        Writer writer = new Writer(params.debug, catalogFileName,
+        Writer writer = new Writer(params.debug,
                 instancesFileName, includeFamilies, cogInfoExists,
                 outputPath, patternsWriter);
 
@@ -253,14 +253,15 @@ public class CSBFinderModel {
         return path;
     }
 
-    public String saveOutputFiles(OutputType outputFileType, String outputDir, String datasetName) {
+    public String saveOutputFiles(OutputType outputFileType, String outputDir, String datasetName,
+                                  List<Family> families) {
         System.out.println("Writing to files");
 
         String msg = "";
         try {
             params.outputDir = outputDir;
             params.datasetName = datasetName;
-            Writer writer = createWriter(cogInfo.cogInfoExists(), outputFileType);
+            Writer writer = createWriter(cogInfo.cogInfoExists(), outputFileType, families);
             msg = "CSBs written to files.";
         }catch (Exception e){
             msg = e.getMessage();
@@ -271,7 +272,7 @@ public class CSBFinderModel {
 
     private String createHeader(boolean include_families){
 
-        String header = "FAMILY_ID\tLength\tScore\tInstance_Count\tCSB";
+        String header = "CSB_ID\tLength\tScore\tInstance_Count\tCSB";
         if (cogInfo.cogInfoExists()){
             header += "\tMain_Category";
         }
