@@ -87,6 +87,7 @@ public class MainFrame extends JFrame {
 
         toolbar = new Toolbar(Icon.RUN.getIcon());
         genomesPanel = new GenomePanel(colorsUsed);
+
         summaryPanel = new SummaryPanel(Icon.FILTER.getIcon());
         summaryPanel.disableFilterBtn();
 
@@ -108,7 +109,7 @@ public class MainFrame extends JFrame {
 
     private void setEventListeners() {
         setRunCSBFinderListener();
-        setToolbarListener();
+        setSelectParamsListener();
         setPatternRowClickedListener();
         setFamilyRowClickedListener();
         setFilterTableListener();
@@ -124,7 +125,28 @@ public class MainFrame extends JFrame {
         setImportSessionButtonListener();
         setLoadCogInfoButtonListener();
         setSaveButtonListener();
+    }
 
+    public void displayFamilyTable(List<Family> familyList) {
+        if (familyList.size() > 0) {
+            menuBar.enableSaveFileBtn();
+            summaryPanel.enableFilterBtn();
+
+            summaryPanel.setFamilyData(familyList);
+        }
+    }
+
+    private void setGenomesData(String filePath){
+        if (controller.getNumberOfGenomes() > 0) {
+            inputParamsDialog.setGenomeData(controller.getNumberOfGenomes(), controller.getMaxGenomeSize());
+            genomesPanel.setGenomesInfo(controller.getGenomeInfo());
+            toolbar.enableSelectParamsBtn();
+
+            setTitle(String.format("%s - %s", PROGRAM_NAME, filePath));
+        } else {
+            toolbar.disableSelectParamsBtn();
+            menuBar.disableSaveFileBtn();
+        }
     }
 
     private void setApplyFilterListener() {
@@ -188,12 +210,6 @@ public class MainFrame extends JFrame {
         });
     }
 
-
-
-    private void setToolbarListener() {
-        setSelectParamsListener();
-    }
-
     private void setSelectParamsListener() {
         toolbar.setSelectParamsListener(new SelectParamsListener() {
             @Override
@@ -220,7 +236,9 @@ public class MainFrame extends JFrame {
         });
     }
 
-
+    /**
+     * Load files listeners
+     */
     private void setLoadButtonListener() {
         menuBar.setLoadGenomesListener(new LoadFileListener() {
 
@@ -305,19 +323,6 @@ public class MainFrame extends JFrame {
         });
     }
 
-    private void setGenomesData(String filePath){
-        if (controller.getNumberOfGenomes() > 0) {
-            inputParamsDialog.setGenomeData(controller.getNumberOfGenomes(), controller.getMaxGenomeSize());
-            genomesPanel.setGenomesInfo(controller.getGenomeInfo());
-            toolbar.enableSelectParamsBtn();
-
-            setTitle(String.format("%s - %s", PROGRAM_NAME, filePath));
-        } else {
-            toolbar.disableSelectParamsBtn();
-            menuBar.disableSaveFileBtn();
-        }
-    }
-
     private void setLoadCogInfoButtonListener() {
         menuBar.setLoadCogInfoListener(new LoadFileListener() {
 
@@ -398,6 +403,9 @@ public class MainFrame extends JFrame {
         });
     }
 
+    /**
+     * Tables click listeners
+     */
     private void setPatternRowClickedListener() {
         summaryPanel.setPatternRowClickedListener(new RowClickedListener<Pattern>() {
             @Override
@@ -438,12 +446,4 @@ public class MainFrame extends JFrame {
         controller.setCSBFinderDoneListener(e -> displayFamilyTable(e.getFamilyList()));
     }
 
-    public void displayFamilyTable(List<Family> familyList) {
-        if (familyList.size() > 0) {
-            menuBar.enableSaveFileBtn();
-            summaryPanel.enableFilterBtn();
-
-            summaryPanel.setFamilyData(familyList);
-        }
-    }
 }

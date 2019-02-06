@@ -135,9 +135,9 @@ public class SuffixTreeAlgorithm implements Algorithm {
         datasetTree.buildTree(parameters.nonDirectons);
         GeneralizedSuffixTree datasetSuffixTree = datasetTree.getSuffixTree();
         datasetSuffixTree.computeCount();
-        totalCharsInData = ((InstanceNode) datasetSuffixTree.getRoot()).getCountMultipleInstancesPerGenome();
+        totalCharsInData = datasetSuffixTree.getRoot().getCountMultipleInstancesPerGenome();
 
-        InstanceNode dataTreeRoot = (InstanceNode) datasetSuffixTree.getRoot();
+        InstanceNode dataTreeRoot = datasetSuffixTree.getRoot();
         //the instance of an empty string is the root of the data tree
         Instance emptyInstance = new Instance(dataTreeRoot);
         countNodesInDataTree++;
@@ -161,15 +161,13 @@ public class SuffixTreeAlgorithm implements Algorithm {
      * Therefore it is sufficient to remove each pattern suffix if it has the same instance count
      */
     private void removeRedundantPatterns() {
-        //if (patternTreeRoot.getType() == TreeType.VIRTUAL) {
-            HashSet<String> patternsToRemove = new HashSet<>();
-            for (Map.Entry<String, Pattern> entry : patterns.entrySet()) {
+        HashSet<String> patternsToRemove = new HashSet<>();
+        for (Map.Entry<String, Pattern> entry : patterns.entrySet()) {
 
-                Pattern pattern = entry.getValue();
-                List<Gene> patternGenes = pattern.getPatternGenes();
-                List<Gene> patternSuffix = new ArrayList<>(patternGenes);
-                patternSuffix.remove(0);
-                String suffixStr = Pattern.toString(patternSuffix);
+            Pattern pattern = entry.getValue();
+
+            if (!parameters.keepAllPatterns) {
+                String suffixStr = getSuffix(pattern);
 
                 Pattern suffix = patterns.get(suffixStr);
 
@@ -180,13 +178,21 @@ public class SuffixTreeAlgorithm implements Algorithm {
                         patternsToRemove.add(suffixStr);
                     }
                 }
-
-                if (nonDirectons) {
-                    removeReverseCompliments(pattern, patternsToRemove);
-                }
             }
-            patterns.keySet().removeAll(patternsToRemove);
-        //}
+
+            if (nonDirectons) {
+                removeReverseCompliments(pattern, patternsToRemove);
+            }
+        }
+        patterns.keySet().removeAll(patternsToRemove);
+    }
+
+    private String getSuffix(Pattern pattern){
+
+        List<Gene> suffix = new ArrayList<>(pattern.getPatternGenes());
+        suffix.remove(0);
+
+        return Pattern.toString(suffix);
     }
 
     private void removeReverseCompliments(Pattern pattern, HashSet<String> patternsToRemove) {
@@ -469,7 +475,9 @@ public class SuffixTreeAlgorithm implements Algorithm {
                 if (alpha != Alphabet.WC_CHAR_INDEX && !(startsWithWildcard(extendedPattern))) {
                     //make sure that extendedPattern is right maximal, if extendedPattern has the same number of
                     // instances as the longer pattern, prefer the longer pattern
-                    if ((instancesCount > ret && extendedPatternNode.getPatternKey() != null) || debug) {// instancesCount >= ret always
+                    if (debug || (extendedPatternNode.getPatternKey() != null &&
+                            (instancesCount > ret || parameters.keepAllPatterns))) // instancesCount >= ret always
+                            {
 
                         Pattern newPattern = new Pattern(extendedPatternNode.getPatternKey(),
                                 extendedPattern);

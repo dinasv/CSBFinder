@@ -89,6 +89,11 @@ public class Parameters {
     @Parameter(names={"-alg"}, description = "Algorithm to use for finding CSBs", order = 16)
     public AlgorithmType algorithmType = AlgorithmType.SUFFIX_TREE;
 
+    @Parameter(names={"-keep-all-patterns"}, description = "Keep all patterns, without removing sub-patterns with " +
+            "the same number of instances",
+            order = 17)
+    public boolean keepAllPatterns = false;
+
     @Parameter(names={"--mismatch", "-err"}, description = "Maximal number of mismatches allowed", hidden = true)
     public int maxError = 0;
     @Parameter(names={"--deletion", "-del"}, description = "Maximal number of deletions allowed", hidden = true)

@@ -13,8 +13,8 @@ import java.util.stream.Collectors;
 
 public class DatasetSuffixTreeTest {
 
-    int GENOME_ID = 1;
-    int REPLICON_ID = 1;
+    private int GENOME_ID = 1;
+    private int REPLICON_ID = 1;
 
     private Pair<WordArray, InstanceLocation> wordLocationPair(int[] word){
         InstanceLocation LOCATION1 = location(word);

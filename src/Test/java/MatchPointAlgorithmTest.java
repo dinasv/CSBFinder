@@ -9,8 +9,7 @@ import IO.Parsers;
 import org.junit.Assert;
 import org.junit.Test;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 /**
  */
@@ -25,14 +24,21 @@ public class MatchPointAlgorithmTest {
         algorithm.setGenomesInfo(gi);
     }
 
-    private void initParamsNonDirectons(Parameters params){
+    private Parameters initParamsNonDirectons(){
+        Parameters params = new Parameters();
         params.nonDirectons = true;
         params.quorum2 = 2;
+        return params;
     }
 
-    private List<Pattern> runAlgorithm(String genomesFile) throws Exception{
-        Parameters params = new Parameters();
-        initParamsNonDirectons(params);
+    private Parameters initParamsKeepAll(){
+        Parameters params = initParamsNonDirectons();
+        params.keepAllPatterns = true;
+
+        return params;
+    }
+
+    private List<Pattern> runAlgorithm(String genomesFile, Parameters params) throws Exception{
 
         Algorithm algorithm = AlgorithmType.MATCH_POINTS.algorithm;
         GenomesInfo gi = Parsers.parseGenomesFile(genomesFile);
@@ -48,7 +54,7 @@ public class MatchPointAlgorithmTest {
     @Test
     public void testRefGenomesPatternsDuplicateGenes() throws Exception {
 
-        List<Pattern> patterns = runAlgorithm(GENOMES_FILE_PATH1);
+        List<Pattern> patterns = runAlgorithm(GENOMES_FILE_PATH1, initParamsNonDirectons());
 
         List<Pattern> expectedPatterns = new ArrayList<>();
         List<Gene> expectedGenes = new ArrayList<>();
@@ -63,7 +69,7 @@ public class MatchPointAlgorithmTest {
     @Test
     public void testRefGenomesReverseComplimentPattern() throws Exception {
 
-        List<Pattern> patterns = runAlgorithm(GENOMES_FILE_PATH2);
+        List<Pattern> patterns = runAlgorithm(GENOMES_FILE_PATH2, initParamsNonDirectons());
 
         List<Pattern> expectedPatterns = new ArrayList<>();
         List<Gene> expectedGenes = new ArrayList<>();
@@ -73,6 +79,27 @@ public class MatchPointAlgorithmTest {
         expectedPatterns.add(new Pattern(expectedGenes));
 
         Assert.assertEquals(expectedPatterns, patterns);
+
+    }
+
+    @Test
+    public void testRefGenomesKeepAllPatterns() throws Exception {
+
+        List<Pattern> patterns = runAlgorithm(GENOMES_FILE_PATH2, initParamsKeepAll());
+
+        List<Pattern> expectedPatterns = new ArrayList<>();
+        List<Gene> expectedGenes = new ArrayList<>();
+        expectedGenes.add(new Gene("COG0001", Strand.FORWARD));
+        expectedGenes.add(new Gene("COG0002", Strand.FORWARD));
+        expectedGenes.add(new Gene("COG0003", Strand.REVERSE));
+        expectedPatterns.add(new Pattern(expectedGenes));
+        expectedPatterns.add(new Pattern(expectedGenes.subList(0, 2)));
+        expectedPatterns.add(new Pattern(expectedGenes.subList(1, 3)));
+
+        Assert.assertTrue(patterns.size() == expectedPatterns.size());
+        for (Pattern pattern : expectedPatterns) {
+            Assert.assertTrue(patterns.contains(pattern));
+        }
 
     }
 

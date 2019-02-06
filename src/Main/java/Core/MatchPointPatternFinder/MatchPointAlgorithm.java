@@ -331,11 +331,13 @@ public class MatchPointAlgorithm implements Algorithm {
 
             Pattern pattern = entry.getValue();
 
-            String suffixStr = getSuffix(pattern);
-            addSubPatternToRemoveList(suffixStr, pattern, patternsToRemove);
+            if (!parameters.keepAllPatterns) {
+                String suffixStr = getSuffix(pattern);
+                addSubPatternToRemoveList(suffixStr, pattern, patternsToRemove);
 
-            String prefixStr = getPrefix(pattern);
-            addSubPatternToRemoveList(prefixStr, pattern, patternsToRemove);
+                String prefixStr = getPrefix(pattern);
+                addSubPatternToRemoveList(prefixStr, pattern, patternsToRemove);
+            }
 
             if (parameters.nonDirectons) {
                 removeReverseCompliments(pattern, patternsToRemove);
