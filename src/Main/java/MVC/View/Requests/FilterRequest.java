@@ -2,9 +2,6 @@ package MVC.View.Requests;
 
 import MVC.View.Models.Filters.PatternStrand;
 
-import java.util.ArrayList;
-import java.util.List;
-
 /**
  */
 public class FilterRequest implements Request{

@@ -17,10 +17,20 @@ import static java.awt.GridBagConstraints.*;
 public class FilterDialog extends JDialog{
 
     private final static int TEXT_FIELD_SIZE = 12;
+    private final static int MIN_PATTERN_LENGTH_DEF = 2;
+    private final static int MAX_PATTERN_LENGTH_DEF = Integer.MAX_VALUE;
+    private final static int MIN_SCORE_DEF = 0;
+    private final static int MAX_SCORE_DEF = Integer.MAX_VALUE;
+    private final static int MIN_COUNT_DEF = 1;
+    private final static int MAX_COUNT_DEF = Integer.MAX_VALUE;
+    private final static PatternStrand PATTERN_STRAND_DEF = PatternStrand.ALL;
+    private final static String PATTERN_IDS_DEF = "";
+    private final static String FAMILY_IDS_DEF = "";
+    private final static String PATTERN_GENES_DEF = "";
 
-    private final JLabel CSB_LENGTH_LABEL = new JLabel("CSB length between:");
-    private JSpinner minCSBLength;
-    private JSpinner maxCSBLength;
+    private final JLabel PATTERN_LENGTH_LABEL = new JLabel("CSB length between:");
+    private JSpinner minPatternLength;
+    private JSpinner maxPatternLength;
 
     private final JLabel SCORE_LABEL = new JLabel("Score between:");
     private JSpinner minScore;
@@ -136,8 +146,8 @@ public class FilterDialog extends JDialog{
 
     private void initRequest(FilterRequest filterRequest){
 
-        filterRequest.setMinCSBLength((int)minCSBLength.getValue());
-        filterRequest.setMaxCSBLength((int)maxCSBLength.getValue());
+        filterRequest.setMinCSBLength((int) minPatternLength.getValue());
+        filterRequest.setMaxCSBLength((int) maxPatternLength.getValue());
         filterRequest.setMinScore((int)minScore.getValue());
         filterRequest.setMaxScore((int)maxScore.getValue());
         filterRequest.setMaxInstanceCount((int)maxCount.getValue());
@@ -153,8 +163,8 @@ public class FilterDialog extends JDialog{
 
         initStrandBtns();
 
-        minCSBLength = new JSpinner();
-        maxCSBLength = new JSpinner();
+        minPatternLength = new JSpinner();
+        maxPatternLength = new JSpinner();
         minScore = new JSpinner();
         maxScore = new JSpinner();
         minCount = new JSpinner();
@@ -169,18 +179,20 @@ public class FilterDialog extends JDialog{
 
         allStrandTypesBtn.setSelected(true);
 
-        minCSBLength.setModel(new SpinnerNumberModel(2, 2, Integer.MAX_VALUE, 1));
-        maxCSBLength.setModel(new SpinnerNumberModel(Integer.MAX_VALUE, 2, Integer.MAX_VALUE, 1));
+        minPatternLength.setModel(new SpinnerNumberModel(MIN_PATTERN_LENGTH_DEF, MIN_PATTERN_LENGTH_DEF,
+                MAX_PATTERN_LENGTH_DEF, 1));
+        maxPatternLength.setModel(new SpinnerNumberModel(MAX_PATTERN_LENGTH_DEF, MIN_PATTERN_LENGTH_DEF,
+                MAX_PATTERN_LENGTH_DEF, 1));
 
-        minScore.setModel(new SpinnerNumberModel(0, 0, Integer.MAX_VALUE, 1));
-        maxScore.setModel(new SpinnerNumberModel(Integer.MAX_VALUE, 0, Integer.MAX_VALUE, 1));
+        minScore.setModel(new SpinnerNumberModel(MIN_SCORE_DEF, MIN_SCORE_DEF, MAX_SCORE_DEF, 1));
+        maxScore.setModel(new SpinnerNumberModel(MAX_SCORE_DEF, MIN_SCORE_DEF, MAX_SCORE_DEF, 1));
 
-        minCount.setModel(new SpinnerNumberModel(1, 1, Integer.MAX_VALUE, 1));
-        maxCount.setModel(new SpinnerNumberModel(Integer.MAX_VALUE, 0, Integer.MAX_VALUE, 1));
+        minCount.setModel(new SpinnerNumberModel(MIN_COUNT_DEF, MIN_COUNT_DEF, MAX_COUNT_DEF, 1));
+        maxCount.setModel(new SpinnerNumberModel(MAX_COUNT_DEF, MIN_COUNT_DEF, MAX_COUNT_DEF, 1));
 
-        patternIds.setText("");
-        familyIds.setText("");
-        patternGenes.setText("");
+        patternIds.setText(PATTERN_IDS_DEF);
+        familyIds.setText(FAMILY_IDS_DEF);
+        patternGenes.setText(PATTERN_GENES_DEF);
     }
 
     private void addComponentsToGC(){
@@ -188,7 +200,7 @@ public class FilterDialog extends JDialog{
         Insets insetField = new Insets(0, 0, 5, 5);
         int y = 0;
 
-        addIntervalComponentToGC(y++, CSB_LENGTH_LABEL, minCSBLength, maxCSBLength, insetLabel, insetField);
+        addIntervalComponentToGC(y++, PATTERN_LENGTH_LABEL, minPatternLength, maxPatternLength, insetLabel, insetField);
         addIntervalComponentToGC(y++, SCORE_LABEL, minScore, maxScore, insetLabel, insetField);
         addIntervalComponentToGC(y++, COUNT_LABEL, minCount, maxCount, insetLabel, insetField);
 
@@ -227,4 +239,5 @@ public class FilterDialog extends JDialog{
     public void setApplyFilterListener(RunListener applyFilterListener){
         this.applyFilterListener = applyFilterListener;
     }
+
 }
