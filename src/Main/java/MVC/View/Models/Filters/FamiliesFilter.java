@@ -3,6 +3,8 @@ package MVC.View.Models.Filters;
 import Core.Genomes.Gene;
 import Core.Patterns.Pattern;
 import Core.PostProcess.Family;
+import MVC.View.Models.ColumnProperty;
+import MVC.View.Models.FamilyProperty;
 import MVC.View.Models.PatternProperty;
 
 import java.util.ArrayList;
@@ -19,104 +21,147 @@ public class FamiliesFilter {
 
     private List<Family> families;
     private List<Family> filteredFamilies;
-    private List<PatternFilter> filters;
+
+    private List<Filter<Pattern>> patternFilters;
+    private List<Filter<Family>> familyFilters;
 
     public FamiliesFilter() {
         this.families = new ArrayList<>();
         filteredFamilies = new ArrayList<>(families);
 
-        filters = new ArrayList<>();
+        patternFilters = new ArrayList<>();
+        familyFilters = new ArrayList<>();
     }
 
     public void setFamilies(List<Family> families) {
         this.families = families;
     }
 
-    public void setId(String patternIds) {
+    public void setFamilyIds(String familyIds){
+        String[] ids = familyIds.split(SEPARATOR);
+
+        List<Filter<Family>> numberFilters = new ArrayList<>();
+        for (String id: ids){
+            try {
+                int intId = Integer.valueOf(id);
+                numberFilters.add(new NumberFilter<>(intId, intId, FamilyProperty.FAMILY_ID));
+            }catch (NumberFormatException e){
+                //skip
+            }
+        }
+
+        if (numberFilters.size() > 0) {
+            OrFilter<Family> orFilter = new OrFilter<>(numberFilters);
+            familyFilters.add(orFilter);
+        }
+    }
+
+    public void setPatternIds(String patternIds) {
         String[] ids = patternIds.split(SEPARATOR);
-        List<PatternFilter> matchFilters = Arrays.stream(ids).map(id -> new MatchStringFilter(id, PatternProperty.ID)).collect(Collectors.toList());
-        OrFilter orFilter = new OrFilter(matchFilters);
-        filters.add(orFilter);
+        List<Filter<Pattern>> matchFilters = Arrays.stream(ids)
+                .map(id -> new MatchStringFilter<>(id, PatternProperty.ID))
+                .collect(Collectors.toList());
+
+        OrFilter<Pattern> orFilter = new OrFilter<>(matchFilters);
+        patternFilters.add(orFilter);
     }
 
     public void setStrand(PatternStrand patternStrand) {
-        filters.add(new StrandFilter(patternStrand));
+        patternFilters.add(new StrandFilter(patternStrand));
     }
 
     public void setPatternLength(int from, int to) {
-        filters.add(new NumberFilter(from, to, PatternProperty.LENGTH));
+        patternFilters.add(new NumberFilter<>(from, to, PatternProperty.LENGTH));
     }
 
     public void setPatternScore(int from, int to) {
-        filters.add(new NumberFilter(from, to, PatternProperty.SCORE));
+        patternFilters.add(new NumberFilter<>(from, to, PatternProperty.SCORE));
     }
 
     public void setPatternCount(int from, int to) {
-        filters.add(new NumberFilter(from, to, PatternProperty.INSTANCE_COUNT));
+        patternFilters.add(new NumberFilter<>(from, to, PatternProperty.INSTANCE_COUNT));
     }
 
     public void setGenes(String genes){
         String[] ids = genes.split(SEPARATOR);
-        filters.addAll(Arrays.stream(ids).map(gene -> new ContainsStringFilter(gene,
+        patternFilters.addAll(Arrays.stream(ids).map(gene -> new ContainsStringFilter<>(gene,
                 PatternProperty.CSB)).collect(Collectors.toList()));
     }
 
     public void clear() {
-        filters.clear();
+        patternFilters.clear();
     }
 
     public void applyFilters() {
-        if (filters.size() == 0) {
+        if (patternFilters.size() == 0) {
             return;
         }
 
         filteredFamilies.clear();
         for (Family family : families) {
-            List<Pattern> filteredPatterns = new ArrayList<>();
-            for (Pattern pattern : family.getPatterns()) {
-                boolean includePattern = true;
-                for (PatternFilter filter : filters) {
-                    if (!filter.include(pattern)) {
-                        includePattern = false;
-                        break;
-                    }
+            boolean includeFamily = filterObj(family, familyFilters);
+
+            if (includeFamily) {
+                List<Pattern> filteredPatterns = filterFamilyPatterns(family.getPatterns());
+                if (filteredPatterns.size() > 0) {
+                    filteredFamilies.add(new Family(family, filteredPatterns));
                 }
-                if (includePattern) {
-                    filteredPatterns.add(pattern);
-                }
-            }
-            if (filteredPatterns.size() > 0) {
-                filteredFamilies.add(new Family(family, filteredPatterns));
             }
         }
     }
 
-    private class NumberFilter implements PatternFilter {
+
+    private <T> boolean filterObj(T obj, List<Filter<T>> filters){
+        boolean includeObj = true;
+        for (Filter<T> filter : filters) {
+            if (!filter.include(obj)) {
+                includeObj = false;
+                break;
+            }
+        }
+        return includeObj;
+    }
+
+    private List<Pattern> filterFamilyPatterns(List<Pattern> patterns){
+        List<Pattern> filteredPatterns = new ArrayList<>();
+        for (Pattern pattern : patterns) {
+            boolean includePattern = filterObj(pattern, patternFilters);
+
+            if (includePattern) {
+                filteredPatterns.add(pattern);
+            }
+        }
+        return filteredPatterns;
+    }
+
+    private class NumberFilter<T> implements Filter<T> {
 
         private int from;
         private int to;
-        private PatternProperty patternProperty;
+        private ColumnProperty<T> patternProperty;
 
-        NumberFilter(int from, int to, PatternProperty patternProperty) {
+        NumberFilter(int from, int to, ColumnProperty<T> patternProperty) {
             this.from = from;
             this.to = to;
             this.patternProperty = patternProperty;
         }
 
         @Override
-        public boolean include(Pattern pattern) {
-            Function<Pattern, ? extends Object> function = patternProperty.getFunction();
-            Object result = function.apply(pattern);
+        public boolean include(T obj) {
+            Function<T, ? extends Object> function = patternProperty.getFunction();
+
+            Object result = function.apply(obj);
             if (result instanceof Number) {
                 Number num = (Number) result;
                 return num.doubleValue() >= from && num.doubleValue() <= to;
             }
+
             return false;
         }
 
     }
 
-    private class StrandFilter implements PatternFilter {
+    private class StrandFilter implements Filter<Pattern> {
 
         private PatternStrand patternStrand;
 
@@ -140,51 +185,51 @@ public class FamiliesFilter {
         }
     }
 
-    private abstract class StringFilter implements PatternFilter {
+    private abstract class StringFilter<T> implements Filter<T> {
 
         protected String strToFind;
 
-        protected Function<Pattern, ? extends Object> patternPropertyFunction;
+        protected Function<T, ? extends Object> propertyFunction;
 
-        StringFilter(String str, PatternProperty patternProperty) {
+        StringFilter(String str, ColumnProperty<T> patternProperty) {
             strToFind = str;
-            this.patternPropertyFunction = patternProperty.getFunction();
+            this.propertyFunction = patternProperty.getFunction();
         }
     }
 
-    private class MatchStringFilter extends StringFilter {
+    private class MatchStringFilter<T> extends StringFilter<T> {
 
-        public MatchStringFilter(String str, PatternProperty patternProperty) {
+        public MatchStringFilter(String str, ColumnProperty<T> patternProperty) {
             super(str, patternProperty);
         }
 
-        public boolean include(Pattern pattern) {
+        public boolean include(T obj) {
 
-            Object result = patternPropertyFunction.apply(pattern);
+            Object result = propertyFunction.apply(obj);
 
             if (result instanceof String) {
 
-                String patternStr = (String) result;
+                String str = (String) result;
 
                 if (this.strToFind.equals("")) {
                     return true;
                 }
-                return this.strToFind.matches(patternStr);
+                return this.strToFind.matches(str);
             }
 
             return false;
         }
     }
 
-    private class ContainsStringFilter extends StringFilter {
+    private class ContainsStringFilter<T> extends StringFilter<T> {
 
-        public ContainsStringFilter(String str, PatternProperty patternProperty) {
+        public ContainsStringFilter(String str, ColumnProperty<T> patternProperty) {
             super(str, patternProperty);
         }
 
-        public boolean include(Pattern pattern) {
+        public boolean include(T obj) {
 
-            Object result = patternPropertyFunction.apply(pattern);
+            Object result = propertyFunction.apply(obj);
 
             if (result instanceof String) {
 
@@ -201,18 +246,18 @@ public class FamiliesFilter {
         }
     }
 
-    private class OrFilter implements PatternFilter {
+    private class OrFilter<T> implements Filter<T> {
 
-        private List<PatternFilter> filters;
+        private List<Filter<T>> filters;
 
-        public OrFilter(List<PatternFilter> filters){
+        public OrFilter(List<Filter<T>> filters){
             this.filters = filters;
         }
 
         @Override
-        public boolean include(Pattern pattern) {
-            for (PatternFilter filter: filters){
-                if(filter.include(pattern)){
+        public boolean include(T obj) {
+            for (Filter<T> filter: filters){
+                if(filter.include(obj)){
                     return true;
                 }
             }

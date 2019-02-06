@@ -158,7 +158,8 @@ public class MainFrame extends JFrame {
         familiesFilter.setPatternLength(filterRequest.getMinCSBLength(), filterRequest.getMaxCSBLength());
         familiesFilter.setPatternScore(filterRequest.getMinScore(), filterRequest.getMaxScore());
         familiesFilter.setPatternCount(filterRequest.getMinInstanceCount(), filterRequest.getMaxInstanceCount());
-        familiesFilter.setId(filterRequest.getPatternId());
+        familiesFilter.setPatternIds(filterRequest.getPatternIds());
+        familiesFilter.setFamilyIds(filterRequest.getFamilyIds());
         familiesFilter.setStrand(filterRequest.getPatternStrand());
         familiesFilter.setGenes(filterRequest.getPatternGenes());
 

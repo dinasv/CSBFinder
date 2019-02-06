@@ -16,6 +16,8 @@ import static java.awt.GridBagConstraints.*;
  */
 public class FilterDialog extends JDialog{
 
+    private final static int TEXT_FIELD_SIZE = 12;
+
     private final JLabel CSB_LENGTH_LABEL = new JLabel("CSB length between:");
     private JSpinner minCSBLength;
     private JSpinner maxCSBLength;
@@ -33,8 +35,11 @@ public class FilterDialog extends JDialog{
     private JRadioButton allStrandTypesBtn;
     private JPanel patternStrandPanel;
 
-    private final JLabel PATTERN_ID_LABEL = new JLabel("Pattern ID:");
-    private JTextField patternId;
+    private final JLabel PATTERN_ID_LABEL = new JLabel("Pattern IDs:");
+    private JTextField patternIds;
+
+    private final JLabel FAMILY_ID_LABEL = new JLabel("Family IDs:");
+    private JTextField familyIds;
 
     private final JLabel PATTERN_GENES_LABEL = new JLabel("Pattern with genes:");
     private JTextField patternGenes;
@@ -137,8 +142,9 @@ public class FilterDialog extends JDialog{
         filterRequest.setMaxScore((int)maxScore.getValue());
         filterRequest.setMaxInstanceCount((int)maxCount.getValue());
         filterRequest.setMinInstanceCount((int)minCount.getValue());
-        filterRequest.setPatternId(patternId.getText());
+        filterRequest.setPatternIds(patternIds.getText());
         filterRequest.setPatternGenes(patternGenes.getText());
+        filterRequest.setFamilyIds(familyIds.getText());
 
         filterRequest.setPatternStrand(PatternStrand.valueOf(strandBtns.getSelection().getActionCommand()));
     }
@@ -154,7 +160,8 @@ public class FilterDialog extends JDialog{
         minCount = new JSpinner();
         maxCount = new JSpinner();
 
-        patternId = new JTextField();
+        patternIds = new JTextField();
+        familyIds = new JTextField();
         patternGenes = new JTextField();
     }
 
@@ -171,7 +178,8 @@ public class FilterDialog extends JDialog{
         minCount.setModel(new SpinnerNumberModel(1, 1, Integer.MAX_VALUE, 1));
         maxCount.setModel(new SpinnerNumberModel(Integer.MAX_VALUE, 0, Integer.MAX_VALUE, 1));
 
-        patternId.setText("");
+        patternIds.setText("");
+        familyIds.setText("");
         patternGenes.setText("");
     }
 
@@ -185,12 +193,16 @@ public class FilterDialog extends JDialog{
         addIntervalComponentToGC(y++, COUNT_LABEL, minCount, maxCount, insetLabel, insetField);
 
         addComponentToGC(0, y, 1, 0.2, insetLabel, PATTERN_ID_LABEL, LINE_START);
-        patternId.setColumns(12);
-        addComponentToGC(1, y++, 1, 0.2, insetLabel, patternId, LINE_START);
+        patternIds.setColumns(TEXT_FIELD_SIZE);
+        addComponentToGC(1, y++, 1, 0.2, insetLabel, patternIds, LINE_START);
 
         addComponentToGC(0, y, 1, 0.2, insetLabel, PATTERN_GENES_LABEL, LINE_START);
-        patternGenes.setColumns(12);
+        patternGenes.setColumns(TEXT_FIELD_SIZE);
         addComponentToGC(1, y++, 1, 0.2, insetLabel, patternGenes, LINE_START);
+
+        addComponentToGC(0, y, 1, 0.2, insetLabel, FAMILY_ID_LABEL, LINE_START);
+        familyIds.setColumns(TEXT_FIELD_SIZE);
+        addComponentToGC(1, y++, 1, 0.2, insetLabel, familyIds, LINE_START);
     }
 
     private void addIntervalComponentToGC(int y, JLabel label, JSpinner minSpinner, JSpinner maxSpinner,

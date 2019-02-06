@@ -1,7 +1,5 @@
 package MVC.View.Models;
 
-import Core.PostProcess.Family;
-
 import java.util.function.Function;
 
 /**
