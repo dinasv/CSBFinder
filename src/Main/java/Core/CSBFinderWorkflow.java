@@ -24,6 +24,8 @@ public class CSBFinderWorkflow {
     private GenomesInfo gi;
     private int patternsCount;
 
+    private List<Pattern> patterns;
+
     public CSBFinderWorkflow(GenomesInfo gi){
         Objects.requireNonNull(gi);
 
@@ -35,6 +37,7 @@ public class CSBFinderWorkflow {
         this.algorithm = null;
 
         patternsFromFile = new ArrayList<>();
+        patterns = new ArrayList<>();
     }
 
     public void setPatternsFromFile(List<Pattern> patternsFromFile){
@@ -57,18 +60,18 @@ public class CSBFinderWorkflow {
 
         algorithm.findPatterns();
 
-        List<Pattern> patterns = algorithm.getPatterns();
+        patterns = algorithm.getPatterns();
 
-        List<Family> families = processPatterns(patterns);
+        List<Family> families = processPatterns();
 
         return families;
     }
 
-    private List<Family> processPatterns(List<Pattern> patterns){
+    private List<Family> processPatterns(){
 
         patternsCount = patterns.size();
         computeScores(patterns);
-        List<Family> families = clusterToFamilies(patterns);
+        List<Family> families = clusterToFamilies();
 
         return families;
     }
@@ -90,7 +93,7 @@ public class CSBFinderWorkflow {
         }
     }
 
-    private List<Family> clusterToFamilies(List<Pattern> patterns){
+    private List<Family> clusterToFamilies(){
         List<Family> families = FamilyClustering.Cluster(patterns, params.threshold, params.clusterBy, gi,
                 params.nonDirectons);
         return families;

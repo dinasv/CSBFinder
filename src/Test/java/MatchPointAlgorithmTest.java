@@ -38,6 +38,14 @@ public class MatchPointAlgorithmTest {
         return params;
     }
 
+    private Parameters initParamsSetLenggth(){
+        Parameters params = initParamsNonDirectons();
+        params.minPatternLength = 2;
+        params.maxPatternLength = 2;
+
+        return params;
+    }
+
     private List<Pattern> runAlgorithm(String genomesFile, Parameters params) throws Exception{
 
         Algorithm algorithm = AlgorithmType.MATCH_POINTS.algorithm;
@@ -83,7 +91,7 @@ public class MatchPointAlgorithmTest {
     }
 
     @Test
-    public void testRefGenomesKeepAllPatterns() throws Exception {
+    public void testKeepAllPatterns() throws Exception {
 
         List<Pattern> patterns = runAlgorithm(GENOMES_FILE_PATH2, initParamsKeepAll());
 
@@ -100,7 +108,25 @@ public class MatchPointAlgorithmTest {
         for (Pattern pattern : expectedPatterns) {
             Assert.assertTrue(patterns.contains(pattern));
         }
+    }
 
+    @Test
+    public void testMinMaxLengthPatterns() throws Exception {
+        List<Pattern> patterns = runAlgorithm(GENOMES_FILE_PATH2, initParamsSetLenggth());
+
+        List<Pattern> expectedPatterns = new ArrayList<>();
+        List<Gene> expectedGenes = new ArrayList<>();
+        expectedGenes.add(new Gene("COG0001", Strand.FORWARD));
+        expectedGenes.add(new Gene("COG0002", Strand.FORWARD));
+        expectedGenes.add(new Gene("COG0003", Strand.REVERSE));
+
+        expectedPatterns.add(new Pattern(expectedGenes.subList(0, 2)));
+        expectedPatterns.add(new Pattern(expectedGenes.subList(1, 3)));
+
+        Assert.assertTrue(patterns.size() == expectedPatterns.size());
+        for (Pattern pattern : expectedPatterns) {
+            Assert.assertTrue(patterns.contains(pattern));
+        }
     }
 
 }
