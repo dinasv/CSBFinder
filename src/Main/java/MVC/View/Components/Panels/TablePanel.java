@@ -9,6 +9,8 @@ import MVC.View.Models.CSBFinderTableModel;
 import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
 import java.awt.*;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.util.List;
 
 
@@ -29,15 +31,31 @@ public class TablePanel<K, V> extends JPanel {
 
         table.setAutoCreateRowSorter(true);
         table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+
+        scrollPane = new JScrollPane(table);
+        scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+
+        addListeners();
+
+        add(scrollPane, BorderLayout.CENTER);
+    }
+
+    private void addListeners(){
         table.getSelectionModel().addListSelectionListener((ListSelectionEvent e) -> {
             if (!e.getValueIsAdjusting() && table.getSelectedRow() != -1) {
                 rowClickedListener.rowClickedOccurred(new RowClickedEvent<>(getSelectedRowObject()));
             }
         });
-        scrollPane = new JScrollPane(table);
-        scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+        table.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mousePressed(MouseEvent e) {
+                super.mousePressed(e);
 
-        add(scrollPane, BorderLayout.CENTER);
+                if (table.getSelectedRow() != -1){
+                    rowClickedListener.rowClickedOccurred(new RowClickedEvent<>(getSelectedRowObject()));
+                }
+            }
+        });
     }
 
     public void select(int row){

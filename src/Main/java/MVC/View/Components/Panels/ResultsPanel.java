@@ -50,6 +50,7 @@ public class ResultsPanel extends JPanel {
 
     }
 
+
     public void setFilteredFamilies(List<Family> filteredFamilies){
 
         clearPanel();
