@@ -188,8 +188,8 @@ public class MatchPointAlgorithm implements Algorithm {
 
     private void extendPattern(Pattern pattern, int patternStart, WordArray wordArray, List<Gene> genes) {
 
-        int endIndex = Math.min(wordArray.getLength(), patternStart + parameters.maxPatternLength);
-        for (int patternEnd = patternStart + 1; patternEnd < endIndex; patternEnd++) {
+        int endIndex = Math.min(wordArray.getLength() - patternStart, parameters.maxPatternLength);
+        for (int patternEnd = patternStart + 1; patternEnd < patternStart + endIndex; patternEnd++) {
 
             int letter = wordArray.getLetter(patternEnd);
 
