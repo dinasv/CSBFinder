@@ -8,6 +8,7 @@ public enum Icon {
 
     QUESTION_MARK("/question.png", "question mark icon"),
     RUN("/right-arrow.png", "run icon"),
+    CLUSTER("/network.png", "cluster icon"),
     FILTER("/funnel.png", "include results icon");
 
     private ImageIcon icon;

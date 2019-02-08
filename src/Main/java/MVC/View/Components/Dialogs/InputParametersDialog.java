@@ -2,6 +2,7 @@ package MVC.View.Components.Dialogs;
 
 import Core.AlgorithmType;
 import Core.ClusterBy;
+import Core.ClusterDenominator;
 import MVC.Common.CSBFinderRequest;
 import MVC.View.Events.RunEvent;
 import MVC.View.Listeners.RunListener;
@@ -13,6 +14,8 @@ import java.awt.event.ActionListener;
 
 import java.io.File;
 import java.util.Hashtable;
+import java.util.*;
+import java.util.List;
 
 import static java.awt.GridBagConstraints.FIRST_LINE_START;
 import static java.awt.GridBagConstraints.LINE_START;
@@ -20,6 +23,7 @@ import static java.awt.GridBagConstraints.LINE_START;
 public class InputParametersDialog extends JDialog {
 
     private JLabel clusterTypeLabel;
+    private JLabel clusterDenominatorLabel;
     private JLabel quorumLabel;
     private JLabel numOfInsertionsLabel;
     private JLabel quorumWithoutInsertionsLabel;
@@ -32,8 +36,9 @@ public class InputParametersDialog extends JDialog {
     private JLabel algorithmLabel;
     private JLabel thresholdLabel;
 
-    private JList clusterTypeField;
-    private JList algorithmField;
+    private JList<ClusterBy> clusterTypeField;
+    private JList<ClusterDenominator> clusterDenominatorField;
+    private JList<AlgorithmType> algorithmField;
     private JSpinner quorum;
     private JSlider quorumSlider;
     private JSpinner numOfInsertions;
@@ -48,18 +53,18 @@ public class InputParametersDialog extends JDialog {
     private JButton loadPatternBtn;
 
     private JButton run;
-    private RunListener runListener;
+    private RunListener<CSBFinderRequest> runListener;
 
     private GridBagConstraints gc;
 
-    JFileChooser fc;
+    private JFileChooser fc;
 
-    ImageIcon questionMark;
+    private ImageIcon questionMark;
 
-    public InputParametersDialog(JFileChooser fc, ImageIcon questionMark) {
+    public InputParametersDialog(JFileChooser fc) {
 
         this.fc = fc;
-        this.questionMark = questionMark;
+        this.questionMark = MVC.View.Images.Icon.QUESTION_MARK.getIcon();
         setTitle("Parameters");
 
         initLabels();
@@ -100,9 +105,10 @@ public class InputParametersDialog extends JDialog {
         request.setCsbPatternFilePath("optional".equals(patternPath) || "".equals(patternPath) ? null : patternFilePath.getText());
         request.setMultCount(bcount.isSelected());
         request.setFamilyClusterThreshold(familyClusterThreshold.getValue() / 10.0f);
-        request.setClusterType(ClusterBy.valueOf((String)clusterTypeField.getSelectedValue()));
-        request.setAlgorithm(AlgorithmType.valueOf((String)algorithmField.getSelectedValue()));
+        request.setClusterType(clusterTypeField.getSelectedValue());
+        request.setAlgorithm(algorithmField.getSelectedValue());
         request.setNonDirectons(!segmentToDirectons.isSelected());
+        request.setClusterDenominator(clusterDenominatorField.getSelectedValue());
 
     }
 
@@ -112,8 +118,9 @@ public class InputParametersDialog extends JDialog {
 
     private void initInputComponents() {
 
-        clusterTypeField = new JList();
-        algorithmField = new JList();
+        clusterTypeField = new JList<>();
+        clusterDenominatorField = new JList<>();
+        algorithmField = new JList<>();
 
         quorum = new JSpinner();
         quorumSlider = new JSlider();
@@ -196,6 +203,11 @@ public class InputParametersDialog extends JDialog {
         desc = "In the greedy CSB clustering to families, CSBs are sorted based on 'score' or 'length'.";
         clusterTypeLabel = initLabel(icon, labelName, desc);
 
+        labelName = "Clustering denominator";
+        desc = "In the greedy CSB clustering to families, CSBs is added to an existing cluster if their intersection/X " +
+                "is above a threshold.";
+        clusterDenominatorLabel = initLabel(icon, labelName, desc);
+
         labelName = "Algorithm";
         desc = "The algorithm used for finding CSBs.";
         algorithmLabel = initLabel(icon, labelName, desc);
@@ -253,9 +265,9 @@ public class InputParametersDialog extends JDialog {
         thresholdLabel = new JLabel("0.8");
         thresholdLabel.setBorder(BorderFactory.createEtchedBorder());
         familyClusterThreshold.setModel(new DefaultBoundedRangeModel(8, 0, 0, 10));
-        Hashtable table = new Hashtable();
-        table.put(new Integer(0), new JLabel("0"));
-        table.put(new Integer(10), new JLabel("1"));
+        Hashtable<Integer, JLabel> table = new Hashtable<>();
+        table.put(0, new JLabel("0"));
+        table.put(10, new JLabel("1"));
         familyClusterThreshold.setLabelTable(table);
         familyClusterThreshold.setPaintLabels(true);
         familyClusterThreshold.addChangeListener(e -> {
@@ -263,21 +275,24 @@ public class InputParametersDialog extends JDialog {
         });
 
         // Cluster Type
-        DefaultListModel clusterModel = new DefaultListModel();
-        clusterModel.addElement(ClusterBy.SCORE.toString());
-        clusterModel.addElement(ClusterBy.LENGTH.toString());
-        clusterTypeField.setModel(clusterModel);
-        clusterTypeField.setSelectedIndex(0);
+        initEnumList(clusterTypeField, Arrays.asList(ClusterBy.values()));
 
-        // Algorithm
-        DefaultListModel algModel = new DefaultListModel();
-        algModel.addElement(AlgorithmType.SUFFIX_TREE.toString());
-        algModel.addElement(AlgorithmType.MATCH_POINTS.toString());
-        algorithmField.setModel(algModel);
-        algorithmField.setSelectedIndex(0);
+        // Cluster Denominator
+        initEnumList(clusterDenominatorField, Arrays.asList(ClusterDenominator.values()));
+
+        initEnumList(algorithmField, Arrays.asList(AlgorithmType.values()));
 
         //directon segmantation
         segmentToDirectons.setSelected(true);
+    }
+
+    private <T extends Enum> void initEnumList(JList<T> jList, List<T> enumValues){
+        DefaultListModel<T> model = new DefaultListModel<>();
+        for (T e : enumValues){
+            model.addElement(e);
+        }
+        jList.setModel(model);
+        jList.setSelectedIndex(0);
     }
 
     private void addFieldsToGC() {
@@ -322,6 +337,14 @@ public class InputParametersDialog extends JDialog {
         addComponentToGC(0, y, 1, 0.1, insetLabel, bcountLabel, LINE_START);
         addComponentToGC(1, y++, 1, 0.1, insetField, bcount, LINE_START);
 
+        addComponentToGC(0, y, 1, 0.2, insetLabel, algorithmLabel, FIRST_LINE_START);
+        addComponentToGC(1, y++, 1, 0.2, insetField, algorithmField, FIRST_LINE_START);
+        addComponentToGC(1, y++, 1, 1, insetField, new JLabel(""), FIRST_LINE_START);
+
+        title = new JLabel("Clustering to families parameters:");
+        title.setFont(new Font(title.getFont().getName(), Font.BOLD, 16));
+        addComponentToGC(0, y++, 1, 0.6, insetLabel, title, LINE_START);
+
         addComponentToGC(0, y, 1, 0.2, insetLabel, familyClusterThresholdLabel, LINE_START);
         addComponentToGC(1, y, 1, 0.2, insetField, familyClusterThreshold, LINE_START);
         addComponentToGC(2, y++, 1, 0.2, insetField, thresholdLabel, LINE_START);
@@ -330,8 +353,8 @@ public class InputParametersDialog extends JDialog {
         addComponentToGC(1, y++, 1, 0.2, insetField, clusterTypeField, FIRST_LINE_START);
         addComponentToGC(1, y++, 1, 1, insetField, new JLabel(""), FIRST_LINE_START);
 
-        addComponentToGC(0, y, 1, 0.2, insetLabel, algorithmLabel, FIRST_LINE_START);
-        addComponentToGC(1, y++, 1, 0.2, insetField, algorithmField, FIRST_LINE_START);
+        addComponentToGC(0, y, 1, 0.2, insetLabel, clusterDenominatorLabel, FIRST_LINE_START);
+        addComponentToGC(1, y++, 1, 0.2, insetField, clusterDenominatorField, FIRST_LINE_START);
         addComponentToGC(1, y++, 1, 1, insetField, new JLabel(""), FIRST_LINE_START);
 
         addComponentToGC(1, y, 1, 2, insetField, run, LINE_START);

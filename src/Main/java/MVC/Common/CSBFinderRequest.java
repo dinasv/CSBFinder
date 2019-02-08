@@ -2,6 +2,7 @@ package MVC.Common;
 
 import Core.AlgorithmType;
 import Core.ClusterBy;
+import Core.ClusterDenominator;
 import MVC.View.Requests.Request;
 
 import java.util.LinkedList;
@@ -21,7 +22,16 @@ public class CSBFinderRequest implements Request{
     private boolean nonDirectons = false;
     private float familyClusterThreshold = 0.8f;
     private ClusterBy clusterType = ClusterBy.SCORE;
+    private ClusterDenominator clusterDenominator = ClusterDenominator.MIN_SET;
     private AlgorithmType algorithmType = AlgorithmType.SUFFIX_TREE;
+
+    public ClusterDenominator getClusterDenominator() {
+        return clusterDenominator;
+    }
+
+    public void setClusterDenominator(ClusterDenominator clusterDenominator) {
+        this.clusterDenominator = clusterDenominator;
+    }
 
     public int getQuorum() {
         return quorum;
@@ -159,6 +169,9 @@ public class CSBFinderRequest implements Request{
 
         argList.add("-clust-by");
         argList.add(clusterType.toString());
+
+        argList.add("-clust-denominator");
+        argList.add(clusterDenominator.toString());
 
         argList.add("-alg");
         argList.add(algorithmType.toString());

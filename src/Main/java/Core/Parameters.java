@@ -71,14 +71,17 @@ public class Parameters {
     @Parameter(names={"--threshold", "-t"}, description = "Threshold for family clustering", order = 10)
     public double threshold = 0.8;
 
-    @Parameter(names={"-out"}, description = "Output file type", order = 11)
-    public OutputType outputFileType = OutputType.XLSX;
+    @Parameter(names={"-clust-by"}, description = "Cluster CSBs to families by: 'score' or 'length'", order = 11)
+    public static ClusterBy clusterBy = ClusterBy.SCORE;
 
-    @Parameter(names={"-clust-by"}, description = "Cluster CSBs to families by: 'score' or 'length'", order = 12)
-    public ClusterBy clusterBy = ClusterBy.SCORE;
+    @Parameter(names={"-clust-denominator"}, description = "Cluster CSBs to families by: 'score' or 'length'", order = 11)
+    public ClusterDenominator clusterDenominator = ClusterDenominator.MIN_SET;
 
-    @Parameter(names={"-non-directons"}, description = "If true, segment input sequences directons", order = 13)
+    @Parameter(names={"-non-directons"}, description = "If true, segment input sequences directons", order = 12)
     public boolean nonDirectons = false;
+
+    @Parameter(names={"-out"}, description = "Output file type", order = 13)
+    public OutputType outputFileType = OutputType.XLSX;
 
     @Parameter(names={"-out-dir"}, description = "Path to output directory", order = 14)
     public String outputDir = "output";

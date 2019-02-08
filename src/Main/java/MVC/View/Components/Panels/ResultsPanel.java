@@ -3,6 +3,7 @@ package MVC.View.Components.Panels;
 import Core.Patterns.Pattern;
 import Core.PostProcess.Family;
 import MVC.View.Listeners.FilterTableListener;
+import MVC.View.Listeners.OpenDialogListener;
 import MVC.View.Listeners.RowClickedListener;
 import MVC.View.Models.*;
 import MVC.View.Models.Filters.FamiliesFilter;
@@ -80,7 +81,7 @@ public class ResultsPanel extends JPanel {
     }
 
 
-    public void setFilterTableListener(FilterTableListener filterTableListener) {
+    public void setFilterTableListener(OpenDialogListener filterTableListener) {
         tableButtonsPanel.setFilterTableListener(filterTableListener);
     }
 

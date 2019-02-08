@@ -54,20 +54,21 @@ public class Family {
 
     private void addCharsToCharsSet(Pattern pattern){
 
-        List<Gene> patternGenes = pattern.getPatternGenes();
+        //List<Gene> patternGenes = pattern.getPatternGenes();
         addCharsToCharsSet(pattern.getPatternGenes());
+        /*
         if (patternGenes != null && patternGenes.size()>0 && patternGenes.get(0) != null) {
             if (patternGenes.get(0).getStrand() != Strand.INVALID) {
                 addCharsToCharsSet(pattern.getReverseComplimentPattern());
             }
-        }
+        }*/
     }
 
     private void addCharsToCharsSet(List<Gene> patternGenes){
         for (Gene gene: patternGenes) {
             int cogIndex;
 
-            if (genomesInfo.getLetter(gene) != -1){
+            if (genomesInfo.getLetter(new Gene(gene.getCogId(), Strand.INVALID)) != -1){
                 cogIndex = genomesInfo.getLetter(gene);
                 charSet.add(cogIndex);
             }

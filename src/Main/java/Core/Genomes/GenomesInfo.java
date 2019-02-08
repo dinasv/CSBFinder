@@ -1,6 +1,7 @@
 package Core.Genomes;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  */
@@ -124,6 +125,10 @@ public class GenomesInfo {
         countReplicons++;
 
         datasetLengthSum += replicon.size();
+
+        createWordArray(replicon.getGenes().stream()
+                .map(gene -> new Gene(gene.getCogId(), Strand.INVALID))
+                .collect(Collectors.toList()));
     }
 
 

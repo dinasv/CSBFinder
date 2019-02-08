@@ -5,11 +5,14 @@ import Core.Patterns.Pattern;
 import java.util.Comparator;
 
 /**
- * Defines a clustering method for the patterns
+ * Defines a sorting comparator in the clustering of patterns
+ *
+ * In the first step of the clustering, the patterns are sorted using a comparator.
+ * The first cluster will consist from the first pattern
  */
 public enum ClusterBy {
-    LENGTH(new Pattern.LengthComparator()),
-    SCORE(new Pattern.ScoreComparator());
+    SCORE(new Pattern.ScoreComparator()),
+    LENGTH(new Pattern.LengthComparator());
 
     public final Comparator<Pattern> patternComparator;
 

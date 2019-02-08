@@ -18,6 +18,7 @@ import com.beust.jcommander.ParameterException;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class CSBFinderModel {
 
@@ -79,6 +80,9 @@ public class CSBFinderModel {
             parseArgs(args);
 
             workflow = new CSBFinderWorkflow(gi);
+            workflow.setParameters(params);
+            workflow.setPatterns(families.stream().map(Family::getPatterns).flatMap(List::stream)
+                    .collect(Collectors.toList()));
 
             csbFinderDoneListener.CSBFinderDoneOccurred(new CSBFinderDoneEvent(families));
             msg = "Loaded session file.";
@@ -164,6 +168,20 @@ public class CSBFinderModel {
 
         System.out.println(msg);
         System.out.println("Took " + String.valueOf((System.nanoTime() - startTime) / Math.pow(10, 9)) + " seconds");
+
+        csbFinderDoneListener.CSBFinderDoneOccurred(new CSBFinderDoneEvent(families));
+
+        return msg;
+    }
+
+    public String clusterToFamilies(double threshold, ClusterBy clusterBy, ClusterDenominator clusterDenominator){
+        String msg = "";
+        try{
+            families = workflow.clusterToFamilies(threshold, clusterBy, clusterDenominator);
+            msg = "Clustered to " + families.size() + " families";
+        }catch (Exception e){
+            msg = "Something went wrong";
+        }
 
         csbFinderDoneListener.CSBFinderDoneOccurred(new CSBFinderDoneEvent(families));
 

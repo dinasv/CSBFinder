@@ -1,7 +1,9 @@
 package MVC.View.Components;
 
+import Core.ClusterDenominator;
 import MVC.Common.CSBFinderRequest;
 import MVC.Controller.CSBFinderController;
+import MVC.View.Components.Dialogs.ClusterDialog;
 import MVC.View.Components.Dialogs.FilterDialog;
 import MVC.View.Components.Dialogs.InputParametersDialog;
 import MVC.View.Components.Dialogs.ProgressBar;
@@ -21,6 +23,7 @@ import java.awt.*;
 import java.io.File;
 import java.util.*;
 import java.util.List;
+import java.util.function.Function;
 
 public class MainFrame extends JFrame {
 
@@ -36,6 +39,7 @@ public class MainFrame extends JFrame {
     private ProgressBar progressBar;
 
     private InputParametersDialog inputParamsDialog;
+    private ClusterDialog clusterDialog;
     private FilterDialog filterDialog;
 
     private FamiliesFilter familiesFilter;
@@ -78,16 +82,18 @@ public class MainFrame extends JFrame {
     public void clearPanels() {
         genomesPanel.clearPanel();
         summaryPanel.clearPanel();
+        toolbar.disableClusterBtn();
     }
 
     public void initComponents() {
         Map<String, Color> colorsUsed = new HashMap<>();
         colorsUsed.put(controller.getUNKchar(), Color.lightGray);
 
-        inputParamsDialog = new InputParametersDialog(fc, Icon.QUESTION_MARK.getIcon());
+        inputParamsDialog = new InputParametersDialog(fc);
+        clusterDialog = new ClusterDialog();
         filterDialog = new FilterDialog();
 
-        toolbar = new Toolbar(Icon.RUN.getIcon());
+        toolbar = new Toolbar();
         genomesPanel = new GenomePanel(colorsUsed);
 
         summaryPanel = new SummaryPanel(Icon.FILTER.getIcon());
@@ -111,7 +117,9 @@ public class MainFrame extends JFrame {
 
     private void setEventListeners() {
         setRunCSBFinderListener();
+        setRunClusteringListener();
         setSelectParamsListener();
+        setClusterListener();
         setPatternRowClickedListener();
         setFamilyRowClickedListener();
         setFilterTableListener();
@@ -133,6 +141,7 @@ public class MainFrame extends JFrame {
         if (familyList.size() > 0) {
             menuBar.enableSaveFileBtn();
             summaryPanel.enableFilterBtn();
+            toolbar.enableClusterBtn();
 
             summaryPanel.setFamilyData(familyList);
             familiesFilter.setFamilies(familyList);
@@ -196,6 +205,40 @@ public class MainFrame extends JFrame {
         });
     }
 
+    private void setRunClusteringListener() {
+        clusterDialog.setRunListener(new RunListener<CSBFinderRequest>() {
+            public void runEventOccurred(RunEvent<CSBFinderRequest> e) {
+
+                SwingUtilities.invokeLater(() -> {
+                    clusterDialog.setVisible(false);
+                    progressBar.start("Running");
+                });
+
+                SwingWorker<Void, Void> swingWorker = new SwingWorker<Void, Void>() {
+
+                    CSBFinderRequest request = e.getRequest();
+                    String msg = "";
+
+                    @Override
+                    protected Void doInBackground() throws Exception {
+                        clearPanels();
+                        msg = controller.clusterToFamilies(request.getFamilyClusterThreshold(),
+                                request.getClusterType(), request.getClusterDenominator());
+                        return null;
+                    }
+
+                    @Override
+                    protected void done() {
+                        progressBar.done("");
+                        JOptionPane.showMessageDialog(MainFrame.this, msg);
+                    }
+                };
+                swingWorker.execute();
+            }
+        });
+    }
+
+
 
     private void setRunCSBFinderListener() {
         inputParamsDialog.setRunListener(new RunListener<CSBFinderRequest>() {
@@ -230,14 +273,22 @@ public class MainFrame extends JFrame {
         });
     }
 
-    private void setSelectParamsListener() {
-        toolbar.setSelectParamsListener(new SelectParamsListener() {
+    private void setClusterListener() {
+        toolbar.setClusterListener(new OpenDialogListener() {
             @Override
-            public void selectParamsOccurred(SelectParamsEvent e) {
+            public void openDialogOccurred(OpenDialogEvent e) {
+                clusterDialog.setLocationRelativeTo(null);
+                clusterDialog.setVisible(true);
+            }
+        });
+    }
 
+    private void setSelectParamsListener() {
+        toolbar.setSelectParamsListener(new OpenDialogListener() {
+            @Override
+            public void openDialogOccurred(OpenDialogEvent e) {
                 inputParamsDialog.setLocationRelativeTo(null);
                 inputParamsDialog.setVisible(true);
-
             }
         });
     }
@@ -247,9 +298,9 @@ public class MainFrame extends JFrame {
     }
 
     private void setFilterTableListener() {
-        summaryPanel.setFilterTableListener(new FilterTableListener() {
+        summaryPanel.setFilterTableListener(new OpenDialogListener() {
             @Override
-            public void filterTableOccurred(FilterTableEvent e) {
+            public void openDialogOccurred(OpenDialogEvent e) {
                 filterDialog.setLocationRelativeTo(null);
                 filterDialog.setVisible(true);
             }

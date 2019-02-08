@@ -49,6 +49,10 @@ public class CSBFinderWorkflow {
         algorithm.setGenomesInfo(gi);
     }
 
+    public void setParameters(Parameters parameters){
+        this.params = parameters;
+    }
+
     public List<Family> run(Parameters params){
         if (algorithm == null || params == null){
             return new ArrayList<>();
@@ -71,7 +75,7 @@ public class CSBFinderWorkflow {
 
         patternsCount = patterns.size();
         computeScores(patterns);
-        List<Family> families = clusterToFamilies();
+        List<Family> families = clusterToFamilies(params.threshold, params.clusterBy, params.clusterDenominator);
 
         return families;
     }
@@ -93,10 +97,12 @@ public class CSBFinderWorkflow {
         }
     }
 
-    private List<Family> clusterToFamilies(){
-        List<Family> families = FamilyClustering.Cluster(patterns, params.threshold, params.clusterBy, gi,
-                params.nonDirectons);
-        return families;
+    public void setPatterns(List<Pattern> patterns){
+        this.patterns = patterns;
+    }
+
+    public List<Family> clusterToFamilies(double threshold, ClusterBy clusterBy, ClusterDenominator clusterDenominator){
+        return FamilyClustering.Cluster(patterns, threshold, clusterBy, clusterDenominator, gi);
     }
 
     public int getPatternsCount() {

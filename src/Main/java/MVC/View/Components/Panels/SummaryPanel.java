@@ -4,6 +4,7 @@ import Core.Patterns.Pattern;
 import Core.PostProcess.Family;
 import Core.OrthologyGroups.COG;
 import MVC.View.Listeners.FilterTableListener;
+import MVC.View.Listeners.OpenDialogListener;
 import MVC.View.Listeners.RowClickedListener;
 import MVC.View.Requests.FilterRequest;
 
@@ -34,7 +35,7 @@ public class SummaryPanel extends JSplitPane {
         resultsPanel.setFilteredFamilies(filteredFamilies);
     }
 
-    public void setFilterTableListener(FilterTableListener filterTableListener) {
+    public void setFilterTableListener(OpenDialogListener filterTableListener) {
         resultsPanel.setFilterTableListener(filterTableListener);
     }
 

@@ -1,5 +1,6 @@
 package Core.PostProcess;
 
+import Core.ClusterDenominator;
 import Core.Genomes.Gene;
 import Core.Genomes.GenomesInfo;
 import Core.Patterns.Pattern;
@@ -14,9 +15,9 @@ import Core.ClusterBy;
 public class FamilyClustering {
 
     public static List<Family> Cluster(List<Pattern> patterns, double threshold, ClusterBy clusterBy,
-                                            GenomesInfo gi, boolean nonDirectons){
+                                       ClusterDenominator clusterDenominator, GenomesInfo gi){
 
-        List<Family> families = greedyClustering(patterns, threshold, clusterBy, gi, nonDirectons);
+        List<Family> families = greedyClustering(patterns, threshold, clusterBy, clusterDenominator, gi);
 
         for (Family family: families){
             family.sortPatternsAndSetScore();
@@ -26,57 +27,65 @@ public class FamilyClustering {
         return families;
     }
 
-    private static boolean addToFamily(Family family, double threshold, Pattern curr_pattern,
-                                       Set<Integer> curr_pattern_gene_set){
+    private static boolean addToFamily(Family family, double threshold, Pattern currPattern,
+                                       ClusterDenominator clusterDenominator, Set<Integer> currPatternGeneSet){
 
-        Set<Integer> family_set = family.getGeneSet();
-        int minimal_set_size = Math.min(family_set.size(), curr_pattern_gene_set.size());
+        Set<Integer> familySet = family.getGeneSet();
 
-        Set<Integer> intersection = new HashSet<Integer>(curr_pattern_gene_set);
-        intersection.retainAll(family_set);
+        int denominator = 1;
+        if (clusterDenominator == ClusterDenominator.MIN_SET){
+            denominator = Math.min(familySet.size(), currPatternGeneSet.size());
 
-        //double thresh = threshold;
-        if (minimal_set_size >= 1 && minimal_set_size <= 2) {
-            threshold = 1;
+            threshold = denominator >= 1 && denominator <= 2 ? 1 : threshold;
+
+        }else if (clusterDenominator == ClusterDenominator.MAX_SET){
+            denominator = Math.max(familySet.size(), currPatternGeneSet.size());
+        }else if (clusterDenominator == ClusterDenominator.UNION){
+            Set<Integer> union = new HashSet<>(currPatternGeneSet);
+            union.addAll(familySet);
+            denominator = union.size();
         }
 
-        if (intersection.size() / (double) minimal_set_size >= threshold) {
-            family.addPattern(curr_pattern);
+        Set<Integer> intersection = new HashSet<>(currPatternGeneSet);
+        intersection.retainAll(familySet);
+
+        if ((intersection.size() / (double) denominator) >= threshold) {
+            family.addPattern(currPattern);
             return true;
         }
         return false;
     }
 
     private static List<Family> greedyClustering(List<Pattern> patterns, double threshold, ClusterBy clusterBy,
-                                                      GenomesInfo gi, boolean nonDirectons){
+                                                 ClusterDenominator clusterDenominator, GenomesInfo gi){
 
-        Collections.sort(patterns, clusterBy.patternComparator);
+        patterns.sort(clusterBy.patternComparator);
 
         List<Family> families = new ArrayList<>();
         Iterator<Pattern> it = patterns.iterator();
         if (it.hasNext()) {
             Pattern first_pattern = it.next();
-            Family first_family = new Family(0, first_pattern, gi);
+            Family firstFamily = new Family(0, first_pattern, gi);
 
-            families.add(first_family);
+            families.add(firstFamily);
 
             while (it.hasNext()) {
-                Pattern curr_pattern = it.next();
+                Pattern currPattern = it.next();
 
-                Set<Integer> curr_pattern_gene_set = getGenesSet(curr_pattern.getPatternGenes(), gi);
+                Set<Integer> currPatternGeneSet = getGenesSet(currPattern.getPatternGenes(), gi);
 
-                boolean added_pattern = false;
+                boolean addedPattern = false;
                 for (Family family : families) {
-                    added_pattern = addToFamily(family, threshold, curr_pattern, curr_pattern_gene_set);
+                    addedPattern = addToFamily(family, threshold, currPattern, clusterDenominator, currPatternGeneSet);
 
-                    if (added_pattern){
+                    if (addedPattern){
                         break;
                     }
                 }
 
-                if (!added_pattern) {
-                    Family new_family = new Family(families.size(), curr_pattern, gi);
-                    families.add(new_family);
+                if (!addedPattern) {
+                    Family newFamily = new Family(families.size(), currPattern, gi);
+                    families.add(newFamily);
                 }
             }
         }
@@ -85,12 +94,12 @@ public class FamilyClustering {
     }
 
     private static Set<Integer> getGenesSet(List<Gene> genes, GenomesInfo gi){
-        Set<Integer> gene_set = new HashSet<>();
+        Set<Integer> geneSet = new HashSet<>();
         for (Gene cog: genes) {
             int cog_index = gi.getLetter(cog);
-            gene_set.add(cog_index);
+            geneSet.add(cog_index);
         }
-        return gene_set;
+        return geneSet;
     }
 
 }

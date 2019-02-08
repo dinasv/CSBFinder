@@ -1,5 +1,7 @@
 package MVC.Controller;
 
+import Core.ClusterBy;
+import Core.ClusterDenominator;
 import Core.Genomes.Gene;
 import Core.Genomes.Genome;
 import Core.Genomes.GenomesInfo;
@@ -78,6 +80,10 @@ public class CSBFinderController {
 
     public String getInputGenomesPath(){
         return model.getInputGenomesPath();
+    }
+
+    public String clusterToFamilies(double threshold, ClusterBy clusterBy, ClusterDenominator clusterDenominator){
+        return model.clusterToFamilies(threshold, clusterBy, clusterDenominator);
     }
 
 }
