@@ -2,12 +2,9 @@ package MVC.View.Components.Panels;
 
 import Core.Patterns.Pattern;
 import Core.PostProcess.Family;
-import MVC.View.Listeners.FilterTableListener;
 import MVC.View.Listeners.OpenDialogListener;
 import MVC.View.Listeners.RowClickedListener;
 import MVC.View.Models.*;
-import MVC.View.Models.Filters.FamiliesFilter;
-import MVC.View.Requests.FilterRequest;
 
 import javax.swing.*;
 import java.awt.*;

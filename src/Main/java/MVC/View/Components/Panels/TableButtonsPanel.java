@@ -1,8 +1,6 @@
 package MVC.View.Components.Panels;
 
-import MVC.View.Events.FilterTableEvent;
 import MVC.View.Events.OpenDialogEvent;
-import MVC.View.Listeners.FilterTableListener;
 import MVC.View.Listeners.OpenDialogListener;
 
 import javax.swing.*;

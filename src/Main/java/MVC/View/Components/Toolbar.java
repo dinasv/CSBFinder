@@ -1,11 +1,9 @@
 package MVC.View.Components;
 
 import MVC.View.Events.OpenDialogEvent;
-import MVC.View.Events.SelectParamsEvent;
 import MVC.View.Events.SetNumOfNeighborsEvent;
 import MVC.View.Images.Icon;
 import MVC.View.Listeners.OpenDialogListener;
-import MVC.View.Listeners.SelectParamsListener;
 import MVC.View.Listeners.SetNumOfNeighborsListener;
 
 import javax.swing.*;

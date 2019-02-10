@@ -10,6 +10,7 @@ import MVC.View.Models.PatternProperty;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -44,7 +45,12 @@ public class FamiliesFilter {
         for (String id: ids){
             try {
                 int intId = Integer.valueOf(id);
-                numberFilters.add(new NumberFilter<>(intId, intId, FamilyProperty.FAMILY_ID));
+                List<Filter<Family>> familyIdFilter = new ArrayList<>();
+                familyIdFilter.add(new NumberFilter<>(intId, NumberComparison.LARGER_EQ, FamilyProperty.FAMILY_ID));
+                familyIdFilter.add(new NumberFilter<>(intId, NumberComparison.LESS_EQ, FamilyProperty.FAMILY_ID));
+
+                numberFilters.add(new AndFilter<>(familyIdFilter));
+
             }catch (NumberFormatException e){
                 //skip
             }
@@ -70,17 +76,30 @@ public class FamiliesFilter {
         patternFilters.add(new StrandFilter(patternStrand));
     }
 
-    public void setPatternLength(int from, int to) {
-        patternFilters.add(new NumberFilter<>(from, to, PatternProperty.LENGTH));
+    public void setPatternMinLength(int val) {
+        patternFilters.add(new NumberFilter<>(val, NumberComparison.LARGER_EQ, PatternProperty.LENGTH));
     }
 
-    public void setPatternScore(int from, int to) {
-        patternFilters.add(new NumberFilter<>(from, to, PatternProperty.SCORE));
+    public void setPatternMaxLength(int val) {
+        patternFilters.add(new NumberFilter<>(val, NumberComparison.LESS_EQ, PatternProperty.LENGTH));
     }
 
-    public void setPatternCount(int from, int to) {
-        patternFilters.add(new NumberFilter<>(from, to, PatternProperty.INSTANCE_COUNT));
+    public void setPatternMinScore(int val) {
+        patternFilters.add(new NumberFilter<>(val, NumberComparison.LARGER_EQ, PatternProperty.SCORE));
     }
+
+    public void setPatternMaxScore(int val) {
+        patternFilters.add(new NumberFilter<>(val, NumberComparison.LESS_EQ, PatternProperty.SCORE));
+    }
+
+    public void setPatternMinCount(int val) {
+        patternFilters.add(new NumberFilter<>(val, NumberComparison.LARGER_EQ, PatternProperty.INSTANCE_COUNT));
+    }
+
+    public void setPatternMaxCount(int val) {
+        patternFilters.add(new NumberFilter<>(val, NumberComparison.LESS_EQ, PatternProperty.INSTANCE_COUNT));
+    }
+
 
     public void setGenes(String genes){
         String[] ids = genes.split(SEPARATOR);
@@ -94,6 +113,7 @@ public class FamiliesFilter {
 
     public void applyFilters() {
         if (patternFilters.size() == 0) {
+            filteredFamilies = families;
             return;
         }
 
@@ -136,13 +156,38 @@ public class FamiliesFilter {
 
     private class NumberFilter<T> implements Filter<T> {
 
-        private int from;
-        private int to;
+        private Integer value;
+        private NumberComparison numberComparison;
         private ColumnProperty<T> patternProperty;
 
-        NumberFilter(int from, int to, ColumnProperty<T> patternProperty) {
-            this.from = from;
-            this.to = to;
+        NumberFilter(int value, NumberComparison numberComparison, ColumnProperty<T> patternProperty) {
+            this.value = value;
+            this.patternProperty = patternProperty;
+            this.numberComparison = numberComparison;
+        }
+
+        @Override
+        public boolean include(T obj) {
+            Function<T, ? extends Object> function = patternProperty.getFunction();
+
+            Object result = function.apply(obj);
+            if (result instanceof Number) {
+                Number num = (Number) result;
+                return numberComparison.comparisonFunc.apply(num.doubleValue(), value.doubleValue());
+            }
+
+            return false;
+        }
+    }
+
+    private class LessEqFilter<T> implements Filter<T> {
+
+        private int value;
+
+        private ColumnProperty<T> patternProperty;
+
+        LessEqFilter(int value, ColumnProperty<T> patternProperty) {
+            this.value = value;
             this.patternProperty = patternProperty;
         }
 
@@ -153,12 +198,10 @@ public class FamiliesFilter {
             Object result = function.apply(obj);
             if (result instanceof Number) {
                 Number num = (Number) result;
-                return num.doubleValue() >= from && num.doubleValue() <= to;
+                return num.doubleValue() <= value;
             }
-
             return false;
         }
-
     }
 
     private class StrandFilter implements Filter<Pattern> {
@@ -246,6 +289,25 @@ public class FamiliesFilter {
         }
     }
 
+    private class AndFilter<T> implements Filter<T> {
+
+        private List<Filter<T>> filters;
+
+        public AndFilter(List<Filter<T>> filters){
+            this.filters = filters;
+        }
+
+        @Override
+        public boolean include(T obj) {
+            for (Filter<T> filter: filters){
+                if(!filter.include(obj)){
+                    return false;
+                }
+            }
+            return true;
+        }
+    }
+
     private class OrFilter<T> implements Filter<T> {
 
         private List<Filter<T>> filters;
@@ -267,5 +329,24 @@ public class FamiliesFilter {
 
     public List<Family> getFilteredFamilies() {
         return filteredFamilies;
+    }
+
+    private enum NumberComparison{
+
+        LESS_EQ(NumberComparison::aLessEqb),
+        LARGER_EQ(NumberComparison::aLargerEqb);
+
+        public final BiFunction<Double, Double, Boolean> comparisonFunc;
+
+        NumberComparison(BiFunction<Double, Double, Boolean> comparisonFunc){
+            this.comparisonFunc = comparisonFunc;
+        }
+
+        public static boolean aLessEqb(double a, double b){
+            return a <= b;
+        }
+        public static boolean aLargerEqb(double a, double b){
+            return a >= b;
+        }
     }
 }

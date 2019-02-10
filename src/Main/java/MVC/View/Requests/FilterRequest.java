@@ -2,20 +2,39 @@ package MVC.View.Requests;
 
 import MVC.View.Models.Filters.PatternStrand;
 
+import java.util.Optional;
+
 /**
  */
 public class FilterRequest implements Request{
 
-    private int minCSBLength = 2;
-    private int maxCSBLength = Integer.MAX_VALUE;
-    private int minScore = 0;
-    private int maxScore = Integer.MAX_VALUE;
-    private int minInstanceCount = 1;
-    private int maxInstanceCount = Integer.MAX_VALUE;
-    private PatternStrand patternStrand = PatternStrand.ALL;
-    private String patternIds = "";
-    private String patternGenes = "";
-    private String familyIds = "";
+    private Integer minCSBLength;
+    private Integer maxCSBLength;
+    private Integer minScore;
+    private Integer maxScore;
+    private Integer minInstanceCount;
+    private Integer maxInstanceCount;
+    private PatternStrand patternStrand;
+    private String patternIds;
+    private String patternGenes;
+    private String familyIds;
+
+    public FilterRequest(){
+        initAllFields();
+    }
+
+    public void initAllFields(){
+        minCSBLength = null;
+        maxCSBLength = null;
+        minScore = null;
+        maxScore = null;
+        minInstanceCount = null;
+        maxInstanceCount = null;
+        patternStrand = null;
+        patternIds = null;
+        patternGenes = null;
+        familyIds = null;
+    }
 
     public void setMinCSBLength(int minCSBLength) {
         this.minCSBLength = minCSBLength;
@@ -25,56 +44,56 @@ public class FilterRequest implements Request{
         this.maxCSBLength = maxCSBLength;
     }
 
-    public int getMinCSBLength() {
-        return minCSBLength;
+    public Optional<Integer> getMinCSBLength() {
+        return Optional.ofNullable(minCSBLength);
     }
 
-    public int getMaxCSBLength() {
-        return maxCSBLength;
+    public Optional<Integer> getMaxCSBLength() {
+        return Optional.ofNullable(maxCSBLength);
     }
 
-    public int getMinScore() {
-        return minScore;
+    public Optional<Integer> getMinScore() {
+        return Optional.ofNullable(minScore);
     }
 
     public void setMinScore(int minScore) {
         this.minScore = minScore;
     }
 
-    public int getMaxScore() {
-        return maxScore;
+    public Optional<Integer> getMaxScore() {
+        return Optional.ofNullable(maxScore);
     }
 
     public void setMaxScore(int maxScore) {
         this.maxScore = maxScore;
     }
 
-    public int getMinInstanceCount() {
-        return minInstanceCount;
+    public Optional<Integer> getMinInstanceCount() {
+        return Optional.ofNullable(minInstanceCount);
     }
 
     public void setMinInstanceCount(int minInstanceCount) {
         this.minInstanceCount = minInstanceCount;
     }
 
-    public int getMaxInstanceCount() {
-        return maxInstanceCount;
+    public Optional<Integer> getMaxInstanceCount() {
+        return Optional.ofNullable(maxInstanceCount);
     }
 
     public void setMaxInstanceCount(int maxInstanceCount) {
         this.maxInstanceCount = maxInstanceCount;
     }
 
-    public PatternStrand getPatternStrand() {
-        return patternStrand;
+    public Optional<PatternStrand> getPatternStrand() {
+        return Optional.ofNullable(patternStrand);
     }
 
     public void setPatternStrand(PatternStrand patternStrand) {
         this.patternStrand = patternStrand;
     }
 
-    public String getPatternIds() {
-        return patternIds;
+    public Optional<String> getPatternIds() {
+        return Optional.ofNullable(patternIds);
     }
 
     public void setPatternIds(String patternIds) {
@@ -85,12 +104,12 @@ public class FilterRequest implements Request{
         this.patternGenes = patternGenes;
     }
 
-    public String getPatternGenes() {
-        return patternGenes;
+    public Optional<String> getPatternGenes() {
+        return Optional.ofNullable(patternGenes);
     }
 
-    public String getFamilyIds() {
-        return familyIds;
+    public Optional<String> getFamilyIds() {
+        return Optional.ofNullable(familyIds);
     }
 
     public void setFamilyIds(String familyIds) {

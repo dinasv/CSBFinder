@@ -164,13 +164,16 @@ public class MainFrame extends JFrame {
     private void setFilters(FilterRequest filterRequest){
         familiesFilter.clear();
 
-        familiesFilter.setPatternLength(filterRequest.getMinCSBLength(), filterRequest.getMaxCSBLength());
-        familiesFilter.setPatternScore(filterRequest.getMinScore(), filterRequest.getMaxScore());
-        familiesFilter.setPatternCount(filterRequest.getMinInstanceCount(), filterRequest.getMaxInstanceCount());
-        familiesFilter.setPatternIds(filterRequest.getPatternIds());
-        familiesFilter.setFamilyIds(filterRequest.getFamilyIds());
-        familiesFilter.setStrand(filterRequest.getPatternStrand());
-        familiesFilter.setGenes(filterRequest.getPatternGenes());
+        filterRequest.getMinCSBLength().ifPresent(val -> familiesFilter.setPatternMinLength(val));
+        filterRequest.getMaxCSBLength().ifPresent(val -> familiesFilter.setPatternMaxLength(val));
+        filterRequest.getMinScore().ifPresent(val -> familiesFilter.setPatternMinScore(val));
+        filterRequest.getMaxScore().ifPresent(val -> familiesFilter.setPatternMaxScore(val));
+        filterRequest.getMinInstanceCount().ifPresent(val -> familiesFilter.setPatternMinCount(val));
+        filterRequest.getMaxInstanceCount().ifPresent(val -> familiesFilter.setPatternMaxCount(val));
+        filterRequest.getPatternIds().ifPresent(val -> familiesFilter.setPatternIds(val));
+        filterRequest.getFamilyIds().ifPresent(val -> familiesFilter.setFamilyIds(val));
+        filterRequest.getPatternStrand().ifPresent(val -> familiesFilter.setStrand(val));
+        filterRequest.getPatternGenes().ifPresent(val -> familiesFilter.setGenes(val));
 
         familiesFilter.applyFilters();
 
