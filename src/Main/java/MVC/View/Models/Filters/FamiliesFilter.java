@@ -112,12 +112,12 @@ public class FamiliesFilter {
     }
 
     public void applyFilters() {
-        if (patternFilters.size() == 0) {
+        if (familyFilters.size() == 0 && patternFilters.size() == 0) {
             filteredFamilies = families;
             return;
         }
 
-        filteredFamilies.clear();
+        filteredFamilies = new ArrayList<>();
         for (Family family : families) {
             boolean includeFamily = filterObj(family, familyFilters);
 

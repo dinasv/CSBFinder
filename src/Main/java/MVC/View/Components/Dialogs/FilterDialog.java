@@ -6,9 +6,17 @@ import MVC.View.Models.Filters.PatternStrand;
 import MVC.View.Requests.FilterRequest;
 
 import javax.swing.*;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
+import javax.swing.text.Document;
+import javax.swing.text.JTextComponent;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.beans.PropertyChangeEvent;
+import java.util.Objects;
 
 import static java.awt.GridBagConstraints.*;
 
@@ -63,10 +71,13 @@ public class FilterDialog extends JDialog{
 
     private JPanel fields;
 
+    private FilterRequest request;
 
     public FilterDialog(){
 
         setTitle("Filter Table");
+
+        request = new FilterRequest();
 
         //buttons
         applyFilter = new JButton("Apply");
@@ -125,6 +136,7 @@ public class FilterDialog extends JDialog{
         clearAll.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 initFields();
+                request.initAllFields();
             }
         });
     }
@@ -132,8 +144,6 @@ public class FilterDialog extends JDialog{
     private void setApplyFilterActionListener(){
         applyFilter.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                FilterRequest request = new FilterRequest();
-                initRequest(request);
 
                 RunEvent<FilterRequest> runEvent = new RunEvent<>(this, request);
 
@@ -144,35 +154,34 @@ public class FilterDialog extends JDialog{
         });
     }
 
-    private void initRequest(FilterRequest filterRequest){
-
-        filterRequest.setMinCSBLength((int) minPatternLength.getValue());
-        filterRequest.setMaxCSBLength((int) maxPatternLength.getValue());
-        filterRequest.setMinScore((int)minScore.getValue());
-        filterRequest.setMaxScore((int)maxScore.getValue());
-        filterRequest.setMaxInstanceCount((int)maxCount.getValue());
-        filterRequest.setMinInstanceCount((int)minCount.getValue());
-        filterRequest.setPatternIds(patternIds.getText());
-        filterRequest.setPatternGenes(patternGenes.getText());
-        filterRequest.setFamilyIds(familyIds.getText());
-
-        filterRequest.setPatternStrand(PatternStrand.valueOf(strandBtns.getSelection().getActionCommand()));
-    }
-
     private void initComponents(){
 
         initStrandBtns();
 
         minPatternLength = new JSpinner();
+        minPatternLength.addChangeListener(e -> request.setMinCSBLength((int)minPatternLength.getValue()));
         maxPatternLength = new JSpinner();
+        maxPatternLength.addChangeListener(e -> request.setMaxCSBLength((int)maxPatternLength.getValue()));
+
         minScore = new JSpinner();
+        minScore.addChangeListener(e -> request.setMinScore((int)minScore.getValue()));
         maxScore = new JSpinner();
+        maxScore.addChangeListener(e -> request.setMaxScore((int)maxScore.getValue()));
+
         minCount = new JSpinner();
+        minCount.addChangeListener(e -> request.setMinInstanceCount((int)minCount.getValue()));
         maxCount = new JSpinner();
+        maxCount.addChangeListener(e -> request.setMinInstanceCount((int)maxCount.getValue()));
 
         patternIds = new JTextField();
+        addChangeListener(patternIds, e -> request.setPatternIds(patternIds.getText()));
+
         familyIds = new JTextField();
+        addChangeListener(familyIds, e -> request.setFamilyIds(familyIds.getText()));
+
         patternGenes = new JTextField();
+        addChangeListener(patternGenes, e -> request.setPatternGenes(patternGenes.getText()));
+
     }
 
     private void initFields(){
@@ -238,6 +247,58 @@ public class FilterDialog extends JDialog{
 
     public void setApplyFilterListener(RunListener applyFilterListener){
         this.applyFilterListener = applyFilterListener;
+    }
+
+    /**
+     * Installs a listener to receive notification when the text of any
+     * {@code JTextComponent} is changed. Internally, it installs a
+     * {@link DocumentListener} on the text component's {@link Document},
+                * and a {@link PropertyChangeListener} on the text component to detect
+     * if the {@code Document} itself is replaced.
+     *
+             * @param text any text component, such as a {@link JTextField}
+     *        or {@link JTextArea}
+     * @param changeListener a listener to receieve {@link ChangeEvent}s
+     *        when the text is changed; the source object for the events
+     *        will be the text component
+     * @throws NullPointerException if either parameter is null
+                */
+        private static void addChangeListener(JTextComponent text, ChangeListener changeListener) {
+        Objects.requireNonNull(text);
+        Objects.requireNonNull(changeListener);
+        DocumentListener dl = new DocumentListener() {
+            private int lastChange = 0, lastNotifiedChange = 0;
+
+            @Override
+            public void insertUpdate(DocumentEvent e) {
+                changedUpdate(e);
+            }
+
+            @Override
+            public void removeUpdate(DocumentEvent e) {
+                changedUpdate(e);
+            }
+
+            @Override
+            public void changedUpdate(DocumentEvent e) {
+                lastChange++;
+                SwingUtilities.invokeLater(() -> {
+                    if (lastNotifiedChange != lastChange) {
+                        lastNotifiedChange = lastChange;
+                        changeListener.stateChanged(new ChangeEvent(text));
+                    }
+                });
+            }
+        };
+        text.addPropertyChangeListener("document", (PropertyChangeEvent e) -> {
+            Document d1 = (Document)e.getOldValue();
+            Document d2 = (Document)e.getNewValue();
+            if (d1 != null) d1.removeDocumentListener(dl);
+            if (d2 != null) d2.addDocumentListener(dl);
+            dl.changedUpdate(null);
+        });
+        Document d = text.getDocument();
+        if (d != null) d.addDocumentListener(dl);
     }
 
 }
