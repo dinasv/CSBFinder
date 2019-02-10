@@ -174,13 +174,17 @@ public class FilterDialog extends JDialog{
         maxCount.addChangeListener(e -> request.setMinInstanceCount((int)maxCount.getValue()));
 
         patternIds = new JTextField();
-        addChangeListener(patternIds, e -> request.setPatternIds(patternIds.getText()));
+        patternIds.getDocument().addDocumentListener((TextChangeListener) e ->
+                request.setPatternIds(patternIds.getText()));
 
         familyIds = new JTextField();
-        addChangeListener(familyIds, e -> request.setFamilyIds(familyIds.getText()));
+        familyIds.getDocument().addDocumentListener((TextChangeListener) e -> {
+                request.setFamilyIds(familyIds.getText());
+        });
 
         patternGenes = new JTextField();
-        addChangeListener(patternGenes, e -> request.setPatternGenes(patternGenes.getText()));
+        patternGenes.getDocument().addDocumentListener((TextChangeListener) e ->
+                request.setPatternGenes(patternGenes.getText()));
 
     }
 
@@ -249,56 +253,21 @@ public class FilterDialog extends JDialog{
         this.applyFilterListener = applyFilterListener;
     }
 
-    /**
-     * Installs a listener to receive notification when the text of any
-     * {@code JTextComponent} is changed. Internally, it installs a
-     * {@link DocumentListener} on the text component's {@link Document},
-                * and a {@link PropertyChangeListener} on the text component to detect
-     * if the {@code Document} itself is replaced.
-     *
-             * @param text any text component, such as a {@link JTextField}
-     *        or {@link JTextArea}
-     * @param changeListener a listener to receieve {@link ChangeEvent}s
-     *        when the text is changed; the source object for the events
-     *        will be the text component
-     * @throws NullPointerException if either parameter is null
-                */
-        private static void addChangeListener(JTextComponent text, ChangeListener changeListener) {
-        Objects.requireNonNull(text);
-        Objects.requireNonNull(changeListener);
-        DocumentListener dl = new DocumentListener() {
-            private int lastChange = 0, lastNotifiedChange = 0;
+    private interface TextChangeListener extends DocumentListener {
+        void update(DocumentEvent e);
 
-            @Override
-            public void insertUpdate(DocumentEvent e) {
-                changedUpdate(e);
-            }
-
-            @Override
-            public void removeUpdate(DocumentEvent e) {
-                changedUpdate(e);
-            }
-
-            @Override
-            public void changedUpdate(DocumentEvent e) {
-                lastChange++;
-                SwingUtilities.invokeLater(() -> {
-                    if (lastNotifiedChange != lastChange) {
-                        lastNotifiedChange = lastChange;
-                        changeListener.stateChanged(new ChangeEvent(text));
-                    }
-                });
-            }
-        };
-        text.addPropertyChangeListener("document", (PropertyChangeEvent e) -> {
-            Document d1 = (Document)e.getOldValue();
-            Document d2 = (Document)e.getNewValue();
-            if (d1 != null) d1.removeDocumentListener(dl);
-            if (d2 != null) d2.addDocumentListener(dl);
-            dl.changedUpdate(null);
-        });
-        Document d = text.getDocument();
-        if (d != null) d.addDocumentListener(dl);
+        @Override
+        default void insertUpdate(DocumentEvent e) {
+            update(e);
+        }
+        @Override
+        default void removeUpdate(DocumentEvent e) {
+            update(e);
+        }
+        @Override
+        default void changedUpdate(DocumentEvent e) {
+            update(e);
+        }
     }
 
 }

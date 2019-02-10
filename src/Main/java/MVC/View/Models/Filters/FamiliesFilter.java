@@ -109,6 +109,7 @@ public class FamiliesFilter {
 
     public void clear() {
         patternFilters.clear();
+        familyFilters.clear();
     }
 
     public void applyFilters() {
@@ -176,30 +177,6 @@ public class FamiliesFilter {
                 return numberComparison.comparisonFunc.apply(num.doubleValue(), value.doubleValue());
             }
 
-            return false;
-        }
-    }
-
-    private class LessEqFilter<T> implements Filter<T> {
-
-        private int value;
-
-        private ColumnProperty<T> patternProperty;
-
-        LessEqFilter(int value, ColumnProperty<T> patternProperty) {
-            this.value = value;
-            this.patternProperty = patternProperty;
-        }
-
-        @Override
-        public boolean include(T obj) {
-            Function<T, ? extends Object> function = patternProperty.getFunction();
-
-            Object result = function.apply(obj);
-            if (result instanceof Number) {
-                Number num = (Number) result;
-                return num.doubleValue() <= value;
-            }
             return false;
         }
     }
