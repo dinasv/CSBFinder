@@ -52,24 +52,12 @@ public class Family {
         sortPatternsAndSetScore();
     }
 
+
     private void addCharsToCharsSet(Pattern pattern){
+        for (Gene gene: pattern.getPatternGenes()) {
+            int cogIndex = genomesInfo.getLetter(new Gene(gene.getCogId(), Strand.INVALID));
 
-        //List<Gene> patternGenes = pattern.getPatternGenes();
-        addCharsToCharsSet(pattern.getPatternGenes());
-        /*
-        if (patternGenes != null && patternGenes.size()>0 && patternGenes.get(0) != null) {
-            if (patternGenes.get(0).getStrand() != Strand.INVALID) {
-                addCharsToCharsSet(pattern.getReverseComplimentPattern());
-            }
-        }*/
-    }
-
-    private void addCharsToCharsSet(List<Gene> patternGenes){
-        for (Gene gene: patternGenes) {
-            int cogIndex;
-
-            if (genomesInfo.getLetter(new Gene(gene.getCogId(), Strand.INVALID)) != -1){
-                cogIndex = genomesInfo.getLetter(gene);
+            if (cogIndex != -1){
                 charSet.add(cogIndex);
             }
         }

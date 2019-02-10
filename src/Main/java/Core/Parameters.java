@@ -72,7 +72,7 @@ public class Parameters {
     public double threshold = 0.8;
 
     @Parameter(names={"-clust-by"}, description = "Cluster CSBs to families by: 'score' or 'length'", order = 11)
-    public static ClusterBy clusterBy = ClusterBy.SCORE;
+    public ClusterBy clusterBy = ClusterBy.SCORE;
 
     @Parameter(names={"-clust-denominator"}, description = "Cluster CSBs to families by: 'score' or 'length'", order = 11)
     public ClusterDenominator clusterDenominator = ClusterDenominator.MIN_SET;

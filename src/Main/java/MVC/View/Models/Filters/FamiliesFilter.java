@@ -28,7 +28,7 @@ public class FamiliesFilter {
 
     public FamiliesFilter() {
         this.families = new ArrayList<>();
-        filteredFamilies = new ArrayList<>(families);
+        filteredFamilies = families;
 
         patternFilters = new ArrayList<>();
         familyFilters = new ArrayList<>();
@@ -36,6 +36,7 @@ public class FamiliesFilter {
 
     public void setFamilies(List<Family> families) {
         this.families = families;
+        filteredFamilies = families;
     }
 
     public void setFamilyIds(String familyIds){

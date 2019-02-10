@@ -3,6 +3,7 @@ package Core.PostProcess;
 import Core.ClusterDenominator;
 import Core.Genomes.Gene;
 import Core.Genomes.GenomesInfo;
+import Core.Genomes.Strand;
 import Core.Patterns.Pattern;
 
 import java.util.*;
@@ -96,8 +97,10 @@ public class FamilyClustering {
     private static Set<Integer> getGenesSet(List<Gene> genes, GenomesInfo gi){
         Set<Integer> geneSet = new HashSet<>();
         for (Gene cog: genes) {
-            int cog_index = gi.getLetter(cog);
-            geneSet.add(cog_index);
+            int cogIndex = gi.getLetter(new Gene(cog.getCogId(), Strand.INVALID));
+            if (cogIndex != -1) {
+                geneSet.add(cogIndex);
+            }
         }
         return geneSet;
     }
