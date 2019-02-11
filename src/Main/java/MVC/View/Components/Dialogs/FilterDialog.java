@@ -117,7 +117,6 @@ public class FilterDialog extends JDialog{
 
         //Put the radio buttons in a column in a panel.
         patternStrandPanel = new JPanel(new FlowLayout());
-        //patternStrandPanel.add(STRAND_LABEL);
         patternStrandPanel.add(allStrandTypesBtn);
         patternStrandPanel.add(btn2);
         patternStrandPanel.add(btn3);

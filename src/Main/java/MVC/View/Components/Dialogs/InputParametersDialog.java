@@ -61,6 +61,8 @@ public class InputParametersDialog extends JDialog {
 
     private ImageIcon questionMark;
 
+    private JPanel fields;
+
     public InputParametersDialog(JFileChooser fc) {
 
         this.fc = fc;
@@ -84,14 +86,18 @@ public class InputParametersDialog extends JDialog {
             }
         });
 
-
-        setLayout(new GridBagLayout());
-
+        fields = new JPanel();
+        fields.setLayout(new GridBagLayout());
         gc = new GridBagConstraints();
         gc.fill = GridBagConstraints.NONE;
 
         initFields();
         addFieldsToGC();
+
+        setLayout(new BorderLayout());
+        add(fields, BorderLayout.PAGE_START);
+        add(run, BorderLayout.LINE_END);
+
         pack();
     }
 
@@ -252,11 +258,10 @@ public class InputParametersDialog extends JDialog {
 
         // CSB max length
         maxCSBLength.setModel(new SpinnerNumberModel(Integer.MAX_VALUE, 2, Integer.MAX_VALUE, 1));
-        //((JSpinner.DefaultEditor)maxCSBLength.getEditor()).getTextField().setColumns(3);
 
         // csb pattern file path
         patternFilePath.setText("optional");
-        patternFilePath.setColumns(20);
+        patternFilePath.setColumns(14);
 
         // bcount
         bcount.setSelected(true);
@@ -367,7 +372,8 @@ public class InputParametersDialog extends JDialog {
         gc.weighty = weighty;
         gc.anchor = anchor;
         gc.insets = insets;
-        add(c , gc);
+        gc.gridwidth = 1;
+        fields.add(c , gc);
     }
 
     public void setGenomeData(int numberOfGenomes, int maxGenomeSize) {

@@ -34,6 +34,7 @@ public class ClusterDialog extends JDialog {
     private GridBagConstraints gc;
 
     private ImageIcon questionMark;
+    private JPanel fields;
 
     public ClusterDialog() {
 
@@ -42,6 +43,11 @@ public class ClusterDialog extends JDialog {
 
         initLabels();
         initInputComponents();
+
+        fields = new JPanel();
+        fields.setLayout(new GridBagLayout());
+        gc = new GridBagConstraints();
+        gc.fill = GridBagConstraints.NONE;
 
         apply = new JButton("Apply");
         apply.addActionListener(new ActionListener() {
@@ -57,13 +63,13 @@ public class ClusterDialog extends JDialog {
             }
         });
 
-        setLayout(new GridBagLayout());
-
-        gc = new GridBagConstraints();
-        gc.fill = GridBagConstraints.NONE;
-
         initFields();
         addFieldsToGC();
+
+        setLayout(new BorderLayout());
+        add(fields, BorderLayout.PAGE_START);
+        add(apply, BorderLayout.LINE_END);
+
         pack();
     }
 
@@ -171,7 +177,7 @@ public class ClusterDialog extends JDialog {
         addComponentToGC(0, y, 1, 0.2, insetLabel, clusterDenominatorLabel, FIRST_LINE_START);
         addComponentToGC(1, y++, 1, 0.2, insetField, clusterDenominatorField, FIRST_LINE_START);
         addComponentToGC(1, y++, 1, 1, insetField, new JLabel(""), FIRST_LINE_START);
-        addComponentToGC(1, y, 1, 2, insetField, apply, LINE_START);
+        //addComponentToGC(1, y, 1, 2, insetField, apply, LINE_START);
     }
 
     private void addComponentToGC(int x, int y, double weightx, double weighty, Insets insets, Component c, int anchor) {
@@ -181,7 +187,7 @@ public class ClusterDialog extends JDialog {
         gc.weighty = weighty;
         gc.anchor = anchor;
         gc.insets = insets;
-        add(c , gc);
+        fields.add(c , gc);
     }
 
 
