@@ -17,7 +17,7 @@ import static java.awt.GridBagConstraints.*;
  */
 public class FilterDialog extends JDialog{
 
-    private final static int TEXT_FIELD_SIZE = 12;
+    private final static int TEXT_FIELD_SIZE = 14;
     private final static int MIN_PATTERN_LENGTH_DEF = 2;
     private final static int MAX_PATTERN_LENGTH_DEF = Integer.MAX_VALUE;
     private final static int MIN_SCORE_DEF = 0;
@@ -93,10 +93,9 @@ public class FilterDialog extends JDialog{
         buttons.add(applyFilter);
         buttons.add(clearAll);
 
-        setLayout(new GridLayout(3,0));
-        add(patternStrandPanel);
-        add(fields);
-        add(buttons);
+        setLayout(new BorderLayout());
+        add(fields, BorderLayout.PAGE_START);
+        add(buttons, BorderLayout.LINE_END);
         pack();
     }
 
@@ -118,7 +117,7 @@ public class FilterDialog extends JDialog{
 
         //Put the radio buttons in a column in a panel.
         patternStrandPanel = new JPanel(new FlowLayout());
-        patternStrandPanel.add(STRAND_LABEL);
+        //patternStrandPanel.add(STRAND_LABEL);
         patternStrandPanel.add(allStrandTypesBtn);
         patternStrandPanel.add(btn2);
         patternStrandPanel.add(btn3);
@@ -215,39 +214,43 @@ public class FilterDialog extends JDialog{
         Insets insetField = new Insets(0, 0, 5, 5);
         int y = 0;
 
+        addComponentToGC(0, y, 1, 0.2, insetLabel, 1,  STRAND_LABEL, LINE_START);
+        addComponentToGC(1, y++, 1, 0.6, insetField,3, patternStrandPanel, LINE_START);
+
         addIntervalComponentToGC(y++, PATTERN_LENGTH_LABEL, minPatternLength, maxPatternLength, insetLabel, insetField);
         addIntervalComponentToGC(y++, SCORE_LABEL, minScore, maxScore, insetLabel, insetField);
         addIntervalComponentToGC(y++, COUNT_LABEL, minCount, maxCount, insetLabel, insetField);
 
-        addComponentToGC(0, y, 1, 0.2, insetLabel, PATTERN_ID_LABEL, LINE_START);
+        addComponentToGC(0, y, 1, 0.2, insetLabel, 1, PATTERN_ID_LABEL, LINE_START);
         patternIds.setColumns(TEXT_FIELD_SIZE);
-        addComponentToGC(1, y++, 1, 0.2, insetLabel, patternIds, LINE_START);
+        addComponentToGC(1, y++, 1, 0.2, insetField, 1, patternIds, LINE_START);
 
-        addComponentToGC(0, y, 1, 0.2, insetLabel, PATTERN_GENES_LABEL, LINE_START);
+        addComponentToGC(0, y, 1, 0.2, insetLabel, 1, PATTERN_GENES_LABEL, LINE_START);
         patternGenes.setColumns(TEXT_FIELD_SIZE);
-        addComponentToGC(1, y++, 1, 0.2, insetLabel, patternGenes, LINE_START);
+        addComponentToGC(1, y++, 1, 0.2, insetField, 1, patternGenes, LINE_START);
 
-        addComponentToGC(0, y, 1, 0.2, insetLabel, FAMILY_ID_LABEL, LINE_START);
+        addComponentToGC(0, y, 1, 0.2, insetLabel, 1, FAMILY_ID_LABEL, LINE_START);
         familyIds.setColumns(TEXT_FIELD_SIZE);
-        addComponentToGC(1, y++, 1, 0.2, insetLabel, familyIds, LINE_START);
+        addComponentToGC(1, y++, 1, 0.2, insetField, 1, familyIds, LINE_START);
     }
 
     private void addIntervalComponentToGC(int y, JLabel label, JSpinner minSpinner, JSpinner maxSpinner,
                                           Insets insetLabel, Insets insetField){
 
-        addComponentToGC(0, y, 1, 0.2, insetLabel, label, LINE_START);
-        addComponentToGC(1, y, 1, 0.2, insetField, minSpinner, LINE_START);
-        addComponentToGC(2, y, 1, 0.2, insetField, new JLabel("and"), CENTER);
-        addComponentToGC(3, y, 1, 0.2, insetField, maxSpinner, LINE_START);
+        addComponentToGC(0, y, 1, 0.2, insetLabel, 1, label, LINE_START);
+        addComponentToGC(1, y, 1, 0.2, insetField, 1, minSpinner, LINE_START);
+        addComponentToGC(2, y, 1, 0.2, insetField, 1, new JLabel("and"), CENTER);
+        addComponentToGC(3, y, 1, 0.2, insetField, 1, maxSpinner, LINE_START);
     }
 
-    private void addComponentToGC(int x, int y, double weightx, double weighty, Insets insets, Component c, int anchor) {
+    private void addComponentToGC(int x, int y, double weightx, double weighty, Insets insets, int gridWidth, Component c, int anchor) {
         gc.gridx = x;
         gc.gridy = y;
         gc.weightx = weightx;
         gc.weighty = weighty;
         gc.anchor = anchor;
         gc.insets = insets;
+        gc.gridwidth = gridWidth;
         fields.add(c , gc);
     }
 
