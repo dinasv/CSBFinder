@@ -6,18 +6,11 @@ import MVC.View.Models.Filters.PatternStrand;
 import MVC.View.Requests.FilterRequest;
 
 import javax.swing.*;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
-import javax.swing.text.Document;
-import javax.swing.text.JTextComponent;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.beans.PropertyChangeEvent;
-import java.util.Objects;
-
 import static java.awt.GridBagConstraints.*;
 
 /**
@@ -129,6 +122,15 @@ public class FilterDialog extends JDialog{
         patternStrandPanel.add(allStrandTypesBtn);
         patternStrandPanel.add(btn2);
         patternStrandPanel.add(btn3);
+
+        addBtnListener(allStrandTypesBtn);
+        addBtnListener(btn2);
+        addBtnListener(btn3);
+    }
+
+    private void addBtnListener(JRadioButton btn){
+        btn.addChangeListener(e ->
+                request.setPatternStrand(PatternStrand.valueOf(btn.getActionCommand())));
 
     }
 
