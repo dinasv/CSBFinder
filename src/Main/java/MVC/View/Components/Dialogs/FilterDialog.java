@@ -44,6 +44,8 @@ public class FilterDialog extends JDialog{
     private final JLabel STRAND_LABEL = new JLabel("Patterns strand:");
     private ButtonGroup strandBtns;
     private JRadioButton allStrandTypesBtn;
+    private JRadioButton multiStrandTypesBtn;
+    private JRadioButton oneStrandTypesBtn;
     private JPanel patternStrandPanel;
 
     private final JLabel PATTERN_ID_LABEL = new JLabel("Pattern IDs:");
@@ -88,6 +90,7 @@ public class FilterDialog extends JDialog{
         initComponents();
         addComponentsToGC();
         initFields();
+        addChangeListeners();
 
         JPanel buttons = new JPanel();
         buttons.add(applyFilter);
@@ -105,25 +108,48 @@ public class FilterDialog extends JDialog{
         allStrandTypesBtn = new JRadioButton(PatternStrand.ALL.description);
         allStrandTypesBtn.setActionCommand(PatternStrand.ALL.toString());
 
-        JRadioButton btn2 = new JRadioButton(PatternStrand.MULTI_STRAND.description);
-        btn2.setActionCommand(PatternStrand.MULTI_STRAND.toString());
+        multiStrandTypesBtn = new JRadioButton(PatternStrand.MULTI_STRAND.description);
+        multiStrandTypesBtn.setActionCommand(PatternStrand.MULTI_STRAND.toString());
 
-        JRadioButton btn3 = new JRadioButton(PatternStrand.SINGLE_STRAND.description);
-        btn3.setActionCommand(PatternStrand.SINGLE_STRAND.toString());
+        oneStrandTypesBtn = new JRadioButton(PatternStrand.SINGLE_STRAND.description);
+        oneStrandTypesBtn.setActionCommand(PatternStrand.SINGLE_STRAND.toString());
 
         strandBtns.add(allStrandTypesBtn);
-        strandBtns.add(btn2);
-        strandBtns.add(btn3);
+        strandBtns.add(multiStrandTypesBtn);
+        strandBtns.add(oneStrandTypesBtn);
 
         //Put the radio buttons in a column in a panel.
         patternStrandPanel = new JPanel(new FlowLayout());
         patternStrandPanel.add(allStrandTypesBtn);
-        patternStrandPanel.add(btn2);
-        patternStrandPanel.add(btn3);
+        patternStrandPanel.add(multiStrandTypesBtn);
+        patternStrandPanel.add(oneStrandTypesBtn);
+
+    }
+
+    private void addChangeListeners(){
 
         addBtnListener(allStrandTypesBtn);
-        addBtnListener(btn2);
-        addBtnListener(btn3);
+        addBtnListener(multiStrandTypesBtn);
+        addBtnListener(oneStrandTypesBtn);
+
+        minPatternLength.addChangeListener(e -> request.setMinCSBLength((int)minPatternLength.getValue()));
+        maxPatternLength.addChangeListener(e -> request.setMaxCSBLength((int)maxPatternLength.getValue()));
+
+        minScore.addChangeListener(e -> request.setMinScore((int)minScore.getValue()));
+        maxScore.addChangeListener(e -> request.setMaxScore((int)maxScore.getValue()));
+
+        minCount.addChangeListener(e -> request.setMinInstanceCount((int)minCount.getValue()));
+        maxCount.addChangeListener(e -> request.setMinInstanceCount((int)maxCount.getValue()));
+
+        patternIds.getDocument().addDocumentListener((TextChangeListener) e ->
+                request.setPatternIds(patternIds.getText()));
+
+        familyIds.getDocument().addDocumentListener((TextChangeListener) e -> {
+            request.setFamilyIds(familyIds.getText());
+        });
+
+        patternGenes.getDocument().addDocumentListener((TextChangeListener) e ->
+                request.setPatternGenes(patternGenes.getText()));
     }
 
     private void addBtnListener(JRadioButton btn){
