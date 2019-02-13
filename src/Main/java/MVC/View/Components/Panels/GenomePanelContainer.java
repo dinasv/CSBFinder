@@ -3,6 +3,8 @@ package MVC.View.Components.Panels;
 import Core.Genomes.GenomesInfo;
 import Core.Patterns.Pattern;
 import Core.Patterns.PatternLocationsInGenome;
+import MVC.View.Events.GeneTooltipEvent;
+import MVC.View.Listeners.Listener;
 
 import javax.swing.*;
 import java.awt.*;
@@ -116,6 +118,10 @@ public class GenomePanelContainer extends JPanel {
 
     public Map<String,Color> getColorsUsed(){
         return instancesPanel.getColorsUsed();
+    }
+
+    public void setGeneTooltipListener(Listener<GeneTooltipEvent> geneTooltipListener) {
+        this.instancesPanel.setGeneTooltipListener(geneTooltipListener);
     }
 
     private enum ViewMode {

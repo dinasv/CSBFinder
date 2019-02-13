@@ -2,7 +2,7 @@ package MVC.View.Events;
 
 import java.io.File;
 
-public class LoadFileEvent {
+public class LoadFileEvent implements Event{
 
     private File filePath;
 

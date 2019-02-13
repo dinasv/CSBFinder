@@ -326,11 +326,11 @@ public class CSBFinderModel {
         this.csbFinderDoneListener = csbFinderDoneListener;
     }
 
-    public List<COG> getCogInfo(List<Gene> genes) {
+    public List<COG> getCogsInfo(List<Gene> genes) {
         List<COG> currCogInfo = new ArrayList<COG>();
         if (cogInfo.cogInfoExists()) {
             genes.forEach(gene -> {
-                COG c = cogInfo.getCog(gene.getCogId());
+                COG c = getCogInfo(gene.getCogId());
                 if (c != null) {
                     currCogInfo.add(c);
                 }
@@ -338,6 +338,10 @@ public class CSBFinderModel {
         }
 
         return currCogInfo;
+    }
+
+    public COG getCogInfo(String cogId){
+        return cogInfo.getCog(cogId);
     }
 
     public Set<COG> getInsertedGenes(Pattern pattern, List<COG> patternCOGs) {
@@ -351,7 +355,7 @@ public class CSBFinderModel {
             for (PatternLocationsInGenome instancesMap : pattern.getPatternLocations().values()) {
                 for (PatternLocationsInReplicon patternLocationsInReplicon : instancesMap.getRepliconToLocations().values()) {
                     for (InstanceLocation instance : patternLocationsInReplicon.getSortedLocations()) {
-                        List<COG> instanceGenes = getCogInfo(getGenes(instance));
+                        List<COG> instanceGenes = getCogsInfo(getGenes(instance));
                         Set<COG> instanceGenesSet = new HashSet<>();
                         instanceGenesSet.addAll(instanceGenes);
                         instanceGenesSet.removeAll(patternGenesSet);

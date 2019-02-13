@@ -2,28 +2,17 @@ package MVC.View.Events;
 
 import Core.OutputType;
 
-import java.util.EventObject;
 
-public class SaveOutputEvent extends EventObject {
+public class SaveOutputEvent implements Event {
 
     private OutputType outputType;
     private String outputDirectory;
     private String datasetName;
     private int action;
 
-    /**
-     * Constructs a prototypical Event.
-     *
-     * @param source The object on which the Event initially occurred.
-     * @throws IllegalArgumentException if source is null.
-     */
-    public SaveOutputEvent(Object source) {
-        super(source);
-    }
 
     public SaveOutputEvent(Object source, OutputType outputType,  String datasetName, String outputDirectory,
                            int action) {
-        super(source);
         this.outputType = outputType;
         this.datasetName = datasetName;
         this.outputDirectory = outputDirectory;

@@ -1,14 +1,9 @@
 package MVC.View.Components.Dialogs;
 
 import Core.OutputType;
-import MVC.View.Events.SaveOutputEvent;
-import MVC.View.Listeners.SaveOutputListener;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.KeyEvent;
 
 /**
  */

@@ -1,6 +1,6 @@
 package MVC.View.Events;
 
-public class SetNumOfNeighborsEvent {
+public class SetNumOfNeighborsEvent implements Event {
 
     private int numOfNeighbors;
 

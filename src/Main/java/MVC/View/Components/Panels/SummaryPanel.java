@@ -3,7 +3,8 @@ package MVC.View.Components.Panels;
 import Core.Patterns.Pattern;
 import Core.PostProcess.Family;
 import Core.OrthologyGroups.COG;
-import MVC.View.Listeners.OpenDialogListener;
+import MVC.View.Events.OpenDialogEvent;
+import MVC.View.Listeners.Listener;
 import MVC.View.Listeners.RowClickedListener;
 
 import javax.swing.*;
@@ -33,7 +34,7 @@ public class SummaryPanel extends JSplitPane {
         resultsPanel.setFilteredFamilies(filteredFamilies);
     }
 
-    public void setFilterTableListener(OpenDialogListener filterTableListener) {
+    public void setFilterTableListener(Listener<OpenDialogEvent> filterTableListener) {
         resultsPanel.setFilterTableListener(filterTableListener);
     }
 

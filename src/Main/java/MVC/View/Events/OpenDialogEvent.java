@@ -2,5 +2,5 @@ package MVC.View.Events;
 
 /**
  */
-public class OpenDialogEvent {
+public class OpenDialogEvent implements Event {
 }

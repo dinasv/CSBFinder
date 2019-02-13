@@ -1,7 +1,7 @@
 package MVC.View.Components.Panels;
 
 import MVC.View.Events.OpenDialogEvent;
-import MVC.View.Listeners.OpenDialogListener;
+import MVC.View.Listeners.Listener;
 
 import javax.swing.*;
 
@@ -11,7 +11,7 @@ public class TableButtonsPanel extends JPanel{
 
     JButton filterBtn;
 
-    private OpenDialogListener filterTableListener;
+    private Listener<OpenDialogEvent> filterTableListener;
 
     public TableButtonsPanel(ImageIcon filterIcon) {
         setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
@@ -21,10 +21,10 @@ public class TableButtonsPanel extends JPanel{
         filterBtn.setToolTipText("Filter Table");
         add(filterBtn);
 
-        filterBtn.addActionListener(e -> filterTableListener.openDialogOccurred(new OpenDialogEvent()));
+        filterBtn.addActionListener(e -> filterTableListener.eventOccurred(new OpenDialogEvent()));
     }
 
-    public void setFilterTableListener(OpenDialogListener filterTableListener) {
+    public void setFilterTableListener(Listener<OpenDialogEvent> filterTableListener) {
         this.filterTableListener = filterTableListener;
     }
 

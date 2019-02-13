@@ -22,6 +22,16 @@ public class LabelShape implements Shape{
 
     }
 
+    @Override
+    public boolean containsPoint(Point point) {
+        return false;
+    }
+
+    @Override
+    public String getTooltip(Point point) {
+        return "";
+    }
+
     public int getLabelHeight(Graphics g){
         return g.getFontMetrics().getHeight();
     }

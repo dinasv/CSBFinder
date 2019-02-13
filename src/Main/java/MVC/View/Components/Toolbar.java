@@ -3,8 +3,7 @@ package MVC.View.Components;
 import MVC.View.Events.OpenDialogEvent;
 import MVC.View.Events.SetNumOfNeighborsEvent;
 import MVC.View.Images.Icon;
-import MVC.View.Listeners.OpenDialogListener;
-import MVC.View.Listeners.SetNumOfNeighborsListener;
+import MVC.View.Listeners.Listener;
 
 import javax.swing.*;
 import java.awt.*;
@@ -23,9 +22,9 @@ public class Toolbar extends JPanel{
     private JComboBox selectNumOfNeighbors;
     private JLabel selectNumOfNeighborsLabel = new JLabel("Neighbors:");
 
-    private OpenDialogListener selectParamsListener;
-    private OpenDialogListener clusterListener;
-    private SetNumOfNeighborsListener setNumOfNeighborsListener;
+    private Listener<OpenDialogEvent> selectParamsListener;
+    private Listener<OpenDialogEvent> clusterListener;
+    private Listener<SetNumOfNeighborsEvent> setNumOfNeighborsListener;
 
     public Toolbar() {
 
@@ -59,22 +58,22 @@ public class Toolbar extends JPanel{
         add(buttons, BorderLayout.LINE_START);
         add(selectNeighborsPanel, BorderLayout.LINE_END);
 
-        selectParamsBtn.addActionListener(e -> selectParamsListener.openDialogOccurred(new OpenDialogEvent()));
-        clusterBtn.addActionListener(e -> clusterListener.openDialogOccurred(new OpenDialogEvent()));
-        selectNumOfNeighbors.addActionListener(e -> setNumOfNeighborsListener.setNumOfNeighborsOccurred(
+        selectParamsBtn.addActionListener(e -> selectParamsListener.eventOccurred(new OpenDialogEvent()));
+        clusterBtn.addActionListener(e -> clusterListener.eventOccurred(new OpenDialogEvent()));
+        selectNumOfNeighbors.addActionListener(e -> setNumOfNeighborsListener.eventOccurred(
                                                 new SetNumOfNeighborsEvent(getNumOfNeighbors())));
     }
 
 
-    public void setSelectParamsListener(OpenDialogListener selectParamsListener) {
+    public void setSelectParamsListener(Listener<OpenDialogEvent> selectParamsListener) {
         this.selectParamsListener = selectParamsListener;
     }
 
-    public void setClusterListener(OpenDialogListener clusterListener) {
+    public void setClusterListener(Listener<OpenDialogEvent> clusterListener) {
         this.clusterListener = clusterListener;
     }
 
-    public void setSetNumOfNeighborsListener(SetNumOfNeighborsListener setNumOfNeighborsListener) {
+    public void setSetNumOfNeighborsListener(Listener<SetNumOfNeighborsEvent> setNumOfNeighborsListener) {
         this.setNumOfNeighborsListener = setNumOfNeighborsListener;
     }
 

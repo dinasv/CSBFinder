@@ -10,6 +10,8 @@ import Core.Patterns.PatternLocationsInReplicon;
 import MVC.View.Components.Shapes.*;
 import MVC.View.Components.Shapes.Label;
 import Core.Genomes.Gene;
+import MVC.View.Events.GeneTooltipEvent;
+import MVC.View.Listeners.Listener;
 
 import javax.swing.*;
 import java.awt.*;
@@ -39,6 +41,7 @@ public class InstancesPanel extends JPanel {
 
     private int numOfNeighbors;
 
+    private Listener<GeneTooltipEvent> geneTooltipListener;
 
     public InstancesPanel(Map<String, Color> colorsUsed) {
 
@@ -97,21 +100,21 @@ public class InstancesPanel extends JPanel {
         addPatternRow(pattern);
 
         ShapesPanel instancesRowPanel;
-        List<ShapesInstance> shapesInstanceInnerList;
+        List<GenesInstance> genesInstanceInnerList;
         int x;
         int y = 0;
         for (Map.Entry<Integer, PatternLocationsInGenome> genomeInstances: pattern.getPatternLocations().entrySet()) {
             x = 0;
 
             PatternLocationsInGenome locationsInGenome = genomeInstances.getValue();
-            List<List<ShapesInstance>> genomeShapesInstances = new ArrayList<>();
+            List<List<GenesInstance>> genomeShapesInstances = new ArrayList<>();
             for (PatternLocationsInReplicon repliconInstances : locationsInGenome.getRepliconToLocations().values()) {
 
-                shapesInstanceInnerList = new ArrayList<>();
-                x = addShapeInstanceList(repliconInstances.getSortedLocations(), shapesInstanceInnerList, x, y,
+                genesInstanceInnerList = new ArrayList<>();
+                x = addShapeInstanceList(repliconInstances.getSortedLocations(), genesInstanceInnerList, x, y,
                         genomesInfo, numOfNeighbors);
 
-                genomeShapesInstances.add(shapesInstanceInnerList);
+                genomeShapesInstances.add(genesInstanceInnerList);
 
             }
 
@@ -121,6 +124,10 @@ public class InstancesPanel extends JPanel {
             }
             rows.add(instancesRowPanel);
         }
+    }
+
+    public void setGeneTooltipListener(Listener<GeneTooltipEvent> geneTooltipListener) {
+        this.geneTooltipListener = geneTooltipListener;
     }
 
     private void addPatternRow(Pattern pattern){
@@ -142,13 +149,14 @@ public class InstancesPanel extends JPanel {
 
     private ShapesPanel createPatternRow(List<Gene> patternGenes){
 
-        List<ShapesInstance> shapesInstanceInnerList = new ArrayList<>();
-        shapesInstanceInnerList.add(getShapesCSB(patternGenes, 0, 0));
-        List<List<ShapesInstance>> shapesInstanceOuterList = new ArrayList<>();
-        shapesInstanceOuterList.add(shapesInstanceInnerList);
-        ShapesPanel patternRow = getInstancesRowPanel(shapesInstanceOuterList,  LIGHT_GRAY);
+        List<GenesInstance> genesInstanceInnerList = new ArrayList<>();
+        genesInstanceInnerList.add(getShapesCSB(patternGenes, 0, 0));
 
-        return patternRow;
+        List<List<GenesInstance>> shapesInstanceOuterList = new ArrayList<>();
+        shapesInstanceOuterList.add(genesInstanceInnerList);
+
+        return getInstancesRowPanel(shapesInstanceOuterList,  LIGHT_GRAY);
+
     }
 
     private int addInstancePanelRow(ShapesPanel instancesRowPanel, int rowIndex, int scrollWidth, int height){
@@ -167,20 +175,23 @@ public class InstancesPanel extends JPanel {
     }
 
 
-    private int addShapeInstanceList(List<InstanceLocation> instancesList, List<ShapesInstance> shapesInstanceList,
+    private int addShapeInstanceList(List<InstanceLocation> instancesList, List<GenesInstance> genesInstanceList,
                                      int x, int y, GenomesInfo genomesInfo, int numOfNeighbors){
 
         for (InstanceLocation instance : instancesList) {
-            ShapesInstance shapesInstance = getShapesInstance(instance, x, y, genomesInfo, numOfNeighbors);
-            shapesInstanceList.add(shapesInstance);
-            x += shapesInstance.getWidth() + CONTAINERS_DIST;
+            GenesInstance genesInstance = getShapesInstance(instance, x, y, genomesInfo, numOfNeighbors);
+            genesInstanceList.add(genesInstance);
+            x += genesInstance.getWidth() + CONTAINERS_DIST;
         }
         return x;
     }
 
-    private ShapesPanel getInstancesRowPanel(List<List<ShapesInstance>> shapesInstanceList, Color backgroundColor) {
+    private ShapesPanel getInstancesRowPanel(List<List<GenesInstance>> shapesInstanceList, Color backgroundColor) {
 
         ShapesPanel shapesPanel = new ShapesPanel(shapesInstanceList, CONTAINERS_DIST, backgroundColor);
+        shapesPanel.setToolTipText("");
+        shapesPanel.setGeneTooltipListener(geneTooltipListener);
+
         MouseAdapter ma = new MouseAdapterScroller(shapesPanel);
         shapesPanel.addMouseListener(ma);
         shapesPanel.addMouseMotionListener(ma);
@@ -189,15 +200,15 @@ public class InstancesPanel extends JPanel {
 
     }
 
-    private ShapesInstance getShapesCSB(List<Gene> genes, int x, int y){
+    private GenesInstance getShapesCSB(List<Gene> genes, int x, int y){
 
         List<GeneShape> geneShapesList = getGeneShapesList(genes);
 
-        return new ShapesInstance(geneShapesList, x, y);
+        return new GenesInstance(geneShapesList, x, y);
     }
 
-    private ShapesInstance getShapesInstance(InstanceLocation instance, int x, int y, GenomesInfo genomesInfo,
-                                             int numOfNeighbors){
+    private GenesInstance getShapesInstance(InstanceLocation instance, int x, int y, GenomesInfo genomesInfo,
+                                            int numOfNeighbors){
 
         Genome genome = genomesInfo.getGenome(instance.getGenomeId());
         Replicon replicon = genome.getReplicon(instance.getRepliconId());
@@ -218,7 +229,7 @@ public class InstancesPanel extends JPanel {
         Label instanceStartIndexLabel = new Label(Integer.toString(leftStartIndex));
         Label instanceEndIndexLabel = new Label(Integer.toString(rightEndIndex-1));
 
-        return new ShapesInstance(instanceShapesList, leftNeighbors, rightNeighbors, x, y, instanceNameLabel,
+        return new GenesInstance(instanceShapesList, leftNeighbors, rightNeighbors, x, y, instanceNameLabel,
                 instanceStartIndexLabel, instanceEndIndexLabel);
     }
 

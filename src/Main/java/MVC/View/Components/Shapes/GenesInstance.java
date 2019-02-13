@@ -6,13 +6,11 @@ import java.util.List;
 
 /**
  */
-public class ShapesInstance implements Shape{
+public class GenesInstance implements Shape{
 
     private List<GeneShape> instanceShapesList;
     private List<GeneShape> leftNeighborsShapeList;
     private List<GeneShape> rightNeighborsShapeList;
-
-    private int instanceShapesWidth;
 
     private int x;
     private int y;
@@ -27,38 +25,21 @@ public class ShapesInstance implements Shape{
     private LabelShape startLocationLabel;
     private LabelShape endLocationLabel;
 
-    int width;
-    int height;
+    private int width;
+    private int leftNeighborsWidth;
+    private int rightNeighborsWidth;
+    private int instanceShapesWidth;
+    private int height;
 
-    public ShapesInstance(List<GeneShape> instanceShapesList, int x, int y){
+    public GenesInstance(List<GeneShape> instanceShapesList, int x, int y){
         this(instanceShapesList, new ArrayList<>(), new ArrayList<>(), x, y,
                 null, null, null);
 
-        /*
-        this.instanceShapesList = instanceShapesList;
-        this.x = x;
-        this.y = y;
-        height = 0;
-
-
-        if (instanceShapesList.size()>0){
-            height = instanceShapesList.get(0).getHeight();
-        }
-
-        repliconNameLabel = null;
-        startLocationLabel = null;
-        endLocationLabel = null;
-
-        leftNeighborsShapeList = new ArrayList<>();
-        rightNeighborsShapeList = new ArrayList<>();
-
-
-        width = calcWidth();*/
     }
 
-    public ShapesInstance(List<GeneShape> instanceShapesList, List<GeneShape> leftNeighborsShapeList,
-                          List<GeneShape> rightNeighborsShapeList, int x, int y, Label repliconNameLabel,
-                          Label startLocationLabel, Label endLocationLabel){
+    public GenesInstance(List<GeneShape> instanceShapesList, List<GeneShape> leftNeighborsShapeList,
+                         List<GeneShape> rightNeighborsShapeList, int x, int y, Label repliconNameLabel,
+                         Label startLocationLabel, Label endLocationLabel){
 
         this.instanceShapesList = instanceShapesList;
         this.leftNeighborsShapeList = leftNeighborsShapeList;
@@ -87,14 +68,11 @@ public class ShapesInstance implements Shape{
     }
 
     private int calcWidth(){
-        int width = 0;
         instanceShapesWidth = calcGeneShapeListWidth(instanceShapesList);
-        width += instanceShapesWidth;
-        width += calcGeneShapeListWidth(leftNeighborsShapeList);
-        width += calcGeneShapeListWidth(rightNeighborsShapeList);
+        leftNeighborsWidth = calcGeneShapeListWidth(leftNeighborsShapeList);
+        rightNeighborsWidth = calcGeneShapeListWidth(rightNeighborsShapeList);
 
-        //width += DIST_SHAPES * (instanceShapesList.size()+leftNeighborsShapeList.size()+rightNeighborsShapeList.size()-1);
-        return width - DIST_SHAPES;
+        return instanceShapesWidth + leftNeighborsWidth + rightNeighborsWidth - DIST_SHAPES;
     }
 
     private int calcGeneShapeListWidth(List<GeneShape> geneShapes){
@@ -155,6 +133,35 @@ public class ShapesInstance implements Shape{
 
         drawLabels(g);
 
+
+    }
+
+    @Override
+    public boolean containsPoint(Point point) {
+        return point.x >= x && point.x <= x+width && point.y >= y && point.y <= y + height;
+    }
+
+    @Override
+    public String getTooltip(Point point) {
+        String geneTooltip = "";
+        if (point.x <= x + leftNeighborsWidth){
+            geneTooltip = getGeneText(point, leftNeighborsShapeList);
+        }else if (point.x <= x + leftNeighborsWidth + instanceShapesWidth){
+            geneTooltip = getGeneText(point, instanceShapesList);
+        }else if (point.x <= x + leftNeighborsWidth + instanceShapesWidth + rightNeighborsWidth){
+            geneTooltip = getGeneText(point, rightNeighborsShapeList);
+        }
+
+        return geneTooltip;
+    }
+
+    private String getGeneText(Point point, List<GeneShape> geneShapes){
+        for (GeneShape geneShape: geneShapes) {
+            if (geneShape.containsPoint(point)){
+                return geneShape.toString();
+            }
+        }
+        return null;
     }
 
     private int drawGenes(Graphics g, int currX, int currY, List<GeneShape> genes){
@@ -182,5 +189,9 @@ public class ShapesInstance implements Shape{
         if (startLocationLabel != null) {
             startLocationLabel.draw(g);
         }
+    }
+
+    public String toString(){
+        return leftNeighborsShapeList.toString() + instanceShapesList.toString() + rightNeighborsShapeList.toString();
     }
 }

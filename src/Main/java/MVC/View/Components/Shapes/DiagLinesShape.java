@@ -23,4 +23,14 @@ public class DiagLinesShape implements Shape{
 
     }
 
+    @Override
+    public boolean containsPoint(Point point) {
+        return point.x >= x1 && point.x <= x2+ DIST && point.y >= y1 && point.y <= y2+ DIST;
+    }
+
+    @Override
+    public String getTooltip(Point point) {
+        return "";
+    }
+
 }

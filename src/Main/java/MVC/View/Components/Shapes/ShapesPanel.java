@@ -1,6 +1,10 @@
 package MVC.View.Components.Shapes;
 
+import MVC.View.Events.GeneTooltipEvent;
+import MVC.View.Listeners.Listener;
+
 import java.awt.*;
+import java.awt.event.MouseEvent;
 import java.util.List;
 
 import java.util.ArrayList;
@@ -10,11 +14,13 @@ import javax.swing.*;
 public class ShapesPanel extends JPanel{
 
     private List<Shape> shapes;
-    private List<List<ShapesInstance>> shapesInstanceList;
+    private List<List<GenesInstance>> shapesInstanceList;
     private int containersDist;
     private int panelHeight;
 
-    public ShapesPanel(List<List<ShapesInstance>> shapesInstanceList, int containersDist, Color backgroundColor) {
+    private Listener<GeneTooltipEvent> geneTooltipListener;
+
+    public ShapesPanel(List<List<GenesInstance>> shapesInstanceList, int containersDist, Color backgroundColor) {
 
         this.containersDist = containersDist;
         shapes = new ArrayList<>();
@@ -30,7 +36,7 @@ public class ShapesPanel extends JPanel{
     private void setPanelSize(){
         panelHeight = 0;
         if (shapesInstanceList.size() > 0) {
-            List<ShapesInstance> repliconInstances = shapesInstanceList.get(0);
+            List<GenesInstance> repliconInstances = shapesInstanceList.get(0);
             if (repliconInstances.size() > 0) {
                 panelHeight = repliconInstances.get(0).getHeight();
             }
@@ -42,37 +48,35 @@ public class ShapesPanel extends JPanel{
         int diffRepliconInstanceCount = 0;
         int x = 0;
 
-        for (List<ShapesInstance> repliconInstances : shapesInstanceList) {
+        for (List<GenesInstance> repliconInstances : shapesInstanceList) {
             diffRepliconInstanceCount++;
             int sameRepliconInstanceCount = 0;
-            for (ShapesInstance shapesInstance : repliconInstances) {
+            for (GenesInstance genesInstance : repliconInstances) {
                 sameRepliconInstanceCount++;
 
-                shapes.add(shapesInstance);
+                shapes.add(genesInstance);
 
-                x = shapesInstance.getX() + shapesInstance.getWidth();
+                x = genesInstance.getX() + genesInstance.getWidth();
 
                 // diagonal lines between two instances on the same replicon
-                addDiagonalLine(x, sameRepliconInstanceCount, shapesInstance, repliconInstances);
+                addDiagonalLine(x, sameRepliconInstanceCount, genesInstance, repliconInstances);
 
             }
             // parallel line between two instances in different replicons
             if (diffRepliconInstanceCount < shapesInstanceList.size()){
-                int x1 = x + (int) (containersDist * 0.4);
-
-                shapes.add(new RectShape(x1, 0, 5, panelHeight, Color.black));
+                addParallelLine(x);
             }
         }
         repaint();
     }
 
-    private void addDiagonalLine(int x, int sameRepliconInstanceCount, ShapesInstance shapesInstance,
-                                 List<ShapesInstance> repliconInstances){
+    private void addDiagonalLine(int x, int sameRepliconInstanceCount, GenesInstance genesInstance,
+                                 List<GenesInstance> repliconInstances){
 
         int x1 = x + (int) (containersDist * 0.2);
-        int y1 = shapesInstance.getGeneEndY();
+        int y1 = genesInstance.getGeneEndY();
         int x2 = x + containersDist - (int) (containersDist * 0.2);
-        int y2 = shapesInstance.getGeneY();
+        int y2 = genesInstance.getGeneY();
 
         // diagonal lines between two instances on the same replicon
         if (sameRepliconInstanceCount < repliconInstances.size()) {
@@ -80,13 +84,19 @@ public class ShapesPanel extends JPanel{
         }
     }
 
-    private void setPreferredPanelSize(List<List<ShapesInstance>> shapesInstanceList){
+    private void addParallelLine(int x){
+        int newX = x + (int) (containersDist * 0.4);
+
+        shapes.add(new RectShape(newX, 0, 5, panelHeight, Color.black));
+    }
+
+    private void setPreferredPanelSize(List<List<GenesInstance>> shapesInstanceList){
         int width = 0;
 
-        for (List<ShapesInstance> repliconInstances : shapesInstanceList) {
+        for (List<GenesInstance> repliconInstances : shapesInstanceList) {
 
-            for (ShapesInstance shapesInstance: repliconInstances) {
-                width += shapesInstance.getWidth();
+            for (GenesInstance genesInstance : repliconInstances) {
+                width += genesInstance.getWidth();
             }
             width += containersDist * (repliconInstances.size());
 
@@ -96,6 +106,18 @@ public class ShapesPanel extends JPanel{
 
         setPreferredSize(new Dimension(width, panelHeight));
     }
+
+    @Override
+    public String getToolTipText(MouseEvent event) {
+        for (Shape shape : shapes) {
+            if (shape.containsPoint(event.getPoint())) {
+                geneTooltipListener.eventOccurred(new GeneTooltipEvent(this, shape.getTooltip(event.getPoint())));
+                return super.getToolTipText(event);
+            }
+        }
+        return null;
+    }
+
 
     @Override
     protected void paintComponent(Graphics g) {
@@ -108,6 +130,10 @@ public class ShapesPanel extends JPanel{
 
     public int getPanelHeight(){
         return panelHeight;
+    }
+
+    public void setGeneTooltipListener(Listener<GeneTooltipEvent> geneTooltipListener) {
+        this.geneTooltipListener = geneTooltipListener;
     }
 
 }

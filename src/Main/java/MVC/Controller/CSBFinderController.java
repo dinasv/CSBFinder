@@ -3,7 +3,6 @@ package MVC.Controller;
 import Core.ClusterBy;
 import Core.ClusterDenominator;
 import Core.Genomes.Gene;
-import Core.Genomes.Genome;
 import Core.Genomes.GenomesInfo;
 import Core.OutputType;
 import Core.PostProcess.Family;
@@ -15,7 +14,6 @@ import Core.Patterns.Pattern;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 public class CSBFinderController {
@@ -54,8 +52,11 @@ public class CSBFinderController {
         return this.model.findCSBs(request);
     }
 
-    public List<COG> getCogInfo(List<Gene> genes) {
-        return model.getCogInfo(genes);
+    public List<COG> getCogsInfo(List<Gene> genes) {
+        return model.getCogsInfo(genes);
+    }
+    public COG getCogInfo(String cogId) {
+        return model.getCogInfo(cogId);
     }
 
     public Set<COG> getInsertedGenes(Pattern pattern, List<COG> patternCOGs){

@@ -1,6 +1,5 @@
 package MVC.View.Components;
 
-import Core.ClusterDenominator;
 import MVC.Common.CSBFinderRequest;
 import MVC.Controller.CSBFinderController;
 import MVC.View.Components.Dialogs.ClusterDialog;
@@ -23,7 +22,6 @@ import java.awt.*;
 import java.io.File;
 import java.util.*;
 import java.util.List;
-import java.util.function.Function;
 
 public class MainFrame extends JFrame {
 
@@ -126,6 +124,7 @@ public class MainFrame extends JFrame {
         setApplyFilterListener();
         setNumOfNeighborsListener();
         setCSBFinderDoneListener();
+        setGeneTooltipListener();
 
         setMenuListeners();
     }
@@ -277,9 +276,9 @@ public class MainFrame extends JFrame {
     }
 
     private void setClusterListener() {
-        toolbar.setClusterListener(new OpenDialogListener() {
+        toolbar.setClusterListener(new Listener<OpenDialogEvent>() {
             @Override
-            public void openDialogOccurred(OpenDialogEvent e) {
+            public void eventOccurred(OpenDialogEvent e) {
                 clusterDialog.setLocationRelativeTo(null);
                 clusterDialog.setVisible(true);
             }
@@ -287,9 +286,9 @@ public class MainFrame extends JFrame {
     }
 
     private void setSelectParamsListener() {
-        toolbar.setSelectParamsListener(new OpenDialogListener() {
+        toolbar.setSelectParamsListener(new Listener<OpenDialogEvent>() {
             @Override
-            public void openDialogOccurred(OpenDialogEvent e) {
+            public void eventOccurred(OpenDialogEvent e) {
                 inputParamsDialog.setLocationRelativeTo(null);
                 inputParamsDialog.setVisible(true);
             }
@@ -301,9 +300,9 @@ public class MainFrame extends JFrame {
     }
 
     private void setFilterTableListener() {
-        summaryPanel.setFilterTableListener(new OpenDialogListener() {
+        summaryPanel.setFilterTableListener(new Listener<OpenDialogEvent>() {
             @Override
-            public void openDialogOccurred(OpenDialogEvent e) {
+            public void eventOccurred(OpenDialogEvent e) {
                 filterDialog.setLocationRelativeTo(null);
                 filterDialog.setVisible(true);
             }
@@ -314,10 +313,10 @@ public class MainFrame extends JFrame {
      * Load files listeners
      */
     private void setLoadButtonListener() {
-        menuBar.setLoadGenomesListener(new LoadFileListener() {
+        menuBar.setLoadGenomesListener(new Listener<LoadFileEvent>() {
 
             @Override
-            public void loadFileEventOccurred(LoadFileEvent e) {
+            public void eventOccurred(LoadFileEvent e) {
 
                 File f = e.getFilePath();
                 if (f.exists() && !f.isDirectory()) {
@@ -356,10 +355,10 @@ public class MainFrame extends JFrame {
     }
 
     private void setImportSessionButtonListener() {
-        menuBar.setImportSessionListener(new LoadFileListener() {
+        menuBar.setImportSessionListener(new Listener<LoadFileEvent>() {
 
             @Override
-            public void loadFileEventOccurred(LoadFileEvent e) {
+            public void eventOccurred(LoadFileEvent e) {
 
                 File f = e.getFilePath();
                 if (f.exists() && !f.isDirectory()) {
@@ -398,10 +397,10 @@ public class MainFrame extends JFrame {
     }
 
     private void setLoadCogInfoButtonListener() {
-        menuBar.setLoadCogInfoListener(new LoadFileListener() {
+        menuBar.setLoadCogInfoListener(new Listener<LoadFileEvent>() {
 
             @Override
-            public void loadFileEventOccurred(LoadFileEvent e) {
+            public void eventOccurred(LoadFileEvent e) {
 
                 File f = e.getFilePath();
                 if (f.exists() && !f.isDirectory()) {
@@ -440,11 +439,11 @@ public class MainFrame extends JFrame {
 
 
     private void setSaveButtonListener() {
-        menuBar.setSaveOutputListener(new SaveOutputListener() {
+        menuBar.setSaveOutputListener(new Listener<SaveOutputEvent>() {
             String msg = "";
 
             @Override
-            public void saveOutputOccurred(SaveOutputEvent e) {
+            public void eventOccurred(SaveOutputEvent e) {
 
                 if (e.getAction() == JFileChooser.APPROVE_OPTION) {
 
@@ -490,7 +489,7 @@ public class MainFrame extends JFrame {
                 genomesPanel.setNumOfNeighbors(toolbar.getNumOfNeighbors());
                 genomesPanel.displayInstances(pattern);
 
-                List<COG> patternCOGs = controller.getCogInfo(pattern.getPatternGenes());
+                List<COG> patternCOGs = controller.getCogsInfo(pattern.getPatternGenes());
                 Set<COG> insertedGenes = controller.getInsertedGenes(pattern, patternCOGs);
                 summaryPanel.setCogInfo(patternCOGs, insertedGenes, genomesPanel.getColorsUsed());
             }
@@ -509,9 +508,22 @@ public class MainFrame extends JFrame {
 
                 List<COG> patternCOGs = new ArrayList<>();
                 for (Pattern pattern : family.getPatterns()) {
-                    patternCOGs.addAll(controller.getCogInfo(pattern.getPatternGenes()));
+                    patternCOGs.addAll(controller.getCogsInfo(pattern.getPatternGenes()));
                 }
                 summaryPanel.setCogInfo(patternCOGs, new HashSet<>(), genomesPanel.getColorsUsed());
+            }
+        });
+    }
+
+    private void setGeneTooltipListener() {
+        genomesPanel.setGeneTooltipListener(new Listener<GeneTooltipEvent>() {
+            @Override
+            public void eventOccurred(GeneTooltipEvent event) {
+                COG cog = controller.getCogInfo(event.getCogId());
+                if (cog != null){
+                    event.getSrc().setToolTipText(String.format("%s | %s",
+                            String.join("/", cog.getFunctionalCategories()), cog.getCogDesc()));
+                }
             }
         });
     }

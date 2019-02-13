@@ -23,4 +23,14 @@ public class RectShape implements Shape{
 
     }
 
+    @Override
+    public boolean containsPoint(Point point) {
+        return point.x >= x && point.x <= x+width && point.y >= y && point.y <= y + height;
+    }
+
+    @Override
+    public String getTooltip(Point point) {
+        return "";
+    }
+
 }

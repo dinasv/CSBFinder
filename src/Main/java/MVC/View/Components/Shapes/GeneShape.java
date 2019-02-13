@@ -7,9 +7,9 @@ import java.awt.*;
 
 public class GeneShape implements Shape{
 
-    final static int PADDING_SMALL = 5;
-    final static int PADDING_MEDIUM = 20;
-    final static int ARROW_WIDTH = 30;
+    private final static int PADDING_SMALL = 5;
+    private final static int PADDING_MEDIUM = 20;
+    private final static int ARROW_WIDTH = 30;
 
     private int x, y;
 
@@ -56,6 +56,16 @@ public class GeneShape implements Shape{
 
     }
 
+    @Override
+    public boolean containsPoint(Point point) {
+        return point.x >= x && point.x <= x+width && point.y >= y && point.y <= y + height;
+    }
+
+    @Override
+    public String getTooltip(Point point) {
+        return "";
+    }
+
     private void drawGene(Graphics g){
         int rectStartX = x;
         int arrowStartX = x + rectWidth;
@@ -72,6 +82,7 @@ public class GeneShape implements Shape{
         g.setColor(color);
         g.fillRect(rectStartX, y, rectWidth, height);
         g.fillPolygon(xPoints, yPoints, 3);
+
 
     }
 
@@ -135,4 +146,7 @@ public class GeneShape implements Shape{
         this.strand = strand;
     }
 
+    public String toString(){
+        return label.getText();
+    }
 }
