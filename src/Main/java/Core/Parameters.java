@@ -68,34 +68,37 @@ public class Parameters {
     @Parameter(names={"-cog-info"}, description = "Gene families info file relative or absolute path", order = 8)
     public String cogInfoFilePath = null;
 
-    @Parameter(names={"--threshold", "-t"}, description = "Threshold for family clustering", order = 10)
-    public double threshold = 0.8;
-
-    @Parameter(names={"-clust-by"}, description = "Cluster CSBs to families by: 'score' or 'length'", order = 11)
-    public ClusterBy clusterBy = ClusterBy.SCORE;
-
-    @Parameter(names={"-clust-denominator"}, description = "Cluster CSBs to families by: 'score' or 'length'", order = 11)
-    public ClusterDenominator clusterDenominator = ClusterDenominator.MIN_SET;
-
-    @Parameter(names={"-non-directons"}, description = "If true, segment input sequences directons", order = 12)
+    @Parameter(names={"-non-directons"}, description = "If true, segment input sequences directons", order = 9)
     public boolean nonDirectons = false;
 
-    @Parameter(names={"-out"}, description = "Output file type", order = 13)
+    @Parameter(names={"-out"}, description = "Output file type", order = 10)
     public OutputType outputFileType = OutputType.XLSX;
 
-    @Parameter(names={"-out-dir"}, description = "Path to output directory", order = 14)
+    @Parameter(names={"-out-dir"}, description = "Path to output directory", order = 11)
     public String outputDir = "output";
 
-    @Parameter(names={"-ref"}, description = "Path to reference genomes file", order = 15)
+    @Parameter(names={"-ref"}, description = "Path to reference genomes file", order = 12)
     public String referenceGenomesPath = null;
 
-    @Parameter(names={"-alg"}, description = "Algorithm to use for finding CSBs", order = 16)
+    @Parameter(names={"-alg"}, description = "Algorithm to use for finding CSBs", order = 13)
     public AlgorithmType algorithmType = AlgorithmType.SUFFIX_TREE;
 
     @Parameter(names={"-keep-all-patterns"}, description = "Keep all patterns, without removing sub-patterns with " +
             "the same number of instances",
-            order = 17)
+            order = 14)
     public boolean keepAllPatterns = false;
+
+    @Parameter(names={"--threshold", "-t"}, description = "Threshold for family clustering", order = 15)
+    public double threshold = 0.8;
+
+    @Parameter(names={"-clust-by"}, description = "Cluster CSBs to families by: 'score' or 'length'", order = 16)
+    public ClusterBy clusterBy = ClusterBy.SCORE;
+
+    @Parameter(names={"-clust-denominator"}, description = "Cluster CSBs to families by: 'score' or 'length'", order = 17)
+    public ClusterDenominator clusterDenominator = ClusterDenominator.MIN_SET;
+
+    @Parameter(names={"-skip-cluster-step"}, description = "Cluster CSBs to families by: 'score' or 'length'", order = 17)
+    public boolean skipClusterStep = false;
 
     @Parameter(names={"--mismatch", "-err"}, description = "Maximal number of mismatches allowed", hidden = true)
     public int maxError = 0;

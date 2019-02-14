@@ -75,8 +75,13 @@ public class CSBFinderWorkflow {
 
         patternsCount = patterns.size();
         computeScores(patterns);
-        List<Family> families = clusterToFamilies(params.threshold, params.clusterBy, params.clusterDenominator);
 
+        List<Family> families = new ArrayList<>();
+        if (params.skipClusterStep){
+            families.add(new Family(0, gi, patterns));
+        }else {
+            families = clusterToFamilies(params.threshold, params.clusterBy, params.clusterDenominator);
+        }
         return families;
     }
 
