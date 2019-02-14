@@ -77,7 +77,7 @@ public class Alphabet {
         int i = 0;
         for(Gene gene: genes){
 
-            int letterIndex = addLetter(gene);
+            int letterIndex = getLetter(gene);
 
             word[i] = letterIndex;
             i++;

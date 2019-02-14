@@ -75,18 +75,11 @@ public class MatchPointAlgorithm implements Algorithm {
         for (int i = 0; i < cogWord.getLength(); i++) {
             int currLetter = cogWord.getLetter(i);
             if (currLetter != Alphabet.UNK_CHAR_INDEX) {
-                Map<Integer, List<MatchPoint>> genomeIdToCogPositions = matchLists.get(currLetter);
-                if (genomeIdToCogPositions == null) {
-                    genomeIdToCogPositions = new HashMap<>();
-                    matchLists.put(currLetter, genomeIdToCogPositions);
-                }
+                Map<Integer, List<MatchPoint>> genomeIdToCogPositions = matchLists
+                        .computeIfAbsent(currLetter, k -> new HashMap<>());
 
-                List<MatchPoint> genePositions = genomeIdToCogPositions.get(currGenomeId);
-
-                if (genePositions == null) {
-                    genePositions = new ArrayList<>();
-                    genomeIdToCogPositions.put(currGenomeId, genePositions);
-                }
+                List<MatchPoint> genePositions = genomeIdToCogPositions
+                        .computeIfAbsent(currGenomeId, k -> new ArrayList<>());
 
                 MatchPoint matchPoint = new MatchPoint(genomicSegment, i);
                 genePositions.add(matchPoint);
@@ -143,6 +136,7 @@ public class MatchPointAlgorithm implements Algorithm {
                     replicon.reverseCompliment();
 
                     extractPatterns(replicon.getGenes());
+
                 }else{
 
                     List<Directon> directons = replicon.splitRepliconToDirectons(Alphabet.UNK_CHAR);

@@ -126,9 +126,13 @@ public class GenomesInfo {
 
         datasetLengthSum += replicon.size();
 
-        createWordArray(replicon.getGenes().stream()
-                .map(gene -> new Gene(gene.getCogId(), Strand.INVALID))
-                .collect(Collectors.toList()));
+        replicon.getGenes()
+                .forEach(gene -> {
+                    alphabet.addLetter(new Gene(gene.getCogId(), Strand.FORWARD));
+                    alphabet.addLetter(new Gene(gene.getCogId(), Strand.REVERSE));
+                    alphabet.addLetter(new Gene(gene.getCogId(), Strand.INVALID));
+                });
+
     }
 
 
