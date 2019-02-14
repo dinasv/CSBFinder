@@ -521,7 +521,7 @@ public class MainFrame extends JFrame {
             public void eventOccurred(GeneTooltipEvent event) {
                 COG cog = controller.getCogInfo(event.getCogId());
                 if (cog != null){
-                    event.getSrc().setToolTipText(String.format("%s | %s",
+                    event.getSrc().setToolTipText(String.format("<html>%s<br>%s</html>",
                             String.join("/", cog.getFunctionalCategories()), cog.getCogDesc()));
                 }
             }
