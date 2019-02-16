@@ -1,18 +1,16 @@
 package Core.Patterns;
-
-import Core.Genomes.Gene;
 import Core.Genomes.Strand;
-
-import java.util.ArrayList;
-import java.util.List;
-
 /**
  *
  */
 public class InstanceLocation{
 
+    //If the replicons are segmented to directons - each directon has a different id
+    //Otherwise - the id is the same as the repliconId.
+    private int genomicSegmentId;
     private int repliconId;
     private int genomeId;
+
     private Strand strand;
 
     /**
@@ -26,7 +24,7 @@ public class InstanceLocation{
     private int genomicSegmentStartIndex;
 
     public InstanceLocation(int repliconId, int genomeId, int relativeStartIndex, int length, Strand strand,
-                            int genomicSegmentStartIndex, int genomicSegmentLength){
+                            int genomicSegmentStartIndex, int genomicSegmentLength, int genomicSegmentId){
         this.repliconId = repliconId;
         this.genomeId = genomeId;
         this.strand = strand;
@@ -34,6 +32,7 @@ public class InstanceLocation{
         this.instanceLength = length;
         this.genomicSegmentLength = genomicSegmentLength;
         this.genomicSegmentStartIndex = genomicSegmentStartIndex;
+        this.genomicSegmentId = genomicSegmentId;
 
     }
 
@@ -45,6 +44,7 @@ public class InstanceLocation{
         instanceLength = other.instanceLength;
         genomicSegmentLength = other.genomicSegmentLength;
         genomicSegmentStartIndex = other.genomicSegmentStartIndex;
+        genomicSegmentId = other.genomicSegmentId;
     }
 
     public int getRepliconId() {
@@ -111,4 +111,11 @@ public class InstanceLocation{
         return false;
     }
 
+    public int getGenomicSegmentId() {
+        return genomicSegmentId;
+    }
+
+    public String toHashString(){
+        return String.format("%d_%d", genomeId, repliconId);
+    }
 }

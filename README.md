@@ -202,7 +202,7 @@ A text file containing all input genomes modeled as strings, where each characte
 
 This file should use the following format:
 ```
->[genome name] | [ replicon name (e.g. plasmid or chromosome id)]
+>[genome name] | [ replicon name (e.g. plasmid or chromosome repliconId)]
 [homology group ID] TAB [Strand (+ or -)] TAB [you can add additional information]
 [homology group ID] TAB [Strand (+ or -)] TAB [you can add additional information] 
 [homology group ID] TAB [Strand (+ or -)] TAB [you can add additional information] 

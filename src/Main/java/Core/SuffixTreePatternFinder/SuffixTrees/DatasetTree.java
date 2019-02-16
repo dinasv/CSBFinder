@@ -35,9 +35,9 @@ public class DatasetTree {
 
         List<Gene> genes = genomicSegment.getGenes();
         WordArray wordArray = genomesInfo.createWordArray(genes);
-        InstanceLocation instanceLocation = new InstanceLocation(genomicSegment.getId(), currGenomeIndex,
+        InstanceLocation instanceLocation = new InstanceLocation(genomicSegment.getRepliconId(), currGenomeIndex,
                 0,genomicSegment.size(), genomicSegment.getStrand(), genomicSegment.getStartIndex(),
-                genomicSegment.size());
+                genomicSegment.size(), genomicSegment.getId());
 
         datasetTree.put(wordArray, instanceLocation);
 

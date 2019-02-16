@@ -155,7 +155,7 @@ public class CSBFinderModel {
 
         workflow.setPatternsFromFile(patternsFromFile);
 
-        Algorithm algorithm = new SuffixTreeAlgorithm();
+        Algorithm algorithm = params.algorithmType.algorithm;
         workflow.setAlgorithm(algorithm);
 
         System.out.println("Extracting CSBs from " + gi.getNumberOfGenomes() + " input sequences.");

@@ -44,10 +44,6 @@ public class GenomesInfo {
         alphabet = new Alphabet();
     }
 
-    public void addLetter(Gene gene){
-        alphabet.addLetter(gene);
-    }
-
     public void initAlphabet(){
         cogToContainingGenomes = new HashMap<>();
 

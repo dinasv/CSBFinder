@@ -14,8 +14,13 @@ public class Replicon extends GenomicSegment {
         super();
     }
 
-    public Replicon(Strand strand, int id, String name, int genomeId){
-        super(strand, id, genomeId);
+    public Replicon(Strand strand){
+        super(strand);
+        this.name = "";
+    }
+
+    public Replicon(Strand strand, int repliconId, String name, int genomeId){
+        super(strand.numericValue, strand, repliconId, genomeId);
         this.name = name;
     }
 
@@ -49,7 +54,8 @@ public class Replicon extends GenomicSegment {
 
         List<Directon> directons = new ArrayList<>();
 
-        Directon directon = new Directon(getId(), getGenomeId());
+        int directonId = 1;
+        Directon directon = new Directon(directonId++, getRepliconId(), getGenomeId());
 
         int geneIndex = 0;
         for (Gene gene : getGenes()) {
@@ -77,7 +83,7 @@ public class Replicon extends GenomicSegment {
                         }
                     }
 
-                    directon = new Directon(getId(), getGenomeId());
+                    directon = new Directon(directonId++, getRepliconId(), getGenomeId());
                 }
             }
             geneIndex ++;
@@ -88,5 +94,10 @@ public class Replicon extends GenomicSegment {
 
     public String getName() {
         return name;
+    }
+
+    public void setStrand(Strand strand) {
+        super.setStrand(strand);
+        super.setId(strand.numericValue);
     }
 }

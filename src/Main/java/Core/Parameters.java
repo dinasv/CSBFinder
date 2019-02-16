@@ -97,8 +97,12 @@ public class Parameters {
     @Parameter(names={"-clust-denominator"}, description = "Cluster CSBs to families by: 'score' or 'length'", order = 17)
     public ClusterDenominator clusterDenominator = ClusterDenominator.MIN_SET;
 
-    @Parameter(names={"-skip-cluster-step"}, description = "Cluster CSBs to families by: 'score' or 'length'", order = 17)
+    @Parameter(names={"-skip-cluster-step"}, description = "Skip the clustering to families step", order = 17)
     public boolean skipClusterStep = false;
+
+    @Parameter(names={"-procs"}, description = "Number of processes. 0 designates the maximal number of " +
+            "available processes", order = 18)
+    public int procCount = 1;
 
     @Parameter(names={"--mismatch", "-err"}, description = "Maximal number of mismatches allowed", hidden = true)
     public int maxError = 0;

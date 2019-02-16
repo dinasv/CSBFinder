@@ -98,6 +98,11 @@ public class SuffixTreeAlgorithm implements Algorithm {
         return parameters;
     }
 
+    @Override
+    public void setNumOfThreads(int numOfThreads) {
+        //TODO: implement
+    }
+
     public int getPatternsCount() {
         return patterns.size();
     }
@@ -345,7 +350,7 @@ public class SuffixTreeAlgorithm implements Algorithm {
         if (dataEdge != null) {
             dataEdgeLabel = dataEdge.getLabel();
             if (dataEdgeIndex >= dataEdgeLabel.getLength()) {//we reached to the end of the edge
-                dataNode = (InstanceNode) dataEdge.getDest();
+                dataNode = dataEdge.getDest();
                 dataEdgeIndex = -1;
                 dataEdge = null;
             }
@@ -361,9 +366,9 @@ public class SuffixTreeAlgorithm implements Algorithm {
                 int alpha = entry.getKey();
                 Gene alpha_ch = gi.getLetter(alpha);
                 dataEdge = entry.getValue();
-                InstanceNode data_tree_target_node = (InstanceNode) dataEdge.getDest();
+                InstanceNode dataTreeTargetNode = dataEdge.getDest();
 
-                if (data_tree_target_node.getCountInstancePerGenome() >= q1) {
+                if (dataTreeTargetNode.getCountInstancePerGenome() >= q1) {
 
                     if (alpha == Alphabet.UNK_CHAR_INDEX) {
                         if (q1 == 0 && gi.getLetter(pattern.get(0)) != Alphabet.UNK_CHAR_INDEX) {
@@ -388,7 +393,7 @@ public class SuffixTreeAlgorithm implements Algorithm {
             dataEdgeLabel = dataEdge.getLabel();
             int alpha = dataEdgeLabel.getLetter(dataEdgeIndex);
 
-            InstanceNode data_tree_target_node = (InstanceNode) dataEdge.getDest();
+            InstanceNode data_tree_target_node = dataEdge.getDest();
 
             if (data_tree_target_node.getCountInstancePerGenome() >= q1) {
                 if (alpha != Alphabet.UNK_CHAR_INDEX) {

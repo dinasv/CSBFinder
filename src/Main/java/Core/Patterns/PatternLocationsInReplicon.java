@@ -21,6 +21,10 @@ public class PatternLocationsInReplicon {
         isSorted = false;
     }
 
+    public List<InstanceLocation> getInstanceLocations(){
+        return instanceLocations;
+    }
+
     public List<InstanceLocation> getSortedLocations(){
         if (!isSorted) {
             instanceLocations.sort(Comparator.comparing(InstanceLocation::getActualStartIndex));

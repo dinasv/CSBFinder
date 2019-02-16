@@ -3,38 +3,48 @@ package Core.MatchPointPatternFinder;
 import Core.Algorithm;
 import Core.Genomes.*;
 import Core.Parameters;
-import Core.Patterns.InstanceLocation;
 import Core.Patterns.Pattern;
-import Core.Patterns.PatternLocationsInGenome;
-import Core.Patterns.PatternLocationsInReplicon;
 
 import java.util.*;
+import java.util.concurrent.*;
 
 /**
  */
 public class MatchPointAlgorithm implements Algorithm {
 
-    private Map<Integer, Map<Integer, List<MatchPoint>>> matchLists;
+    /**
+     * Alphabet letter to matches in each genomic segment
+     */
+    private Map<Integer, Map<String, List<MatchPoint>>> matchLists;
     private List<GenomicSegment> genomicSegments;
     private GenomesInfo genomesInfo;
     private Parameters parameters;
-    private Map<String, Pattern> patterns;
+
+    private ConcurrentMap<String, Pattern> patterns;
 
     private int patternId;
 
     private List<Pattern> patternsFromFile;
 
+    private ExecutorService executor;
+
     public MatchPointAlgorithm() {
         matchLists = new HashMap<>();
         genomesInfo = null;
         genomicSegments = new ArrayList<>();
-        patterns = new HashMap<>();
+        patterns = new ConcurrentHashMap<>();
         patternsFromFile = new ArrayList<>();
 
         patternId = 1;
+        executor = Executors.newFixedThreadPool(1);
+    }
+
+    public void setNumOfThreads(int numOfThreads){
+        executor = Executors.newFixedThreadPool(numOfThreads);
     }
 
     private void createMatchLists(boolean nonDirectons) {
+
         if (genomesInfo == null) {
             return;
         }
@@ -44,11 +54,10 @@ public class MatchPointAlgorithm implements Algorithm {
             for (Replicon replicon : genome.getReplicons()) {
                 if (nonDirectons) {//putWithSuffix replicon and its reverseCompliment
 
-                    createMatchLists(replicon, genome.getId());
+                    Replicon reversedReplicon = new Replicon(replicon);
+                    reversedReplicon.reverseCompliment();
 
-                    //reverseCompliment replicon
-                    replicon = new Replicon(replicon);
-                    replicon.reverseCompliment();
+                    createMatchLists(reversedReplicon, genome.getId());
                     createMatchLists(replicon, genome.getId());
 
                 } else {//split replicon to directons
@@ -75,16 +84,21 @@ public class MatchPointAlgorithm implements Algorithm {
         for (int i = 0; i < cogWord.getLength(); i++) {
             int currLetter = cogWord.getLetter(i);
             if (currLetter != Alphabet.UNK_CHAR_INDEX) {
-                Map<Integer, List<MatchPoint>> genomeIdToCogPositions = matchLists
+                Map<String, List<MatchPoint>> genomicSegmentToCogPositions = matchLists
                         .computeIfAbsent(currLetter, k -> new HashMap<>());
 
-                List<MatchPoint> genePositions = genomeIdToCogPositions
-                        .computeIfAbsent(currGenomeId, k -> new ArrayList<>());
+                List<MatchPoint> genePositions = genomicSegmentToCogPositions
+                        .computeIfAbsent(genomeRepliconToHashString(genomicSegment.getGenomeId(),
+                                genomicSegment.getRepliconId(), genomicSegment.getId()), k -> new ArrayList<>());
 
                 MatchPoint matchPoint = new MatchPoint(genomicSegment, i);
                 genePositions.add(matchPoint);
             }
         }
+    }
+
+    public static String genomeRepliconToHashString(int genomeId, int repliconId, int genomicSegmentId){
+        return String.format("%d_%d_%d", genomeId, repliconId, genomicSegmentId);
     }
 
     @Override
@@ -106,10 +120,11 @@ public class MatchPointAlgorithm implements Algorithm {
     private void initialize() {
 
         if (matchLists.size() == 0) {
+            genomicSegments = new ArrayList<>();
             createMatchLists(parameters.nonDirectons);
         }
 
-        patterns = new HashMap<>();
+        patterns = new ConcurrentHashMap<>();
         patternId = 1;
     }
 
@@ -121,6 +136,8 @@ public class MatchPointAlgorithm implements Algorithm {
 
         initialize();
 
+        List<Callable<Object>> tasks = new ArrayList<>();
+
         if (patternsFromFile.size() > 0){
             for (Pattern pattern : patternsFromFile){
 
@@ -131,34 +148,55 @@ public class MatchPointAlgorithm implements Algorithm {
 
                 if(parameters.nonDirectons) {
 
-                    extractPatterns(genes);
+                    //extractPatterns(genes);
+                    tasks.add(new FindPatternsThread(genes, genomesInfo, parameters.quorum2, parameters.maxPatternLength,
+                            parameters.minPatternLength, parameters.maxInsertion, patterns, matchLists));
 
                     replicon.reverseCompliment();
 
-                    extractPatterns(replicon.getGenes());
+                    tasks.add(new FindPatternsThread(replicon.getGenes(), genomesInfo, parameters.quorum2, parameters.maxPatternLength,
+                            parameters.minPatternLength, parameters.maxInsertion, patterns, matchLists));
+                    //extractPatterns(replicon.getGenes());
 
                 }else{
 
                     List<Directon> directons = replicon.splitRepliconToDirectons(Alphabet.UNK_CHAR);
 
                     for (Directon directon : directons) {
-                        extractPatterns(directon.getGenes());
+                        tasks.add(new FindPatternsThread(directon.getGenes(), genomesInfo, parameters.quorum2, parameters.maxPatternLength,
+                                parameters.minPatternLength, parameters.maxInsertion, patterns, matchLists));
+                        //extractPatterns(directon.getGenes());
                     }
                 }
 
             }
-        }else {
+        } else {
             for (GenomicSegment genomicSegment : genomicSegments) {
 
                 List<Gene> genes = genomicSegment.getGenes();
-                extractPatterns(genes);
-
+                //extractPatterns(genes);
+                tasks.add(new FindPatternsThread(genes, genomesInfo, parameters.quorum2, parameters.maxPatternLength,
+                        parameters.minPatternLength, parameters.maxInsertion, patterns, matchLists));
             }
         }
-
+        try {
+            List<Future<Object>> answers = executor.invokeAll(tasks);
+            executor.shutdown();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        setPatternIds();
         removeRedundantPatterns();
     }
 
+    private void setPatternIds(){
+        int i = 1;
+        for (Pattern pattern : patterns.values()){
+            pattern.setPatternId(String.valueOf(i++));
+        }
+    }
+
+    /*
     private void extractPatterns(List<Gene> genes){
         WordArray wordArray = genomesInfo.createWordArray(genes);
 
@@ -212,15 +250,15 @@ public class MatchPointAlgorithm implements Algorithm {
 
     private void initializePattern(int letter, Pattern pattern) {
 
-        Map<Integer, List<MatchPoint>> matchList = matchLists.get(letter);
+        Map<String, List<MatchPoint>> matchList = matchLists.get(letter);
         List<MatchPoint> currGenomeMatchList;
 
         //initialize instanceLists, using matchLists
         if (matchList != null) {
-            for (Map.Entry<Integer, List<MatchPoint>> entry : matchList.entrySet()) {
-                int genomeId = entry.getKey();
+            for (Map.Entry<String, List<MatchPoint>> entry : matchList.entrySet()) {
+                //int genomeId = entry.getKey();
 
-                currGenomeMatchList = matchList.get(genomeId);
+                currGenomeMatchList = entry.getValue();
 
                 if (currGenomeMatchList != null) {
 
@@ -228,10 +266,10 @@ public class MatchPointAlgorithm implements Algorithm {
                         GenomicSegment currGenomicSegment = matchPoint.getGenomicSegment();
                         int pos = matchPoint.getPosition();
 
-                        InstanceLocation instanceLocation = new InstanceLocation(currGenomicSegment.getId(),
+                        InstanceLocation instanceLocation = new InstanceLocation(currGenomicSegment.getRepliconId(),
                                 currGenomicSegment.getGenomeId(), pos, 1,
                                 currGenomicSegment.getStrand(), currGenomicSegment.getStartIndex(),
-                                currGenomicSegment.size());
+                                currGenomicSegment.size(), currGenomicSegment.getId());
 
                         pattern.addInstanceLocation(instanceLocation);
                     }
@@ -262,7 +300,9 @@ public class MatchPointAlgorithm implements Algorithm {
         }
         if (extendedPattern.getInstancesPerGenome() >= parameters.quorum2
                 && extendedPattern.getLength() >= parameters.minPatternLength) {
+
             patterns.put(extendedPatternStr, extendedPattern);
+
         }
     }
 
@@ -289,10 +329,10 @@ public class MatchPointAlgorithm implements Algorithm {
                 relativeMatchPointIndex = matchPoint.getPosition();
 
                 //match point is in an earlier genomic segment in this sequence
-                if (matchPoint.getGenomicSegment().getId() < currInstance.getRepliconId()) {
+                if (matchPoint.getGenomicSegment().getRepliconId() < currInstance.getRepliconId()) {
                     matchPointPtr++;
                     //The match point is in a later genomic segment in this sequence
-                } else if (matchPoint.getGenomicSegment().getId() > currInstance.getRepliconId()) {
+                } else if (matchPoint.getGenomicSegment().getRepliconId() > currInstance.getRepliconId()) {
                     instancePtr++;
                 } else {
                     //the match point index is too small to extend curr instance
@@ -300,7 +340,7 @@ public class MatchPointAlgorithm implements Algorithm {
                         matchPointPtr++;
                         //The match point is closer to next instance
                     } else if (nextInstance != null &&
-                            matchPoint.getGenomicSegment().getId() == nextInstance.getRepliconId() &&
+                            matchPoint.getGenomicSegment().getRepliconId() == nextInstance.getRepliconId() &&
                             relativeMatchPointIndex >= nextInstance.getRelativeEndIndex()) {
                         instancePtr++;
                     } else {//The match point is >= currInstance.getRelativeEndIndex()
@@ -318,7 +358,7 @@ public class MatchPointAlgorithm implements Algorithm {
                 }
             }
         }
-    }
+    }*/
 
     private void removeRedundantPatterns() {
 
@@ -398,22 +438,4 @@ public class MatchPointAlgorithm implements Algorithm {
         return parameters;
     }
 
-    private class MatchPoint {
-
-        private final GenomicSegment genomicSegment;
-        private final int position;
-
-        public MatchPoint(GenomicSegment genomicSegment, int position) {
-            this.genomicSegment = genomicSegment;
-            this.position = position;
-        }
-
-        public GenomicSegment getGenomicSegment() {
-            return genomicSegment;
-        }
-
-        public int getPosition() {
-            return position;
-        }
-    }
 }

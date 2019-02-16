@@ -27,7 +27,7 @@ public class Genome {
     }
 
     public void addReplicon(Replicon replicon){
-        repliconsById.put(replicon.getId(), replicon);
+        repliconsById.put(replicon.getRepliconId(), replicon);
         repliconsByName.put(replicon.getName(), replicon);
         genomeSize += replicon.size();
     }

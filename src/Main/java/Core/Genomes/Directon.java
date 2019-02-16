@@ -9,8 +9,8 @@ import java.util.stream.Collectors;
  */
 public class Directon extends GenomicSegment {
 
-    public Directon(int id, int genomeId){
-        super(id, genomeId);
+    public Directon(int id, int repliconId, int genomeId){
+        super(id, repliconId, genomeId);
     }
 
     public void removeUnkChars(String UNK_CHAR){
@@ -35,7 +35,7 @@ public class Directon extends GenomicSegment {
             i++;
         }
         if (i != 0) {
-            genes = new ArrayList<Gene>(genes.subList(0, i + 1));
+            genes = new ArrayList<Gene>(genes.subList(2, genes.size()));
         }
     }
 

@@ -8,6 +8,7 @@ import java.util.List;
 public abstract class GenomicSegment {
 
     private int id;
+    private int repliconId;
     private int genomeId;
 
     protected List<Gene> genes;
@@ -18,22 +19,30 @@ public abstract class GenomicSegment {
         genes = new ArrayList<>();
         strand = Strand.INVALID;
         startIndex = 0;
-        id = -1;
+        repliconId = -1;
         genomeId = -1;
-    }
-    public GenomicSegment(int id, int genomeId){
-        this();
-        this.id = id;
-        this.genomeId = genomeId;
+        id = -1;
     }
 
-    public GenomicSegment(Strand strand, int id, int genomeId){
-        this(id, genomeId);
+    public GenomicSegment(int id, int repliconId, int genomeId){
+        this();
+        this.repliconId = repliconId;
+        this.genomeId = genomeId;
+        this.id = id;
+    }
+
+    public GenomicSegment(Strand strand){
+        this();
+        this.strand = strand;
+    }
+
+    public GenomicSegment(int id, Strand strand, int repliconId, int genomeId){
+        this(id, repliconId, genomeId);
         this.strand = strand;
     }
 
     public GenomicSegment(GenomicSegment other){
-        this(other.getStrand(), other.getId(), other.getGenomeId());
+        this(other.id, other.strand, other.repliconId, other.genomeId);
         genes.addAll(other.genes);
     }
 
@@ -69,13 +78,19 @@ public abstract class GenomicSegment {
         return genes;
     }
 
-    public int getId() {
-        return id;
+    public int getRepliconId() {
+        return repliconId;
     }
 
     public int getGenomeId() {
         return genomeId;
     }
 
+    public int getId() {
+        return id;
+    }
 
+    public void setId(int id) {
+        this.id = id;
+    }
 }

@@ -23,7 +23,7 @@ public class DatasetSuffixTreeTest {
 
     private InstanceLocation location(int[] word){
         return new InstanceLocation(REPLICON_ID, GENOME_ID, 0,
-                word.length, Strand.FORWARD, 0, word.length);
+                word.length, Strand.FORWARD, 0, word.length, REPLICON_ID);
     }
 
     private WordArray wordArray(int[] word){
@@ -44,23 +44,23 @@ public class DatasetSuffixTreeTest {
     @Test
     public void testGSTFindSingleWordSubstrings() throws Exception {
 
-        int[] WORD1 = {1, 2, 3, 4};
-        Pair<WordArray, InstanceLocation> WORD_LOC1 = wordLocationPair(WORD1);
+        int[] WORD = {1, 2, 3, 4};
+        Pair<WordArray, InstanceLocation> WORD_LOC = wordLocationPair(WORD);
 
         List<Pair<WordArray, InstanceLocation>> words = new ArrayList<>();
-        words.add(WORD_LOC1);
+        words.add(WORD_LOC);
         GeneralizedSuffixTree gst = createGstWithWords(words);
 
-        for (int startIndex = 0; startIndex < WORD1.length; startIndex++) {
-            for (int endIndex = startIndex+1; endIndex < WORD1.length+1; endIndex++) {
+        for (int startIndex = 0; startIndex < WORD.length; startIndex++) {
+            for (int endIndex = startIndex+1; endIndex < WORD.length+1; endIndex++) {
 
-                WordArray WORD_ARRAY1 = wordArray(Arrays.copyOfRange(WORD1, startIndex, endIndex));
+                WordArray WORD_ARRAY1 = wordArray(Arrays.copyOfRange(WORD, startIndex, endIndex));
                 Map<Integer, List<InstanceLocation>> instances = gst.search(WORD_ARRAY1);
 
                 Assert.assertEquals(1, instances.size());
-                Assert.assertEquals(true, instances.containsKey(WORD_LOC1.getSecond().getGenomeId()));
+                Assert.assertEquals(true, instances.containsKey(WORD_LOC.getSecond().getGenomeId()));
 
-                InstanceLocation loc = instances.get(WORD_LOC1.getSecond().getGenomeId()).get(0);
+                InstanceLocation loc = instances.get(WORD_LOC.getSecond().getGenomeId()).get(0);
                 Assert.assertEquals(startIndex, loc.getActualStartIndex());
             }
         }
@@ -68,14 +68,14 @@ public class DatasetSuffixTreeTest {
 
     @Test
     public void testGSTFindSingleRepeatedSubstring() throws Exception {
-        int[] WORD2 = {1, 2, 1, 2};
-        Pair<WordArray, InstanceLocation> WORD_LOC2 = wordLocationPair(WORD2);
+        int[] WORD = {1, 2, 1, 2};
+        Pair<WordArray, InstanceLocation> WORD_LOC = wordLocationPair(WORD);
 
         List<Pair<WordArray, InstanceLocation>> words = new ArrayList<>();
-        words.add(WORD_LOC2);
+        words.add(WORD_LOC);
         GeneralizedSuffixTree gst = createGstWithWords(words);
 
-        WordArray WORD_SUBSTRING = wordArray(Arrays.copyOfRange(WORD2, 0, 2));
+        WordArray WORD_SUBSTRING = wordArray(Arrays.copyOfRange(WORD, 0, 2));
         Map<Integer, List<InstanceLocation>> instances = gst.search(WORD_SUBSTRING);
 
         Set<Integer> startIndexes = instances.get(GENOME_ID).stream()
@@ -85,6 +85,28 @@ public class DatasetSuffixTreeTest {
         Set<Integer> expectedStartIndexes = new HashSet<>();
         expectedStartIndexes.add(0);
         expectedStartIndexes.add(2);
+
+        Assert.assertEquals(expectedStartIndexes, startIndexes);
+
+    }
+
+    @Test
+    public void testGSTFindSingleSubstringDuplicatedLetter() throws Exception {
+        int[] WORD = {0, 1, 1};
+        Pair<WordArray, InstanceLocation> WORD_LOC = wordLocationPair(WORD);
+
+        List<Pair<WordArray, InstanceLocation>> words = new ArrayList<>();
+        words.add(WORD_LOC);
+        GeneralizedSuffixTree gst = createGstWithWords(words);
+
+        Map<Integer, List<InstanceLocation>> instances = gst.search(wordArray(Arrays.copyOfRange(WORD, 1, WORD.length)));
+
+        Set<Integer> startIndexes = instances.get(GENOME_ID).stream()
+                .map(InstanceLocation::getActualStartIndex)
+                .collect(Collectors.toSet());
+
+        Set<Integer> expectedStartIndexes = new HashSet<>();
+        expectedStartIndexes.add(1);
 
         Assert.assertEquals(expectedStartIndexes, startIndexes);
 

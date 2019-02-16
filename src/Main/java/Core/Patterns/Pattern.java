@@ -47,7 +47,7 @@ public class Pattern {
         mainFunctionalCategory = "";
         reverseComplimentPatternArr = reverseComplimentPattern(patternGenes);
 
-        genomeToInstanceLocations = new HashMap<>();
+        genomeToInstanceLocations = new TreeMap<>();
     }
 
 
@@ -232,8 +232,8 @@ public class Pattern {
             return true;
 
         Pattern other = (Pattern) obj;
-        return other.patternGenes.equals(this.patternGenes) ||
-                other.patternGenes.equals(this.reverseComplimentPatternArr);
+        return (other.patternGenes.equals(this.patternGenes) ||
+                other.patternGenes.equals(this.reverseComplimentPatternArr));
     }
 
 }

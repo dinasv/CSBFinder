@@ -338,14 +338,15 @@ public class Parsers {
             Objects.requireNonNull(genome, errorMessage("replicon name to match one of the input genomes",
                     rawLine, lineNumber, filePath));
 
-            int repliconId = replicon.getId();
+            int repliconId = replicon.getRepliconId();
 
             String[] indexes = location[1].substring(1, location[1].length() - 1).split(",");
             int startIndex = castToInteger(indexes[0], "start index", lineNumber, filePath);
             int endIndex = castToInteger(indexes[1], "end index", lineNumber, filePath);
 
             InstanceLocation instanceLocation = new InstanceLocation(repliconId, genomeId, startIndex,
-                    endIndex - startIndex, Strand.FORWARD, 0, 0);
+                    endIndex - startIndex, Strand.FORWARD, 0, 0,
+                    repliconId);
             pattern.addInstanceLocation(instanceLocation);
 
         }
@@ -432,7 +433,7 @@ public class Parsers {
         String currGenomeName = "";
 
         Genome genome = new Genome();
-        Replicon replicon = new Replicon(Strand.FORWARD, -1, "", -1);
+        Replicon replicon = new Replicon(Strand.FORWARD);
 
         String rawLine = br.readLine();
         lineNumber++;

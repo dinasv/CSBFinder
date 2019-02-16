@@ -22,6 +22,7 @@ public class MatchPointAlgorithmTest {
         algorithm.setParameters(params);
         algorithm.setPatternsFromFile(patternsFromFile);
         algorithm.setGenomesInfo(gi);
+        algorithm.setNumOfThreads(1);
     }
 
     private Parameters initParamsNonDirectons(){

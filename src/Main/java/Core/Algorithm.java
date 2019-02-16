@@ -23,4 +23,5 @@ public interface Algorithm {
 
     Parameters getParameters();
 
+    void setNumOfThreads(int numOfThreads);
 }
