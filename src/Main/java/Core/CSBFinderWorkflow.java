@@ -61,9 +61,9 @@ public class CSBFinderWorkflow {
         this.params = params;
         algorithm.setParameters(params);
         algorithm.setPatternsFromFile(patternsFromFile);
+
         int procCount = params.procCount == 0 ? Runtime.getRuntime().availableProcessors() : params.procCount;
         algorithm.setNumOfThreads(procCount);
-        System.out.println(Runtime.getRuntime().availableProcessors());
 
         algorithm.findPatterns();
 

@@ -22,8 +22,6 @@ public class MatchPointAlgorithm implements Algorithm {
 
     private ConcurrentMap<String, Pattern> patterns;
 
-    private int patternId;
-
     private List<Pattern> patternsFromFile;
 
     private ExecutorService executor;
@@ -35,7 +33,6 @@ public class MatchPointAlgorithm implements Algorithm {
         patterns = new ConcurrentHashMap<>();
         patternsFromFile = new ArrayList<>();
 
-        patternId = 1;
         executor = Executors.newFixedThreadPool(1);
     }
 
@@ -125,7 +122,6 @@ public class MatchPointAlgorithm implements Algorithm {
         }
 
         patterns = new ConcurrentHashMap<>();
-        patternId = 1;
     }
 
     @Override
@@ -148,7 +144,6 @@ public class MatchPointAlgorithm implements Algorithm {
 
                 if(parameters.nonDirectons) {
 
-                    //extractPatterns(genes);
                     tasks.add(new FindPatternsThread(genes, genomesInfo, parameters.quorum2, parameters.maxPatternLength,
                             parameters.minPatternLength, parameters.maxInsertion, patterns, matchLists));
 
@@ -156,7 +151,6 @@ public class MatchPointAlgorithm implements Algorithm {
 
                     tasks.add(new FindPatternsThread(replicon.getGenes(), genomesInfo, parameters.quorum2, parameters.maxPatternLength,
                             parameters.minPatternLength, parameters.maxInsertion, patterns, matchLists));
-                    //extractPatterns(replicon.getGenes());
 
                 }else{
 
@@ -165,7 +159,6 @@ public class MatchPointAlgorithm implements Algorithm {
                     for (Directon directon : directons) {
                         tasks.add(new FindPatternsThread(directon.getGenes(), genomesInfo, parameters.quorum2, parameters.maxPatternLength,
                                 parameters.minPatternLength, parameters.maxInsertion, patterns, matchLists));
-                        //extractPatterns(directon.getGenes());
                     }
                 }
 
@@ -195,171 +188,6 @@ public class MatchPointAlgorithm implements Algorithm {
             pattern.setPatternId(String.valueOf(i++));
         }
     }
-
-    /*
-    private void extractPatterns(List<Gene> genes){
-        WordArray wordArray = genomesInfo.createWordArray(genes);
-
-        //go over all possible start indices of a pattern
-        for (int patternStart = 0; patternStart < wordArray.getLength(); patternStart++) {
-
-            List<Gene> patternGenes = genes.subList(patternStart, patternStart + 1);
-            Pattern pattern = new Pattern(Integer.toString(patternId++), patternGenes);
-
-            int letter = wordArray.getLetter(patternStart);
-            if (letter == Alphabet.UNK_CHAR_INDEX) {//There can't be an unkonwn char in a pattern
-                continue;
-            }
-
-            initializePattern(letter, pattern);
-
-            //extend pattern to length > 1, one character at a time
-            extendPattern(pattern, patternStart, wordArray, genes);
-        }
-    }
-
-    private void extendPattern(Pattern pattern, int patternStart, WordArray wordArray, List<Gene> genes) {
-
-        int endIndex = Math.min(wordArray.getLength() - patternStart, parameters.maxPatternLength);
-        for (int patternEnd = patternStart + 1; patternEnd < patternStart + endIndex; patternEnd++) {
-
-            int letter = wordArray.getLetter(patternEnd);
-
-            if (letter == Alphabet.UNK_CHAR_INDEX) {//There can't be an unkonwn char in a pattern
-                break;
-            }
-
-            List<Gene> extendedPatternGenes = genes.subList(patternStart, patternEnd + 1);
-            Pattern extendedPattern = new Pattern(Integer.toString(patternId++), extendedPatternGenes);
-
-            if (patterns.containsKey(extendedPattern.toString())) {
-                pattern = patterns.get(extendedPattern.toString());
-                continue;
-            }
-
-            extendPattern(letter, pattern, extendedPattern);
-
-            pattern = extendedPattern;
-            //pruning
-            if (pattern.getInstancesPerGenome() < parameters.quorum2) {
-                return;
-            }
-        }
-
-    }
-
-    private void initializePattern(int letter, Pattern pattern) {
-
-        Map<String, List<MatchPoint>> matchList = matchLists.get(letter);
-        List<MatchPoint> currGenomeMatchList;
-
-        //initialize instanceLists, using matchLists
-        if (matchList != null) {
-            for (Map.Entry<String, List<MatchPoint>> entry : matchList.entrySet()) {
-                //int genomeId = entry.getKey();
-
-                currGenomeMatchList = entry.getValue();
-
-                if (currGenomeMatchList != null) {
-
-                    for (MatchPoint matchPoint : currGenomeMatchList) {
-                        GenomicSegment currGenomicSegment = matchPoint.getGenomicSegment();
-                        int pos = matchPoint.getPosition();
-
-                        InstanceLocation instanceLocation = new InstanceLocation(currGenomicSegment.getRepliconId(),
-                                currGenomicSegment.getGenomeId(), pos, 1,
-                                currGenomicSegment.getStrand(), currGenomicSegment.getStartIndex(),
-                                currGenomicSegment.size(), currGenomicSegment.getId());
-
-                        pattern.addInstanceLocation(instanceLocation);
-                    }
-                }
-            }
-        }
-    }
-
-    private void extendPattern(int letter, Pattern pattern, Pattern extendedPattern) {
-
-        String extendedPatternStr = extendedPattern.toString();
-
-        Map<Integer, List<MatchPoint>> matchList = matchLists.get(letter);
-
-        if (matchList != null) {
-            for (Map.Entry<Integer, PatternLocationsInGenome> genomeToInstanceLocations : pattern.getPatternLocations().entrySet()) {
-
-                int genomeId = genomeToInstanceLocations.getKey();
-                List<MatchPoint> matchList_y = matchList.get(genomeId);
-
-                PatternLocationsInGenome instanceLocationsInGenome = genomeToInstanceLocations.getValue();
-                if (instanceLocationsInGenome != null) {
-                    for (Map.Entry<Integer, PatternLocationsInReplicon> entry : instanceLocationsInGenome.getRepliconToLocations().entrySet()) {
-                        extendInstances(entry.getValue().getSortedLocations(), matchList_y, extendedPattern);
-                    }
-                }
-            }
-        }
-        if (extendedPattern.getInstancesPerGenome() >= parameters.quorum2
-                && extendedPattern.getLength() >= parameters.minPatternLength) {
-
-            patterns.put(extendedPatternStr, extendedPattern);
-
-        }
-    }
-
-    private void extendInstances(List<InstanceLocation> instanceList, List<MatchPoint> matchList_y,
-                                 Pattern extendedPattern) {
-
-        if (matchList_y != null) {
-            InstanceLocation currInstance;
-            InstanceLocation nextInstance;
-            MatchPoint matchPoint;
-
-            int instancePtr = 0;
-            int matchPointPtr = 0;
-            int relativeMatchPointIndex;
-
-            while (instancePtr < instanceList.size() && matchPointPtr < matchList_y.size()) {
-                currInstance = instanceList.get(instancePtr);
-                if (instancePtr < instanceList.size() - 1) {
-                    nextInstance = instanceList.get(instancePtr + 1);
-                } else {
-                    nextInstance = null;
-                }
-                matchPoint = matchList_y.get(matchPointPtr);
-                relativeMatchPointIndex = matchPoint.getPosition();
-
-                //match point is in an earlier genomic segment in this sequence
-                if (matchPoint.getGenomicSegment().getRepliconId() < currInstance.getRepliconId()) {
-                    matchPointPtr++;
-                    //The match point is in a later genomic segment in this sequence
-                } else if (matchPoint.getGenomicSegment().getRepliconId() > currInstance.getRepliconId()) {
-                    instancePtr++;
-                } else {
-                    //the match point index is too small to extend curr instance
-                    if (relativeMatchPointIndex < currInstance.getRelativeEndIndex()) {
-                        matchPointPtr++;
-                        //The match point is closer to next instance
-                    } else if (nextInstance != null &&
-                            matchPoint.getGenomicSegment().getRepliconId() == nextInstance.getRepliconId() &&
-                            relativeMatchPointIndex >= nextInstance.getRelativeEndIndex()) {
-                        instancePtr++;
-                    } else {//The match point is >= currInstance.getRelativeEndIndex()
-                        int instanceLength = relativeMatchPointIndex - currInstance.getRelativeStartIndex() + 1;
-                        int numOfInsertions = instanceLength - extendedPattern.getLength();
-                        if (numOfInsertions <= parameters.maxInsertion) {
-                            InstanceLocation extendedPatternInstance = new InstanceLocation(currInstance);
-                            extendedPatternInstance.setInstanceLength(instanceLength);
-                            extendedPattern.addInstanceLocation(extendedPatternInstance);
-
-                            matchPointPtr++;//each match point used only once
-                        }
-                        instancePtr++;
-                    }
-                }
-            }
-        }
-    }*/
-
     private void removeRedundantPatterns() {
 
         HashSet<String> patternsToRemove = new HashSet<>();

@@ -23,11 +23,19 @@ public class FindPatternsThread implements Callable<Object> {
     private int maxPatternLength;
     private int minPatternLength;
     private int maxInsertion;
-    private ConcurrentMap<String, Pattern> patterns;
+
+    /**
+     * Only get operations
+     */
     private Map<Integer, Map<String, List<MatchPoint>>> matchLists;
 
+    /**
+     * Shared by all threads, the patterns are added dynamically
+     */
+    private ConcurrentMap<String, Pattern> patterns;
+
     public FindPatternsThread(List<Gene> genes, GenomesInfo genomesInfo, int quorum, int maxPatternLength,
-                              int minPatternLength, int maxInsertion, ConcurrentMap patterns, Map<Integer,
+                              int minPatternLength, int maxInsertion, ConcurrentMap<String, Pattern> patterns, Map<Integer,
             Map<String, List<MatchPoint>>> matchLists) {
 
         this.genes = genes;
@@ -134,12 +142,8 @@ public class FindPatternsThread implements Callable<Object> {
 
             PatternLocationsInGenome instanceLocationsInGenome = genomeToInstanceLocations.getValue();
 
-            int genomeId = genomeToInstanceLocations.getKey();
-            //List<MatchPoint> matchList_y = genomeRepliconToMatchList.get(genomeId);
-
             if (instanceLocationsInGenome != null) {
                 for (Map.Entry<Integer, PatternLocationsInReplicon> repliconToLocations : instanceLocationsInGenome.getRepliconToLocations().entrySet()) {
-                    int replicon_id = repliconToLocations.getKey();
 
                     List<InstanceLocation> locations = repliconToLocations.getValue().getInstanceLocations();
                     Map<Integer, List<InstanceLocation>> genomicSegmentToLocations = locations.stream()
@@ -161,6 +165,16 @@ public class FindPatternsThread implements Callable<Object> {
         }
     }
 
+    /**
+     * Goes over a list of instances and a list of match points in the same genomic segment in parallel.
+     * Each match point extends at most one instance - the closest one to the match point
+     *
+     * The list of match points and the list of instances must be ordered by their start index
+     *
+     * @param genomeRepliconToMatchList
+     * @param instanceList
+     * @param extendedPattern
+     */
     private void extendInstances(Map<String, List<MatchPoint>> genomeRepliconToMatchList,
                                  List<InstanceLocation> instanceList, Pattern extendedPattern) {
 

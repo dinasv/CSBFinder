@@ -50,8 +50,7 @@ public class CompareAlgorithmsTest {
         Parameters params = new Parameters();
         params.quorum2 = 1;
 
-        //String[] files = {GENOMES_FILE_PATH2, GENOMES_FILE_PATH4, GENOMES_FILE_PATH5};
-        String[] files = {GENOMES_FILE_PATH5};
+        String[] files = {GENOMES_FILE_PATH2, GENOMES_FILE_PATH4, GENOMES_FILE_PATH5};
 
         for (String file : files) {
             List<Pattern> patternsAlg1 = runAlgorithm(AlgorithmType.SUFFIX_TREE.algorithm, file, params);

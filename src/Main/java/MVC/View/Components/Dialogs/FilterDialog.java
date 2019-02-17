@@ -200,17 +200,10 @@ public class FilterDialog extends JDialog{
         maxCount.addChangeListener(e -> request.setMinInstanceCount((int)maxCount.getValue()));
 
         patternIds = new JTextField();
-        patternIds.getDocument().addDocumentListener((TextChangeListener) e ->
-                request.setPatternIds(patternIds.getText()));
 
         familyIds = new JTextField();
-        familyIds.getDocument().addDocumentListener((TextChangeListener) e -> {
-                request.setFamilyIds(familyIds.getText());
-        });
 
         patternGenes = new JTextField();
-        patternGenes.getDocument().addDocumentListener((TextChangeListener) e ->
-                request.setPatternGenes(patternGenes.getText()));
 
     }
 

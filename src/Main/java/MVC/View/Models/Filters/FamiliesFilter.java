@@ -235,7 +235,7 @@ public class FamiliesFilter {
                 if (this.strToFind.equals("")) {
                     return true;
                 }
-                return this.strToFind.matches(str);
+                return this.strToFind.toLowerCase().matches(str.toLowerCase());
             }
 
             return false;
@@ -260,7 +260,7 @@ public class FamiliesFilter {
                     return true;
                 }
 
-                return patternStr.contains(this.strToFind);
+                return patternStr.toLowerCase().contains(this.strToFind.toLowerCase());
             }
 
             return false;
