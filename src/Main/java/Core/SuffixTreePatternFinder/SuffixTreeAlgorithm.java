@@ -171,18 +171,13 @@ public class SuffixTreeAlgorithm implements Algorithm {
 
             Pattern pattern = entry.getValue();
 
+            if (pattern.toString().equals("COG0747,COG0601,COG1173,COG0444,COG1124")){
+                System.out.println();
+            }
+
             if (!parameters.keepAllPatterns) {
                 String suffixStr = getSuffix(pattern);
-
-                Pattern suffix = patterns.get(suffixStr);
-
-                if (suffix != null) {
-                    int patternCount = pattern.getInstancesPerGenome();
-                    int suffixCount = suffix.getInstancesPerGenome();
-                    if (suffixCount == patternCount) {
-                        patternsToRemove.add(suffixStr);
-                    }
-                }
+                addSubPatternToRemoveList(suffixStr, pattern, patternsToRemove);
             }
 
             if (nonDirectons) {
@@ -198,6 +193,18 @@ public class SuffixTreeAlgorithm implements Algorithm {
         suffix.remove(0);
 
         return Pattern.toString(suffix);
+    }
+
+    private void addSubPatternToRemoveList(String subPatternStr, Pattern pattern, HashSet<String> patternsToRemove){
+        Pattern subPattern = patterns.get(subPatternStr);
+
+        if (subPattern != null) {
+            int patternCount = pattern.getInstancesPerGenome();
+            int suffixCount = subPattern.getInstancesPerGenome();
+            if (suffixCount == patternCount) {
+                patternsToRemove.add(subPatternStr);
+            }
+        }
     }
 
     private void removeReverseCompliments(Pattern pattern, HashSet<String> patternsToRemove) {

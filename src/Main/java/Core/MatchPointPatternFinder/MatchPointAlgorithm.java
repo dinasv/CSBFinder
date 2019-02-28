@@ -167,7 +167,6 @@ public class MatchPointAlgorithm implements Algorithm {
             for (GenomicSegment genomicSegment : genomicSegments) {
 
                 List<Gene> genes = genomicSegment.getGenes();
-                //extractPatterns(genes);
                 tasks.add(new FindPatternsThread(genes, genomesInfo, parameters.quorum2, parameters.maxPatternLength,
                         parameters.minPatternLength, parameters.maxInsertion, patterns, matchLists));
             }
@@ -201,12 +200,15 @@ public class MatchPointAlgorithm implements Algorithm {
 
                 String prefixStr = getPrefix(pattern);
                 addSubPatternToRemoveList(prefixStr, pattern, patternsToRemove);
+
             }
 
             if (parameters.nonDirectons) {
-                removeReverseCompliments(pattern, patternsToRemove);
+                addReverseComplimentsToRemoveList(pattern, patternsToRemove);
             }
         }
+
+
         patterns.keySet().removeAll(patternsToRemove);
     }
 
@@ -231,14 +233,14 @@ public class MatchPointAlgorithm implements Algorithm {
 
         if (subPattern != null) {
             int patternCount = pattern.getInstancesPerGenome();
-            int suffixCount = subPattern.getInstancesPerGenome();
-            if (suffixCount == patternCount) {
+            int subPatternCount = subPattern.getInstancesPerGenome();
+            if (subPatternCount == patternCount) {
                 patternsToRemove.add(subPatternStr);
             }
         }
     }
 
-    private void removeReverseCompliments(Pattern pattern, HashSet<String> patternsToRemove) {
+    private void addReverseComplimentsToRemoveList(Pattern pattern, HashSet<String> patternsToRemove) {
 
         List<Gene> reversePatternGenes = pattern.getReverseComplimentPattern();
         String reversedPatternStr = Pattern.toString(reversePatternGenes);

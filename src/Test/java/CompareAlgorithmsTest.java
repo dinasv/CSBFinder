@@ -22,6 +22,7 @@ public class CompareAlgorithmsTest {
     private final String GENOMES_FILE_PATH4 = this.getClass().getResource("/genomes6.fasta").getPath();
     private final String GENOMES_FILE_PATH5 = this.getClass().getResource("/genomes7.fasta").getPath();
     private final String REF_GENOMES_FILE_PATH = this.getClass().getResource("/ref_genomes.txt").getPath();
+    private final String PLASMID_GENOMES_FILE_PATH = this.getClass().getResource("/plasmid_genomes.fasta").getPath();
 
     @Test
     public void testRefGenomesEqualOutput() throws Exception {
@@ -71,6 +72,21 @@ public class CompareAlgorithmsTest {
         List<Pattern> patternsAlg1 = runAlgorithm(AlgorithmType.SUFFIX_TREE.algorithm, GENOMES_FILE_PATH3, params);
 
         List<Pattern> patternsAlg2 = runAlgorithm(AlgorithmType.MATCH_POINTS.algorithm, GENOMES_FILE_PATH3, params);
+
+        comparePatterns(patternsAlg1, patternsAlg2);
+
+    }
+
+    @Test
+    public void testRealDatasetEqualOutput() throws Exception {
+        Parameters params = new Parameters();
+        params.quorum2 = 10;
+        params.keepAllPatterns = true;
+        //params.nonDirectons = true;
+
+        List<Pattern> patternsAlg1 = runAlgorithm(AlgorithmType.SUFFIX_TREE.algorithm, PLASMID_GENOMES_FILE_PATH, params);
+
+        List<Pattern> patternsAlg2 = runAlgorithm(AlgorithmType.MATCH_POINTS.algorithm, PLASMID_GENOMES_FILE_PATH, params);
 
         comparePatterns(patternsAlg1, patternsAlg2);
 

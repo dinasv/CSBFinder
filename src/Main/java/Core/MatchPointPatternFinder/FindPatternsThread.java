@@ -131,6 +131,10 @@ public class FindPatternsThread implements Callable<Object> {
 
     private void extendPattern(int letter, Pattern pattern, Pattern extendedPattern) {
 
+        if (extendedPattern.toString().equals("COG0601,COG1173,COG0444")){
+            System.out.println("");
+        }
+
         String extendedPatternStr = extendedPattern.toString();
 
         Map<String, List<MatchPoint>> genomeRepliconToMatchList = matchLists.get(letter);
@@ -138,12 +142,17 @@ public class FindPatternsThread implements Callable<Object> {
             return;
         }
 
-        for (Map.Entry<Integer, PatternLocationsInGenome> genomeToInstanceLocations : pattern.getPatternLocations().entrySet()) {
+        for (Map.Entry<Integer, PatternLocationsInGenome> genomeToInstanceLocations :
+                pattern.getPatternLocations().entrySet()) {
 
+            if (genomeToInstanceLocations.getKey() == 263){
+                System.out.println();
+            }
             PatternLocationsInGenome instanceLocationsInGenome = genomeToInstanceLocations.getValue();
 
             if (instanceLocationsInGenome != null) {
-                for (Map.Entry<Integer, PatternLocationsInReplicon> repliconToLocations : instanceLocationsInGenome.getRepliconToLocations().entrySet()) {
+                for (Map.Entry<Integer, PatternLocationsInReplicon> repliconToLocations :
+                        instanceLocationsInGenome.getRepliconToLocations().entrySet()) {
 
                     List<InstanceLocation> locations = repliconToLocations.getValue().getInstanceLocations();
                     Map<Integer, List<InstanceLocation>> genomicSegmentToLocations = locations.stream()
@@ -183,9 +192,10 @@ public class FindPatternsThread implements Callable<Object> {
         }
 
         InstanceLocation firstInstance = instanceList.get(0);
-        List<MatchPoint> genomicSegmentMatchList = genomeRepliconToMatchList.get(MatchPointAlgorithm
-                .genomeRepliconToHashString(firstInstance.getGenomeId(), firstInstance.getRepliconId(),
-                        firstInstance.getGenomicSegmentId()));
+        String hashString = MatchPointAlgorithm.genomeRepliconToHashString(firstInstance.getGenomeId(),
+                        firstInstance.getRepliconId(),
+                        firstInstance.getGenomicSegmentId());
+        List<MatchPoint> genomicSegmentMatchList = genomeRepliconToMatchList.get(hashString);
 
         if (genomicSegmentMatchList == null || genomicSegmentMatchList.size() == 0) {
             return;
@@ -202,27 +212,29 @@ public class FindPatternsThread implements Callable<Object> {
         while (currInstance != null && matchPoint != null) {
 
             relativeMatchPointIndex = matchPoint.getPosition();
-            nextInstance = instanceIterator.hasNext() ? instanceIterator.next() : null;
 
             assert matchPoint.getGenomicSegment().getId() == currInstance.getGenomicSegmentId();
 
             //the match point index is too small to extend curr instance
             if (relativeMatchPointIndex < currInstance.getRelativeEndIndex()) {
                 matchPoint = matchPointIterator.hasNext() ? matchPointIterator.next() : null;
+            }else{
+                nextInstance = instanceIterator.hasNext() ? instanceIterator.next() : null;
                 //The match point is closer to next instance
-            } else if (nextInstance != null && relativeMatchPointIndex >= nextInstance.getRelativeEndIndex()) {
-                currInstance = nextInstance;
-            } else {//The match point is >= currInstance.getRelativeEndIndex()
-                int instanceLength = relativeMatchPointIndex - currInstance.getRelativeStartIndex() + 1;
-                int numOfInsertions = instanceLength - extendedPattern.getLength();
-                if (numOfInsertions <= maxInsertion) {
-                    InstanceLocation extendedPatternInstance = new InstanceLocation(currInstance);
-                    extendedPatternInstance.setInstanceLength(instanceLength);
-                    extendedPattern.addInstanceLocation(extendedPatternInstance);
+                if (nextInstance != null && relativeMatchPointIndex >= nextInstance.getRelativeEndIndex()) {
+                    currInstance = nextInstance;
+                } else {//The match point is >= currInstance.getRelativeEndIndex()
+                    int instanceLength = relativeMatchPointIndex - currInstance.getRelativeStartIndex() + 1;
+                    int numOfInsertions = instanceLength - extendedPattern.getLength();
+                    if (numOfInsertions <= maxInsertion) {
+                        InstanceLocation extendedPatternInstance = new InstanceLocation(currInstance);
+                        extendedPatternInstance.setInstanceLength(instanceLength);
+                        extendedPattern.addInstanceLocation(extendedPatternInstance);
 
-                    matchPoint = matchPointIterator.hasNext() ? matchPointIterator.next() : null;//each match point used only once
+                        matchPoint = matchPointIterator.hasNext() ? matchPointIterator.next() : null;//each match point used only once
+                    }
+                    currInstance = nextInstance;
                 }
-                currInstance = nextInstance;
             }
         }
     }
