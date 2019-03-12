@@ -1,8 +1,8 @@
 package MVC.Common;
 
-import Core.AlgorithmType;
-import Core.ClusterBy;
-import Core.ClusterDenominator;
+import Model.AlgorithmType;
+import Model.ClusterBy;
+import Model.ClusterDenominator;
 import MVC.View.Requests.Request;
 
 import java.util.LinkedList;

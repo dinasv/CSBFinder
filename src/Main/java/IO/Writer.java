@@ -1,19 +1,18 @@
 package IO;
 
-import Core.OrthologyGroups.CogInfo;
-import Core.Genomes.*;
+import Model.OrthologyGroups.CogInfo;
+import Model.Genomes.*;
 
 import java.io.*;
 import java.text.DecimalFormat;
 import java.util.*;
 
-import Core.Patterns.InstanceLocation;
-import Core.Patterns.Pattern;
-import Core.Patterns.PatternLocationsInGenome;
-import Core.Patterns.PatternLocationsInReplicon;
-import Core.PostProcess.Family;
-
-import java.util.logging.Logger;
+import Model.Parameters;
+import Model.Patterns.InstanceLocation;
+import Model.Patterns.Pattern;
+import Model.Patterns.PatternLocationsInGenome;
+import Model.Patterns.PatternLocationsInReplicon;
+import Model.PostProcess.Family;
 
 /**
  * Writes the output files:
@@ -28,26 +27,22 @@ public class Writer {
 
     private String catalogInstancesPath;
 
-    private int countPrintedPatterns;
-    private boolean cogInfoExists;
     private boolean debug;
 
     private static final DecimalFormat DF = new DecimalFormat("#.####");
 
-    public Writer(boolean debug,
-                  String instancesFileName, boolean includeFamilies,
-                  boolean cogInfoExists, String outputPath,
+
+    public Writer(boolean debug, String instancesFileName, String outputPath,
                   PatternsWriter patternsWriter){
 
         this.patternsWriter = patternsWriter;
 
         this.debug = debug;
-        countPrintedPatterns = 0;
 
-        this.cogInfoExists = cogInfoExists;
         catalogInstancesPath = outputPath + instancesFileName + ".fasta";
 
         instancesFile = null;
+
     }
 
     public void writeHeader(String header){

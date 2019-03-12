@@ -1,10 +1,10 @@
-import Core.Algorithm;
-import Core.AlgorithmType;
-import Core.Genomes.Gene;
-import Core.Genomes.GenomesInfo;
-import Core.Genomes.Strand;
-import Core.Parameters;
-import Core.Patterns.Pattern;
+import Model.Algorithm;
+import Model.AlgorithmType;
+import Model.Genomes.Gene;
+import Model.Genomes.GenomesInfo;
+import Model.Genomes.Strand;
+import Model.Parameters;
+import Model.Patterns.Pattern;
 import IO.Parsers;
 import org.junit.Assert;
 import org.junit.Test;

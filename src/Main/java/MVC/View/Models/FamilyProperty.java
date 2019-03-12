@@ -3,7 +3,7 @@ package MVC.View.Models;
 /**
  */
 
-import Core.PostProcess.Family;
+import Model.PostProcess.Family;
 
 import java.util.function.Function;
 

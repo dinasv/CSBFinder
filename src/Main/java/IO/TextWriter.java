@@ -1,8 +1,8 @@
 package IO;
 
-import Core.OrthologyGroups.CogInfo;
-import Core.Patterns.Pattern;
-import Core.PostProcess.Family;
+import Model.OrthologyGroups.CogInfo;
+import Model.Patterns.Pattern;
+import Model.PostProcess.Family;
 
 import java.io.PrintWriter;
 import java.math.RoundingMode;

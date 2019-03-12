@@ -1,6 +1,6 @@
 package MVC.View.Components.Panels;
 
-import Core.PostProcess.Family;
+import Model.PostProcess.Family;
 import MVC.View.Events.RowClickedEvent;
 import MVC.View.Listeners.RowClickedListener;
 import MVC.View.Models.ColumnProperty;

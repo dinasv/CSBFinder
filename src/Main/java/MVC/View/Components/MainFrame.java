@@ -11,9 +11,9 @@ import MVC.View.Images.Icon;
 import MVC.View.Listeners.*;
 import MVC.View.Components.Panels.GenomePanel;
 import MVC.View.Components.Panels.SummaryPanel;
-import Core.OrthologyGroups.COG;
-import Core.Patterns.Pattern;
-import Core.PostProcess.Family;
+import Model.OrthologyGroups.COG;
+import Model.Patterns.Pattern;
+import Model.PostProcess.Family;
 import MVC.View.Models.Filters.FamiliesFilter;
 import MVC.View.Requests.FilterRequest;
 

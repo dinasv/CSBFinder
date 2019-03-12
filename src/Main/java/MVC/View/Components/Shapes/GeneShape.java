@@ -1,7 +1,7 @@
 package MVC.View.Components.Shapes;
 
-import Core.Genomes.Gene;
-import Core.Genomes.Strand;
+import Model.Genomes.Gene;
+import Model.Genomes.Strand;
 
 import java.awt.*;
 

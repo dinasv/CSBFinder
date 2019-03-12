@@ -1,7 +1,7 @@
 package MVC.View.Components.Panels;
 
-import Core.Genomes.GenomesInfo;
-import Core.Patterns.Pattern;
+import Model.Genomes.GenomesInfo;
+import Model.Patterns.Pattern;
 import MVC.View.Events.GeneTooltipEvent;
 import MVC.View.Listeners.Listener;
 

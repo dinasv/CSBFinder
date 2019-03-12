@@ -1,10 +1,10 @@
 package IO;
 
-import Core.Genomes.*;
-import Core.OrthologyGroups.COG;
-import Core.Patterns.InstanceLocation;
-import Core.Patterns.Pattern;
-import Core.PostProcess.Family;
+import Model.Genomes.*;
+import Model.OrthologyGroups.COG;
+import Model.Patterns.InstanceLocation;
+import Model.Patterns.Pattern;
+import Model.PostProcess.Family;
 
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
@@ -117,7 +117,7 @@ public class Parsers {
 
 
     /**
-     * Parse {@code rawLine} containing a gene and its numericValue separated by TAB, and create {@link Core.Genomes.Gene}.
+     * Parse {@code rawLine} containing a gene and its numericValue separated by TAB, and create {@link Model.Genomes.Gene}.
      * A numericValue must be "+" or "-"
      * <p>
      * Format: [Gene FAMILY_ID][TAB][Strand]

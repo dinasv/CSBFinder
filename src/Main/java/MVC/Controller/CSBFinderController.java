@@ -1,16 +1,16 @@
 package MVC.Controller;
 
-import Core.ClusterBy;
-import Core.ClusterDenominator;
-import Core.Genomes.Gene;
-import Core.Genomes.GenomesInfo;
-import Core.OutputType;
-import Core.PostProcess.Family;
+import Model.ClusterBy;
+import Model.ClusterDenominator;
+import Model.Genomes.Gene;
+import Model.Genomes.GenomesInfo;
+import Model.OutputType;
+import Model.PostProcess.Family;
 import MVC.Common.*;
 import MVC.Model.CSBFinderModel;
 import MVC.View.Components.MainFrame;
-import Core.OrthologyGroups.COG;
-import Core.Patterns.Pattern;
+import Model.OrthologyGroups.COG;
+import Model.Patterns.Pattern;
 
 import java.io.IOException;
 import java.util.List;

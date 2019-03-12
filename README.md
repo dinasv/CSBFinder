@@ -87,7 +87,7 @@ Just double click on the CSBFinder.jar file
  > It is recommended to use at least 6GB for a large dataset. You can specify a higher number, 
  depending on you RAM size.  
  
-1. Upload your input genomes file, by clicking on "Load Input Core.Genomes" in the top left. If your dataset is large, this
+1. Upload your input genomes file, by clicking on "Load Input Model.Genomes" in the top left. If your dataset is large, this
 make take a few minutes.
     > [Sample input files](#sample) are provided below
 
@@ -197,7 +197,7 @@ as the jar file.
 A text file containing all input genomes modeled as strings, where each character is an orthology group ID that was assigned to a corresponding gene (for example, COG ID)
 - This is a mandatory input file
 - The path to this file is provided in:
-    - User Interface: Load this file using the "Load Input Core.Genomes" button
+    - User Interface: Load this file using the "Load Input Model.Genomes" button
     - Command Line: "-in" option
 
 This file should use the following format:
@@ -410,7 +410,7 @@ This command will launch the User Interface with more available memory (6GB), yo
 higher number depending on you RAM size.
 It may take a few minuted to load the input file.
 
-Upload the dataset by clicking on the "Load Input Core.Genomes" button.
+Upload the dataset by clicking on the "Load Input Model.Genomes" button.
 
 ##### Input Parameters
 Click on the "Run" button, and a dialog will open.
@@ -447,12 +447,12 @@ java -Xmx6g -jar CSBFinder.jar -in chromosomal_genomes.fasta -q 50 -ins 1 -ds Ch
 ##### Output
 The output files will be now located in the output directory
 
-> On a laptop computer with Intel Core i7 processor and 8GB RAM, this execution should take less than 5 minutes
+> On a laptop computer with Intel Model i7 processor and 8GB RAM, this execution should take less than 5 minutes
 
 ### Execution of CSBFinder on the Plasmid Dataset of 471 prokaryotic genomes
 
 #### User Interface 
-Upload the dataset by clicking on the "Load Input Core.Genomes" button.
+Upload the dataset by clicking on the "Load Input Model.Genomes" button.
 
 ##### Input Parameters
 Click on the "Run" button, and a dialog will open.
@@ -487,7 +487,7 @@ java -jar CSBFinder.jar -in plasmid_genomes.fasta -q 10 -ins 1 -ds plasmids -cog
 
 ##### Output
 The output files will be now located in the output directory
-> On a laptop computer with Intel Core i7 processor and 8GB RAM, this execution should take a few seconds
+> On a laptop computer with Intel Model i7 processor and 8GB RAM, this execution should take a few seconds
 
 
 

@@ -1,8 +1,8 @@
 package MVC.View.Components.Dialogs;
 
-import Core.AlgorithmType;
-import Core.ClusterBy;
-import Core.ClusterDenominator;
+import Model.AlgorithmType;
+import Model.ClusterBy;
+import Model.ClusterDenominator;
 import MVC.Common.CSBFinderRequest;
 import MVC.View.Events.RunEvent;
 import MVC.View.Listeners.RunListener;

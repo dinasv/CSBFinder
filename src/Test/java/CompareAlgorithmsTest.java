@@ -1,15 +1,14 @@
-import Core.Algorithm;
-import Core.AlgorithmType;
-import Core.CSBFinderWorkflow;
-import Core.Genomes.GenomesInfo;
-import Core.Parameters;
-import Core.Patterns.Pattern;
-import Core.PostProcess.Family;
+import Model.Algorithm;
+import Model.AlgorithmType;
+import Model.CSBFinderWorkflow;
+import Model.Genomes.GenomesInfo;
+import Model.Parameters;
+import Model.Patterns.Pattern;
+import Model.PostProcess.Family;
 import IO.Parsers;
 import org.junit.Assert;
 import org.junit.Test;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**

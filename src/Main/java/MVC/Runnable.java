@@ -1,6 +1,6 @@
 package MVC;
 
-import Core.Controller;
+import Model.Controller;
 import MVC.Controller.CSBFinderController;
 
 import javax.swing.*;

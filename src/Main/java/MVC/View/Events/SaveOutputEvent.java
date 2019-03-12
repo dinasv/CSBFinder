@@ -1,6 +1,6 @@
 package MVC.View.Events;
 
-import Core.OutputType;
+import Model.OutputType;
 
 
 public class SaveOutputEvent implements Event {

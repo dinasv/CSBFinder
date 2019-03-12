@@ -6,7 +6,7 @@ import java.awt.*;
 import java.util.*;
 import java.util.List;
 
-import Core.OrthologyGroups.COG;
+import Model.OrthologyGroups.COG;
 
 
 public class CSBSummaryPanel extends JPanel {

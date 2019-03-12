@@ -1,6 +1,6 @@
 package MVC.View.Models;
 
-import Core.PostProcess.Family;
+import Model.PostProcess.Family;
 
 import javax.swing.table.AbstractTableModel;
 import java.util.ArrayList;

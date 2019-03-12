@@ -3,7 +3,7 @@ package MVC.View.Models;
 /**
  */
 
-import Core.Patterns.Pattern;
+import Model.Patterns.Pattern;
 
 import java.util.function.Function;
 

@@ -1,15 +1,15 @@
 package MVC.View.Components.Panels;
 
-import Core.Genomes.Genome;
-import Core.Genomes.GenomesInfo;
-import Core.Genomes.Replicon;
-import Core.Patterns.InstanceLocation;
-import Core.Patterns.Pattern;
-import Core.Patterns.PatternLocationsInGenome;
-import Core.Patterns.PatternLocationsInReplicon;
+import Model.Genomes.Genome;
+import Model.Genomes.GenomesInfo;
+import Model.Genomes.Replicon;
+import Model.Patterns.InstanceLocation;
+import Model.Patterns.Pattern;
+import Model.Patterns.PatternLocationsInGenome;
+import Model.Patterns.PatternLocationsInReplicon;
 import MVC.View.Components.Shapes.*;
 import MVC.View.Components.Shapes.Label;
-import Core.Genomes.Gene;
+import Model.Genomes.Gene;
 import MVC.View.Events.GeneTooltipEvent;
 import MVC.View.Listeners.Listener;
 

@@ -1,17 +1,16 @@
 package MVC.Model;
 
-import Core.Genomes.*;
-import Core.OrthologyGroups.COG;
-import Core.OrthologyGroups.CogInfo;
-import Core.Patterns.InstanceLocation;
-import Core.Patterns.Pattern;
-import Core.Patterns.PatternLocationsInGenome;
-import Core.Patterns.PatternLocationsInReplicon;
-import Core.SuffixTreePatternFinder.SuffixTreeAlgorithm;
+import Model.Genomes.*;
+import Model.OrthologyGroups.COG;
+import Model.OrthologyGroups.CogInfo;
+import Model.Patterns.InstanceLocation;
+import Model.Patterns.Pattern;
+import Model.Patterns.PatternLocationsInGenome;
+import Model.Patterns.PatternLocationsInReplicon;
 import IO.*;
 import MVC.Common.*;
-import Core.*;
-import Core.PostProcess.Family;
+import Model.*;
+import Model.PostProcess.Family;
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.ParameterException;
 
@@ -215,61 +214,6 @@ public class CSBFinderModel {
         }
     }
 
-    private Writer createWriter(boolean cogInfoExists, OutputType outputType, List<Family> families){
-
-        String outputPath = createOutputPath();
-
-        String parameters = "_ins" + params.maxInsertion + "_q" + params.quorum2;
-        String catalogFileName = "Catalog_" + params.datasetName + parameters;
-        String instancesFileName = catalogFileName + "_instances";
-
-        String catalogPath = outputPath + catalogFileName;
-        //TODO: add as input parameter
-        boolean includeFamilies = true;
-
-        PatternsWriter patternsWriter = null;
-
-        switch (outputType){
-            case TXT:
-                patternsWriter = new TextWriter(cogInfoExists, includeFamilies, catalogPath);
-                break;
-            case XLSX:
-                patternsWriter = new ExcelWriter(cogInfoExists, includeFamilies, catalogPath);
-                break;
-            case EXPORT:
-                SessionWriter sessionWriter = new SessionWriter(includeFamilies, catalogPath, gi);
-                sessionWriter.writeHeader(arguments);
-                sessionWriter.writeGenomes(gi.getGenomesByName());
-                patternsWriter = sessionWriter;
-                break;
-        }
-
-        Writer writer = new Writer(params.debug,
-                instancesFileName, includeFamilies, cogInfoExists,
-                outputPath, patternsWriter);
-
-        if (outputType != OutputType.EXPORT){
-            writer.printInstances(families, gi);
-            writer.writeHeader(createHeader(includeFamilies));
-        }
-
-        writer.printFamilies(families, cogInfo);
-        writer.closeFiles();
-
-        return writer;
-    }
-
-    private String createOutputPath(){
-        Date dNow = new Date( );
-        SimpleDateFormat ft = new SimpleDateFormat ("dd_MM_yyyy_hh_mm_ss_a");
-
-        String path = params.outputDir;
-        Writer.createOutputDirectory(path);
-        path += "/"+ft.format(dNow)+"/";
-        Writer.createOutputDirectory(path);
-
-        return path;
-    }
 
     public String saveOutputFiles(OutputType outputFileType, String outputDir, String datasetName,
                                   List<Family> families) {
@@ -279,7 +223,10 @@ public class CSBFinderModel {
         try {
             params.outputDir = outputDir;
             params.datasetName = datasetName;
-            Writer writer = createWriter(cogInfo.cogInfoExists(), outputFileType, families);
+            params.outputFileType = outputFileType;
+
+            Writer writer = WriteUtils.writeFamiliesToFiles(families, gi,  cogInfo, params, arguments);
+
             msg = "CSBs written to files.";
         }catch (Exception e){
             msg = e.getMessage();

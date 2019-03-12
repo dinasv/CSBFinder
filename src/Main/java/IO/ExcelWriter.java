@@ -1,10 +1,10 @@
 package IO;
 
-import Core.OrthologyGroups.CogInfo;
-import Core.OrthologyGroups.COG;
-import Core.Genomes.Gene;
-import Core.Patterns.Pattern;
-import Core.PostProcess.Family;
+import Model.OrthologyGroups.CogInfo;
+import Model.OrthologyGroups.COG;
+import Model.Genomes.Gene;
+import Model.Patterns.Pattern;
+import Model.PostProcess.Family;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.xssf.streaming.SXSSFWorkbook;

@@ -1,8 +1,8 @@
 package MVC.View.Models.Filters;
 
-import Core.Genomes.Gene;
-import Core.Patterns.Pattern;
-import Core.PostProcess.Family;
+import Model.Genomes.Gene;
+import Model.Patterns.Pattern;
+import Model.PostProcess.Family;
 import MVC.View.Models.ColumnProperty;
 import MVC.View.Models.FamilyProperty;
 import MVC.View.Models.PatternProperty;

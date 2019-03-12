@@ -1,6 +1,6 @@
 package MVC.Common;
 
-import Core.PostProcess.Family;
+import Model.PostProcess.Family;
 
 import java.util.List;
 

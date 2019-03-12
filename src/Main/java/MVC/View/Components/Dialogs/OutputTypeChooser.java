@@ -1,6 +1,6 @@
 package MVC.View.Components.Dialogs;
 
-import Core.OutputType;
+import Model.OutputType;
 
 import javax.swing.*;
 import java.awt.*;
@@ -29,8 +29,8 @@ public class OutputTypeChooser extends JPanel {
         JRadioButton btn2 = new JRadioButton(OutputType.XLSX.toString());
         btn2.setActionCommand(OutputType.XLSX.toString());
 
-        JRadioButton btn3 = new JRadioButton(OutputType.EXPORT.toString());
-        btn3.setActionCommand(OutputType.EXPORT.toString());
+        JRadioButton btn3 = new JRadioButton(OutputType.SESSION.toString());
+        btn3.setActionCommand(OutputType.SESSION.toString());
 
         radioBtns.add(btn1);
         radioBtns.add(btn2);

@@ -1,7 +1,7 @@
 package MVC.View.Components.Panels;
 
-import Core.Patterns.Pattern;
-import Core.PostProcess.Family;
+import Model.Patterns.Pattern;
+import Model.PostProcess.Family;
 import MVC.View.Events.OpenDialogEvent;
 import MVC.View.Listeners.Listener;
 import MVC.View.Listeners.RowClickedListener;

@@ -1,4 +1,4 @@
-import Core.Patterns.PatternScore;
+import Model.Patterns.PatternScore;
 import org.junit.Assert;
 import org.junit.Test;
 

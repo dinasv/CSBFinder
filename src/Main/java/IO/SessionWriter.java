@@ -1,9 +1,10 @@
 package IO;
 
-import Core.OrthologyGroups.CogInfo;
-import Core.Genomes.*;
-import Core.Patterns.Pattern;
-import Core.PostProcess.Family;
+import Model.OrthologyGroups.CogInfo;
+import Model.Genomes.*;
+import Model.OutputType;
+import Model.Patterns.Pattern;
+import Model.PostProcess.Family;
 
 import java.io.PrintWriter;
 import java.math.RoundingMode;
@@ -20,22 +21,21 @@ public class SessionWriter implements PatternsWriter {
 
     GenomesInfo genomesInfo;
 
-    private boolean includeFamilies;
 
     private int countPrintedPatterns;
 
     private static final DecimalFormat DF = new DecimalFormat("#.####");
 
-    public SessionWriter(boolean includeFamilies, String path, GenomesInfo genomesInfo){
+    public SessionWriter(String path, GenomesInfo genomesInfo){
+
         DF.setRoundingMode(RoundingMode.HALF_UP);
 
         countPrintedPatterns = 0;
 
         this.genomesInfo = genomesInfo;
 
-        this.includeFamilies = includeFamilies;
 
-        String catalogPath = path + "_export_session.txt";
+        String catalogPath = path + "_" + OutputType.SESSION.toString().toLowerCase() + ".txt";
         file = Writer.createOutputPrintWriter(catalogPath);
     }
 

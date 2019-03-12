@@ -1,7 +1,7 @@
 package IO;
 
-import Core.OrthologyGroups.CogInfo;
-import Core.PostProcess.Family;
+import Model.OrthologyGroups.CogInfo;
+import Model.PostProcess.Family;
 
 import java.util.List;
 
