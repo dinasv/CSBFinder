@@ -2,7 +2,9 @@ package MVC.View.Components;
 
 import MVC.View.Components.Dialogs.InputFileChooser;
 import MVC.View.Components.Dialogs.OutputTypeChooser;
+import MVC.View.Components.Dialogs.SaveDialog;
 import MVC.View.Events.LoadFileEvent;
+import MVC.View.Events.OpenDialogEvent;
 import MVC.View.Events.SaveOutputEvent;
 import MVC.View.Listeners.Listener;
 
@@ -19,13 +21,12 @@ public class Menu implements ActionListener {
     private static final String LOAD_GENOMES = "Genomes File";
     private static final String LOAD_SESSION = "Session File";
     private static final String LOAD_COG_INFO = "Orthology Information File";
-    private static final String SAVE_FILES_DIALOG_NAME = "Select Directory";
     private static final String SAVE_FILES = "Save";
 
     private Listener<LoadFileEvent> loadGenomesListener;
     private Listener<LoadFileEvent> importSessionListener;
     private Listener<LoadFileEvent> loadCogInfoListener;
-    private Listener<SaveOutputEvent> saveOutputListener;
+    private Listener<OpenDialogEvent> saveOutputListener;
 
     private JMenuBar mainMenu;
     private JMenu menu;
@@ -36,13 +37,11 @@ public class Menu implements ActionListener {
     private JMenuItem saveItem;
 
     private JFileChooser fileChooser;
-    private OutputTypeChooser outputTypeChooser;
 
     private JFrame mainFrame;
 
     public Menu(JFileChooser fileChooser, JFrame mainFrame){
         this.fileChooser = fileChooser;
-        outputTypeChooser = new OutputTypeChooser();
         mainMenu = new JMenuBar();
         this.mainFrame = mainFrame;
         this.mainFrame.setJMenuBar(mainMenu);
@@ -109,10 +108,8 @@ public class Menu implements ActionListener {
 
                 break;
             case SAVE_FILES:
-                initOutputFileChooser();
-                int action = fileChooser.showDialog(mainFrame, SAVE_FILES_DIALOG_NAME);
-                saveOutputListener.eventOccurred(new SaveOutputEvent(e, outputTypeChooser.getChosenOutput(),
-                        outputTypeChooser.getDatasetName(), fileChooser.getSelectedFile().getAbsolutePath(), action));
+
+                saveOutputListener.eventOccurred(new OpenDialogEvent());
 
                 break;
         }
@@ -137,12 +134,6 @@ public class Menu implements ActionListener {
         }
     }
 
-    private void initOutputFileChooser(){
-        fileChooser.resetChoosableFileFilters();
-        fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-        fileChooser.setAccessory(outputTypeChooser);
-    }
-
 
     public void setImportSessionListener(Listener<LoadFileEvent> importSessionListener) {
         this.importSessionListener = importSessionListener;
@@ -156,8 +147,10 @@ public class Menu implements ActionListener {
         this.loadCogInfoListener = loadCogInfoListener;
     }
 
-    public void setSaveOutputListener(Listener<SaveOutputEvent> saveOutputListener) {
+    public void setSaveOutputListener(Listener<OpenDialogEvent> saveOutputListener) {
         this.saveOutputListener = saveOutputListener;
     }
+
+
 
 }

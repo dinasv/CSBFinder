@@ -11,7 +11,7 @@ public class SaveOutputEvent implements Event {
     private int action;
 
 
-    public SaveOutputEvent(Object source, OutputType outputType,  String datasetName, String outputDirectory,
+    public SaveOutputEvent(OutputType outputType,  String datasetName, String outputDirectory,
                            int action) {
         this.outputType = outputType;
         this.datasetName = datasetName;

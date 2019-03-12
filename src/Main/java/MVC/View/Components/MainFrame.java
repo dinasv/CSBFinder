@@ -2,10 +2,7 @@ package MVC.View.Components;
 
 import MVC.Common.CSBFinderRequest;
 import MVC.Controller.CSBFinderController;
-import MVC.View.Components.Dialogs.ClusterDialog;
-import MVC.View.Components.Dialogs.FilterDialog;
-import MVC.View.Components.Dialogs.InputParametersDialog;
-import MVC.View.Components.Dialogs.ProgressBar;
+import MVC.View.Components.Dialogs.*;
 import MVC.View.Events.*;
 import MVC.View.Images.Icon;
 import MVC.View.Listeners.*;
@@ -39,6 +36,7 @@ public class MainFrame extends JFrame {
     private InputParametersDialog inputParamsDialog;
     private ClusterDialog clusterDialog;
     private FilterDialog filterDialog;
+    private SaveDialog saveDialog;
 
     private FamiliesFilter familiesFilter;
 
@@ -80,7 +78,11 @@ public class MainFrame extends JFrame {
     public void clearPanels() {
         genomesPanel.clearPanel();
         summaryPanel.clearPanel();
+
         toolbar.disableClusterBtn();
+        toolbar.disableSaveBtn();
+        menuBar.disableSaveFileBtn();
+        summaryPanel.disableFilterBtn();
     }
 
     public void initComponents() {
@@ -90,8 +92,10 @@ public class MainFrame extends JFrame {
         inputParamsDialog = new InputParametersDialog(fc);
         clusterDialog = new ClusterDialog();
         filterDialog = new FilterDialog();
+        saveDialog = new SaveDialog(fc, this);
 
         toolbar = new Toolbar();
+        toolbar.disableSaveBtn();
         genomesPanel = new GenomePanel(colorsUsed);
 
         summaryPanel = new SummaryPanel(Icon.FILTER.getIcon());
@@ -117,6 +121,7 @@ public class MainFrame extends JFrame {
         setRunCSBFinderListener();
         setRunClusteringListener();
         setSelectParamsListener();
+        setOpenSaveDialogListener();
         setClusterListener();
         setPatternRowClickedListener();
         setFamilyRowClickedListener();
@@ -139,6 +144,7 @@ public class MainFrame extends JFrame {
     public void displayFamilyTable(List<Family> familyList) {
         if (familyList.size() > 0) {
             menuBar.enableSaveFileBtn();
+            toolbar.enableSaveBtn();
             summaryPanel.enableFilterBtn();
             toolbar.enableClusterBtn();
 
@@ -157,6 +163,7 @@ public class MainFrame extends JFrame {
         } else {
             toolbar.disableSelectParamsBtn();
             menuBar.disableSaveFileBtn();
+            toolbar.disableSaveBtn();
         }
     }
 
@@ -294,6 +301,19 @@ public class MainFrame extends JFrame {
             }
         });
     }
+
+    private void setOpenSaveDialogListener(){
+        Listener<OpenDialogEvent> listener = new Listener<OpenDialogEvent>() {
+            @Override
+            public void eventOccurred(OpenDialogEvent e) {
+                saveDialog.openDialog();
+            }
+        };
+
+        menuBar.setSaveOutputListener(listener);
+        toolbar.setSaveListener(listener);
+    }
+
 
     private void setNumOfNeighborsListener() {
         toolbar.setSetNumOfNeighborsListener(e -> genomesPanel.setNumOfNeighbors(e.getNumOfNeighbors()));
@@ -438,8 +458,9 @@ public class MainFrame extends JFrame {
     }
 
 
+
     private void setSaveButtonListener() {
-        menuBar.setSaveOutputListener(new Listener<SaveOutputEvent>() {
+        Listener<SaveOutputEvent> listener = new Listener<SaveOutputEvent>() {
             String msg = "";
 
             @Override
@@ -473,7 +494,10 @@ public class MainFrame extends JFrame {
                     swingWorker.execute();
                 }
             }
-        });
+        };
+
+        saveDialog.setSaveOutputListener(listener);
+
     }
 
     /**
