@@ -84,7 +84,7 @@ public class Menu implements ActionListener {
         saveItem.setEnabled(true);
     }
 
-    public void disableSaveFileBtn() {
+    public void disableSaveBtn() {
         saveItem.setEnabled(false);
     }
 

@@ -76,7 +76,11 @@ public class CSBFinderModel {
             gi = new GenomesInfo();
             families = new ArrayList<>();
             String[] args = Parsers.parseSessionFile(families, path, gi);
-            parseArgs(args);
+            JCommander jCommander = parseArgs(args);
+
+            if (jCommander == null){
+                return String.format("The first line in the file %s should contain valid arguments", path);
+            }
 
             workflow = new CSBFinderWorkflow(gi);
             workflow.setParameters(params);
@@ -85,6 +89,7 @@ public class CSBFinderModel {
 
             csbFinderDoneListener.CSBFinderDoneOccurred(new CSBFinderDoneEvent(families));
             msg = "Loaded session file.";
+
         }catch(Exception e){
             msg = e.getMessage();
             e.printStackTrace();

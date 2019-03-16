@@ -118,7 +118,7 @@ public class InputParametersDialog extends JDialog {
 
     }
 
-    public void setRunListener(RunListener runListener) {
+    public void setRunListener(RunListener<CSBFinderRequest> runListener) {
         this.runListener = runListener;
     }
 

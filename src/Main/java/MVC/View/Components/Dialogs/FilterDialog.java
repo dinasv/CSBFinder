@@ -272,7 +272,7 @@ public class FilterDialog extends JDialog{
         fields.add(c , gc);
     }
 
-    public void setApplyFilterListener(RunListener applyFilterListener){
+    public void setApplyFilterListener(RunListener<FilterRequest> applyFilterListener){
         this.applyFilterListener = applyFilterListener;
     }
 
