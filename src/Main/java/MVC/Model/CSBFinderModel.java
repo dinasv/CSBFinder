@@ -15,7 +15,6 @@ import com.beust.jcommander.JCommander;
 import com.beust.jcommander.ParameterException;
 
 import java.io.IOException;
-import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -75,6 +74,7 @@ public class CSBFinderModel {
         try {
             gi = new GenomesInfo();
             families = new ArrayList<>();
+
             String[] args = Parsers.parseSessionFile(families, path, gi);
             JCommander jCommander = parseArgs(args);
 
@@ -240,19 +240,6 @@ public class CSBFinderModel {
         return msg;
     }
 
-    private String createHeader(boolean include_families){
-
-        String header = "CSB_ID\tLength\tScore\tInstance_Count\tCSB";
-        if (cogInfo.cogInfoExists()){
-            header += "\tMain_Category";
-        }
-        if (include_families){
-            header += "\tFamily_ID";
-        }
-
-        return header;
-    }
-
     /**
      * Read patterns from a file if a file is given, and putWithSuffix them in a suffix trie
      * @return
@@ -260,9 +247,6 @@ public class CSBFinderModel {
     private List<Pattern> readPatternsFromFile() throws Exception{
         List<Pattern> patterns = new ArrayList<>();
         if (params.inputPatternsFilePath != null) {
-            //these arguments are not valid when input patterns are given
-            //params.minPatternLength = 2;
-            //params.maxPatternLength = Integer.MAX_VALUE;
 
             String path = params.inputPatternsFilePath;
             patterns = Parsers.parsePatternsFile(path);

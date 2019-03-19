@@ -58,27 +58,29 @@ public class PatternScore {
         return intersectionOfGenomesWithPatternChars;
     }
 
-    private int computeAverageParalogCount(Set<Integer> intersectionOfGenomesWithPatternChars, List<Integer> patternLetters){
-        int paralogCountProductSum = 0;
-        int paralogCountProduct;
-        for (int seq_key: intersectionOfGenomesWithPatternChars) {
+    private double computeLogMaxParalogCount(Set<Integer> intersectionOfGenomesWithPatternChars, List<Integer> patternLetters){
+        //int paralogCountProductSum = 0;
+        double maxLogParalogCount = 0;
+        for (int genomeId: intersectionOfGenomesWithPatternChars) {
 
-            Map<Integer, Integer> currSeqParalogCount = genomeToCogParalogCount.get(seq_key);
-            paralogCountProduct = patternLetters.stream()
-                    .map(cog -> currSeqParalogCount.get(cog))
-                    .reduce(1, (a, b) -> a*b);
+            Map<Integer, Integer> currGenomeParalogCount = genomeToCogParalogCount.get(genomeId);
+            double paralogCountLogSum = patternLetters.stream()
+                    .map(cog -> currGenomeParalogCount.get(cog))
+                    .mapToDouble((count) -> Math.log(count)).sum();
 
-            paralogCountProductSum += paralogCountProduct;
+            if (paralogCountLogSum > paralogCountLogSum) {
+                maxLogParalogCount = paralogCountLogSum;
+            }
         }
 
-        return paralogCountProductSum/intersectionOfGenomesWithPatternChars.size();
+        return maxLogParalogCount;
     }
 
     public double computePatternScore(List<Integer> patternLetters, int maxInsertions, int genomesWithInstance){
 
         Set<Integer> intersectionOfGenomesWithPatternChars = genomesWithPatternChars(patternLetters);
 
-        int averageParalogCount = computeAverageParalogCount(intersectionOfGenomesWithPatternChars, patternLetters);
+        double averageParalogCount = computeLogMaxParalogCount(intersectionOfGenomesWithPatternChars, patternLetters);
 
         return pvalCrossGenome(patternLetters.size(), maxInsertions, averageParalogCount, genomesWithInstance);
     }
@@ -87,18 +89,18 @@ public class PatternScore {
      * Computes a ranking score for a given pattern
      * @param patternLength pattern length
      * @param maxInsertions maximal number of allowed insertions
-     * @param averageParalogFrequency product of average paralog frequency for each gene in the pattern
+     * @param maxLogParalogFrequency the log of the maximal paralog frequency for each gene in the pattern
      * @param genomesWithInstance number of genomes containing an instance of the pattern
      * @return ranking score
      */
-    public double pvalCrossGenome(int patternLength, int maxInsertions, int averageParalogFrequency,
+    public double pvalCrossGenome(int patternLength, int maxInsertions, double maxLogParalogFrequency,
                                   int genomesWithInstance){
 
         int G = numberOfGenomes;
         int n = avgGenomeSize;
         double result = 0;
 
-        double logPval = logPvalInsertions(n, patternLength, maxInsertions) + Math.log(averageParalogFrequency);
+        double logPval = Math.max(logPvalInsertions(n, patternLength, maxInsertions) + maxLogParalogFrequency, 0);
 
         double a = (double)genomesWithInstance/G;
         if ( a == 1){
