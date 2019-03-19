@@ -11,6 +11,7 @@ public enum FamilyProperty implements ColumnProperty<Family> {
 
     FAMILY_ID(Family::getFamilyId, Integer.class),
     SCORE(Family::getScore, Double.class),
+    LONGEST_MEMBER(Family::getLongestPattern, Integer.class),
     MEMBERS(Family::size, Integer.class);
 
     private final Function<Family, ?> familyFunction;

@@ -18,6 +18,8 @@ public class ResultsPanel extends JPanel {
     private TablePanel<String, Pattern> familyPatternsPanel;
     private TableButtonsPanel tableButtonsPanel;
 
+    private static final double FAMILIES_PANEL_WEIGHT = 0.3;
+
     private static PatternProperty[] patternsColumns = {
             PatternProperty.ID,
             PatternProperty.LENGTH,
@@ -30,6 +32,7 @@ public class ResultsPanel extends JPanel {
     private static FamilyProperty[] familyColumns = {
             FamilyProperty.FAMILY_ID,
             FamilyProperty.SCORE,
+            FamilyProperty.LONGEST_MEMBER,
             FamilyProperty.MEMBERS,
     };
 
@@ -73,7 +76,7 @@ public class ResultsPanel extends JPanel {
         splitPane.setDividerSize(2);
         splitPane.setLeftComponent(familiesPanel);
         splitPane.setRightComponent(familyPatternsPanel);
-        splitPane.setResizeWeight(0.2);
+        splitPane.setResizeWeight(FAMILIES_PANEL_WEIGHT);
 
         add(splitPane, BorderLayout.CENTER);
     }

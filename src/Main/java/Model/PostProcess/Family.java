@@ -17,6 +17,8 @@ public class Family {
     private List<Pattern> patterns;
     //contains the union of all characters of all family members
     private HashSet<Integer> charSet;
+
+    private int longestPattern;
     /**
      * Score of the highest scoring member.
      * Updated after calling  {@link #sortPatternsAndSetScore() sortPatternsAndSetScore} method
@@ -28,19 +30,15 @@ public class Family {
         charSet = new HashSet<>();
 
         this.genomesInfo = genomesInfo;
-        score = -1;
+        this.score = -1;
         this.familyId = familyId;
+
         patterns = new ArrayList<>();
         patterns.add(firstPattern);
+
+        longestPattern = firstPattern.getLength();
+
         addCharsToCharsSet(firstPattern);
-    }
-
-    public Family(Family family) {
-        patterns = new ArrayList<>(family.getPatterns());
-
-        score = family.score;
-        genomesInfo = family.genomesInfo;
-        familyId = family.familyId;
     }
 
     public Family(int familyId, GenomesInfo genomesInfo, List<Pattern> patterns) {
@@ -48,6 +46,8 @@ public class Family {
 
         this.genomesInfo = genomesInfo;
         this.familyId = familyId;
+
+        setLongestPattern();
 
         sortPatternsAndSetScore();
     }
@@ -58,8 +58,19 @@ public class Family {
         genomesInfo = family.genomesInfo;
         familyId = family.familyId;
 
+        setLongestPattern();
         sortPatternsAndSetScore();
     }
+
+    public Family(Family family) {
+
+        this.patterns = new ArrayList<>(family.getPatterns());
+        genomesInfo = family.genomesInfo;
+        familyId = family.familyId;
+        longestPattern = family.longestPattern;
+
+    }
+
 
     private void addCharsToCharsSet(Pattern pattern){
         for (Gene gene: pattern.getPatternGenes()) {
@@ -71,6 +82,13 @@ public class Family {
         }
     }
 
+    private void setLongestPattern(){
+        longestPattern = this.patterns.stream()
+                .map(Pattern::getLength)
+                .max(Integer::compareTo)
+                .orElse(0);
+    }
+
     public HashSet<Integer> getGeneSet(){
         return charSet;
     }
@@ -78,10 +96,18 @@ public class Family {
     public void addPattern(Pattern pattern){
         addCharsToCharsSet(pattern);
         patterns.add(pattern);
+
+        if (pattern.getLength() > longestPattern){
+            longestPattern = pattern.getLength();
+        }
     }
 
     public int getFamilyId(){
         return familyId;
+    }
+
+    public int getLongestPattern(){
+        return longestPattern;
     }
 
     public double getScore(){
