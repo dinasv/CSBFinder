@@ -68,7 +68,8 @@ public class Parameters {
     @Parameter(names={"-cog-info"}, description = "Gene families info file relative or absolute path", order = 8)
     public String cogInfoFilePath = null;
 
-    @Parameter(names={"-non-directons"}, description = "If true, segment input sequences directons", order = 9)
+    @Parameter(names={"-non-directons"}, description = "If this option is provided, the input genomes are not " +
+            "segmented to directons", order = 9)
     public boolean nonDirectons = false;
 
     @Parameter(names={"-out"}, description = "Output file type", order = 10)
@@ -94,7 +95,9 @@ public class Parameters {
     @Parameter(names={"-clust-by"}, description = "Cluster CSBs to families by: 'score' or 'length'", order = 16)
     public ClusterBy clusterBy = ClusterBy.SCORE;
 
-    @Parameter(names={"-clust-denominator"}, description = "Cluster CSBs to families by: 'score' or 'length'", order = 17)
+    @Parameter(names={"-clust-denominator"}, description = "In the greedy CSB clustering to families, " +
+            "a CSB is added to an existing cluster if the (intersection between the CSB and the Cluster genes/X) is " +
+            "above a threshold. Choose X.", order = 17)
     public ClusterDenominator clusterDenominator = ClusterDenominator.MIN_SET;
 
     @Parameter(names={"-skip-cluster-step"}, description = "Skip the clustering to families step", order = 17)

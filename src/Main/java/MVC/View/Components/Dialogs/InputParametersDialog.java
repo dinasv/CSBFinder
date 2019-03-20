@@ -210,8 +210,8 @@ public class InputParametersDialog extends JDialog {
         clusterTypeLabel = initLabel(icon, labelName, desc);
 
         labelName = "Clustering denominator";
-        desc = "In the greedy CSB clustering to families, CSBs is added to an existing cluster if their intersection/X " +
-                "is above a threshold.";
+        desc = "In the greedy CSB clustering to families, a CSB is added to an existing cluster if the " +
+                "(intersection between the CSB and the Cluster genes/X) is above a threshold. Choose X.";
         clusterDenominatorLabel = initLabel(icon, labelName, desc);
 
         labelName = "Algorithm";
