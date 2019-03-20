@@ -104,13 +104,6 @@ on the parameters specified.
 Load it by choosing `File->Import->Orthology Information file`. This information will be displayed on the lower right 
  panel.
 
-The following screenshot shows an example of a selected CSB and its instances in the different genomes. The results 
-were obtained by running CSBFinder on a dataset of ~1,500 prokaryotic genomes containing only chromosomes. The quorum 
-was set to 50 and the number of allowed insertions is 3.
-
-![CSBFinder results screenshot](https://github.com/dinasv/CSBFinder/blob/master/images/screenshot_results_example.PNG "CSBFinder Screenshot")
-
-
 ### <a name='cmd'>Running CSBFinder via Command Line </a>
 
 > CSBFinder can be executed via the command line by executing the JAR file in the installation folder. 
