@@ -267,10 +267,10 @@ public class CSBFinderModel {
         this.csbFinderDoneListener = csbFinderDoneListener;
     }
 
-    public List<COG> getCogsInfo(List<Gene> genes) {
-        List<COG> currCogInfo = new ArrayList<COG>();
+    public List<COG> getCogsInfo(Gene[] genes) {
+        List<COG> currCogInfo = new ArrayList<>();
         if (cogInfo.cogInfoExists()) {
-            genes.forEach(gene -> {
+            Arrays.stream(genes).forEach(gene -> {
                 COG c = getCogInfo(gene.getCogId());
                 if (c != null) {
                     currCogInfo.add(c);
@@ -308,7 +308,7 @@ public class CSBFinderModel {
         return insertedGenes;
     }
 
-    private List<Gene> getGenes(InstanceLocation instance){
+    private Gene[] getGenes(InstanceLocation instance){
         Genome genome = gi.getGenome(instance.getGenomeId());
         Replicon replicon = genome.getReplicon(instance.getRepliconId());
 
@@ -319,7 +319,9 @@ public class CSBFinderModel {
             instanceList = repliconGenes.subList(instance.getActualStartIndex(), instance.getActualEndIndex());
         }
 
-        return instanceList;
+        Gene[] instanceGenes = new Gene[instanceList.size()];
+
+        return instanceList.toArray(instanceGenes);
     }
 
     public int getNumberOfGenomes() {

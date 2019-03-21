@@ -190,9 +190,9 @@ public class FamiliesFilter {
             this.patternStrand = patternStrand;
         }
 
-        private boolean isMultiStrand(List<Gene> genes) {
+        private boolean isMultiStrand(Gene[] genes) {
 
-            return genes.stream().map(Gene::getStrand).distinct().count() > 1;
+            return Arrays.stream(genes).map(Gene::getStrand).distinct().count() > 1;
 
         }
 

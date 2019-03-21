@@ -137,7 +137,7 @@ public class MatchPointAlgorithm implements Algorithm {
         if (patternsFromFile.size() > 0){
             for (Pattern pattern : patternsFromFile){
 
-                List<Gene> genes = pattern.getPatternGenes();
+                List<Gene> genes = Arrays.asList(pattern.getPatternGenes());
 
                 Replicon replicon = new Replicon();
                 replicon.addAllGenes(genes);
@@ -214,16 +214,14 @@ public class MatchPointAlgorithm implements Algorithm {
 
     private String getSuffix(Pattern pattern){
 
-        List<Gene> suffix = new ArrayList<>(pattern.getPatternGenes());
-        suffix.remove(0);
+        Gene[] suffix = Arrays.copyOfRange( pattern.getPatternGenes(), 1, pattern.getLength());
 
         return Pattern.toString(suffix);
     }
 
     private String getPrefix(Pattern pattern){
 
-        List<Gene> prefix = new ArrayList<>(pattern.getPatternGenes());
-        prefix.remove(prefix.size()-1);
+        Gene[] prefix = Arrays.copyOfRange( pattern.getPatternGenes(), 0, pattern.getLength()-1);
 
         return Pattern.toString(prefix);
     }
@@ -242,7 +240,7 @@ public class MatchPointAlgorithm implements Algorithm {
 
     private void addReverseComplimentsToRemoveList(Pattern pattern, HashSet<String> patternsToRemove) {
 
-        List<Gene> reversePatternGenes = pattern.getReverseComplimentPattern();
+        Gene[] reversePatternGenes = pattern.getReverseComplimentPattern();
         String reversedPatternStr = Pattern.toString(reversePatternGenes);
         Pattern reversedPattern = patterns.get(reversedPatternStr);
 

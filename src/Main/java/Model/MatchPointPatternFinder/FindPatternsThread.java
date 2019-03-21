@@ -6,6 +6,7 @@ import Model.Patterns.Pattern;
 import Model.Patterns.PatternLocationsInGenome;
 import Model.Patterns.PatternLocationsInReplicon;
 
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;

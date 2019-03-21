@@ -147,7 +147,7 @@ public class InstancesPanel extends JPanel {
         }
     }
 
-    private ShapesPanel createPatternRow(List<Gene> patternGenes){
+    private ShapesPanel createPatternRow(Gene[] patternGenes){
 
         List<GenesInstance> genesInstanceInnerList = new ArrayList<>();
         genesInstanceInnerList.add(getShapesCSB(patternGenes, 0, 0));
@@ -200,7 +200,7 @@ public class InstancesPanel extends JPanel {
 
     }
 
-    private GenesInstance getShapesCSB(List<Gene> genes, int x, int y){
+    private GenesInstance getShapesCSB(Gene[] genes, int x, int y){
 
         List<GeneShape> geneShapesList = getGeneShapesList(genes);
 
@@ -233,7 +233,7 @@ public class InstancesPanel extends JPanel {
                 instanceStartIndexLabel, instanceEndIndexLabel);
     }
 
-    private List<Gene> getGenes(Replicon replicon, int startIndex, int endIndex){
+    private Gene[] getGenes(Replicon replicon, int startIndex, int endIndex){
         List<Gene> instanceList = new ArrayList<>();
 
         List<Gene> repliconGenes = replicon.getGenes();
@@ -242,10 +242,10 @@ public class InstancesPanel extends JPanel {
             instanceList = repliconGenes.subList(startIndex, endIndex);
         }
 
-        return instanceList;
+        return instanceList.toArray(new Gene[instanceList.size()]);
     }
 
-    private List<GeneShape> getGeneShapesList(List<Gene> genes){
+    private List<GeneShape> getGeneShapesList(Gene[] genes){
         List<GeneShape> geneShapesList = new ArrayList<>();
         for (Gene gene : genes) {
 

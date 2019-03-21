@@ -52,7 +52,7 @@ public class CSBFinderController {
         return this.model.findCSBs(request);
     }
 
-    public List<COG> getCogsInfo(List<Gene> genes) {
+    public List<COG> getCogsInfo(Gene[] genes) {
         return model.getCogsInfo(genes);
     }
     public COG getCogInfo(String cogId) {

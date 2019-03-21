@@ -12,10 +12,10 @@ import java.util.stream.Collectors;
  **/
 public class Pattern {
 
-    public static final String GENES_DELIMITER = ",";
+    private static final String GENES_DELIMITER = ",";
 
-    private List<Gene> patternGenes;
-    private List<Gene> reverseComplimentPatternArr;
+    private Gene[] patternGenes;
+    private Gene[] reverseComplimentPatternArr;
 
     private String patternId;
 
@@ -30,17 +30,20 @@ public class Pattern {
     private Map<Integer, PatternLocationsInGenome> genomeToInstanceLocations;
 
     public Pattern(){
-        this(null, new ArrayList<>());
+        this(null, new Gene[0]);
     }
 
-    public Pattern(List<Gene> patternGenes) { this(null, patternGenes); }
+    public Pattern(Gene[] patternGenes) { this(null, patternGenes); }
 
     public Pattern(String patternId, List<Gene> patternGenes){
+        this(patternId, patternGenes.toArray(new Gene[patternGenes.size()]));
+    }
+    public Pattern(String patternId, Gene[] patternGenes){
 
         this.patternId = patternId;
-        this.patternGenes = new ArrayList<>();
-        this.patternGenes.addAll(patternGenes);
-        this.length = patternGenes.size();
+        this.patternGenes = Arrays.copyOf(patternGenes, patternGenes.length);
+        //this.patternGenes.addAll(patternGenes);
+        this.length = patternGenes.length;
 
         score = 0;
         mainFunctionalCategory = "";
@@ -96,7 +99,7 @@ public class Pattern {
         return length;
     }
 
-    public List<Gene> getPatternGenes() {
+    public Gene[] getPatternGenes() {
         return patternGenes;
     }
 
@@ -165,19 +168,27 @@ public class Pattern {
      * @param pattern
      * @return
      */
-    private static List<Gene> reverseComplimentPattern(List<Gene> pattern){
+    private static Gene[] reverseComplimentPattern(Gene[] pattern){
 
-        List<Gene> reversedPattern = pattern.stream().map(gene ->
-                {Gene copy = new Gene(gene.getCogId(), Gene.reverseStrand(gene.getStrand()));
-                return copy;})
-                .collect(Collectors.toList());
+        Gene[] reversedPattern = Arrays.stream(pattern).map(gene -> {
+                Gene copy = new Gene(gene.getCogId(), Gene.reverseStrand(gene.getStrand()));
+                return copy;
+            }).toArray(Gene[]::new);
 
-        Collections.reverse(reversedPattern);
+        reverseArray(reversedPattern);
 
         return reversedPattern;
     }
 
-    public List<Gene> getReverseComplimentPattern() {
+    private static <T> void reverseArray(T[] array){
+        for(int i=0; i < array.length/2; i++){
+            T temp = array[i];
+            array[i] = array[array.length-i-1];
+            array[array.length-i-1] = temp;
+        }
+    }
+
+    public Gene[] getReverseComplimentPattern() {
         return reverseComplimentPatternArr;
     }
 
@@ -197,8 +208,8 @@ public class Pattern {
         return toString(patternGenes);
     }
 
-    public static String toString(List<Gene> genes){
-        String str = genes.stream()
+    public static String toString(Gene[] genes){
+        String str = Arrays.stream(genes)
                 .map(gene -> gene.getCogId() + gene.getStrand())
                 .collect(Collectors.joining(GENES_DELIMITER));
         return str;
@@ -231,8 +242,8 @@ public class Pattern {
             return true;
 
         Pattern other = (Pattern) obj;
-        return (other.patternGenes.equals(this.patternGenes) ||
-                other.patternGenes.equals(this.reverseComplimentPatternArr));
+        return (Arrays.equals(other.patternGenes, this.patternGenes) ||
+                Arrays.equals(other.patternGenes, this.reverseComplimentPatternArr));
     }
 
 }

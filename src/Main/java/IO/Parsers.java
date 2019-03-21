@@ -44,7 +44,8 @@ public class Parsers {
                 Genome genome = genomesInfo.getGenome(genomeName);
                 if (genome != null){
                     for (Replicon replicon: genome.getReplicons()){
-                        Pattern pattern = new Pattern(replicon.getGenes());
+                        Gene[] repliconGenes = new Gene[replicon.getGenes().size()];
+                        Pattern pattern = new Pattern(replicon.getGenes().toArray(repliconGenes));
                         patterns.add(pattern);
                     }
                 }
@@ -76,7 +77,7 @@ public class Parsers {
                     patternId = line.substring(1);
 
                 } else {
-                    List<Gene> genes = parseGenes(line, lineNumber, inputPatternsFilePath);
+                    Gene[] genes = parseGenes(line, lineNumber, inputPatternsFilePath);
                     Pattern pattern = new Pattern(patternId, genes);
                     patterns.add(pattern);
                 }
@@ -92,10 +93,11 @@ public class Parsers {
         return patterns;
     }
 
-    private static List<Gene> parseGenes(String line, int lineNumber, String inputPatternsFilePath) throws IllegalArgumentException {
+    private static Gene[] parseGenes(String line, int lineNumber, String inputPatternsFilePath) throws IllegalArgumentException {
         String[] patternArr = line.split(PATTERN_DELIMITER);
-        List<Gene> genes = new ArrayList<>();
+        Gene[] genes = new Gene[patternArr.length];
         if (patternArr.length > 1) {
+            int i = 0;
             for (String gene : patternArr) {
                 if (gene.length() > 0) {
                     String lastChar = gene.substring(gene.length() - 1);
@@ -105,7 +107,7 @@ public class Parsers {
                         gene = gene.substring(0, gene.length() - 1);
                     }
 
-                    genes.add(new Gene(gene, strand));
+                    genes[i++] = new Gene(gene, strand);
                 }
             }
         } else {
@@ -399,7 +401,7 @@ public class Parsers {
         i++;
         int count = castToInteger(patternLine[i], INSTANCE_HEADER[i], lineNumber, filePath);
         i++;
-        List<Gene> genes = parseGenes(patternLine[i], lineNumber, filePath);
+        Gene[] genes = parseGenes(patternLine[i], lineNumber, filePath);
         i++;
         int familyId = castToInteger(patternLine[i], INSTANCE_HEADER[i], lineNumber, filePath);
 

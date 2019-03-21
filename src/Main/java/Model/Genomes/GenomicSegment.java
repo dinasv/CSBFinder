@@ -1,6 +1,7 @@
 package Model.Genomes;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -56,6 +57,10 @@ public abstract class GenomicSegment {
 
     public void addAllGenes(List<Gene> genes){
         this.genes.addAll(genes);
+    }
+
+    public void addAllGenes(Gene[] genes){
+        addAllGenes(Arrays.asList(genes));
     }
 
     public Strand getStrand() {

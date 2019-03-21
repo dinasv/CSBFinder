@@ -91,12 +91,12 @@ public class Instance implements Comparable<Instance>{
     public int compareTo(Instance o) {
         InstanceNode instanceNodeOther = o.getNodeInstance();
         if (o.getEdge() != null) {
-            instanceNodeOther = (InstanceNode) o.getEdge().getDest();
+            instanceNodeOther = o.getEdge().getDest();
         }
 
         InstanceNode instanceNodeThis = instanceNode;
         if (edge != null) {
-            instanceNodeThis = (InstanceNode) edge.getDest();
+            instanceNodeThis = edge.getDest();
         }
 
         return instanceNodeOther.getCountInstancePerGenome() - instanceNodeThis.getCountInstancePerGenome();
@@ -118,7 +118,7 @@ public class Instance implements Comparable<Instance>{
         InstanceNode instanceNode = this.instanceNode;
         if (edge != null) {
             Edge edge = this.edge;
-            instanceNode = (InstanceNode) edge.getDest();
+            instanceNode = edge.getDest();
         }
         return instanceNode.getGenomeToLocationsInSubtree();
     }

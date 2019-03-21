@@ -66,9 +66,9 @@ public class MatchPointAlgorithmTest {
         List<Pattern> patterns = runAlgorithm(GENOMES_FILE_PATH1, initParamsNonDirectons());
 
         List<Pattern> expectedPatterns = new ArrayList<>();
-        List<Gene> expectedGenes = new ArrayList<>();
-        expectedGenes.add(new Gene("COG0001", Strand.FORWARD));
-        expectedGenes.add(new Gene("COG0002", Strand.FORWARD));
+        Gene[] expectedGenes = {new Gene("COG0001", Strand.FORWARD),
+                                new Gene("COG0002", Strand.FORWARD)};
+
         expectedPatterns.add(new Pattern(expectedGenes));
 
         Assert.assertEquals(expectedPatterns, patterns);
@@ -81,10 +81,10 @@ public class MatchPointAlgorithmTest {
         List<Pattern> patterns = runAlgorithm(GENOMES_FILE_PATH2, initParamsNonDirectons());
 
         List<Pattern> expectedPatterns = new ArrayList<>();
-        List<Gene> expectedGenes = new ArrayList<>();
-        expectedGenes.add(new Gene("COG0001", Strand.FORWARD));
-        expectedGenes.add(new Gene("COG0002", Strand.FORWARD));
-        expectedGenes.add(new Gene("COG0003", Strand.REVERSE));
+        Gene[] expectedGenes = {new Gene("COG0001", Strand.FORWARD),
+                                new Gene("COG0002", Strand.FORWARD),
+                                new Gene("COG0003", Strand.REVERSE)};
+
         expectedPatterns.add(new Pattern(expectedGenes));
 
         Assert.assertEquals(expectedPatterns, patterns);
@@ -97,15 +97,14 @@ public class MatchPointAlgorithmTest {
         List<Pattern> patterns = runAlgorithm(GENOMES_FILE_PATH2, initParamsKeepAll());
 
         List<Pattern> expectedPatterns = new ArrayList<>();
-        List<Gene> expectedGenes = new ArrayList<>();
-        expectedGenes.add(new Gene("COG0001", Strand.FORWARD));
-        expectedGenes.add(new Gene("COG0002", Strand.FORWARD));
-        expectedGenes.add(new Gene("COG0003", Strand.REVERSE));
+        Gene[] expectedGenes = {new Gene("COG0001", Strand.FORWARD),
+                                    new Gene("COG0002", Strand.FORWARD),
+                                    new Gene("COG0003", Strand.REVERSE)};
         expectedPatterns.add(new Pattern(expectedGenes));
-        expectedPatterns.add(new Pattern(expectedGenes.subList(0, 2)));
-        expectedPatterns.add(new Pattern(expectedGenes.subList(1, 3)));
+        expectedPatterns.add(new Pattern(Arrays.copyOfRange(expectedGenes,0, 2)));
+        expectedPatterns.add(new Pattern(Arrays.copyOfRange(expectedGenes,1, 3)));
 
-        Assert.assertTrue(patterns.size() == expectedPatterns.size());
+        Assert.assertEquals(patterns.size(), expectedPatterns.size());
         for (Pattern pattern : expectedPatterns) {
             Assert.assertTrue(patterns.contains(pattern));
         }
@@ -116,15 +115,14 @@ public class MatchPointAlgorithmTest {
         List<Pattern> patterns = runAlgorithm(GENOMES_FILE_PATH2, initParamsSetLenggth());
 
         List<Pattern> expectedPatterns = new ArrayList<>();
-        List<Gene> expectedGenes = new ArrayList<>();
-        expectedGenes.add(new Gene("COG0001", Strand.FORWARD));
-        expectedGenes.add(new Gene("COG0002", Strand.FORWARD));
-        expectedGenes.add(new Gene("COG0003", Strand.REVERSE));
+        Gene[] expectedGenes = {new Gene("COG0001", Strand.FORWARD),
+                                new Gene("COG0002", Strand.FORWARD),
+                                new Gene("COG0003", Strand.REVERSE)};
 
-        expectedPatterns.add(new Pattern(expectedGenes.subList(0, 2)));
-        expectedPatterns.add(new Pattern(expectedGenes.subList(1, 3)));
+        expectedPatterns.add(new Pattern(Arrays.copyOfRange(expectedGenes, 0, 2)));
+        expectedPatterns.add(new Pattern(Arrays.copyOfRange(expectedGenes,1, 3)));
 
-        Assert.assertTrue(patterns.size() == expectedPatterns.size());
+        Assert.assertEquals(patterns.size(), expectedPatterns.size());
         for (Pattern pattern : expectedPatterns) {
             Assert.assertTrue(patterns.contains(pattern));
         }

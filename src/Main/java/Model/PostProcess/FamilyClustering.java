@@ -94,7 +94,7 @@ public class FamilyClustering {
         return families;
     }
 
-    private static Set<Integer> getGenesSet(List<Gene> genes, GenomesInfo gi){
+    private static Set<Integer> getGenesSet(Gene[] genes, GenomesInfo gi){
         Set<Integer> geneSet = new HashSet<>();
         for (Gene cog: genes) {
             int cogIndex = gi.getLetter(new Gene(cog.getCogId(), Strand.INVALID));
