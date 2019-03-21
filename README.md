@@ -84,7 +84,7 @@ the Java option `-Xmx500m` to `-Xmx[maximal heap size]` depending of the availab
  
 #### Importing input files
 
-1. **Importing a file with the input genomes**:
+1. **Importing a file containing the input genomes**:
     1. Choose `File->Import->Genomes File`. If your dataset is large, this
 make take a few minutes.
     > [Sample input files](#sample) are provided in the input directory in the installation folder

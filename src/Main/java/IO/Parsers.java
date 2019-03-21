@@ -213,8 +213,28 @@ public class Parsers {
         return genome;
     }
 
+    public static String[] parseSessionFileFirstLine(String filePath) throws IOException, IllegalArgumentException{
 
-    public static String[] parseSessionFile(List<Family> families, String filePath, GenomesInfo genomesInfo)
+        if (filePath == null) {
+            throw new IllegalArgumentException();
+        }
+        String[] args = new String[0];
+
+        try (BufferedReader br = new BufferedReader(new FileReader(filePath))) {
+
+            args = br.readLine().split(" ");
+
+        } catch (FileNotFoundException e) {
+            throw new FileNotFoundException("File " + filePath + " was not found.");
+        } catch (IOException e) {
+            throw new IOException("An exception occurred while reading " + filePath);
+        }
+
+        return args;
+    }
+
+
+    public static void parseSessionFile(List<Family> families, String filePath, GenomesInfo genomesInfo)
             throws IOException, IllegalArgumentException {
 
         if (filePath == null) {
@@ -222,11 +242,11 @@ public class Parsers {
         }
 
         int lineNumber = 0;
-        String[] args = new String[0];
 
         try (BufferedReader br = new BufferedReader(new FileReader(filePath))) {
 
-            args = br.readLine().split(" ");
+            String args = br.readLine();
+
             lineNumber++;
 
             String rawLine = br.readLine();
@@ -248,7 +268,6 @@ public class Parsers {
             throw new IOException("An exception occurred while reading " + filePath);
         }
 
-        return args;
     }
 
 

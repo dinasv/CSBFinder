@@ -115,7 +115,4 @@ public class InstanceLocation{
         return genomicSegmentId;
     }
 
-    public String toHashString(){
-        return String.format("%d_%d", genomeId, repliconId);
-    }
 }

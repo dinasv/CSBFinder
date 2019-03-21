@@ -75,12 +75,14 @@ public class CSBFinderModel {
             gi = new GenomesInfo();
             families = new ArrayList<>();
 
-            String[] args = Parsers.parseSessionFile(families, path, gi);
+            String[] args = Parsers.parseSessionFileFirstLine(path);
             JCommander jCommander = parseArgs(args);
 
             if (jCommander == null){
                 return String.format("The first line in the file %s should contain valid arguments", path);
             }
+
+            Parsers.parseSessionFile(families, path, gi);
 
             workflow = new CSBFinderWorkflow(gi);
             workflow.setParameters(params);
@@ -92,7 +94,8 @@ public class CSBFinderModel {
 
         }catch(Exception e){
             msg = e.getMessage();
-            e.printStackTrace();
+            gi = new GenomesInfo();
+            families = new ArrayList<>();
         }
         return msg;
     }
@@ -147,9 +150,11 @@ public class CSBFinderModel {
             return msg;
         }
 
+        families = new ArrayList<>();
+
         long startTime = System.nanoTime();
 
-        List<Pattern> patternsFromFile = new ArrayList<>();
+        List<Pattern> patternsFromFile;
         try {
             patternsFromFile = readPatternsFromFile();
         }catch (Exception e){
@@ -171,7 +176,7 @@ public class CSBFinderModel {
         msg += workflow.getPatternsCount() + " CSBs found";
 
         System.out.println(msg);
-        System.out.println("Took " + String.valueOf((System.nanoTime() - startTime) / Math.pow(10, 9)) + " seconds");
+        System.out.println("Took " + (System.nanoTime() - startTime) / Math.pow(10, 9) + " seconds");
 
         csbFinderDoneListener.CSBFinderDoneOccurred(new CSBFinderDoneEvent(families));
 
