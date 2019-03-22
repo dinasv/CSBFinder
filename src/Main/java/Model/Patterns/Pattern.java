@@ -49,7 +49,7 @@ public class Pattern {
         mainFunctionalCategory = "";
         reverseComplimentPatternArr = reverseComplimentPattern(patternGenes);
 
-        genomeToInstanceLocations = new TreeMap<>();
+        genomeToInstanceLocations = new HashMap<>();
     }
 
 

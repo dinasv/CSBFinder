@@ -107,7 +107,7 @@ public class Parsers {
                         gene = gene.substring(0, gene.length() - 1);
                     }
 
-                    genes[i++] = new Gene(gene, strand);
+                    genes[i++] = new Gene(gene.intern(), strand);
                 }
             }
         } else {
@@ -152,7 +152,7 @@ public class Parsers {
                     rawStrand, lineNumber, filePath));
         }
 
-        return new Gene(geneId, strand);
+        return new Gene(geneId.intern(), strand);
     }
 
     /**

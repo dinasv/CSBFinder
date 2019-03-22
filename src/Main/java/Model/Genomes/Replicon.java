@@ -40,7 +40,7 @@ public class Replicon extends GenomicSegment {
         setStrand(reverseStrand(getStrand()));
 
         for(Gene gene: genes){
-            reversedGenes.add(new Gene(gene.getCogId(), Gene.reverseStrand(gene.getStrand())));
+            reversedGenes.add(new Gene(gene.getCogId().intern(), Gene.reverseStrand(gene.getStrand())));
         }
 
         int start_index = getStartIndex();

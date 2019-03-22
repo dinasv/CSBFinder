@@ -40,6 +40,11 @@ public class CSBFinderWorkflow {
         patterns = new ArrayList<>();
     }
 
+    public void clear(){
+        patternsFromFile.clear();
+        patterns.clear();
+    }
+
     public void setPatternsFromFile(List<Pattern> patternsFromFile){
         this.patternsFromFile = patternsFromFile;
     }

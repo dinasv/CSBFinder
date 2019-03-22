@@ -123,9 +123,9 @@ public class GenomesInfo {
 
         replicon.getGenes()
                 .forEach(gene -> {
-                    alphabet.addLetter(new Gene(gene.getCogId(), Strand.FORWARD));
-                    alphabet.addLetter(new Gene(gene.getCogId(), Strand.REVERSE));
-                    alphabet.addLetter(new Gene(gene.getCogId(), Strand.INVALID));
+                    alphabet.addLetter(new Gene(gene.getCogId().intern(), Strand.FORWARD));
+                    alphabet.addLetter(new Gene(gene.getCogId().intern(), Strand.REVERSE));
+                    alphabet.addLetter(new Gene(gene.getCogId().intern(), Strand.INVALID));
                 });
 
     }

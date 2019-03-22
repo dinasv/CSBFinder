@@ -74,7 +74,7 @@ public class Family {
 
     private void addCharsToCharsSet(Pattern pattern){
         for (Gene gene: pattern.getPatternGenes()) {
-            int cogIndex = genomesInfo.getLetter(new Gene(gene.getCogId(), Strand.INVALID));
+            int cogIndex = genomesInfo.getLetter(new Gene(gene.getCogId().intern(), Strand.INVALID));
 
             if (cogIndex != -1){
                 charSet.add(cogIndex);

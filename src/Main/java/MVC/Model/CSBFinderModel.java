@@ -14,7 +14,6 @@ import Model.PostProcess.Family;
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.ParameterException;
 
-import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -68,13 +67,14 @@ public class CSBFinderModel {
         return msg;
     }
 
-    public String loadSessionFile(String path) throws IOException {
+    public String loadSessionFile(String path) {
 
         String msg = "";
-        try {
-            gi = new GenomesInfo();
-            families = new ArrayList<>();
+        gi = new GenomesInfo();
+        families = new ArrayList<>();
+        workflow = null;
 
+        try {
             String[] args = Parsers.parseSessionFileFirstLine(path);
             JCommander jCommander = parseArgs(args);
 
@@ -94,8 +94,6 @@ public class CSBFinderModel {
 
         }catch(Exception e){
             msg = e.getMessage();
-            gi = new GenomesInfo();
-            families = new ArrayList<>();
         }
         return msg;
     }
@@ -290,15 +288,13 @@ public class CSBFinderModel {
         Set<COG> insertedGenes = new HashSet<>();
 
         if (params.maxInsertion > 0) {
-            Set<COG> patternGenesSet = new HashSet<>();
-            patternGenesSet.addAll(patternCOGs);
+            Set<COG> patternGenesSet = new HashSet<>(patternCOGs);
 
             for (PatternLocationsInGenome instancesMap : pattern.getPatternLocations().values()) {
                 for (PatternLocationsInReplicon patternLocationsInReplicon : instancesMap.getRepliconToLocations().values()) {
                     for (InstanceLocation instance : patternLocationsInReplicon.getSortedLocations()) {
                         List<COG> instanceGenes = getCogsInfo(getGenes(instance));
-                        Set<COG> instanceGenesSet = new HashSet<>();
-                        instanceGenesSet.addAll(instanceGenes);
+                        Set<COG> instanceGenesSet = new HashSet<>(instanceGenes);
                         instanceGenesSet.removeAll(patternGenesSet);
                         insertedGenes.addAll(instanceGenesSet);
                     }

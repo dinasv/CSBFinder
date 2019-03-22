@@ -239,15 +239,6 @@ public class SuffixTreeAlgorithm implements Algorithm {
         }
     }
 
-    private boolean startsWithWildcard(Gene[] pattern) {
-        if (maxWildcards > 0 && pattern.length > 0) {
-            if (pattern[0].getCogId().equals("*")) {
-                return true;
-            }
-        }
-        return false;
-    }
-
     /**
      * Adds a character to str
      *
@@ -621,7 +612,7 @@ public class SuffixTreeAlgorithm implements Algorithm {
 
             //if the char is equal addGene anyway
             if (nextCh == ch) {
-                exactInstanceCount = ((InstanceNode) instanceEdge.getDest()).getCountInstancePerGenome();
+                exactInstanceCount = instanceEdge.getDest().getCountInstancePerGenome();
                 addInstanceToPattern(extendedPattern, instance, nextCh, nextNodeInstance, nextEdgeInstance, nextEdgeIndex, error,
                         deletions);
             } else {

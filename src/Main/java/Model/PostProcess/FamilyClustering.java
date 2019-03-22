@@ -24,7 +24,7 @@ public class FamilyClustering {
             family.sortPatternsAndSetScore();
         }
 
-        Collections.sort(families, new Family.ScoreComparator());
+        families.sort(new Family.ScoreComparator());
         return families;
     }
 

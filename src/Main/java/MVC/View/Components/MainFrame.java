@@ -19,6 +19,8 @@ import java.awt.*;
 import java.io.File;
 import java.util.*;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class MainFrame extends JFrame {
 
@@ -28,6 +30,7 @@ public class MainFrame extends JFrame {
     private static final String LOADING_MSG = "Loading File";
     private static final int MSG_WIDTH = 500;
 
+    private ExecutorService threadPool = Executors.newFixedThreadPool(1);
 
     private CSBFinderController controller;
 
@@ -157,6 +160,8 @@ public class MainFrame extends JFrame {
     }
 
     private void setGenomesData(String filePath){
+        familiesFilter.clear();
+
         if (controller.getNumberOfGenomes() > 0) {
             inputParamsDialog.setGenomeData(controller.getNumberOfGenomes(), controller.getMaxGenomeSize());
             genomesPanel.setGenomesInfo(controller.getGenomeInfo());
@@ -363,7 +368,7 @@ public class MainFrame extends JFrame {
                     String msg = "";
 
                     @Override
-                    protected Void doInBackground() throws Exception {
+                    protected Void doInBackground() {
                         msg = controller.loadInputGenomesFile(f.getPath());
                         return null;
                     }
@@ -397,7 +402,7 @@ public class MainFrame extends JFrame {
                     String msg = "";
 
                     @Override
-                    protected Void doInBackground() throws Exception {
+                    protected Void doInBackground() {
                         clearPanels();
                         msg = controller.loadSessionFile(f.getPath());
                         return null;
@@ -412,7 +417,8 @@ public class MainFrame extends JFrame {
                         JOptionPane.showMessageDialog(MainFrame.this, formatMsgWidth(msg));
                     }
                 };
-                swingWorker.execute();
+
+                threadPool.submit(swingWorker);
             }
         });
     }

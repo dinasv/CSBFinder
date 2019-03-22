@@ -36,7 +36,7 @@ public class PatternNode {
      * Saves all different keys of strings that the pattern has an instance in.
      * (union of getResult from all instance nodes)
      */
-    private Set instanceKeys;
+    private Set<Integer> instanceKeys;
     /**
      * Saves number of instances of the pattern (including multiple instances in the same input string)
      */
@@ -47,14 +47,14 @@ public class PatternNode {
     private int exactInstanceCount;
 
     public PatternNode(TreeType type){
-        targetNodes = new HashMap<Integer, PatternNode>();
+        targetNodes = new HashMap<>();
         suffix = null;
 
         patternKey = null;
         copyCount = 0;
         this.type = type;
 
-        instances = new ArrayList<Instance>();
+        instances = new ArrayList<>();
         instanceKeys = new HashSet();
         instanceIndexCount = 0;
 
@@ -171,6 +171,7 @@ public class PatternNode {
     public void setSubstring(String substr){
         substring = substr;
     }
+
     public String getSubstring(){
         return substring;
     }

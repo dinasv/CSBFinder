@@ -18,7 +18,7 @@ import java.util.Set;
 
 public class CSBFinderController {
 
-    private CSBFinderModel model;
+    public CSBFinderModel model;
     private MainFrame view;
 
     public CSBFinderController() {
@@ -35,7 +35,7 @@ public class CSBFinderController {
         return this.model.loadInputGenomesFile(filePath);
     }
 
-    public String loadSessionFile(String filePath) throws IOException {
+    public String loadSessionFile(String filePath) {
         return this.model.loadSessionFile(filePath);
     }
 

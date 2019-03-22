@@ -10,7 +10,7 @@ public class PatternLocationsInGenome {
     private Map<Integer, PatternLocationsInReplicon> repliconToLocations;
 
     public PatternLocationsInGenome(){
-        repliconToLocations = new TreeMap<>();
+        repliconToLocations = new HashMap<>();
     }
 
     public void addLocation(InstanceLocation instanceLocation){
