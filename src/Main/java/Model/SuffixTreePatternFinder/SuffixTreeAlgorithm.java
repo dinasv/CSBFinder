@@ -25,7 +25,6 @@ public class SuffixTreeAlgorithm implements Algorithm {
     public static long countNodesInDataTree;
 
     private int maxError;
-    private int maxWildcards;
     private int maxDeletion;
     private int maxInsertion;
     private int q1;
@@ -71,7 +70,6 @@ public class SuffixTreeAlgorithm implements Algorithm {
 
         // args
         this.maxError = params.maxError;
-        this.maxWildcards = params.maxWildcards;
         this.maxDeletion = params.maxDeletion;
         this.maxInsertion = params.maxInsertion;
         q1 = params.quorum1;
@@ -150,9 +148,9 @@ public class SuffixTreeAlgorithm implements Algorithm {
         patternTreeRoot.addInstance(emptyInstance);
         if (patternTreeRoot.getType() == TreeType.VIRTUAL) {
             spellPatternsVirtually(patternTreeRoot, dataTreeRoot, -1, null, new Gene[0],
-                    0, 0);
+                    0);
         } else {
-            spellPatterns(patternTreeRoot, new Gene[0], 0, 0);
+            spellPatterns(patternTreeRoot, new Gene[0], 0);
         }
 
         removeRedundantPatterns();
@@ -221,25 +219,6 @@ public class SuffixTreeAlgorithm implements Algorithm {
 
 
     /**
-     * Add to node an edge with label = gap. edge.dest = copy of node, its edged are deep copied
-     *
-     * @param node
-     */
-    private void addWildcardEdge(PatternNode node, Boolean copy_node) {
-        PatternNode targetNode = node.getTargetNode(Alphabet.WC_CHAR_INDEX);
-        if (targetNode == null) {
-            int[] wildcard = {Alphabet.WC_CHAR_INDEX};
-            //create a copy of node
-            PatternNode newnode = new PatternNode(node);
-            node.addTargetNode(Alphabet.WC_CHAR_INDEX, newnode);
-        } else {
-            PatternNode newnode = node.getTargetNode(Alphabet.WC_CHAR_INDEX);
-            newnode = new PatternNode(newnode);
-            targetNode.addTargetNode(Alphabet.WC_CHAR_INDEX, newnode);
-        }
-    }
-
-    /**
      * Adds a character to str
      *
      * @param str
@@ -264,14 +243,9 @@ public class SuffixTreeAlgorithm implements Algorithm {
      * @param patternNode            node in the enumeration tree that represents the current pattern
      * @param pattern                represents a string concatenation of edge labels from root to patternNode
      * @param pattern_length
-     * @param pattern_wildcard_count number of wildcards in the pattern
      * @return The maximal number of different string indexes that one of the extended patterns by a char appear in
      */
-    private int spellPatterns(PatternNode patternNode, Gene[] pattern, int pattern_length, int pattern_wildcard_count) {
-        if (pattern_wildcard_count < maxWildcards && patternNode.getType() == TreeType.VIRTUAL) {
-            //addGene to patternNode an edge with "_", pointing to a new node that will save the instances
-            addWildcardEdge(patternNode, true);
-        }
+    private int spellPatterns(PatternNode patternNode, Gene[] pattern, int pattern_length) {
 
         List<Instance> instances = patternNode.getInstances();
 
@@ -284,33 +258,20 @@ public class SuffixTreeAlgorithm implements Algorithm {
         PatternNode target_node;
         for (Map.Entry<Integer, PatternNode> entry : targetNodes.entrySet()) {
             int alpha = entry.getKey();
-            Gene alpha_ch = gi.getLetter(alpha);
+            //Gene alpha_ch = gi.getLetter(alpha);
             target_node = entry.getValue();
 
-            //go over edges that are not wild cards
-            if (alpha != Alphabet.WC_CHAR_INDEX) {
-                numOfDiffInstance = extendPattern(alpha, -1, null, null,
-                        pattern_wildcard_count, pattern, target_node, patternNode, instances, pattern_length);
+            numOfDiffInstance = extendPattern(alpha, -1, null, null,
+                     pattern, target_node, patternNode, instances, pattern_length);
 
-                if (numOfDiffInstance > maxNumOfDiffInstances) {
-                    maxNumOfDiffInstances = numOfDiffInstance;
-                }
-                //For memory saving, remove pointer to target node
-                patternNode.addTargetNode(alpha, null);
+            if (numOfDiffInstance > maxNumOfDiffInstances) {
+                maxNumOfDiffInstances = numOfDiffInstance;
             }
+            //For memory saving, remove pointer to target node
+            patternNode.addTargetNode(alpha, null);
+
         }
 
-        //handle wild card edge
-        if (patternNode.getType() == TreeType.STATIC || pattern_wildcard_count < maxWildcards) {
-            target_node = patternNode.getTargetNode(Alphabet.WC_CHAR_INDEX);
-            if (target_node != null) {
-                numOfDiffInstance = extendPattern(Alphabet.WC_CHAR_INDEX, -1, null, null,
-                        pattern_wildcard_count + 1, pattern, target_node, patternNode, instances, pattern_length);
-                if (numOfDiffInstance > maxNumOfDiffInstances) {
-                    maxNumOfDiffInstances = numOfDiffInstance;
-                }
-            }
-        }
         countNodesInPatternTree++;
 
         return maxNumOfDiffInstances;
@@ -330,12 +291,11 @@ public class SuffixTreeAlgorithm implements Algorithm {
      * @param dataEdge
      * @param pattern
      * @param patternLength
-     * @param wildcardCount
      * @return
      */
     private int spellPatternsVirtually(PatternNode patternNode, InstanceNode dataNode, int dataEdgeIndex,
                                        Edge dataEdge,
-                                       Gene[] pattern, int patternLength, int wildcardCount) {
+                                       Gene[] pattern, int patternLength) {
 
         List<Instance> instances = patternNode.getInstances();
         //the maximal number of different instances, of one of the extended patterns
@@ -354,15 +314,13 @@ public class SuffixTreeAlgorithm implements Algorithm {
             }
         }
 
-        PatternNode targetNode;
-
         if (dataEdgeIndex == -1) {
             dataEdgeIndex++;
             dataNodeEdges = dataNode.getEdges();
 
             for (Map.Entry<Integer, Edge> entry : dataNodeEdges.entrySet()) {
                 int alpha = entry.getKey();
-                Gene alpha_ch = gi.getLetter(alpha);
+                //Gene alpha_ch = gi.getLetter(alpha);
                 dataEdge = entry.getValue();
                 InstanceNode dataTreeTargetNode = dataEdge.getDest();
 
@@ -371,19 +329,12 @@ public class SuffixTreeAlgorithm implements Algorithm {
                     if (alpha == Alphabet.UNK_CHAR_INDEX) {
                         if (q1 == 0 && gi.getLetter(pattern[0]) != Alphabet.UNK_CHAR_INDEX) {
                             spellPatternsVirtually(patternNode, dataNode, dataEdgeIndex + 1, dataEdge,
-                                    pattern, patternLength, wildcardCount);
+                                    pattern, patternLength);
                         }
                     } else {
 
-                        targetNode = new PatternNode(TreeType.VIRTUAL);
-                        targetNode.setKey(Integer.toString(++lastPatternKey));
-
-                        numOfDiffInstances = extendPattern(alpha, dataEdgeIndex + 1, dataNode, dataEdge,
-                                wildcardCount, pattern, targetNode, patternNode, instances, patternLength);
-
-                        if (numOfDiffInstances > maxNumOfDiffInstances) {
-                            maxNumOfDiffInstances = numOfDiffInstances;
-                        }
+                        maxNumOfDiffInstances = extendPattern(patternNode, dataNode, dataEdgeIndex, dataEdge, pattern,
+                                patternLength, alpha, instances, maxNumOfDiffInstances);
                     }
                 }
             }
@@ -396,15 +347,8 @@ public class SuffixTreeAlgorithm implements Algorithm {
             if (data_tree_target_node.getCountInstancePerGenome() >= q1) {
                 if (alpha != Alphabet.UNK_CHAR_INDEX) {
 
-                    targetNode = new PatternNode(TreeType.VIRTUAL);
-                    targetNode.setKey(Integer.toString(++lastPatternKey));
-
-                    numOfDiffInstances = extendPattern(alpha, dataEdgeIndex + 1, dataNode, dataEdge,
-                            wildcardCount, pattern, targetNode, patternNode, instances, patternLength);
-
-                    if (numOfDiffInstances > maxNumOfDiffInstances) {
-                        maxNumOfDiffInstances = numOfDiffInstances;
-                    }
+                    maxNumOfDiffInstances = extendPattern(patternNode, dataNode, dataEdgeIndex,
+                    dataEdge, pattern, patternLength, alpha, instances, maxNumOfDiffInstances);
                 }
             }
         }
@@ -414,12 +358,28 @@ public class SuffixTreeAlgorithm implements Algorithm {
         return maxNumOfDiffInstances;
     }
 
+    private int extendPattern(PatternNode patternNode, InstanceNode dataNode, int dataEdgeIndex,
+                               Edge dataEdge, Gene[] pattern, int patternLength,
+                               int alpha, List<Instance> instances, int maxNumOfDiffInstances){
+
+        PatternNode targetNode = new PatternNode(TreeType.VIRTUAL);
+        targetNode.setKey(Integer.toString(++lastPatternKey));
+
+        int numOfDiffInstances = extendPattern(alpha, dataEdgeIndex + 1, dataNode, dataEdge,
+                 pattern, targetNode, patternNode, instances, patternLength);
+
+        if (numOfDiffInstances > maxNumOfDiffInstances) {
+            maxNumOfDiffInstances = numOfDiffInstances;
+        }
+
+        return maxNumOfDiffInstances;
+    }
+
 
     /**
      * Extend pattern recursively by one character, if it passes the q1 and q2 - addGene to pattern list
      *
      * @param alpha          the char to append
-     * @param wildcard_count how many wildcard in the pattern
      * @param pattern        previous pattern string, before adding alpha. i.e. COG1234|COG2000|
      * @param targetNode     node the extended pattern
      * @param pattern_node   node of pattern
@@ -429,18 +389,12 @@ public class SuffixTreeAlgorithm implements Algorithm {
      */
 
     private int extendPattern(int alpha, int data_edge_index, InstanceNode data_node, Edge data_edge,
-                              int wildcard_count, Gene[] pattern, PatternNode targetNode,
+                              Gene[] pattern, PatternNode targetNode,
                               PatternNode pattern_node, List<Instance> Instances, int pattern_length) {
 
         Gene[] extendedPattern = appendChar(pattern, alpha);
         PatternNode extendedPatternNode = targetNode;
         int extendedPatternLength = pattern_length + 1;
-
-        //if there is a wildcard in the current pattern, have to create a copy of the subtree
-        if (wildcard_count > 0 && alpha != Alphabet.WC_CHAR_INDEX) {
-            extendedPatternNode = new PatternNode(extendedPatternNode);
-            pattern_node.addTargetNode(alpha, extendedPatternNode);
-        }
 
         extendedPatternNode.setSubstring(extendedPattern.toString());
         extendedPatternNode.setSubstringLength(extendedPatternLength);
@@ -463,18 +417,18 @@ public class SuffixTreeAlgorithm implements Algorithm {
         }
 
         if (exactInstancesCount >= q1 && instancesCount >= q2 &&
-                (extendedPatternLength - wildcard_count <= maxPatternLength)) {
+                (extendedPatternLength <= maxPatternLength)) {
 
             TreeType type = extendedPatternNode.getType();
             int ret;
             if (type == TreeType.VIRTUAL) {
                 ret = spellPatternsVirtually(extendedPatternNode, data_node, data_edge_index, data_edge,
-                        extendedPattern, extendedPatternLength, wildcard_count);
+                        extendedPattern, extendedPatternLength);
             } else {
-                ret = spellPatterns(extendedPatternNode, extendedPattern, extendedPatternLength, wildcard_count);
+                ret = spellPatterns(extendedPatternNode, extendedPattern, extendedPatternLength);
             }
 
-            if (extendedPatternLength - wildcard_count >= minPatternLength) {
+            if (extendedPatternLength >= minPatternLength) {
 
                 //make sure that extendedPattern is right maximal, if extendedPattern has the same number of
                 // instances as the longer pattern, prefer the longer pattern
@@ -539,52 +493,44 @@ public class SuffixTreeAlgorithm implements Algorithm {
             Map<Integer, Edge> instanceEdges = nodeInstance.getEdges();
 
             //we can extend the instance using all outgoing edges, increment error if needed
-            if (ch == Alphabet.WC_CHAR_INDEX) {
-                exactInstanceCount = addAllInstanceEdges(false, instance, instanceEdges, deletions, error, nodeInstance,
+
+            if (insertions < maxInsertion && instance.getLength() > 0) {
+                addAllInstanceEdges(true, instance, instanceEdges, deletions, error, nodeInstance,
                         edgeIndex, ch, extendedPattern, patternGenes);
+            }
+            if (error < maxError) {
+                //go over all outgoing edges
+                exactInstanceCount = addAllInstanceEdges(false, instance, instanceEdges, deletions,
+                        error, nodeInstance, edgeIndex, ch, extendedPattern, patternGenes);
                 //extend instance by deletions char
                 if (deletions < maxDeletion) {
                     addInstanceToPattern(extendedPattern, instance, Alphabet.GAP_CHAR_INDEX, nodeInstance, instanceEdge, edgeIndex,
                             error, deletions + 1);
                 }
-            } else {
-                if (insertions < maxInsertion && instance.getLength() > 0) {
-                    addAllInstanceEdges(true, instance, instanceEdges, deletions, error, nodeInstance,
-                            edgeIndex, ch, extendedPattern, patternGenes);
-                }
-                if (error < maxError) {
-                    //go over all outgoing edges
-                    exactInstanceCount = addAllInstanceEdges(false, instance, instanceEdges, deletions,
-                            error, nodeInstance, edgeIndex, ch, extendedPattern, patternGenes);
+            } else {//error = max error, only instanceEdge starting with ch can be added, or deletions
+                nextEdgeIndex++;
+                nextEdgeInstance = nodeInstance.getEdge(ch);
+                nextNodeInstance = nodeInstance;
+                //Exists an instanceEdge starting with ch, addGene it to instances
+                if (nextEdgeInstance != null) {
+                    exactInstanceCount = ((InstanceNode) nextEdgeInstance.getDest()).getCountInstancePerGenome();
+                    //The label contains only 1 char, go to next nodeInstance
+                    if (nextEdgeInstance.getLabel().getLength() == 1) {
+                        nextNodeInstance = (InstanceNode) nextEdgeInstance.getDest();
+                        nextEdgeInstance = null;
+                        nextEdgeIndex = -1;
+                    }
+                    addInstanceToPattern(extendedPattern, instance, ch, nextNodeInstance, nextEdgeInstance,
+                            nextEdgeIndex, error, deletions);
+                } else {
                     //extend instance by deletions char
                     if (deletions < maxDeletion) {
-                        addInstanceToPattern(extendedPattern, instance, Alphabet.GAP_CHAR_INDEX, nodeInstance, instanceEdge, edgeIndex,
-                                error, deletions + 1);
-                    }
-                } else {//error = max error, only instanceEdge starting with ch can be added, or deletions
-                    nextEdgeIndex++;
-                    nextEdgeInstance = nodeInstance.getEdge(ch);
-                    nextNodeInstance = nodeInstance;
-                    //Exists an instanceEdge starting with ch, addGene it to instances
-                    if (nextEdgeInstance != null) {
-                        exactInstanceCount = ((InstanceNode) nextEdgeInstance.getDest()).getCountInstancePerGenome();
-                        //The label contains only 1 char, go to next nodeInstance
-                        if (nextEdgeInstance.getLabel().getLength() == 1) {
-                            nextNodeInstance = (InstanceNode) nextEdgeInstance.getDest();
-                            nextEdgeInstance = null;
-                            nextEdgeIndex = -1;
-                        }
-                        addInstanceToPattern(extendedPattern, instance, ch, nextNodeInstance, nextEdgeInstance,
-                                nextEdgeIndex, error, deletions);
-                    } else {
-                        //extend instance by deletions char
-                        if (deletions < maxDeletion) {
-                            addInstanceToPattern(extendedPattern, instance, Alphabet.GAP_CHAR_INDEX, nodeInstance, instanceEdge,
-                                    edgeIndex, error, deletions + 1);
-                        }
+                        addInstanceToPattern(extendedPattern, instance, Alphabet.GAP_CHAR_INDEX, nodeInstance, instanceEdge,
+                                edgeIndex, error, deletions + 1);
                     }
                 }
             }
+
         } else {//Edge is not null, the substring ends at the middle of the instanceEdge, at index edgeIndex
             WordArray label = instanceEdge.getLabel();
             //check the next char on the label, at edgeIndex+1
@@ -616,19 +562,16 @@ public class SuffixTreeAlgorithm implements Algorithm {
                 addInstanceToPattern(extendedPattern, instance, nextCh, nextNodeInstance, nextEdgeInstance, nextEdgeIndex, error,
                         deletions);
             } else {
-                if (ch == Alphabet.WC_CHAR_INDEX) {
-                    addInstanceToPattern(extendedPattern, instance, nextCh, nextNodeInstance, nextEdgeInstance, nextEdgeIndex, error,
-                            deletions);
-                } else {
-                    if (error < maxError) {//check if the error is not maximal, to addGene not equal char
-                        addInstanceToPattern(extendedPattern, instance, nextCh, nextNodeInstance, nextEdgeInstance, nextEdgeIndex,
-                                error + 1, deletions);
-                    }
-                    //extend instance by deletions char
-                    if (deletions < maxDeletion) {
-                        addInstanceToPattern(extendedPattern, instance, Alphabet.GAP_CHAR_INDEX, nodeInstance, instanceEdge, edgeIndex, error, deletions + 1);
-                    }
+
+                if (error < maxError) {//check if the error is not maximal, to addGene not equal char
+                    addInstanceToPattern(extendedPattern, instance, nextCh, nextNodeInstance, nextEdgeInstance, nextEdgeIndex,
+                            error + 1, deletions);
                 }
+                //extend instance by deletions char
+                if (deletions < maxDeletion) {
+                    addInstanceToPattern(extendedPattern, instance, Alphabet.GAP_CHAR_INDEX, nodeInstance, instanceEdge, edgeIndex, error, deletions + 1);
+                }
+
             }
         }
         if (error > 0 || deletions > 0 || insertions > 0) {
@@ -664,16 +607,15 @@ public class SuffixTreeAlgorithm implements Algorithm {
 
             if (ch == nextCh) {
                 curr_error = error;
-                exact_instance_count = ((InstanceNode) nextEdge.getDest()).getCountInstancePerGenome();
+                exact_instance_count = nextEdge.getDest().getCountInstancePerGenome();
             } else {
-                if (ch != Alphabet.WC_CHAR_INDEX) {//Substitution - the chars are different, increment error
-                    curr_error = error + 1;
-                }
+                //Substitution - the chars are different, increment error
+                curr_error = error + 1;
             }
 
             //The label contains only 1 char, go to next instanceNode
             if (nextEdge.getLabel().getLength() == 1) {
-                nextNode = (InstanceNode) nextEdge.getDest();
+                nextNode = nextEdge.getDest();
                 nextEdge = null;
                 nextEdgeIndex = -1;
             } else {//label contains more the 1 char, increment edgeIndex
@@ -684,7 +626,7 @@ public class SuffixTreeAlgorithm implements Algorithm {
                 if (ch != nextCh) {
                     int minimalInstanceIndex = instance.getMinimalInstanceIndex();
                     Gene gene = patternGenes[minimalInstanceIndex];
-                    Gene instanceGene = gi.getLetter(nextCh);
+                    //Gene instanceGene = gi.getLetter(nextCh);
                     if (gi.getLetter(gene) == nextCh) {
                         minimalInstanceIndex += 1;
                     }

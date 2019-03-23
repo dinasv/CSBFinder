@@ -15,17 +15,17 @@ import java.util.*;
 
 public class Parsers {
 
-    final static String PATTERN_DELIMITER = ",";
-    final static String[] INSTANCE_HEADER = {"[Family ID]", "[Length]", "[Score]", "[Count]", "[Genes]", "[Family FAMILY_ID]"};
-    final static String INSTANCE_HEADER_DELIMITER = "\t";
-    final static String[] GENOME_HEADER = {"[Genome name]", "[Replicon FAMILY_ID]"};
-    final static String GENOME_HEADER_DELIMITER = "\\|";
-    final static String[] GENE_LINE = {"[Gene Orthology Group ID]", "[Strand]"};
-    final static String GENE_LINE_DELIMITER = "\t";
-    final static String[] COG_LINE = {"[COG Orthology Group ID]", "[COG description]"};
-    final static String COG_LINE_DELIMITER = ";";
-    final static String[] LOCATIONS_LINE = {"[Genome Name]", "[Replicon Name|[Start Index, End Index]]"};
-    final static String LOCATIONS_LINE_DELIMITER = "\t";
+    private final static String PATTERN_DELIMITER = ",";
+    private final static String[] INSTANCE_HEADER = {"[Family ID]", "[Length]", "[Score]", "[Count]", "[Genes]", "[Family FAMILY_ID]"};
+    private final static String INSTANCE_HEADER_DELIMITER = "\t";
+    private final static String[] GENOME_HEADER = {"[Genome name]", "[Replicon FAMILY_ID]"};
+    private final static String GENOME_HEADER_DELIMITER = "\\|";
+    private final static String[] GENE_LINE = {"[Gene Orthology Group ID]", "[Strand]"};
+    private final static String GENE_LINE_DELIMITER = "\t";
+    private final static String[] COG_LINE = {"[COG Orthology Group ID]", "[COG description]"};
+    private final static String COG_LINE_DELIMITER = ";";
+    private final static String[] LOCATIONS_LINE = {"[Genome Name]", "[Replicon Name|[Start Index, End Index]]"};
+    private final static String LOCATIONS_LINE_DELIMITER = "\t";
 
     final static String GENOMES_START = "<genomes>";
     final static String GENOMES_END = "<\\genomes>";
@@ -101,7 +101,7 @@ public class Parsers {
             for (String gene : patternArr) {
                 if (gene.length() > 0) {
                     String lastChar = gene.substring(gene.length() - 1);
-                    Strand strand = determineStrand(lastChar);
+                    Strand strand = Strand.determineStrand(lastChar);
 
                     if (strand != Strand.INVALID) {
                         gene = gene.substring(0, gene.length() - 1);
@@ -146,7 +146,7 @@ public class Parsers {
         String geneId = splitLine[0];
         String rawStrand = splitLine[1];
 
-        Strand strand = determineStrand(rawStrand);
+        Strand strand = Strand.determineStrand(rawStrand);
         if (strand == Strand.INVALID) {
             throw new IllegalArgumentException(errorMessage("Strand must be + or -",
                     rawStrand, lineNumber, filePath));
@@ -181,24 +181,7 @@ public class Parsers {
         return title;
     }
 
-    private static Strand determineStrand(String rawStrand) {
 
-        Strand strand;
-
-        switch (rawStrand) {
-            case "+":
-                strand = Strand.FORWARD;
-                break;
-            case "-":
-                strand = Strand.REVERSE;
-                break;
-            default:
-                strand = Strand.INVALID;
-                break;
-        }
-
-        return strand;
-    }
 
     private static String errorMessage(String expected, String recieved, int lineNumber, String path) {
         return String.format("Expected %s, got \"%s\" in file %s line %d", expected, recieved, path, lineNumber);

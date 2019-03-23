@@ -1,7 +1,6 @@
 package Model.Genomes;
 
-import org.apache.commons.lang3.builder.EqualsBuilder;
-import org.apache.commons.lang3.builder.HashCodeBuilder;
+import java.util.Objects;
 
 /**
  * Represents a gene
@@ -34,16 +33,12 @@ public class Gene {
     }
 
     public String toString(){
-        return cogId + strand;
+        return (cogId + strand).intern();
     }
 
     @Override
     public int hashCode() {
-        return new HashCodeBuilder(17, 31). // two randomly chosen prime numbers
-                // if deriving: appendSuper(super.hashCode()).
-                        append(cogId).
-                        append(strand).
-                        toHashCode();
+        return Objects.hash(cogId, strand);
     }
 
     @Override
@@ -53,11 +48,9 @@ public class Gene {
         if (obj == this)
             return true;
 
-        Gene rhs = (Gene) obj;
-        return new EqualsBuilder().
-                // if deriving: appendSuper(super.equals(obj)).
-                        append(cogId, rhs.cogId).
-                        append(strand, rhs.strand).
-                        isEquals();
+        Gene otherGene = (Gene) obj;
+
+        return strand == otherGene.strand && cogId.equals(otherGene.getCogId());
+
     }
 }

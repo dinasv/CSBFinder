@@ -111,8 +111,6 @@ public class Parameters {
     public int maxError = 0;
     @Parameter(names={"--deletion", "-del"}, description = "Maximal number of deletions allowed", hidden = true)
     public int maxDeletion = 0;
-    @Parameter(names={"--wildcard", "-wc"}, description = "Maximal number of wildcards allowed", hidden = true)
-    public int maxWildcards = 0;
 
     @Parameter(names = "-debug", description = "Debug mode", hidden = true)
     public boolean debug = false;

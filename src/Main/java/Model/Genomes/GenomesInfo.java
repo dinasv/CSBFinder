@@ -138,11 +138,8 @@ public class GenomesInfo {
     public void countParalogsInSeqs(WordArray word, int currGenomeId){
         for (int ch : word.getWordArray()) {
 
-            Map<Integer, Integer> currGenomeParalogsCount = genomeToCogParalogCount.get(currGenomeId);
-            if (currGenomeParalogsCount == null) {
-                currGenomeParalogsCount = new HashMap<>();
-                genomeToCogParalogCount.put(currGenomeId, currGenomeParalogsCount);
-            }
+            Map<Integer, Integer> currGenomeParalogsCount = genomeToCogParalogCount
+                    .computeIfAbsent(currGenomeId, k -> new HashMap<>());
 
             int currCogParalogCount = 1;
             if (currGenomeParalogsCount.containsKey(ch)) {
@@ -150,11 +147,7 @@ public class GenomesInfo {
             }
             currGenomeParalogsCount.put(ch, currCogParalogCount);
 
-            Set<Integer> genomes = cogToContainingGenomes.get(ch);
-            if (genomes == null) {
-                genomes = new HashSet<>();
-                cogToContainingGenomes.put(ch, genomes);
-            }
+            Set<Integer> genomes = cogToContainingGenomes.computeIfAbsent(ch, k -> new HashSet<>());
             genomes.add(currGenomeId);
         }
     }

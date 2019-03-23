@@ -9,24 +9,17 @@ public class Alphabet {
     private List<Gene> indexToLetter;
     private Map<Gene, Integer> letterToIndex;
 
-    public static final int WC_CHAR_INDEX = 0;
-    public static final String WC_CHAR = "*";
-    public static final int GAP_CHAR_INDEX = 1;
+    public static final int GAP_CHAR_INDEX = 0;
     public static final String GAP_CHAR = "_";
-    public static final int UNK_CHAR_INDEX = 2;
+    public static final int UNK_CHAR_INDEX = 1;
     public static final String UNK_CHAR = "X";
 
     public Alphabet(){
         indexToLetter = new ArrayList<>();
         letterToIndex = new HashMap<>();
 
-        //wild card
-        Gene gene = new Gene(WC_CHAR, Strand.FORWARD);
-        letterToIndex.put(gene, WC_CHAR_INDEX);
-        indexToLetter.add(gene);
-
-        gene = new Gene(GAP_CHAR, Strand.FORWARD);
         //gap
+        Gene gene = new Gene(GAP_CHAR, Strand.FORWARD);
         letterToIndex.put(gene, GAP_CHAR_INDEX);
         indexToLetter.add(gene);
 
@@ -58,6 +51,7 @@ public class Alphabet {
     }
 
     public int addLetter(Gene gene){
+
         int letterIndex = getLetter(gene);
         if (letterIndex == -1) {
             letterIndex = alphabetSize();
