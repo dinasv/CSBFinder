@@ -7,6 +7,7 @@ import Model.Patterns.Pattern;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ConcurrentMap;
 
@@ -24,7 +25,7 @@ public class FindPatternsThread implements Callable<Object> {
     /**
      * Only get operations
      */
-    private Map<Integer, Map<String, List<MatchPoint>>> matchLists;
+    private Map<Integer, Map<Integer, List<MatchPoint>>> matchLists;
 
     /**
      * Shared by all threads, the patterns are added dynamically
@@ -33,7 +34,7 @@ public class FindPatternsThread implements Callable<Object> {
 
     public FindPatternsThread(List<Gene> genes, GenomesInfo genomesInfo, int quorum, int maxPatternLength,
                               int minPatternLength, int maxInsertion, ConcurrentMap<String, Pattern> patterns, Map<Integer,
-            Map<String, List<MatchPoint>>> matchLists) {
+            Map<Integer, List<MatchPoint>>> matchLists) {
 
         this.genes = genes;
         this.genomesInfo = genomesInfo;
@@ -98,13 +99,12 @@ public class FindPatternsThread implements Callable<Object> {
 
     private void initializePattern(int letter, Pattern pattern) {
 
-        Map<String, List<MatchPoint>> matchList = matchLists.get(letter);
+        Map<Integer, List<MatchPoint>> matchList = matchLists.get(letter);
         List<MatchPoint> currGenomeMatchList;
 
         //initialize instanceLists, using matchLists
         if (matchList != null) {
-            for (Map.Entry<String, List<MatchPoint>> entry : matchList.entrySet()) {
-                //int genomeId = entry.getKey();
+            for (Map.Entry<Integer, List<MatchPoint>> entry : matchList.entrySet()) {
 
                 currGenomeMatchList = entry.getValue();
 
@@ -130,7 +130,7 @@ public class FindPatternsThread implements Callable<Object> {
 
         String extendedPatternStr = extendedPattern.toString();
 
-        Map<String, List<MatchPoint>> genomeRepliconToMatchList = matchLists.get(letter);
+        Map<Integer, List<MatchPoint>> genomeRepliconToMatchList = matchLists.get(letter);
         if (genomeRepliconToMatchList == null) {
             return;
         }
@@ -194,12 +194,14 @@ public class FindPatternsThread implements Callable<Object> {
      * Each match point extends at most one instance - the closest one to the match point
      *
      * The list of match points and the list of instances must be ordered by their start index
+     * The way these lists were constructed should keep them ordered
      *
-     * @param genomeRepliconToMatchList
-     * @param instanceIt
+     * @param genomicSegmentMatchList ordered match points in the current genomic segment
+     * @param instanceIt ordered instances from all genomic segments
      * @param extendedPattern
      */
-    private InstanceLocation extendInstances(List<MatchPoint> genomicSegmentMatchList, Iterator<InstanceLocation> instanceIt,
+    private InstanceLocation extendInstances(List<MatchPoint> genomicSegmentMatchList,
+                                             Iterator<InstanceLocation> instanceIt,
                                  Pattern extendedPattern, InstanceLocation currInstance, int genomeId, int repliconId,
                                  int genomicSegmentId) {
 
@@ -251,10 +253,10 @@ public class FindPatternsThread implements Callable<Object> {
     }
 
     private List<MatchPoint> getMatchList(int genomeId, int repliconId, int genomicSegmentId,
-                                          Map<String, List<MatchPoint>> genomeRepliconToMatchList){
+                                          Map<Integer, List<MatchPoint>> genomeRepliconToMatchList){
 
-        String hashString = MatchPointAlgorithm.genomeRepliconToHashString(genomeId, repliconId, genomicSegmentId);
-        List<MatchPoint> genomicSegmentMatchList = genomeRepliconToMatchList.get(hashString);
+        int hash = Objects.hash(genomeId, repliconId, genomicSegmentId);
+        List<MatchPoint> genomicSegmentMatchList = genomeRepliconToMatchList.get(hash);
 
         if (genomicSegmentMatchList == null || genomicSegmentMatchList.size() == 0){
             return null;
@@ -276,7 +278,7 @@ public class FindPatternsThread implements Callable<Object> {
     }
 
     @Override
-    public Object call() throws Exception {
+    public Object call() {
         try {
             extractPatterns();
         }catch (Exception e){

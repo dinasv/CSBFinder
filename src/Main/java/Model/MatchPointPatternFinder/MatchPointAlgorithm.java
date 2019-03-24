@@ -15,7 +15,7 @@ public class MatchPointAlgorithm implements Algorithm {
     /**
      * Alphabet letter to matches in each genomic segment
      */
-    private Map<Integer, Map<String, List<MatchPoint>>> matchLists;
+    private Map<Integer, Map<Integer, List<MatchPoint>>> matchLists;
     private List<GenomicSegment> genomicSegments;
     private GenomesInfo genomesInfo;
     private Parameters parameters;
@@ -81,11 +81,11 @@ public class MatchPointAlgorithm implements Algorithm {
         for (int i = 0; i < cogWord.getLength(); i++) {
             int currLetter = cogWord.getLetter(i);
             if (currLetter != Alphabet.UNK_CHAR_INDEX) {
-                Map<String, List<MatchPoint>> genomicSegmentToCogPositions = matchLists
+                Map<Integer, List<MatchPoint>> genomicSegmentToCogPositions = matchLists
                         .computeIfAbsent(currLetter, k -> new HashMap<>());
 
                 List<MatchPoint> genePositions = genomicSegmentToCogPositions
-                        .computeIfAbsent(genomeRepliconToHashString(genomicSegment.getGenomeId(),
+                        .computeIfAbsent(Objects.hash(genomicSegment.getGenomeId(),
                                 genomicSegment.getRepliconId(), genomicSegment.getId()), k -> new ArrayList<>());
 
                 MatchPoint matchPoint = new MatchPoint(genomicSegment, i);
