@@ -143,41 +143,26 @@ public class FindPatternsThread implements Callable<Object> {
             currInstance = instanceIterator.next();
         }
 
+        int genomeId;
+        int repliconId;
+        int genomicSegmentId;
+
         while (currInstance != null) {
 
-            int genomeId = currInstance.getGenomeId();
-            int repliconId = currInstance.getRepliconId();
-            int genomicSegmentId = currInstance.getGenomicSegmentId();
+            genomeId = currInstance.getGenomeId();
+            repliconId = currInstance.getRepliconId();
+            genomicSegmentId = currInstance.getGenomicSegmentId();
 
             List<MatchPoint> genomicSegmentMatchList = getMatchList(genomeId, repliconId, genomicSegmentId,
                     genomeRepliconToMatchList);
 
-            /*
-            while (instanceIterator.hasNext() && genomicSegmentMatchList == null) {
-                while (instanceIterator.hasNext()) {
-                    currInstance = instanceIterator.next();
-                    if (atLeastOneValueChanged(currInstance, genomeId, repliconId, genomicSegmentId)) {
-                        genomeId = currInstance.getGenomeId();
-                        repliconId = currInstance.getRepliconId();
-                        genomicSegmentId = currInstance.getGenomicSegmentId();
-                        break;
-                    }
-                }
-
-                genomicSegmentMatchList = getMatchList(genomeId, repliconId, genomicSegmentId,
-                        genomeRepliconToMatchList);
-            }*/
-
+            //no match points on the current genomic segment, get the first instance in the next genomic segment
             if (genomicSegmentMatchList == null) {
-                currInstance = null;
-                if (instanceIterator.hasNext()){
-                    instanceIterator.next();
-                }
-                continue;
+                currInstance = getNextInstanceWithDiffValues(instanceIterator, genomeId, repliconId, genomicSegmentId);
+            }else {
+                currInstance = extendInstances(genomicSegmentMatchList, instanceIterator, extendedPattern, currInstance,
+                        genomeId, repliconId, genomicSegmentId);
             }
-
-            currInstance = extendInstances(genomicSegmentMatchList, instanceIterator, extendedPattern, currInstance,
-                    genomeId, repliconId, genomicSegmentId);
         }
 
 
@@ -187,6 +172,19 @@ public class FindPatternsThread implements Callable<Object> {
             patterns.put(extendedPatternStr, extendedPattern);
 
         }
+    }
+
+    private InstanceLocation getNextInstanceWithDiffValues(Iterator<InstanceLocation> instanceIterator,
+                                               int genomeId, int repliconId, int genomicSegmentId){
+        InstanceLocation currInstance = null;
+        while (instanceIterator.hasNext()) {
+            currInstance = instanceIterator.next();
+            if (atLeastOneValueChanged(currInstance, genomeId, repliconId, genomicSegmentId)) {
+                break;
+            }
+            currInstance = null;
+        }
+        return currInstance;
     }
 
     /**
@@ -201,9 +199,9 @@ public class FindPatternsThread implements Callable<Object> {
      * @param extendedPattern
      */
     private InstanceLocation extendInstances(List<MatchPoint> genomicSegmentMatchList,
-                                             Iterator<InstanceLocation> instanceIt,
-                                 Pattern extendedPattern, InstanceLocation currInstance, int genomeId, int repliconId,
-                                 int genomicSegmentId) {
+                                             Iterator<InstanceLocation> instanceIt, Pattern extendedPattern,
+                                             InstanceLocation currInstance,
+                                             int genomeId, int repliconId, int genomicSegmentId) {
 
         Iterator<MatchPoint> matchPointIterator = genomicSegmentMatchList.iterator();
         MatchPoint matchPoint = matchPointIterator.next();
@@ -241,15 +239,7 @@ public class FindPatternsThread implements Callable<Object> {
             }
         }
 
-
-        currInstance = nextInstance;
-
-        if (matchPoint == null && currInstance != null &&
-                !atLeastOneValueChanged(currInstance, genomeId, repliconId, genomicSegmentId)){
-            currInstance = null;
-        }
-
-        return currInstance;
+        return nextInstance;
     }
 
     private List<MatchPoint> getMatchList(int genomeId, int repliconId, int genomicSegmentId,
