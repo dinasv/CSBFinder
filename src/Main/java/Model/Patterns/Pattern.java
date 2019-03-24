@@ -27,7 +27,9 @@ public class Pattern {
 
     private int familyId;
 
-    private Map<Integer, PatternLocationsInGenome> genomeToInstanceLocations;
+    private Locations locations;
+
+    private int instancesPerGenome;
 
     public Pattern(){
         this(null, new Gene[0]);
@@ -36,20 +38,21 @@ public class Pattern {
     public Pattern(Gene[] patternGenes) { this(null, patternGenes); }
 
     public Pattern(String patternId, List<Gene> patternGenes){
-        this(patternId, patternGenes.toArray(new Gene[patternGenes.size()]));
+        this(patternId, patternGenes.toArray(new Gene[0]));
     }
     public Pattern(String patternId, Gene[] patternGenes){
 
         this.patternId = patternId;
         this.patternGenes = Arrays.copyOf(patternGenes, patternGenes.length);
-        //this.patternGenes.addAll(patternGenes);
         this.length = patternGenes.length;
 
         score = 0;
         mainFunctionalCategory = "";
         reverseComplimentPatternArr = reverseComplimentPattern(patternGenes);
 
-        genomeToInstanceLocations = new HashMap<>();
+        locations = new Locations();
+
+        instancesPerGenome = -1;
     }
 
 
@@ -78,21 +81,19 @@ public class Pattern {
                 addInstanceLocation(patternLocation);
             }
         }
+
+        instancesPerGenome = -1;
     }
 
 
     public void addInstanceLocation(InstanceLocation patternLocation){
-        PatternLocationsInGenome patternLocations = genomeToInstanceLocations.get(patternLocation.getGenomeId());
-        if (patternLocations == null){
-            patternLocations = new PatternLocationsInGenome();
-        }
-        patternLocations.addLocation(patternLocation);
-        genomeToInstanceLocations.put(patternLocation.getGenomeId(), patternLocations);
+        locations.addLocation(patternLocation);
+        instancesPerGenome = -1;
     }
 
 
-    public Map<Integer, PatternLocationsInGenome> getPatternLocations(){
-        return genomeToInstanceLocations;
+    public Locations getPatternLocations(){
+        return locations;
     }
 
     public int getLength(){
@@ -171,7 +172,7 @@ public class Pattern {
     private static Gene[] reverseComplimentPattern(Gene[] pattern){
 
         Gene[] reversedPattern = Arrays.stream(pattern).map(gene -> {
-                Gene copy = new Gene(gene.getCogId(), Gene.reverseStrand(gene.getStrand()));
+                Gene copy = new Gene(gene.getCogId().intern(), Gene.reverseStrand(gene.getStrand()));
                 return copy;
             }).toArray(Gene[]::new);
 
@@ -201,7 +202,13 @@ public class Pattern {
     }
 
     public int getInstancesPerGenome(){
-        return genomeToInstanceLocations.size();
+
+        if (instancesPerGenome == -1){
+            instancesPerGenome = locations.getInstanceLocations().stream()
+                    .collect(Collectors.groupingBy(InstanceLocation::getGenomeId)).size();
+        }
+
+        return instancesPerGenome;
     }
 
     public String toString(){

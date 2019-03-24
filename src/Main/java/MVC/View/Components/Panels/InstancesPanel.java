@@ -5,8 +5,6 @@ import Model.Genomes.GenomesInfo;
 import Model.Genomes.Replicon;
 import Model.Patterns.InstanceLocation;
 import Model.Patterns.Pattern;
-import Model.Patterns.PatternLocationsInGenome;
-import Model.Patterns.PatternLocationsInReplicon;
 import MVC.View.Components.Shapes.*;
 import MVC.View.Components.Shapes.Label;
 import Model.Genomes.Gene;
@@ -18,6 +16,7 @@ import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.util.*;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class InstancesPanel extends JPanel {
 
@@ -93,7 +92,7 @@ public class InstancesPanel extends JPanel {
         }
     }
 
-    public void setData(Pattern pattern) {
+    public void setData(Pattern pattern, Map<Integer, List<InstanceLocation>> genomeToInstances) {
 
         rows.clear();
 
@@ -103,15 +102,19 @@ public class InstancesPanel extends JPanel {
         List<GenesInstance> genesInstanceInnerList;
         int x;
         int y = 0;
-        for (Map.Entry<Integer, PatternLocationsInGenome> genomeInstances: pattern.getPatternLocations().entrySet()) {
+        for (Map.Entry<Integer, List<InstanceLocation>> genomeInstances: genomeToInstances.entrySet()) {
             x = 0;
 
-            PatternLocationsInGenome locationsInGenome = genomeInstances.getValue();
+            List<InstanceLocation> locationsInGenome = genomeInstances.getValue();
             List<List<GenesInstance>> genomeShapesInstances = new ArrayList<>();
-            for (PatternLocationsInReplicon repliconInstances : locationsInGenome.getRepliconToLocations().values()) {
+
+            Map<Integer, List<InstanceLocation>> locationsInReplicon = locationsInGenome.stream()
+                    .collect(Collectors.groupingBy(InstanceLocation::getRepliconId));
+
+            for (List<InstanceLocation> repliconInstances : locationsInReplicon.values()) {
 
                 genesInstanceInnerList = new ArrayList<>();
-                x = addShapeInstanceList(repliconInstances.getSortedLocations(), genesInstanceInnerList, x, y,
+                x = addShapeInstanceList(repliconInstances, genesInstanceInnerList, x, y,
                         genomesInfo, numOfNeighbors);
 
                 genomeShapesInstances.add(genesInstanceInnerList);

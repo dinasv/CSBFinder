@@ -5,8 +5,6 @@ import Model.OrthologyGroups.COG;
 import Model.OrthologyGroups.CogInfo;
 import Model.Patterns.InstanceLocation;
 import Model.Patterns.Pattern;
-import Model.Patterns.PatternLocationsInGenome;
-import Model.Patterns.PatternLocationsInReplicon;
 import IO.*;
 import MVC.Common.*;
 import Model.*;
@@ -290,16 +288,13 @@ public class CSBFinderModel {
         if (params.maxInsertion > 0) {
             Set<COG> patternGenesSet = new HashSet<>(patternCOGs);
 
-            for (PatternLocationsInGenome instancesMap : pattern.getPatternLocations().values()) {
-                for (PatternLocationsInReplicon patternLocationsInReplicon : instancesMap.getRepliconToLocations().values()) {
-                    for (InstanceLocation instance : patternLocationsInReplicon.getSortedLocations()) {
-                        List<COG> instanceGenes = getCogsInfo(getGenes(instance));
-                        Set<COG> instanceGenesSet = new HashSet<>(instanceGenes);
-                        instanceGenesSet.removeAll(patternGenesSet);
-                        insertedGenes.addAll(instanceGenesSet);
-                    }
-                }
+            for (InstanceLocation instance : pattern.getPatternLocations().getInstanceLocations()) {
+                List<COG> instanceGenes = getCogsInfo(getGenes(instance));
+                Set<COG> instanceGenesSet = new HashSet<>(instanceGenes);
+                instanceGenesSet.removeAll(patternGenesSet);
+                insertedGenes.addAll(instanceGenesSet);
             }
+
         }
         return insertedGenes;
     }

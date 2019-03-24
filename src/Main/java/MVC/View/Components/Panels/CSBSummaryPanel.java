@@ -15,8 +15,8 @@ public class CSBSummaryPanel extends JPanel {
     JScrollPane scroll;
 
     private static final String NEWLINE = "\n";
-    private static final String NO_COG_INFO_WARNNING = "Oops, No gene information was found. " +
-            "A gene orthogoly information file was not specified, or it did not load properly";
+    private static final String NO_COG_INFO_WARNING = "Oops, No gene information was found. " +
+            "A gene orthology information file was not specified, or it did not load properly";
 
     private Style titleStyle;
     private Style textStyle;
@@ -25,7 +25,7 @@ public class CSBSummaryPanel extends JPanel {
     private String missingInfoText;
 
     public CSBSummaryPanel() {
-        missingInfoText = NO_COG_INFO_WARNNING;
+        missingInfoText = NO_COG_INFO_WARNING;
 
         setLayout(new BorderLayout());
         summary = new JTextPane();

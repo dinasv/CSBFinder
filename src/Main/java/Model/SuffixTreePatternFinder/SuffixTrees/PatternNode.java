@@ -55,7 +55,7 @@ public class PatternNode {
         this.type = type;
 
         instances = new ArrayList<>();
-        instanceKeys = new HashSet();
+        instanceKeys = new HashSet<>();
         instanceIndexCount = 0;
 
         substring = "";
@@ -74,13 +74,13 @@ public class PatternNode {
         suffix = other.getSuffix();
 
         instances = new ArrayList<Instance>();
-        instanceKeys = new HashSet();
+        instanceKeys = new HashSet<>();
 
         pVal = 0;
         exactInstanceCount = 0;
 
         Map<Integer, PatternNode> other_target_nodes = other.getTargetNodes();
-        targetNodes = new HashMap<Integer, PatternNode>(other_target_nodes.size());
+        targetNodes = new HashMap<>(other_target_nodes.size());
         targetNodes.putAll(other_target_nodes);
     }
 
@@ -138,7 +138,7 @@ public class PatternNode {
             instance_node = instance.getNodeInstance();
             addOccKeys(instance_node.getGenomeToLocationsInSubtree().keySet());
         } else {//we are in the middle of the edge, the instance is a suffix of edge.getDest()
-            instance_node = (InstanceNode)instance.getEdge().getDest();
+            instance_node = instance.getEdge().getDest();
             addOccKeys(instance_node.getGenomeToLocationsInSubtree().keySet());
         }
         incrementInstanceCount(instance_node.getCountMultipleInstancesPerGenome());

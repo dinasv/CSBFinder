@@ -7,11 +7,8 @@ import java.io.*;
 import java.text.DecimalFormat;
 import java.util.*;
 
-import Model.Parameters;
 import Model.Patterns.InstanceLocation;
 import Model.Patterns.Pattern;
-import Model.Patterns.PatternLocationsInGenome;
-import Model.Patterns.PatternLocationsInReplicon;
 import Model.PostProcess.Family;
 
 /**
@@ -114,24 +111,27 @@ public class Writer {
 
             instancesFile.println(">" + catalogLine);
 
-            for (Map.Entry<Integer, PatternLocationsInGenome> entry : pattern.getPatternLocations().entrySet()) {
+            int genomeId = -1;
+            for (InstanceLocation instanceLocation : pattern.getPatternLocations().getSortedLocations()) {
 
-                Genome genome = gi.getGenome(entry.getKey());
-                String genomeName = genome.getName();
-                String repliconName;
+                Genome genome = null;
+                String genomeName;
 
-                instancesFile.print(genomeName);
+                if (instanceLocation.getGenomeId() != genomeId) {
+                    genome = gi.getGenome(instanceLocation.getGenomeId());
+                    genomeName = genome.getName();
 
-                PatternLocationsInGenome patternLocationsInGenome = entry.getValue();
-                for (PatternLocationsInReplicon instanceLocationsInReplicon : patternLocationsInGenome.getRepliconToLocations().values()){
-                    for (InstanceLocation instanceLocation: instanceLocationsInReplicon.getSortedLocations()) {
-
-                        repliconName = genome.getReplicon(instanceLocation.getRepliconId()).getName();
-
-                        instancesFile.print(String.format("\t%s|[%d,%d]", repliconName,
-                                instanceLocation.getActualStartIndex(), instanceLocation.getActualEndIndex()));
-                    }
+                    instancesFile.print(genomeName);
                 }
+
+                if (genome == null){
+                    continue;
+                }
+
+                String repliconName = genome.getReplicon(instanceLocation.getRepliconId()).getName();
+                instancesFile.print(String.format("\t%s|[%d,%d]", repliconName,
+                        instanceLocation.getActualStartIndex(), instanceLocation.getActualEndIndex()));
+
 
                 instancesFile.println();
             }

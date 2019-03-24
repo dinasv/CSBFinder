@@ -4,16 +4,21 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
-/**
- */
-public class PatternLocationsInReplicon {
+import static java.util.Comparator.*;
+
+public class Locations {
 
     private boolean isSorted;
     private List<InstanceLocation> instanceLocations;
+    private Comparator<InstanceLocation> comparator;
 
-    public PatternLocationsInReplicon(){
+    public Locations(){
         instanceLocations = new ArrayList<>();
         isSorted = false;
+
+        comparator = comparing(InstanceLocation::getGenomeId)
+                    .thenComparing(InstanceLocation::getRepliconId)
+                    .thenComparing(InstanceLocation::getActualStartIndex);
     }
 
     public void addLocation(InstanceLocation instanceLocation){
@@ -27,10 +32,9 @@ public class PatternLocationsInReplicon {
 
     public List<InstanceLocation> getSortedLocations(){
         if (!isSorted) {
-            instanceLocations.sort(Comparator.comparing(InstanceLocation::getActualStartIndex));
+            instanceLocations.sort(comparator);
             isSorted = true;
         }
         return instanceLocations;
     }
-
 }

@@ -1,6 +1,7 @@
 package MVC.View.Components.Panels;
 
 import Model.Genomes.GenomesInfo;
+import Model.Patterns.InstanceLocation;
 import Model.Patterns.Pattern;
 import MVC.View.Events.GeneTooltipEvent;
 import MVC.View.Listeners.Listener;
@@ -24,6 +25,7 @@ public class GenomePanelContainer extends JPanel {
     private ViewMode viewMode;
     private int scrollWidth;
     private Pattern patternInView;
+    private Map<Integer, List<InstanceLocation>> genomeToInstances;
 
     public GenomePanelContainer(Map<String, Color> colorsUsed){
 
@@ -45,6 +47,7 @@ public class GenomePanelContainer extends JPanel {
 
         genomesInfo = null;
         patternInView = null;
+        genomeToInstances = new HashMap<>();
 
         scrollWidth = 0;
     }
@@ -58,7 +61,7 @@ public class GenomePanelContainer extends JPanel {
         instancesPanel.setNumOfNeighbors(numOfNeighbors);
 
         if (viewMode == ViewMode.INSTANCES){
-            instancesPanel.setData(patternInView);
+            instancesPanel.setData(patternInView, genomeToInstances);
             instancesPanel.displayInstances(scrollWidth);
         }
 
@@ -90,13 +93,15 @@ public class GenomePanelContainer extends JPanel {
         List<String> genomeNames = new ArrayList<>();
         genomeNames.add("CSB");//first label
 
-        genomeNames.addAll(pattern.getPatternLocations()
-                .keySet()
+        genomeToInstances = pattern.getPatternLocations().getSortedLocations().stream()
+                .collect(Collectors.groupingBy(InstanceLocation::getGenomeId));
+
+        genomeNames.addAll(genomeToInstances.keySet()
                 .stream()
                 .map(key -> genomesInfo.getGenomeName(key))
                 .collect(Collectors.toList()));
 
-        instancesPanel.setData(pattern);
+        instancesPanel.setData(pattern, genomeToInstances);
         labelsPanel.displayInstancesLabels(genomeNames, instancesPanel.getFirstRowHeight(), instancesPanel.getRowHeight());
 
         this.scrollWidth = scrollWidth-labelsPanel.getPanelWidth();

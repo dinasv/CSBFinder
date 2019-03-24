@@ -3,16 +3,12 @@ package Model.MatchPointPatternFinder;
 import Model.Genomes.*;
 import Model.Patterns.InstanceLocation;
 import Model.Patterns.Pattern;
-import Model.Patterns.PatternLocationsInGenome;
-import Model.Patterns.PatternLocationsInReplicon;
 
-import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ConcurrentMap;
-import java.util.stream.Collectors;
 
 /**
  */
@@ -139,27 +135,51 @@ public class FindPatternsThread implements Callable<Object> {
             return;
         }
 
-        for (Map.Entry<Integer, PatternLocationsInGenome> genomeToInstanceLocations :
-                pattern.getPatternLocations().entrySet()) {
+        List<InstanceLocation> instancesToExtend = pattern.getPatternLocations().getInstanceLocations();
+        Iterator<InstanceLocation> instanceIterator = instancesToExtend.iterator();
 
+        InstanceLocation currInstance = null;
+        if(instanceIterator.hasNext()){
+            currInstance = instanceIterator.next();
+        }
 
-            PatternLocationsInGenome instanceLocationsInGenome = genomeToInstanceLocations.getValue();
+        while (currInstance != null) {
 
-            if (instanceLocationsInGenome != null) {
-                for (Map.Entry<Integer, PatternLocationsInReplicon> repliconToLocations :
-                        instanceLocationsInGenome.getRepliconToLocations().entrySet()) {
+            int genomeId = currInstance.getGenomeId();
+            int repliconId = currInstance.getRepliconId();
+            int genomicSegmentId = currInstance.getGenomicSegmentId();
 
-                    List<InstanceLocation> locations = repliconToLocations.getValue().getInstanceLocations();
-                    Map<Integer, List<InstanceLocation>> genomicSegmentToLocations = locations.stream()
-                            .collect(Collectors.groupingBy(InstanceLocation::getGenomicSegmentId));
+            List<MatchPoint> genomicSegmentMatchList = getMatchList(genomeId, repliconId, genomicSegmentId,
+                    genomeRepliconToMatchList);
 
-                    for (Map.Entry<Integer, List<InstanceLocation>> entry : genomicSegmentToLocations.entrySet()) {
-
-                        extendInstances(genomeRepliconToMatchList, entry.getValue(), extendedPattern);
+            /*
+            while (instanceIterator.hasNext() && genomicSegmentMatchList == null) {
+                while (instanceIterator.hasNext()) {
+                    currInstance = instanceIterator.next();
+                    if (atLeastOneValueChanged(currInstance, genomeId, repliconId, genomicSegmentId)) {
+                        genomeId = currInstance.getGenomeId();
+                        repliconId = currInstance.getRepliconId();
+                        genomicSegmentId = currInstance.getGenomicSegmentId();
+                        break;
                     }
                 }
+
+                genomicSegmentMatchList = getMatchList(genomeId, repliconId, genomicSegmentId,
+                        genomeRepliconToMatchList);
+            }*/
+
+            if (genomicSegmentMatchList == null) {
+                currInstance = null;
+                if (instanceIterator.hasNext()){
+                    instanceIterator.next();
+                }
+                continue;
             }
+
+            currInstance = extendInstances(genomicSegmentMatchList, instanceIterator, extendedPattern, currInstance,
+                    genomeId, repliconId, genomicSegmentId);
         }
+
 
         if (extendedPattern.getInstancesPerGenome() >= quorum
                 && extendedPattern.getLength() >= minPatternLength) {
@@ -176,35 +196,20 @@ public class FindPatternsThread implements Callable<Object> {
      * The list of match points and the list of instances must be ordered by their start index
      *
      * @param genomeRepliconToMatchList
-     * @param instanceList
+     * @param instanceIt
      * @param extendedPattern
      */
-    private void extendInstances(Map<String, List<MatchPoint>> genomeRepliconToMatchList,
-                                 List<InstanceLocation> instanceList, Pattern extendedPattern) {
+    private InstanceLocation extendInstances(List<MatchPoint> genomicSegmentMatchList, Iterator<InstanceLocation> instanceIt,
+                                 Pattern extendedPattern, InstanceLocation currInstance, int genomeId, int repliconId,
+                                 int genomicSegmentId) {
 
-        if (instanceList.size() == 0){
-            return;
-        }
-
-        InstanceLocation firstInstance = instanceList.get(0);
-        String hashString = MatchPointAlgorithm.genomeRepliconToHashString(firstInstance.getGenomeId(),
-                        firstInstance.getRepliconId(),
-                        firstInstance.getGenomicSegmentId());
-        List<MatchPoint> genomicSegmentMatchList = genomeRepliconToMatchList.get(hashString);
-
-        if (genomicSegmentMatchList == null || genomicSegmentMatchList.size() == 0) {
-            return;
-        }
-
-        Iterator<InstanceLocation> instanceIterator = instanceList.iterator();
         Iterator<MatchPoint> matchPointIterator = genomicSegmentMatchList.iterator();
-
-        InstanceLocation currInstance = instanceIterator.next();
-        InstanceLocation nextInstance;
         MatchPoint matchPoint = matchPointIterator.next();
+        InstanceLocation nextInstance = null;
         int relativeMatchPointIndex;
 
-        while (currInstance != null && matchPoint != null) {
+        while (currInstance != null && matchPoint != null &&
+                !atLeastOneValueChanged(currInstance, genomeId, repliconId, genomicSegmentId)) {
 
             relativeMatchPointIndex = matchPoint.getPosition();
 
@@ -214,9 +219,10 @@ public class FindPatternsThread implements Callable<Object> {
             if (relativeMatchPointIndex < currInstance.getRelativeEndIndex()) {
                 matchPoint = matchPointIterator.hasNext() ? matchPointIterator.next() : null;
             }else{
-                nextInstance = instanceIterator.hasNext() ? instanceIterator.next() : null;
+                nextInstance = instanceIt.hasNext() ? instanceIt.next() : null;
                 //The match point is closer to next instance
-                if (nextInstance != null && relativeMatchPointIndex >= nextInstance.getRelativeEndIndex()) {
+                if (nextInstance != null && areOnSameGenomicSegment(currInstance, nextInstance)
+                        && relativeMatchPointIndex >= nextInstance.getRelativeEndIndex()) {
                     currInstance = nextInstance;
                 } else {//The match point is >= currInstance.getRelativeEndIndex()
                     int instanceLength = relativeMatchPointIndex - currInstance.getRelativeStartIndex() + 1;
@@ -232,6 +238,41 @@ public class FindPatternsThread implements Callable<Object> {
                 }
             }
         }
+
+
+        currInstance = nextInstance;
+
+        if (matchPoint == null && currInstance != null &&
+                !atLeastOneValueChanged(currInstance, genomeId, repliconId, genomicSegmentId)){
+            currInstance = null;
+        }
+
+        return currInstance;
+    }
+
+    private List<MatchPoint> getMatchList(int genomeId, int repliconId, int genomicSegmentId,
+                                          Map<String, List<MatchPoint>> genomeRepliconToMatchList){
+
+        String hashString = MatchPointAlgorithm.genomeRepliconToHashString(genomeId, repliconId, genomicSegmentId);
+        List<MatchPoint> genomicSegmentMatchList = genomeRepliconToMatchList.get(hashString);
+
+        if (genomicSegmentMatchList == null || genomicSegmentMatchList.size() == 0){
+            return null;
+        }else{
+            return genomicSegmentMatchList;
+        }
+    }
+
+    private boolean areOnSameGenomicSegment(InstanceLocation instance1, InstanceLocation instance2){
+        return !atLeastOneValueChanged(instance1, instance2.getGenomeId(), instance2.getRepliconId(),
+                instance2.getGenomicSegmentId());
+    }
+
+    private boolean atLeastOneValueChanged(InstanceLocation instance, int genomeId, int repliconId,
+                                           int genomicSegmentId){
+
+        return instance.getGenomeId() != genomeId || instance.getRepliconId() != repliconId
+                || instance.getGenomicSegmentId() != genomicSegmentId ;
     }
 
     @Override
