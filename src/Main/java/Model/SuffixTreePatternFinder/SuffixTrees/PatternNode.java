@@ -8,13 +8,12 @@ import java.util.*;
  * Represents a node in the pattern tree
  */
 public class PatternNode {
+
     private Map<Integer, PatternNode> targetNodes;
     /**
      * Contains the key of the string concatenation from the root
      */
     private String patternKey;
-
-    private int copyCount;
 
     private TreeType type;
 
@@ -34,42 +33,20 @@ public class PatternNode {
      */
     private int instanceIndexCount;
 
-    private double pVal;
-
     private int exactInstanceCount;
 
     public PatternNode(TreeType type){
-        targetNodes = new HashMap<>();
-        suffix = null;
 
-        patternKey = null;
-        copyCount = 0;
         this.type = type;
 
+        targetNodes = new HashMap<>();
+        suffix = null;
+        patternKey = null;
         instances = new ArrayList<>();
         instanceKeys = new HashSet<>();
         instanceIndexCount = 0;
 
-        pVal = 0;
         exactInstanceCount = 0;
-    }
-
-    public PatternNode(PatternNode other){
-
-        patternKey = other.getPatternKey();
-        copyCount = other.getCopyCount()+1;
-        type = other.type;
-        suffix = other.getSuffix();
-
-        instances = new ArrayList<Instance>();
-        instanceKeys = new HashSet<>();
-
-        pVal = 0;
-        exactInstanceCount = 0;
-
-        Map<Integer, PatternNode> other_target_nodes = other.getTargetNodes();
-        targetNodes = new HashMap<>(other_target_nodes.size());
-        targetNodes.putAll(other_target_nodes);
     }
 
     public Map<Integer, PatternNode> getTargetNodes(){
@@ -83,6 +60,7 @@ public class PatternNode {
     public PatternNode getTargetNode(int ch){
         return targetNodes.get(ch);
     }
+
     public PatternNode getSuffix() {
         return suffix;
     }
@@ -107,22 +85,18 @@ public class PatternNode {
         patternKey = key;
     }
 
-    public int getCopyCount(){
-        return copyCount;
-    }
-
     public void addInstance(Instance instance){
 
         instances.add(instance);
-        InstanceNode instance_node;
+        InstanceNode instanceNode;
         if (instance.getEdge() == null) {
-            instance_node = instance.getNodeInstance();
-            addOccKeys(instance_node.getGenomeToLocationsInSubtree().keySet());
+            instanceNode = instance.getNodeInstance();
+            addOccKeys(instanceNode.getGenomeToLocationsInSubtree().keySet());
         } else {//we are in the middle of the edge, the instance is a suffix of edge.getDest()
-            instance_node = instance.getEdge().getDest();
-            addOccKeys(instance_node.getGenomeToLocationsInSubtree().keySet());
+            instanceNode = instance.getEdge().getDest();
+            addOccKeys(instanceNode.getGenomeToLocationsInSubtree().keySet());
         }
-        incrementInstanceCount(instance_node.getCountMultipleInstancesPerGenome());
+        incrementInstanceCount(instanceNode.getCountMultipleInstancesPerGenome());
     }
 
     public List<Instance> getInstances(){
@@ -147,14 +121,6 @@ public class PatternNode {
 
     public void incrementInstanceCount(int val){
         instanceIndexCount += val;
-    }
-
-    public double getpVal() {
-        return pVal;
-    }
-
-    public void setpVal(double pVal) {
-        this.pVal = pVal;
     }
 
     public int getExactInstanceCount() {
