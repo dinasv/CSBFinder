@@ -186,7 +186,7 @@ public class Trie {
             curr_node = target_node;
             index++;
         }
-        return new Pair(curr_node, index);
+        return new Pair<>(curr_node, index);
     }
 
 

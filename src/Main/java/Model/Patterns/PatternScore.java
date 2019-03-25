@@ -100,7 +100,7 @@ public class PatternScore {
         int n = avgGenomeSize;
         double result = 0;
 
-        double logPval = Math.max(logPvalInsertions(n, patternLength, maxInsertions) + maxLogParalogFrequency, 0);
+        double logPval = Math.min(logPvalInsertions(n, patternLength, maxInsertions) + maxLogParalogFrequency, 0);
 
         double a = (double)genomesWithInstance/G;
         if ( a == 1){

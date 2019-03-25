@@ -77,12 +77,9 @@ public class InstanceNode extends SuffixNode {
                 instanceLocation = new InstanceLocation(instanceLocation);
                 instanceLocation.incrementRelativeStartIndex();
 
-                List<InstanceLocation> key_indexes = iter.genomeToLocations.get(genomeId);
-                if (key_indexes == null){
-                    key_indexes = new ArrayList<>();
-                    iter.genomeToLocations.put(genomeId, key_indexes);
-                }
-                key_indexes.add(instanceLocation);
+                List<InstanceLocation> instanceLocations = iter.genomeToLocations
+                                                                .computeIfAbsent(genomeId, k -> new ArrayList<>());
+                instanceLocations.add(instanceLocation);
 
                 iter = iter.getSuffix();
             }
@@ -90,8 +87,8 @@ public class InstanceNode extends SuffixNode {
     }
 
     /**
-     * Computes the genomeToLocationsInSubtree and the number of genomeToLocationsInSubtree that are stored on this node and on its
-     * children, and caches the result. Equal to getData, only with caching
+     * Computes the genomeToLocationsInSubtree and the number of genomeToLocationsInSubtree
+     * that are stored on this node and on its children, and caches the result. Equal to getData, only with caching
      *
      * Performs the same operation on subnodes as well
      * @return the number of genomeToLocationsInSubtree
@@ -122,18 +119,14 @@ public class InstanceNode extends SuffixNode {
         return genomeToLocationsInSubtree;
     }
 
-    private static int multimapAddAll(Map<Integer, List<InstanceLocation>>  multimap_to, Map<Integer, List<InstanceLocation>>  multimap_from ){
+    private static int multimapAddAll(Map<Integer, List<InstanceLocation>>  multimapTo, Map<Integer, List<InstanceLocation>>  multimap_from ){
         int indexes_counter = 0;
         for (Map.Entry<Integer, List<InstanceLocation>> entry : multimap_from.entrySet()) {
             int key = entry.getKey();
 
-            List<InstanceLocation> indexSet =  multimap_to.get(key);
-            if (indexSet == null) {
-                indexSet = new ArrayList<>();
-                multimap_to.put(key, indexSet);
-            }
+            List<InstanceLocation> indexSet = multimapTo.computeIfAbsent(key, k -> new ArrayList<>());
 
-            List indexSetToAdd = entry.getValue();
+            List<InstanceLocation> indexSetToAdd = entry.getValue();
 
             indexSet.addAll(indexSetToAdd);
             indexes_counter += indexSetToAdd.size();

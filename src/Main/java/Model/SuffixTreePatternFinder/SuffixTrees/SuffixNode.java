@@ -52,7 +52,7 @@ public class SuffixNode{
 
         suffix = null;
 
-        edges = new HashMap<Integer, Edge>();
+        edges = new HashMap<>();
         substring = "";
         substringLength = 0;
     }
@@ -66,7 +66,7 @@ public class SuffixNode{
         substringLength = other.getSubstringLength();
 
         Map<Integer, Edge> other_edges = other.getEdges();
-        edges = new HashMap<Integer, Edge>(other_edges.size());
+        edges = new HashMap<>(other_edges.size());
         for (Map.Entry<Integer, Edge> entry : other_edges.entrySet()) {
             int ch = entry.getKey();
             Edge edge = entry.getValue();

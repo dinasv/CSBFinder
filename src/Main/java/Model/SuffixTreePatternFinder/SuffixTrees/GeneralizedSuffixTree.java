@@ -100,22 +100,6 @@ public class GeneralizedSuffixTree  implements Serializable{
         return tmpNode.getGenomeToLocationsInSubtree();
     }
 
-    /**
-     * Searches for the given word within the GST and returns at most the given number of matches.
-     *
-     * @param word the key to search for
-     * @param to the max number of results to return
-     * @return at most <tt>results</tt> values for the given word
-     * @see GeneralizedSuffixTree#ResultInfo
-     */
-    /*public ResultInfo searchWithCount(WordArray word, int to) {
-        Node tmpNode = searchNode(word);
-        if (tmpNode == null) {
-            return new ResultInfo(Collections.EMPTY_LIST, 0);
-        }
-
-        return new ResultInfo(tmpNode.getData(to), tmpNode.getCountInstancePerGenome());
-    }*/
 
     /**
      * Returns the tree node (if present) that corresponds to the given string.
@@ -165,7 +149,6 @@ public class GeneralizedSuffixTree  implements Serializable{
      *
      *
      * @param substring the substring (word) that will be added to the tree
-     * @param genomeId a unique id of the genome in which {@code substring} is a substring
      * @param instanceLocation information regarding the location of substring in the genome
      */
     public void put(WordArray substring, InstanceLocation instanceLocation) {
@@ -251,14 +234,13 @@ public class GeneralizedSuffixTree  implements Serializable{
                 // need to split the edge
 
                 WordArray newlabel = getSubstring(label, str.getLength(), label.getLength());
-                WordArray str_copy = str;
 
-                assert (label.startsWith(str_copy) );
+                assert (label.startsWith(str) );
 
                 // build a new node
                 InstanceNode r = new InstanceNode();
                 // build a new edge
-                Edge newedge = new Edge(str_copy, r);
+                Edge newedge = new Edge(str, r);
 
                 g.setLabel(newlabel);
 
@@ -452,7 +434,8 @@ public class GeneralizedSuffixTree  implements Serializable{
     }
     //works as the regular substring
     private WordArray getSubstring(WordArray seq, int start_index, int end_index) {
-        return new WordArray(seq.getWordArray(), seq.getStartIndex()+start_index, seq.getStartIndex() + end_index );
+        return new WordArray(seq.getWordArray(), seq.getStartIndex()+start_index,
+                seq.getStartIndex() + end_index );
     }
 
     private WordArray safeCutLastChar(WordArray seq) {
