@@ -56,10 +56,8 @@ public class CompareAlgorithmsTest {
         params.maxPatternLength = 2;
         //params.keepAllPatterns = true;
 
-        //String[] files = {GENOMES_FILE_PATH2, GENOMES_FILE_PATH4, GENOMES_FILE_PATH5, GENOMES_FILE_PATH6,
-                //PLASMID_GENOMES_SMALL_FILE_PATH2};
-
-        String[] files = {GENOMES_FILE_PATH6};
+        String[] files = {GENOMES_FILE_PATH2, GENOMES_FILE_PATH4, GENOMES_FILE_PATH5, GENOMES_FILE_PATH6,
+                PLASMID_GENOMES_SMALL_FILE_PATH2};
 
         for (String file : files) {
             List<Pattern> patternsAlg1 = runAlgorithm(AlgorithmType.SUFFIX_TREE.algorithm, file, params);

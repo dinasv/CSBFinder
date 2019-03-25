@@ -381,7 +381,7 @@ public class SuffixTreeAlgorithm implements Algorithm {
      *
      * @param alpha          the char to append
      * @param pattern        previous pattern string, before adding alpha. i.e. COG1234|COG2000|
-     * @param targetNode     node the extended pattern
+     * @param extendedPatternNode     node the extended pattern
      * @param pattern_node   node of pattern
      * @param Instances      the instances of pattern
      * @param pattern_length
@@ -389,11 +389,14 @@ public class SuffixTreeAlgorithm implements Algorithm {
      */
 
     private int extendPattern(int alpha, int data_edge_index, InstanceNode data_node, Edge data_edge,
-                              Gene[] pattern, PatternNode targetNode,
+                              Gene[] pattern, PatternNode extendedPatternNode,
                               PatternNode pattern_node, List<Instance> Instances, int pattern_length) {
 
         Gene[] extendedPattern = appendChar(pattern, alpha);
-        PatternNode extendedPatternNode = targetNode;
+        if (extendedPattern[0].getCogId().equals("COG0005")&& extendedPattern.length == 2
+                && extendedPattern[1].getCogId().equals("COG0006")){
+            System.out.println();
+        }
         int extendedPatternLength = pattern_length + 1;
 
         int exactInstancesCount = 0;
@@ -413,15 +416,17 @@ public class SuffixTreeAlgorithm implements Algorithm {
             instancesCount = extendedPatternNode.getInstanceKeysSize();
         }
 
-        if (exactInstancesCount >= q1 && instancesCount >= q2 && extendedPatternLength <= maxPatternLength) {
+        if (exactInstancesCount >= q1 && instancesCount >= q2) {
 
             TreeType type = extendedPatternNode.getType();
-            int ret;
-            if (type == TreeType.VIRTUAL) {
-                ret = spellPatternsVirtually(extendedPatternNode, data_node, data_edge_index, data_edge,
-                        extendedPattern, extendedPatternLength);
-            } else {
-                ret = spellPatterns(extendedPatternNode, extendedPattern, extendedPatternLength);
+            int ret = -1;
+            if (extendedPatternLength < maxPatternLength) {
+                if (type == TreeType.VIRTUAL) {
+                    ret = spellPatternsVirtually(extendedPatternNode, data_node, data_edge_index, data_edge,
+                            extendedPattern, extendedPatternLength);
+                } else {
+                    ret = spellPatterns(extendedPatternNode, extendedPattern, extendedPatternLength);
+                }
             }
 
             if (extendedPatternLength >= minPatternLength) {
