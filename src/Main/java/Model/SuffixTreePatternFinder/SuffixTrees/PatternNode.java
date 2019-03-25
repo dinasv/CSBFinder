@@ -20,14 +20,6 @@ public class PatternNode {
 
     private PatternNode suffix;
 
-    private int substringLength;
-
-    /**
-     * The concat of labels from root to this node
-     * e.g. COG1209 COG1088 COG1091 COG 4723
-     */
-    private String substring;
-
     /**
      * Saves instances of the pattern that starts in the root and ends in this node
      */
@@ -58,16 +50,12 @@ public class PatternNode {
         instanceKeys = new HashSet<>();
         instanceIndexCount = 0;
 
-        substring = "";
-        substringLength = 0;
-
         pVal = 0;
         exactInstanceCount = 0;
     }
 
     public PatternNode(PatternNode other){
-        substring = other.getSubstring();
-        substringLength = other.getSubstringLength();
+
         patternKey = other.getPatternKey();
         copyCount = other.getCopyCount()+1;
         type = other.type;
@@ -86,13 +74,6 @@ public class PatternNode {
 
     public Map<Integer, PatternNode> getTargetNodes(){
         return targetNodes;
-    }
-    public int getSubstringLength() {
-        return substringLength;
-    }
-
-    public void setSubstringLength(int substringLength) {
-        this.substringLength = substringLength;
     }
 
     public void addTargetNode(int ch, PatternNode node){
@@ -166,14 +147,6 @@ public class PatternNode {
 
     public void incrementInstanceCount(int val){
         instanceIndexCount += val;
-    }
-
-    public void setSubstring(String substr){
-        substring = substr;
-    }
-
-    public String getSubstring(){
-        return substring;
     }
 
     public double getpVal() {

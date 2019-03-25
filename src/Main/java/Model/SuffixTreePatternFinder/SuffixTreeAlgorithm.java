@@ -396,9 +396,6 @@ public class SuffixTreeAlgorithm implements Algorithm {
         PatternNode extendedPatternNode = targetNode;
         int extendedPatternLength = pattern_length + 1;
 
-        extendedPatternNode.setSubstring(extendedPattern.toString());
-        extendedPatternNode.setSubstringLength(extendedPatternLength);
-
         int exactInstancesCount = 0;
         //go over all instances of the pattern
         for (Instance instance : Instances) {
@@ -416,8 +413,7 @@ public class SuffixTreeAlgorithm implements Algorithm {
             instancesCount = extendedPatternNode.getInstanceKeysSize();
         }
 
-        if (exactInstancesCount >= q1 && instancesCount >= q2 &&
-                (extendedPatternLength <= maxPatternLength)) {
+        if (exactInstancesCount >= q1 && instancesCount >= q2 && extendedPatternLength <= maxPatternLength) {
 
             TreeType type = extendedPatternNode.getType();
             int ret;

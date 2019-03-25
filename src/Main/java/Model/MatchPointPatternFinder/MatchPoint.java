@@ -18,6 +18,10 @@ public class MatchPoint {
         return genomicSegment;
     }
 
+    public int getGenomicSegmentId(){
+        return genomicSegment.getId();
+    }
+
     public int getPosition() {
         return position;
     }

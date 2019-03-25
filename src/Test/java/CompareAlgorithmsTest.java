@@ -20,8 +20,11 @@ public class CompareAlgorithmsTest {
     private final String GENOMES_FILE_PATH3 = this.getClass().getResource("/genomes5.fasta").getPath();
     private final String GENOMES_FILE_PATH4 = this.getClass().getResource("/genomes6.fasta").getPath();
     private final String GENOMES_FILE_PATH5 = this.getClass().getResource("/genomes7.fasta").getPath();
+    private final String GENOMES_FILE_PATH6 = this.getClass().getResource("/genomes8.fasta").getPath();
     private final String REF_GENOMES_FILE_PATH = this.getClass().getResource("/ref_genomes.txt").getPath();
     private final String PLASMID_GENOMES_FILE_PATH = this.getClass().getResource("/plasmid_genomes.fasta").getPath();
+    private final String PLASMID_GENOMES_SMALL_FILE_PATH = this.getClass().getResource("/plasmid_genomes_small.txt").getPath();
+    private final String PLASMID_GENOMES_SMALL_FILE_PATH2 = this.getClass().getResource("/plasmid_genomes_small2.txt").getPath();
 
     @Test
     public void testRefGenomesEqualOutput() throws Exception {
@@ -48,9 +51,15 @@ public class CompareAlgorithmsTest {
     @Test
     public void testDirectonsEqualOutput() throws Exception {
         Parameters params = new Parameters();
-        params.quorum2 = 1;
+        params.quorum2 = 2;
+        params.maxInsertion = 1;
+        params.maxPatternLength = 2;
+        //params.keepAllPatterns = true;
 
-        String[] files = {GENOMES_FILE_PATH2, GENOMES_FILE_PATH4, GENOMES_FILE_PATH5};
+        //String[] files = {GENOMES_FILE_PATH2, GENOMES_FILE_PATH4, GENOMES_FILE_PATH5, GENOMES_FILE_PATH6,
+                //PLASMID_GENOMES_SMALL_FILE_PATH2};
+
+        String[] files = {GENOMES_FILE_PATH6};
 
         for (String file : files) {
             List<Pattern> patternsAlg1 = runAlgorithm(AlgorithmType.SUFFIX_TREE.algorithm, file, params);
@@ -67,6 +76,7 @@ public class CompareAlgorithmsTest {
         Parameters params = new Parameters();
         params.quorum2 = 2;
         params.nonDirectons = true;
+        params.maxInsertion = 1;
 
         List<Pattern> patternsAlg1 = runAlgorithm(AlgorithmType.SUFFIX_TREE.algorithm, GENOMES_FILE_PATH3, params);
 
@@ -81,7 +91,7 @@ public class CompareAlgorithmsTest {
         Parameters params = new Parameters();
         params.quorum2 = 10;
         params.keepAllPatterns = true;
-        //params.nonDirectons = true;
+        params.maxInsertion = 2;
 
         List<Pattern> patternsAlg1 = runAlgorithm(AlgorithmType.SUFFIX_TREE.algorithm, PLASMID_GENOMES_FILE_PATH, params);
 
@@ -93,8 +103,10 @@ public class CompareAlgorithmsTest {
 
     private void comparePatterns(List<Pattern> patternsAlg1, List<Pattern> patternsAlg2){
         Assert.assertEquals(patternsAlg1.size(), patternsAlg2.size());
+
         for (Pattern pattern : patternsAlg1){
             Assert.assertTrue(patternsAlg2.contains(pattern));
+
             int index = patternsAlg2.indexOf(pattern);
             Pattern alg2Pattern = patternsAlg2.get(index);
             Assert.assertEquals(pattern.getInstancesPerGenome(), alg2Pattern.getInstancesPerGenome());

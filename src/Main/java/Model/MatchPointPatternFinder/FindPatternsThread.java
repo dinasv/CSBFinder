@@ -44,9 +44,11 @@ public class FindPatternsThread implements Callable<Object> {
         this.maxInsertion = maxInsertion;
         this.patterns = patterns;
         this.matchLists = matchLists;
+
     }
 
     private void extractPatterns() {
+
         WordArray wordArray = genomesInfo.createWordArray(genes);
 
         //go over all possible start indices of a pattern
@@ -160,7 +162,8 @@ public class FindPatternsThread implements Callable<Object> {
             if (genomicSegmentMatchList == null) {
                 currInstance = getNextInstanceWithDiffValues(instanceIterator, genomeId, repliconId, genomicSegmentId);
             }else {
-                currInstance = extendInstances(genomicSegmentMatchList, instanceIterator, extendedPattern, currInstance,
+                Iterator<MatchPoint> matchPointIterator = genomicSegmentMatchList.iterator();
+                currInstance = extendInstances(matchPointIterator, instanceIterator, extendedPattern, currInstance,
                         genomeId, repliconId, genomicSegmentId);
             }
         }
@@ -194,17 +197,21 @@ public class FindPatternsThread implements Callable<Object> {
      * The list of match points and the list of instances must be ordered by their start index
      * The way these lists were constructed should keep them ordered
      *
-     * @param genomicSegmentMatchList ordered match points in the current genomic segment
+     * @param genomicSegmentMatchListIt ordered match points in the current genomic segment
      * @param instanceIt ordered instances from all genomic segments
      * @param extendedPattern
      */
-    private InstanceLocation extendInstances(List<MatchPoint> genomicSegmentMatchList,
+    private InstanceLocation extendInstances(Iterator<MatchPoint> genomicSegmentMatchListIt,
                                              Iterator<InstanceLocation> instanceIt, Pattern extendedPattern,
                                              InstanceLocation currInstance,
                                              int genomeId, int repliconId, int genomicSegmentId) {
 
-        Iterator<MatchPoint> matchPointIterator = genomicSegmentMatchList.iterator();
-        MatchPoint matchPoint = matchPointIterator.next();
+        //there are no match points for currentInstance, get next instance
+        if (!genomicSegmentMatchListIt.hasNext()){
+            return instanceIt.hasNext() ? instanceIt.next() : null;
+        }
+
+        MatchPoint matchPoint = genomicSegmentMatchListIt.next();
         InstanceLocation nextInstance = null;
         int relativeMatchPointIndex;
 
@@ -213,11 +220,15 @@ public class FindPatternsThread implements Callable<Object> {
 
             relativeMatchPointIndex = matchPoint.getPosition();
 
-            assert matchPoint.getGenomicSegment().getId() == currInstance.getGenomicSegmentId();
+            boolean hashCollisionCondition = matchPoint.getGenomicSegmentId() != currInstance.getGenomicSegmentId();
+            boolean earlyMatchPointCondition = relativeMatchPointIndex < currInstance.getRelativeEndIndex();
 
             //the match point index is too small to extend curr instance
-            if (relativeMatchPointIndex < currInstance.getRelativeEndIndex()) {
-                matchPoint = matchPointIterator.hasNext() ? matchPointIterator.next() : null;
+            if (hashCollisionCondition || earlyMatchPointCondition) {
+                matchPoint = genomicSegmentMatchListIt.hasNext() ? genomicSegmentMatchListIt.next() : null;
+                if (matchPoint == null){
+                    nextInstance = instanceIt.hasNext() ? instanceIt.next() : null;
+                }
             }else{
                 nextInstance = instanceIt.hasNext() ? instanceIt.next() : null;
                 //The match point is closer to next instance
@@ -232,7 +243,8 @@ public class FindPatternsThread implements Callable<Object> {
                         extendedPatternInstance.setInstanceLength(instanceLength);
                         extendedPattern.addInstanceLocation(extendedPatternInstance);
 
-                        matchPoint = matchPointIterator.hasNext() ? matchPointIterator.next() : null;//each match point used only once
+                        //each match point used only once
+                        matchPoint = genomicSegmentMatchListIt.hasNext() ? genomicSegmentMatchListIt.next() : null;
                     }
                     currInstance = nextInstance;
                 }
