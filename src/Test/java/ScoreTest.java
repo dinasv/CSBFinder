@@ -69,7 +69,6 @@ public class ScoreTest {
                 new HashMap<>());
 
         double score = patternScore.pvalCrossGenome(PATTERN_LENGTH, MAX_INSERTIONS, PARALOG_FREQUENCY, GENOMES_WITH_INSTANCE);
-        System.out.println(score);
         Assert.assertEquals(607, score, epsilon);
     }
 }

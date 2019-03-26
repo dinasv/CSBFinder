@@ -19,8 +19,7 @@ public class SessionWriter implements PatternsWriter {
 
     private PrintWriter file;
 
-    GenomesInfo genomesInfo;
-
+    private GenomesInfo genomesInfo;
 
     private int countPrintedPatterns;
 
@@ -33,7 +32,6 @@ public class SessionWriter implements PatternsWriter {
         countPrintedPatterns = 0;
 
         this.genomesInfo = genomesInfo;
-
 
         String catalogPath = path + "_" + OutputType.SESSION.toString().toLowerCase() + ".txt";
         file = Writer.createOutputPrintWriter(catalogPath);

@@ -55,9 +55,7 @@ public class Writer {
 
     public static PrintWriter createOutputPrintWriter(String path){
         try {
-            PrintWriter output_file = new PrintWriter(path, "UTF-8");
-
-            return output_file;
+            return new PrintWriter(path, "UTF-8");
         } catch (Exception e) {
             System.out.println("Cannot create file " + path);
             System.exit(1);
@@ -99,44 +97,59 @@ public class Writer {
 
     public static void printInstances(Pattern pattern, int familyId, GenomesInfo gi, PrintWriter instancesFile){
 
-        if (instancesFile != null) {
+        if (instancesFile == null) {
+            return;
+        }
+        String catalogLine = pattern.getPatternId() + "\t" + pattern.getLength() + "\t";
 
-            String catalogLine = pattern.getPatternId() + "\t" + pattern.getLength() + "\t";
+        catalogLine += DF.format(pattern.getScore()) + "\t"
+                + pattern.getInstancesPerGenome() + "\t"
+                + pattern.toString() + "\t";
 
-            catalogLine += DF.format(pattern.getScore()) + "\t"
-                    + pattern.getInstancesPerGenome() + "\t"
-                    + pattern.toString() + "\t";
+        catalogLine += familyId;
 
-            catalogLine += familyId;
+        instancesFile.println(">" + catalogLine);
 
-            instancesFile.println(">" + catalogLine);
+        List<String> replicons = new ArrayList<>();
+        int genomeId = -1;
+        String genomeName = "";
+        Genome genome = null;
 
-            int genomeId = -1;
-            for (InstanceLocation instanceLocation : pattern.getPatternLocations().getSortedLocations()) {
+        for (InstanceLocation instanceLocation : pattern.getPatternLocations().getSortedLocations()) {
 
-                Genome genome = null;
-                String genomeName;
+            if (instanceLocation.getGenomeId() != genomeId) {
 
-                if (instanceLocation.getGenomeId() != genomeId) {
-                    genome = gi.getGenome(instanceLocation.getGenomeId());
-                    genomeName = genome.getName();
-
-                    instancesFile.print(genomeName);
+                if (genomeId != -1) {
+                    printGenomeInstancesLine(genomeName, replicons, instancesFile);
+                    replicons.clear();
                 }
 
-                if (genome == null){
-                    continue;
-                }
+                genome = gi.getGenome(instanceLocation.getGenomeId());
+                genomeId = genome.getId();
+                genomeName = genome.getName();
 
-                String repliconName = genome.getReplicon(instanceLocation.getRepliconId()).getName();
-                instancesFile.print(String.format("\t%s|[%d,%d]", repliconName,
-                        instanceLocation.getActualStartIndex(), instanceLocation.getActualEndIndex()));
-
-
-                instancesFile.println();
             }
 
+            if (genome == null){
+                continue;
+            }
+
+            String repliconName = genome.getReplicon(instanceLocation.getRepliconId()).getName();
+            replicons.add(String.format("\t%s|[%d,%d]", repliconName,
+                    instanceLocation.getActualStartIndex(), instanceLocation.getActualEndIndex()));
+
         }
+
+        printGenomeInstancesLine(genomeName, replicons, instancesFile);
+    }
+
+    private static void printGenomeInstancesLine(String genomeName, List<String> replicons, PrintWriter instancesFile){
+        instancesFile.print(genomeName);
+
+        for (String replicon : replicons) {
+            instancesFile.print(replicon);
+        }
+        instancesFile.println();
     }
 
     public void printFamilies(List<Family> families, CogInfo cogInfo){
