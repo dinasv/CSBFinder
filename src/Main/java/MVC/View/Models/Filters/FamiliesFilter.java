@@ -66,7 +66,7 @@ public class FamiliesFilter {
     public void setPatternIds(String patternIds) {
         String[] ids = patternIds.split(SEPARATOR);
         List<Filter<Pattern>> matchFilters = Arrays.stream(ids)
-                .map(id -> new MatchStringFilter<>(id, PatternProperty.CSB))
+                .map(id -> new MatchStringFilter<>(id, PatternProperty.ID))
                 .collect(Collectors.toList());
 
         OrFilter<Pattern> orFilter = new OrFilter<>(matchFilters);
