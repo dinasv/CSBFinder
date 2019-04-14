@@ -76,7 +76,7 @@ public class FindPatternsThread implements Callable<Object> {
 
             int letter = wordArray.getLetter(patternEnd);
 
-            if (letter == Alphabet.UNK_CHAR_INDEX) {//There can't be an unkonwn char in a pattern
+            if (letter == Alphabet.UNK_CHAR_INDEX) {//There can't be an unknown char in a pattern
                 break;
             }
 

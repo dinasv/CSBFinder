@@ -138,11 +138,6 @@ Optional:
 - **-ins** INSERTIONS    
       Maximal number of insertions allowed in a CSB instance.
       Default: 0
-- **-qexact** EXACT_QUORUM    
-      Quorum without insertions. Minimal number of input sequences that must contain a CSB instance with no insertions. 
-      Default: 1
-      Min Value: 1
-      Max Value: Total input sequences
 - **-lmin** MIN_CSB_LENGTH     
       Minimal length (number of genes) of a CSB   
       Default: 2
@@ -164,9 +159,7 @@ Optional:
 - **-cog-info** COG_INFO_FILE_NAME     
       A name of a file, located in a directory named 'input', in the same directory as CSBFinder.jar.   
       This file should contain functional description of orthology groups.    
-      See [Input files formats](#cog_info) for more details.    
-- **-mult_count**    
-      If this option is provided, CSB count indicates the total number of instances (could be several instances in the same input sequence), rather than the number of input sequences with an instance.    
+      See [Input files formats](#cog_info) for more details.        
 - **-non-directons**
       If this option is provided, the input genomes are not segmented to directons.
 - **-out** OUTPUT_FILE_TYPE    

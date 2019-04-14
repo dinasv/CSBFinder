@@ -40,7 +40,7 @@ public class Parameters {
     public int quorum2 = 1;
 
     @Parameter(names={"-qexact"}, description = "Instance quorum without insertions"
-                , validateWith = Parameters.PositiveInteger.class, order = 3)
+                , validateWith = Parameters.PositiveInteger.class, order = 3, hidden = true)
     public int quorum1 = 1;
 
     @Parameter(names={"-ins"}, description = "Maximal number of insertions allowed"
@@ -56,7 +56,7 @@ public class Parameters {
     public int maxPatternLength = Integer.MAX_VALUE;
 
     @Parameter(names={"-mult-count"}, description = "Count multiple instances per input string, not just one",
-            order = 9)
+            order = 9, hidden = true)
     public boolean multCount = false;
 
     @Parameter(names={"--datasetname", "-ds"}, description = "Dataset name", order = 6)
