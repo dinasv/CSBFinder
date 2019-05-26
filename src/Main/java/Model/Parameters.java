@@ -32,7 +32,8 @@ public class Parameters {
         }
     }
 
-    @Parameter(names={"-in"}, description = "Input file relative or absolute path", required = true, order = 0)
+    @Parameter(names={"-in"}, description = "Input file relative or absolute path", required = true, order = 0,
+            variableArity = true)
     public String inputFilePath = "";
 
     @Parameter(names={"-q"}, description = "Instance quorum with insertions", required = true,
