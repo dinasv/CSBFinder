@@ -167,8 +167,6 @@ public class CSBFinderModel {
 
         families = workflow.run(params);
 
-        calculateMainFunctionalCategory();
-
         msg += workflow.getPatternsCount() + " CSBs found";
 
         System.out.println(msg);
@@ -213,7 +211,7 @@ public class CSBFinderModel {
         return msg;
     }
 
-    private void calculateMainFunctionalCategory(){
+    public void calculateMainFunctionalCategory(){
         if (cogInfo.cogInfoExists() && families != null){
             families.forEach(family -> family.getPatterns()
                     .forEach(pattern -> pattern.calculateMainFunctionalCategory(cogInfo)));

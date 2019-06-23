@@ -138,6 +138,8 @@ public class MainFrame extends JFrame {
         if (familyList.size() > 0) {
             enableBtnsResultsDisplay();
 
+            controller.calculateMainFunctionalCategory();
+
             summaryPanel.setFamilyData(familyList);
             familiesFilter.setFamilies(familyList);
         }

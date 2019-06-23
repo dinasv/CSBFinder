@@ -43,6 +43,10 @@ public class CSBFinderController {
         return this.model.loadCogInfo(path);
     }
 
+    public void calculateMainFunctionalCategory(){
+        this.model.calculateMainFunctionalCategory();
+    }
+
     public String saveOutputFiles(OutputType outputFileType, String outputDir, String datasetName,
                                   List<Family> families) {
         return this.model.saveOutputFiles(outputFileType, outputDir, datasetName, families);

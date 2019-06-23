@@ -134,25 +134,25 @@ public class Pattern {
                 }
             }
 
-            String main_categories = "";
+            StringBuilder main_categories = new StringBuilder();
             if (functional_letter_count.size() > 0) {
                 List<Map.Entry<String, Integer>> list = new ArrayList<>(functional_letter_count.entrySet());
 
-                Collections.sort(list, (o1, o2) -> o2.getValue().compareTo(o1.getValue()));
+                list.sort((o1, o2) -> o2.getValue().compareTo(o1.getValue()));
 
-                main_categories = functional_letter_to_desc.get(list.get(0).getKey());
+                main_categories = new StringBuilder(functional_letter_to_desc.get(list.get(0).getKey()));
                 int max_count = list.get(0).getValue();
                 list.remove(0);
                 for (Map.Entry<String, Integer> entry : list) {
                     String letter = entry.getKey();
                     int count = entry.getValue();
                     if (count == max_count) {
-                        main_categories += "/" + functional_letter_to_desc.get(letter);
+                        main_categories.append("/").append(functional_letter_to_desc.get(letter));
                     }
                 }
             }
 
-            mainFunctionalCategory = main_categories;
+            mainFunctionalCategory = main_categories.toString();
         }
     }
 
