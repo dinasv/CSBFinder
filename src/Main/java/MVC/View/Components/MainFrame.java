@@ -166,6 +166,7 @@ public class MainFrame extends JFrame {
 
         if (controller.getNumberOfGenomes() > 0) {
             inputParamsDialog.setGenomeData(controller.getNumberOfGenomes(), controller.getMaxGenomeSize());
+            filterDialog.setGenomeData(controller.getNumberOfGenomes(), controller.getMaxGenomeSize());
             genomesPanel.setGenomesInfo(controller.getGenomeInfo());
 
             toolbar.enableSelectParamsBtn();

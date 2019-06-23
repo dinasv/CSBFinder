@@ -22,13 +22,20 @@ import static java.awt.GridBagConstraints.LINE_START;
 
 public class InputParametersDialog extends JDialog {
 
+    private final static int MIN_PATTERN_LENGTH_DEF = 2;
+    private final static int MAX_PATTERN_LENGTH_DEF = Integer.MAX_VALUE;
+    private final static int MIN_COUNT_DEF = 1;
+    private final static int MAX_COUNT_DEF = Integer.MAX_VALUE;
+
+    private final static int TEXT_FIELD_COLS = 13;
+
     private JLabel clusterTypeLabel;
     private JLabel clusterDenominatorLabel;
     private JLabel quorumLabel;
     private JLabel numOfInsertionsLabel;
     //private JLabel quorumWithoutInsertionsLabel;
-    private JLabel minCSBLengthLabel;
-    private JLabel maxCSBLengthLabel;
+    private JLabel minPatternLengthLabel;
+    private JLabel maxPatternLengthLabel;
     private JLabel patternFilePathLabel;
     //private JLabel bcountLabel;
     private JLabel familyClusterThresholdLabel;
@@ -39,13 +46,14 @@ public class InputParametersDialog extends JDialog {
     private JList<ClusterBy> clusterTypeField;
     private JList<ClusterDenominator> clusterDenominatorField;
     private JList<AlgorithmType> algorithmField;
+
     private JSpinner quorum;
     private JSlider quorumSlider;
     private JSpinner numOfInsertions;
     //private JSpinner quorumWithoutInsertions;
     //private JSlider quorumWithoutInsertionsSlider;
-    private JSpinner minCSBLength;
-    private JSpinner maxCSBLength;
+    private JSpinner minPatternLength;
+    private JSpinner maxPatternLengthComponent;
     private JTextField patternFilePath;
     //private JCheckBox bcount;
     private JSlider familyClusterThreshold;
@@ -105,8 +113,8 @@ public class InputParametersDialog extends JDialog {
         request.setNumberOfInsertions((int) numOfInsertions.getValue());
         request.setQuorum((int) quorum.getValue());
         //request.setQuorumWithoutInsertions((int) quorumWithoutInsertions.getValue());
-        request.setMinimalCSBLength((int) minCSBLength.getValue());
-        request.setMaximumCSBLength((int) maxCSBLength.getValue());
+        request.setMinimalCSBLength((int) minPatternLength.getValue());
+        request.setMaximumCSBLength((int) maxPatternLengthComponent.getValue());
         String patternPath = patternFilePath.getText();
         request.setCsbPatternFilePath("optional".equals(patternPath) || "".equals(patternPath) ? null : patternFilePath.getText());
         //request.setMultCount(bcount.isSelected());
@@ -136,9 +144,9 @@ public class InputParametersDialog extends JDialog {
         //quorumWithoutInsertions = new JSpinner();
         //quorumWithoutInsertionsSlider = new JSlider();
 
-        minCSBLength = new JSpinner();
+        minPatternLength = new JSpinner();
 
-        maxCSBLength = new JSpinner();
+        maxPatternLengthComponent = new JSpinner();
 
         patternFilePath = new JTextField();
 
@@ -156,6 +164,25 @@ public class InputParametersDialog extends JDialog {
             }
         });
 
+    }
+
+    private void setSpinnerWidth(JSpinner spinner, int width){
+        JFormattedTextField textField = getTextField(spinner);
+        if (textField != null ) {
+            textField.setColumns(width);
+        }
+    }
+
+    private JFormattedTextField getTextField(JSpinner spinner) {
+        JComponent editor = spinner.getEditor();
+        if (editor instanceof JSpinner.DefaultEditor) {
+            return ((JSpinner.DefaultEditor)editor).getTextField();
+        } else {
+            System.err.println("Unexpected editor type: "
+                    + spinner.getEditor().getClass()
+                    + " isn't a descendant of DefaultEditor");
+            return null;
+        }
     }
 
     private File chooseFile() {
@@ -185,11 +212,11 @@ public class InputParametersDialog extends JDialog {
 
         labelName = "CSB Min Length";
         desc = "Minimal length (number of genes) of a CSB.";
-        minCSBLengthLabel = initLabel(icon, labelName, desc);
+        minPatternLengthLabel = initLabel(icon, labelName, desc);
 
         labelName = "CSB Max Length";
         desc = "Maximal length (number of gene) of a CSB.";
-        maxCSBLengthLabel = initLabel(icon, labelName, desc);
+        maxPatternLengthLabel = initLabel(icon, labelName, desc);
 
         labelName = "CSB Patterns File";
         desc = "If this option is used, CSBs are no longer extracted from the input sequences. " +
@@ -235,17 +262,12 @@ public class InputParametersDialog extends JDialog {
 
     public void initFields() {
 
-        // Quorum
-        quorum.setModel(new SpinnerNumberModel(1, 1, 2000, 1));
-        ((JSpinner.DefaultEditor) quorum.getEditor()).getTextField().setColumns(3);
-        quorumSlider.setModel(new DefaultBoundedRangeModel(1, 0, 1, 2000));
-        quorum.addChangeListener(e -> quorumSlider.setValue((Integer) quorum.getValue()));
-        quorumSlider.addChangeListener(e -> quorum.setValue(quorumSlider.getValue()));
 
         // Number Of Insertions
         numOfInsertions.setModel(new SpinnerNumberModel(0, 0, 100, 1));
-        ((JSpinner.DefaultEditor)numOfInsertions.getEditor()).getTextField().setColumns(3);
+        setSpinnerWidth(numOfInsertions, TEXT_FIELD_COLS);
 
+        setQuorumModel(MIN_COUNT_DEF, MAX_COUNT_DEF);
         // Quorum without insertions
         /*
         quorumWithoutInsertions.setModel(new SpinnerNumberModel(1, 1, 2000, 1));
@@ -254,15 +276,12 @@ public class InputParametersDialog extends JDialog {
         quorumWithoutInsertions.addChangeListener(e -> quorumWithoutInsertionsSlider.setValue((Integer) quorumWithoutInsertions.getValue()));
         quorumWithoutInsertionsSlider.addChangeListener(e -> quorumWithoutInsertions.setValue(quorumWithoutInsertionsSlider.getValue()));
         */
-        // CSB min length
-        minCSBLength.setModel(new SpinnerNumberModel(2, 2, Integer.MAX_VALUE, 1));
 
-        // CSB max length
-        maxCSBLength.setModel(new SpinnerNumberModel(Integer.MAX_VALUE, 2, Integer.MAX_VALUE, 1));
+        setPatternLengthModels(MIN_PATTERN_LENGTH_DEF, MAX_PATTERN_LENGTH_DEF);
 
         // csb pattern file path
         patternFilePath.setText("optional");
-        patternFilePath.setColumns(14);
+        patternFilePath.setColumns(TEXT_FIELD_COLS);
 
         // bcount
         //bcount.setSelected(true);
@@ -290,6 +309,25 @@ public class InputParametersDialog extends JDialog {
 
         //directon segmantation
         segmentToDirectons.setSelected(true);
+    }
+
+    private void setQuorumModel(int min, int max){
+        // Quorum
+        quorum.setModel(new SpinnerNumberModel(min, min, max, 1));
+        setSpinnerWidth(quorum, 3);
+        quorumSlider.setModel(new DefaultBoundedRangeModel(min, 0, min, max));
+        quorum.addChangeListener(e -> quorumSlider.setValue((Integer) quorum.getValue()));
+        quorumSlider.addChangeListener(e -> quorum.setValue(quorumSlider.getValue()));
+
+    }
+
+    private void setPatternLengthModels(int min, int max){
+        // CSB min length
+        minPatternLength.setModel(new SpinnerNumberModel(min, min, max, 1));
+        setSpinnerWidth(minPatternLength, TEXT_FIELD_COLS);
+        // CSB max length
+        maxPatternLengthComponent.setModel(new SpinnerNumberModel(max, min, max, 1));
+        setSpinnerWidth(maxPatternLengthComponent, TEXT_FIELD_COLS);
     }
 
     private <T extends Enum> void initEnumList(JList<T> jList, List<T> enumValues){
@@ -331,11 +369,11 @@ public class InputParametersDialog extends JDialog {
         addComponentToGC(2, y, 1, 0.2, insetField, quorumWithoutInsertions, LINE_START);
         addComponentToGC(1, y++, 1, 0.2, insetField, quorumWithoutInsertionsSlider, LINE_START);
         */
-        addComponentToGC(0, y, 1, 0.1, insetLabel, minCSBLengthLabel, LINE_START);
-        addComponentToGC(1, y++, 1, 0.1, insetField, minCSBLength, LINE_START);
+        addComponentToGC(0, y, 1, 0.1, insetLabel, minPatternLengthLabel, LINE_START);
+        addComponentToGC(1, y++, 1, 0.1, insetField, minPatternLength, LINE_START);
 
-        addComponentToGC(0, y, 1, 0.1, insetLabel, maxCSBLengthLabel, LINE_START);
-        addComponentToGC(1, y++, 1, 0.1, insetField, maxCSBLength, LINE_START);
+        addComponentToGC(0, y, 1, 0.1, insetLabel, maxPatternLengthLabel, LINE_START);
+        addComponentToGC(1, y++, 1, 0.1, insetField, maxPatternLengthComponent, LINE_START);
 
         addComponentToGC(0, y, 1, 0.2, insetLabel, patternFilePathLabel, LINE_START);
         addComponentToGC(1, y, 1, 0.2, insetField, patternFilePath, LINE_START);
@@ -381,12 +419,9 @@ public class InputParametersDialog extends JDialog {
 
     public void setGenomeData(int numberOfGenomes, int maxGenomeSize) {
         if (numberOfGenomes > 0) {
-            ((SpinnerNumberModel)quorum.getModel()).setMaximum(numberOfGenomes);
-            quorumSlider.getModel().setMaximum(numberOfGenomes);
-            //quorumWithoutInsertionsSlider.getModel().setMaximum(numberOfGenomes);
+            setPatternLengthModels(MIN_PATTERN_LENGTH_DEF, maxGenomeSize);
 
-            ((SpinnerNumberModel)maxCSBLength.getModel()).setMaximum(maxGenomeSize);
-            maxCSBLength.setValue(maxGenomeSize);
+            setQuorumModel(MIN_COUNT_DEF, numberOfGenomes);
         }
     }
 
