@@ -28,8 +28,10 @@ public class FilterDialog extends JDialog{
     private final static String PATTERN_IDS_DEF = "";
     private final static String FAMILY_IDS_DEF = "";
     private final static String PATTERN_GENES_DEF = "";
-
     private final static int TEXT_FIELD_COLS = 13;
+
+    private int maxPatternLen = MAX_PATTERN_LENGTH_DEF;
+    private int maxCountVal = MAX_COUNT_DEF;
 
     private final JLabel PATTERN_LENGTH_LABEL = new JLabel("CSB length between:");
     private JSpinner minPatternLength;
@@ -58,6 +60,7 @@ public class FilterDialog extends JDialog{
 
     private final JLabel PATTERN_GENES_LABEL = new JLabel("Pattern with genes:");
     private JTextField patternGenes;
+    private JComboBox<BooleanOperator> genesComboBox;
 
     private GridBagConstraints gc;
 
@@ -172,6 +175,9 @@ public class FilterDialog extends JDialog{
 
         patternGenes.getDocument().addDocumentListener((TextChangeListener) e ->
                 request.setPatternGenes(patternGenes.getText()));
+
+        genesComboBox.addActionListener(e ->
+                request.setGenesOperator(genesComboBox.getItemAt(genesComboBox.getSelectedIndex())));
     }
 
     private void addBtnListener(JRadioButton btn){
@@ -207,19 +213,13 @@ public class FilterDialog extends JDialog{
         initStrandBtns();
 
         minPatternLength = new JSpinner();
-        minPatternLength.addChangeListener(e -> request.setMinCSBLength((int)minPatternLength.getValue()));
         maxPatternLength = new JSpinner();
-        maxPatternLength.addChangeListener(e -> request.setMaxCSBLength((int)maxPatternLength.getValue()));
 
         minScore = new JSpinner();
-        minScore.addChangeListener(e -> request.setMinScore((int)minScore.getValue()));
         maxScore = new JSpinner();
-        maxScore.addChangeListener(e -> request.setMaxScore((int)maxScore.getValue()));
 
         minCount = new JSpinner();
-        minCount.addChangeListener(e -> request.setMinInstanceCount((int)minCount.getValue()));
         maxCount = new JSpinner();
-        maxCount.addChangeListener(e -> request.setMinInstanceCount((int)maxCount.getValue()));
 
         patternIds = new JTextField();
 
@@ -227,38 +227,39 @@ public class FilterDialog extends JDialog{
 
         patternGenes = new JTextField();
 
+        genesComboBox = new JComboBox<>(BooleanOperator.values());
+
     }
 
     private void initFields(){
 
         allStrandTypesBtn.setSelected(true);
 
-        setPatternLengthModels(MIN_PATTERN_LENGTH_DEF, MAX_PATTERN_LENGTH_DEF);
-
+        setPatternLengthModels();
 
         minScore.setModel(new SpinnerNumberModel(MIN_SCORE_DEF, MIN_SCORE_DEF, MAX_SCORE_DEF, 1));
         maxScore.setModel(new SpinnerNumberModel(MAX_SCORE_DEF, MIN_SCORE_DEF, MAX_SCORE_DEF, 1));
 
-        setCountModel(MIN_COUNT_DEF, MAX_COUNT_DEF);
+        setCountModel();
 
         patternIds.setText(PATTERN_IDS_DEF);
         familyIds.setText(FAMILY_IDS_DEF);
         patternGenes.setText(PATTERN_GENES_DEF);
     }
 
-    private void setCountModel(int min, int max){
-        minCount.setModel(new SpinnerNumberModel(min, min, max, 1));
-        maxCount.setModel(new SpinnerNumberModel(max, min, max, 1));
+    private void setCountModel(){
+        minCount.setModel(new SpinnerNumberModel(MIN_COUNT_DEF, MIN_COUNT_DEF, maxCountVal, 1));
+        maxCount.setModel(new SpinnerNumberModel(maxCountVal, MIN_COUNT_DEF, maxCountVal, 1));
 
         setSpinnerWidth(minCount, TEXT_FIELD_COLS);
         setSpinnerWidth(maxCount, TEXT_FIELD_COLS);
 
     }
 
-    private void setPatternLengthModels(int min, int max){
+    private void setPatternLengthModels(){
 
-        minPatternLength.setModel(new SpinnerNumberModel(min, min, max, 1));
-        maxPatternLength.setModel(new SpinnerNumberModel(max, min, max, 1));
+        minPatternLength.setModel(new SpinnerNumberModel(MIN_PATTERN_LENGTH_DEF, MIN_PATTERN_LENGTH_DEF, maxPatternLen, 1));
+        maxPatternLength.setModel(new SpinnerNumberModel(maxPatternLen, MIN_PATTERN_LENGTH_DEF, maxPatternLen, 1));
 
         setSpinnerWidth(minPatternLength, TEXT_FIELD_COLS);
         setSpinnerWidth(maxPatternLength, TEXT_FIELD_COLS);
@@ -283,7 +284,8 @@ public class FilterDialog extends JDialog{
 
         addComponentToGC(0, y, 1, 0.2, insetLabel, 1, PATTERN_GENES_LABEL, LINE_START);
         patternGenes.setColumns(TEXT_FIELD_SIZE);
-        addComponentToGC(1, y++, 1, 0.2, insetField, 1, patternGenes, LINE_START);
+        addComponentToGC(1, y, 1, 0.2, insetField, 1, patternGenes, LINE_START);
+        addComponentToGC(2, y++, 1, 0.2, insetField, 2, genesComboBox, LINE_START);
 
         addComponentToGC(0, y, 1, 0.2, insetLabel, 1, FAMILY_ID_LABEL, LINE_START);
         familyIds.setColumns(TEXT_FIELD_SIZE);
@@ -312,9 +314,11 @@ public class FilterDialog extends JDialog{
 
     public void setGenomeData(int numberOfGenomes, int maxGenomeSize) {
         if (numberOfGenomes > 0) {
-            setPatternLengthModels(MIN_PATTERN_LENGTH_DEF, maxGenomeSize);
+            maxPatternLen = maxGenomeSize;
+            maxCountVal = numberOfGenomes;
 
-            setCountModel(MIN_COUNT_DEF, numberOfGenomes);
+            setPatternLengthModels();
+            setCountModel();
         }
     }
 

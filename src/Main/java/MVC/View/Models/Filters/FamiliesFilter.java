@@ -1,5 +1,6 @@
 package MVC.View.Models.Filters;
 
+import MVC.View.Components.Dialogs.BooleanOperator;
 import Model.Genomes.Gene;
 import Model.Patterns.Pattern;
 import Model.PostProcess.Family;
@@ -102,10 +103,18 @@ public class FamiliesFilter {
     }
 
 
-    public void setGenes(String genes){
+    public void setGenes(String genes, BooleanOperator operator){
         String[] ids = genes.split(SEPARATOR);
-        patternFilters.addAll(Arrays.stream(ids).map(gene -> new ContainsStringFilter<>(gene,
-                PatternProperty.CSB)).collect(Collectors.toList()));
+
+        List<Filter<Pattern>> containsStringFilters = Arrays.stream(ids).map(gene -> new ContainsStringFilter<>(gene,
+                PatternProperty.CSB)).collect(Collectors.toList());
+
+        if (operator == BooleanOperator.AND) {
+            patternFilters.addAll(containsStringFilters);
+        }else if (operator == BooleanOperator.OR){
+            OrFilter<Pattern> orFilter = new OrFilter<>(containsStringFilters);
+            patternFilters.add(orFilter);
+        }
     }
 
     public void clear() {

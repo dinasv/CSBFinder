@@ -1,5 +1,6 @@
 package MVC.View.Requests;
 
+import MVC.View.Components.Dialogs.BooleanOperator;
 import MVC.View.Models.Filters.PatternStrand;
 
 import java.util.Optional;
@@ -9,14 +10,15 @@ import java.util.Optional;
 public class FilterRequest implements Request{
 
     private Integer minCSBLength;
+    private Integer maxInstanceCount;
     private Integer maxCSBLength;
     private Integer minScore;
     private Integer maxScore;
     private Integer minInstanceCount;
-    private Integer maxInstanceCount;
     private PatternStrand patternStrand;
     private String patternIds;
     private String patternGenes;
+    private BooleanOperator genesOperator;
     private String familyIds;
 
     public FilterRequest(){
@@ -34,6 +36,7 @@ public class FilterRequest implements Request{
         patternIds = null;
         patternGenes = null;
         familyIds = null;
+        genesOperator = BooleanOperator.AND;
     }
 
     public void setMinCSBLength(int minCSBLength) {
@@ -107,6 +110,15 @@ public class FilterRequest implements Request{
     public Optional<String> getPatternGenes() {
         return Optional.ofNullable(patternGenes);
     }
+
+    public void setGenesOperator(BooleanOperator operator) {
+        this.genesOperator = operator;
+    }
+
+    public BooleanOperator getGenesOperator() {
+        return genesOperator;
+    }
+
 
     public Optional<String> getFamilyIds() {
         return Optional.ofNullable(familyIds);

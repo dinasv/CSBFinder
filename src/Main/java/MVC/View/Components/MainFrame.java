@@ -189,7 +189,7 @@ public class MainFrame extends JFrame {
         filterRequest.getPatternIds().ifPresent(val -> familiesFilter.setPatternIds(val));
         filterRequest.getFamilyIds().ifPresent(val -> familiesFilter.setFamilyIds(val));
         filterRequest.getPatternStrand().ifPresent(val -> familiesFilter.setStrand(val));
-        filterRequest.getPatternGenes().ifPresent(val -> familiesFilter.setGenes(val));
+        filterRequest.getPatternGenes().ifPresent(val -> familiesFilter.setGenes(val, filterRequest.getGenesOperator()));
 
         familiesFilter.applyFilters();
 
