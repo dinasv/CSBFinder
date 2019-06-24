@@ -1,6 +1,7 @@
 package MVC.View.Models.Filters;
 
 import MVC.View.Components.Dialogs.BooleanOperator;
+import MVC.View.Components.Dialogs.FunctionalCategoryOption;
 import Model.Genomes.Gene;
 import Model.Patterns.Pattern;
 import Model.PostProcess.Family;
@@ -100,6 +101,21 @@ public class FamiliesFilter {
 
     public void setPatternMaxCount(int val) {
         patternFilters.add(new NumberFilter<>(val, NumberComparison.LESS_EQ, PatternProperty.INSTANCE_COUNT));
+    }
+
+    public void setFunctionalCategory(String functionalCategory, FunctionalCategoryOption option){
+        String[] functionalCategories = functionalCategory.split(SEPARATOR);
+
+        List<Filter<Pattern>> containsStringFilters = Arrays.stream(functionalCategories).map(category ->
+                new ContainsStringFilter<>(category, PatternProperty.MAIN_CATEGORY)).collect(Collectors.toList());
+
+        if (option == FunctionalCategoryOption.INCLUDE){
+            OrFilter<Pattern> orFilter = new OrFilter<>(containsStringFilters);
+            patternFilters.add(orFilter);
+        }else if (option == FunctionalCategoryOption.EXCLUDE){
+            NotFilter<Pattern> notFilter = new NotFilter<>(containsStringFilters);
+            patternFilters.add(notFilter);
+        }
     }
 
 
@@ -311,6 +327,25 @@ public class FamiliesFilter {
                 }
             }
             return false;
+        }
+    }
+
+    private class NotFilter<T> implements Filter<T> {
+
+        private List<Filter<T>> filters;
+
+        public NotFilter(List<Filter<T>> filters){
+            this.filters = filters;
+        }
+
+        @Override
+        public boolean include(T obj) {
+            for (Filter<T> filter: filters){
+                if(filter.include(obj)){
+                    return false;
+                }
+            }
+            return true;
         }
     }
 

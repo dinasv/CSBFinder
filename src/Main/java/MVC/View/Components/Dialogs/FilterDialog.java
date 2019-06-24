@@ -28,6 +28,7 @@ public class FilterDialog extends JDialog{
     private final static String PATTERN_IDS_DEF = "";
     private final static String FAMILY_IDS_DEF = "";
     private final static String PATTERN_GENES_DEF = "";
+    private final static String FUNCTIONAL_CATEGORY_DEF = "";
     private final static int TEXT_FIELD_COLS = 13;
 
     private int maxPatternLen = MAX_PATTERN_LENGTH_DEF;
@@ -61,6 +62,10 @@ public class FilterDialog extends JDialog{
     private final JLabel PATTERN_GENES_LABEL = new JLabel("Pattern with genes:");
     private JTextField patternGenes;
     private JComboBox<BooleanOperator> genesComboBox;
+
+    private final JLabel FUNCTIONAL_CATEGORY_LABEL = new JLabel("Functional category:");
+    private JTextField functionalCategory;
+    private JComboBox<FunctionalCategoryOption> functionalCategoryComboBox;
 
     private GridBagConstraints gc;
 
@@ -178,6 +183,16 @@ public class FilterDialog extends JDialog{
 
         genesComboBox.addActionListener(e ->
                 request.setGenesOperator(genesComboBox.getItemAt(genesComboBox.getSelectedIndex())));
+
+        functionalCategory.getDocument().addDocumentListener((TextChangeListener) e ->
+                request.setFunctionalCategory(functionalCategory.getText()));
+
+        functionalCategoryComboBox.addActionListener(e ->
+                request.setFunctionalCategoryOption(functionalCategoryComboBox.getItemAt(
+                        functionalCategoryComboBox.getSelectedIndex())));
+
+
+
     }
 
     private void addBtnListener(JRadioButton btn){
@@ -229,6 +244,10 @@ public class FilterDialog extends JDialog{
 
         genesComboBox = new JComboBox<>(BooleanOperator.values());
 
+        functionalCategory = new JTextField();
+
+        functionalCategoryComboBox = new JComboBox<>(FunctionalCategoryOption.values());
+
     }
 
     private void initFields(){
@@ -245,6 +264,7 @@ public class FilterDialog extends JDialog{
         patternIds.setText(PATTERN_IDS_DEF);
         familyIds.setText(FAMILY_IDS_DEF);
         patternGenes.setText(PATTERN_GENES_DEF);
+        functionalCategory.setText(FUNCTIONAL_CATEGORY_DEF);
     }
 
     private void setCountModel(){
@@ -287,9 +307,16 @@ public class FilterDialog extends JDialog{
         addComponentToGC(1, y, 1, 0.2, insetField, 1, patternGenes, LINE_START);
         addComponentToGC(2, y++, 1, 0.2, insetField, 2, genesComboBox, LINE_START);
 
+        addComponentToGC(0, y, 1, 0.2, insetLabel, 1, FUNCTIONAL_CATEGORY_LABEL, LINE_START);
+        functionalCategory.setColumns(TEXT_FIELD_SIZE);
+        addComponentToGC(1, y, 1, 0.2, insetField, 1, functionalCategory, LINE_START);
+        addComponentToGC(2, y++, 1, 0.2, insetField, 2, functionalCategoryComboBox, LINE_START);
+
         addComponentToGC(0, y, 1, 0.2, insetLabel, 1, FAMILY_ID_LABEL, LINE_START);
         familyIds.setColumns(TEXT_FIELD_SIZE);
         addComponentToGC(1, y++, 1, 0.2, insetField, 1, familyIds, LINE_START);
+
+
     }
 
     private void addIntervalComponentToGC(int y, JLabel label, JSpinner minSpinner, JSpinner maxSpinner,

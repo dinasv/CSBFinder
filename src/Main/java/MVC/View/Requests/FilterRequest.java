@@ -1,6 +1,7 @@
 package MVC.View.Requests;
 
 import MVC.View.Components.Dialogs.BooleanOperator;
+import MVC.View.Components.Dialogs.FunctionalCategoryOption;
 import MVC.View.Models.Filters.PatternStrand;
 
 import java.util.Optional;
@@ -21,6 +22,9 @@ public class FilterRequest implements Request{
     private BooleanOperator genesOperator;
     private String familyIds;
 
+    private String functionalCategory;
+    private FunctionalCategoryOption functionalCategoryOption;
+
     public FilterRequest(){
         initAllFields();
     }
@@ -37,6 +41,8 @@ public class FilterRequest implements Request{
         patternGenes = null;
         familyIds = null;
         genesOperator = BooleanOperator.AND;
+        functionalCategory = null;
+        functionalCategoryOption = FunctionalCategoryOption.INCLUDE;
     }
 
     public void setMinCSBLength(int minCSBLength) {
@@ -126,5 +132,21 @@ public class FilterRequest implements Request{
 
     public void setFamilyIds(String familyIds) {
         this.familyIds = familyIds;
+    }
+
+    public Optional<String> getFunctionalCategory() {
+        return Optional.ofNullable(functionalCategory);
+    }
+
+    public void setFunctionalCategory(String functionalCategory) {
+        this.functionalCategory = functionalCategory;
+    }
+
+    public FunctionalCategoryOption getFunctionalCategoryOption() {
+        return functionalCategoryOption;
+    }
+
+    public void setFunctionalCategoryOption(FunctionalCategoryOption functionalCategoryOption) {
+        this.functionalCategoryOption = functionalCategoryOption;
     }
 }
