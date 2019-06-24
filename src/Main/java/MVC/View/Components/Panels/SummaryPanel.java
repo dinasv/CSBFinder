@@ -32,6 +32,9 @@ public class SummaryPanel extends JSplitPane {
 
     public void setFilteredFamilies(List<Family> filteredFamilies){
         resultsPanel.setFilteredFamilies(filteredFamilies);
+        if (filteredFamilies.size() == 0){
+            csbSummaryPanel.clearPanel();
+        }
     }
 
     public void setFilterTableListener(Listener<OpenDialogEvent> filterTableListener) {

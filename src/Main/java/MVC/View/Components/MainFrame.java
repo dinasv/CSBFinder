@@ -193,7 +193,8 @@ public class MainFrame extends JFrame {
 
         familiesFilter.applyFilters();
 
-        summaryPanel.setFilteredFamilies(familiesFilter.getFilteredFamilies());
+        List<Family> filteredFamilies = familiesFilter.getFilteredFamilies();
+        summaryPanel.setFilteredFamilies(filteredFamilies);
 
     }
 
