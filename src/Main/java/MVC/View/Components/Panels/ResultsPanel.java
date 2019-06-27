@@ -57,16 +57,8 @@ public class ResultsPanel extends JPanel {
 
         clearPanel();
 
-        Family selectedFamily = familiesPanel.getSelectedRowObject();
-
         familiesPanel.setData(filteredFamilies);
 
-        int row = 0;
-        if (selectedFamily != null) {
-            row = familiesPanel.getObjectRow(selectedFamily.getFamilyId());
-            row = row == -1 ? 0 : row;
-        }
-        familiesPanel.select(row);
     }
 
 
@@ -124,6 +116,30 @@ public class ResultsPanel extends JPanel {
 
     public void enableFilterBtn(){
         tableButtonsPanel.enableFilterBtn();
+    }
+
+    public void familyTableRowClick(Family family){
+        familiesPanel.rowClick(family);
+    }
+
+    public void patternsTableRowClick(Pattern pattern){
+        familyPatternsPanel.rowClick(pattern);
+    }
+
+    public void selectFamily(int familyId){
+
+        int row = familiesPanel.getObjectRow(familyId);
+        row = row == -1 ? 0 : row;
+
+        familiesPanel.select(row);
+    }
+
+    public void selectPattern(String patternId){
+
+        int row = familyPatternsPanel.getObjectRow(patternId);
+        row = row == -1 ? 0 : row;
+
+        familyPatternsPanel.select(row);
     }
 
 }

@@ -76,7 +76,8 @@ public class GenomePanelContainer extends JPanel {
                                             .collect(Collectors.toList());
 
         instancesPanel.setData(patterns);
-        labelsPanel.displayInstancesLabels(patternNames, instancesPanel.getFirstRowHeight(), instancesPanel.getFirstRowHeight());
+        labelsPanel.displayInstancesLabels(patternNames, instancesPanel.getFirstRowHeight(),
+                instancesPanel.getFirstRowHeight());
 
         this.scrollWidth = scrollWidth - labelsPanel.getPanelWidth();
         instancesPanel.showData(this.scrollWidth);

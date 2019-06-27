@@ -43,7 +43,7 @@ public class TablePanel<K, V> extends JPanel {
     private void addListeners(){
         table.getSelectionModel().addListSelectionListener((ListSelectionEvent e) -> {
             if (!e.getValueIsAdjusting() && table.getSelectedRow() != -1) {
-                rowClickedListener.rowClickedOccurred(new RowClickedEvent<>(getSelectedRowObject()));
+                rowClick(getSelectedRowObject());
             }
         });
         table.addMouseListener(new MouseAdapter() {
@@ -52,10 +52,14 @@ public class TablePanel<K, V> extends JPanel {
                 super.mousePressed(e);
 
                 if (table.getSelectedRow() != -1){
-                    rowClickedListener.rowClickedOccurred(new RowClickedEvent<>(getSelectedRowObject()));
+                    rowClick(getSelectedRowObject());
                 }
             }
         });
+    }
+
+    public void rowClick(V rowObject){
+        rowClickedListener.rowClickedOccurred(new RowClickedEvent<>(rowObject));
     }
 
     public void select(int row){
@@ -95,7 +99,7 @@ public class TablePanel<K, V> extends JPanel {
         }
     }
 
-    public void setRowClickedListener(RowClickedListener rowClickedListener) {
+    public void setRowClickedListener(RowClickedListener<V> rowClickedListener) {
         this.rowClickedListener = rowClickedListener;
     }
 

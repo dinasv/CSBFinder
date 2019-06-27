@@ -31,7 +31,9 @@ public class SummaryPanel extends JSplitPane {
     }
 
     public void setFilteredFamilies(List<Family> filteredFamilies){
+
         resultsPanel.setFilteredFamilies(filteredFamilies);
+
         if (filteredFamilies.size() == 0){
             csbSummaryPanel.clearPanel();
         }
@@ -81,5 +83,21 @@ public class SummaryPanel extends JSplitPane {
 
     public void enableFilterBtn(){
         resultsPanel.enableFilterBtn();
+    }
+
+    public void familyTableRowClick(Family family){
+        resultsPanel.familyTableRowClick(family);
+    }
+
+    public void patternsTableRowClick(Pattern pattern){
+        resultsPanel.patternsTableRowClick(pattern);
+    }
+
+    public void selectFamily(int familyId){
+        resultsPanel.selectFamily(familyId);
+    }
+
+    public void selectPattern(String patternId){
+        resultsPanel.selectPattern(patternId);
     }
 }

@@ -3,6 +3,8 @@ package MVC.View.Components;
 import MVC.Common.CSBFinderRequest;
 import MVC.Controller.CSBFinderController;
 import MVC.View.Components.Dialogs.*;
+import MVC.View.Components.Panels.TableView;
+import MVC.View.Components.Panels.TablesHistory;
 import MVC.View.Events.*;
 import MVC.View.Images.Icon;
 import MVC.View.Listeners.*;
@@ -48,6 +50,8 @@ public class MainFrame extends JFrame {
 
     private FamiliesFilter familiesFilter;
 
+    private TablesHistory tablesHistory;
+
     private JFileChooser fc;
 
     public MainFrame(CSBFinderController controller) {
@@ -55,6 +59,7 @@ public class MainFrame extends JFrame {
 
         fc = new JFileChooser(System.getProperty("user.dir"));
         familiesFilter = new FamiliesFilter();
+        tablesHistory = new TablesHistory();
 
         this.controller = controller;
 
@@ -74,6 +79,7 @@ public class MainFrame extends JFrame {
     }
 
     public void clearPanels() {
+        tablesHistory.clearAll();
         genomesPanel.clearPanel();
         summaryPanel.clearPanel();
 
@@ -125,6 +131,7 @@ public class MainFrame extends JFrame {
         setFilterTableListener();
         setApplyFilterListener();
         setNumOfNeighborsListener();
+        setShowOnlyTablesListener();
         setCSBFinderDoneListener();
         setGeneTooltipListener();
 
@@ -198,6 +205,24 @@ public class MainFrame extends JFrame {
         List<Family> filteredFamilies = familiesFilter.getFilteredFamilies();
         summaryPanel.setFilteredFamilies(filteredFamilies);
 
+        tableRowClickFromHistory();
+
+    }
+
+
+    private void tableRowClickFromHistory(){
+
+        TableView tableView = tablesHistory.getTableView();
+        if (tableView != TableView.NONE) {
+
+            Family family = tablesHistory.getFamily();
+
+            summaryPanel.selectFamily(family.getFamilyId());
+
+            if (tableView == TableView.PATTERN) {
+                summaryPanel.selectPattern(tablesHistory.getPattern().getPatternId());
+            }
+        }
     }
 
     private void setApplyFilterListener() {
@@ -307,7 +332,18 @@ public class MainFrame extends JFrame {
 
 
     private void setNumOfNeighborsListener() {
-        toolbar.setSetNumOfNeighborsListener(e -> genomesPanel.setNumOfNeighbors(e.getNumOfNeighbors()));
+        toolbar.setNumOfNeighborsListener(e -> genomesPanel.setNumOfNeighbors(e.getNumOfNeighbors()));
+    }
+
+    private void setShowOnlyTablesListener() {
+        toolbar.setShowOnlyTablesListener(e -> {
+            boolean isShowOnlyTables = e.isShowOnlyTables();
+            if (isShowOnlyTables){
+                genomesPanel.clearPanel();
+            }else{
+
+            }
+        });
     }
 
     private void setFilterTableListener() {
@@ -469,9 +505,12 @@ public class MainFrame extends JFrame {
         summaryPanel.setPatternRowClickedListener(event -> {
             Pattern pattern = event.getRow();
 
+            tablesHistory.setPattern(pattern);
             genomesPanel.clearPanel();
             genomesPanel.setNumOfNeighbors(toolbar.getNumOfNeighbors());
-            genomesPanel.displayInstances(pattern);
+            if (!toolbar.isShowOnlyTables()) {
+                genomesPanel.displayInstances(pattern);
+            }
 
             List<COG> patternCOGs = controller.getCogsInfo(pattern.getPatternGenes());
             Set<COG> insertedGenes = controller.getInsertedGenes(pattern, patternCOGs);
@@ -482,10 +521,14 @@ public class MainFrame extends JFrame {
     private void setFamilyRowClickedListener() {
         summaryPanel.setFamilyRowClickedListener(event -> {
             Family family = event.getRow();
-            summaryPanel.setFamilyPatternsData(family);
 
+            tablesHistory.setFamily(family);
+            summaryPanel.setFamilyPatternsData(family);
             genomesPanel.clearPanel();
-            genomesPanel.displayPatterns(family.getPatterns());
+
+            if (!toolbar.isShowOnlyTables()) {
+                genomesPanel.displayPatterns(family.getPatterns());
+            }
 
             List<COG> patternCOGs = new ArrayList<>();
             for (Pattern pattern : family.getPatterns()) {

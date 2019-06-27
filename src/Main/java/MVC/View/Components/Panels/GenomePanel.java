@@ -47,6 +47,7 @@ public class GenomePanel extends JPanel {
 
     public void displayPatterns(List<Pattern> patterns) {
         int scrollWidth = scroll.getViewport().getSize().width;
+
         viewInstancesPanel.displayPatterns(patterns, scrollWidth);
         viewInstancesPanel.revalidate();
         viewInstancesPanel.repaint();

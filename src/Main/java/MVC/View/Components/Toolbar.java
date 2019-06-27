@@ -1,8 +1,8 @@
 package MVC.View.Components;
 
 import MVC.View.Events.OpenDialogEvent;
-import MVC.View.Events.SaveOutputEvent;
-import MVC.View.Events.SetNumOfNeighborsEvent;
+import MVC.View.Events.numOfNeighborsEvent;
+import MVC.View.Events.ShowOnlyTablesEvent;
 import MVC.View.Images.Icon;
 import MVC.View.Listeners.Listener;
 
@@ -21,14 +21,17 @@ public class Toolbar extends JPanel{
 
     private final Integer[] NEIGHBORS_VALUES = {0, 1, 2, 3, 4, 5, 6,  7, 8, 9, 10};
 
-    private JPanel selectNeighborsPanel;
+    private JPanel rightPanel;
     private JComboBox selectNumOfNeighbors;
     private JLabel selectNumOfNeighborsLabel = new JLabel("Neighbors:");
+    private JCheckBox showOnlyTables;
+    private JLabel showOnlyTablesLabel = new JLabel("Tables only:");
 
     private Listener<OpenDialogEvent> selectParamsListener;
     private Listener<OpenDialogEvent> clusterListener;
     private Listener<OpenDialogEvent> saveListener;
-    private Listener<SetNumOfNeighborsEvent> setNumOfNeighborsListener;
+    private Listener<numOfNeighborsEvent> numOfNeighborsListener;
+    private Listener<ShowOnlyTablesEvent> showOnlyTablesListener;
 
     public Toolbar() {
 
@@ -47,21 +50,27 @@ public class Toolbar extends JPanel{
         selectNumOfNeighbors = new JComboBox<>(NEIGHBORS_VALUES);
         selectNumOfNeighbors.setSelectedIndex(3);
 
-        selectNeighborsPanel = new JPanel();
-        selectNeighborsPanel.setLayout(new FlowLayout());
-        selectNeighborsPanel.add(selectNumOfNeighborsLabel);
-        selectNeighborsPanel.add(selectNumOfNeighbors);
+        showOnlyTables = new JCheckBox();
+
+        rightPanel = new JPanel();
+        rightPanel.setLayout(new FlowLayout());
+        rightPanel.add(showOnlyTablesLabel);
+        rightPanel.add(showOnlyTables);
+        rightPanel.add(selectNumOfNeighborsLabel);
+        rightPanel.add(selectNumOfNeighbors);
 
         setLayout(new BorderLayout());
 
         add(buttons, BorderLayout.LINE_START);
-        add(selectNeighborsPanel, BorderLayout.LINE_END);
+        add(rightPanel, BorderLayout.LINE_END);
 
         selectParamsBtn.addActionListener(e -> selectParamsListener.eventOccurred(new OpenDialogEvent()));
         clusterBtn.addActionListener(e -> clusterListener.eventOccurred(new OpenDialogEvent()));
         saveBtn.addActionListener(e -> saveListener.eventOccurred(new OpenDialogEvent()));
-        selectNumOfNeighbors.addActionListener(e -> setNumOfNeighborsListener.eventOccurred(
-                                                new SetNumOfNeighborsEvent(getNumOfNeighbors())));
+        selectNumOfNeighbors.addActionListener(e -> numOfNeighborsListener.eventOccurred(
+                                                new numOfNeighborsEvent(getNumOfNeighbors())));
+        showOnlyTables.addActionListener(e -> showOnlyTablesListener.eventOccurred(
+                new ShowOnlyTablesEvent(showOnlyTables.isSelected())));
     }
 
     private JButton createToolbarButton(ImageIcon icon, String btnName){
@@ -86,8 +95,12 @@ public class Toolbar extends JPanel{
         this.saveListener = saveListener;
     }
 
-    public void setSetNumOfNeighborsListener(Listener<SetNumOfNeighborsEvent> setNumOfNeighborsListener) {
-        this.setNumOfNeighborsListener = setNumOfNeighborsListener;
+    public void setNumOfNeighborsListener(Listener<numOfNeighborsEvent> numOfNeighborsListener) {
+        this.numOfNeighborsListener = numOfNeighborsListener;
+    }
+
+    public void setShowOnlyTablesListener(Listener<ShowOnlyTablesEvent> setshowOnlyTablesListener) {
+        this.showOnlyTablesListener = setshowOnlyTablesListener;
     }
 
     public void enableSelectParamsBtn() {
@@ -116,6 +129,10 @@ public class Toolbar extends JPanel{
 
     public int getNumOfNeighbors(){
        return selectNumOfNeighbors.getSelectedIndex();
+    }
+
+    public boolean isShowOnlyTables(){
+        return showOnlyTables.isSelected();
     }
 
 }
