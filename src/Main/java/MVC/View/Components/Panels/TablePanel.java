@@ -109,11 +109,6 @@ public class TablePanel<K, V> extends JPanel {
     }
 
     public void fireTableDataChanged(){
-        int row = table.getSelectedRow();
         model.fireTableDataChanged();
-
-        if (row != -1) {
-            table.setRowSelectionInterval(row, row);
-        }
     }
 }

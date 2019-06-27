@@ -118,28 +118,25 @@ public class ResultsPanel extends JPanel {
         tableButtonsPanel.enableFilterBtn();
     }
 
-    public void familyTableRowClick(Family family){
-        familiesPanel.rowClick(family);
-    }
-
-    public void patternsTableRowClick(Pattern pattern){
-        familyPatternsPanel.rowClick(pattern);
-    }
-
     public void selectFamily(int familyId){
 
         int row = familiesPanel.getObjectRow(familyId);
-        row = row == -1 ? 0 : row;
-
-        familiesPanel.select(row);
+        selectRow(familiesPanel, row);
     }
 
     public void selectPattern(String patternId){
 
         int row = familyPatternsPanel.getObjectRow(patternId);
+        selectRow(familyPatternsPanel, row);
+    }
+
+    private void selectRow(TablePanel panel, int row){
+        panel.fireTableDataChanged();
+
         row = row == -1 ? 0 : row;
 
-        familyPatternsPanel.select(row);
+        panel.select(row);
+
     }
 
 }

@@ -341,7 +341,8 @@ public class MainFrame extends JFrame {
             if (isShowOnlyTables){
                 genomesPanel.clearPanel();
             }else{
-
+                tableRowClickFromHistory();
+                //summaryPanel.fireTableDataChanged();
             }
         });
     }
@@ -488,7 +489,7 @@ public class MainFrame extends JFrame {
                     protected void done() {
 
                         progressBar.done("");
-                        summaryPanel.fireTableDataChanged();
+                        tableRowClickFromHistory();
                         JOptionPane.showMessageDialog(MainFrame.this, formatMsgWidth(msg));
                     }
                 };

@@ -85,14 +85,6 @@ public class SummaryPanel extends JSplitPane {
         resultsPanel.enableFilterBtn();
     }
 
-    public void familyTableRowClick(Family family){
-        resultsPanel.familyTableRowClick(family);
-    }
-
-    public void patternsTableRowClick(Pattern pattern){
-        resultsPanel.patternsTableRowClick(pattern);
-    }
-
     public void selectFamily(int familyId){
         resultsPanel.selectFamily(familyId);
     }
