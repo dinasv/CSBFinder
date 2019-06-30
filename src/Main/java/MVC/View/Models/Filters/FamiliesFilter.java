@@ -103,7 +103,29 @@ public class FamiliesFilter {
         patternFilters.add(new NumberFilter<>(val, NumberComparison.LESS_EQ, PatternProperty.INSTANCE_COUNT));
     }
 
+    public void setGeneCategory(String genes, BooleanOperator operator, Function<Gene[], String> genesToCogsDesc){
+
+        String[] functionalCategories = genes.split(SEPARATOR);
+
+        List<Filter<Pattern>> containsStringFilters = Arrays.stream(functionalCategories).map(category ->
+                new ContainsStringFilterPreprocess<>(category, PatternProperty.GENES,
+                        genesToCogsDesc, Gene[].class)).collect(Collectors.toList());
+
+        addFiltersBooleanOperator(containsStringFilters, operator);
+
+    }
+
+    private void addFiltersBooleanOperator(List<Filter<Pattern>> filters, BooleanOperator operator){
+        if (operator == BooleanOperator.AND) {
+            patternFilters.addAll(filters);
+        }else if (operator == BooleanOperator.OR){
+            OrFilter<Pattern> orFilter = new OrFilter<>(filters);
+            patternFilters.add(orFilter);
+        }
+    }
+
     public void setFunctionalCategory(String functionalCategory, FunctionalCategoryOption option){
+
         String[] functionalCategories = functionalCategory.split(SEPARATOR);
 
         List<Filter<Pattern>> containsStringFilters = Arrays.stream(functionalCategories).map(category ->
@@ -125,12 +147,7 @@ public class FamiliesFilter {
         List<Filter<Pattern>> containsStringFilters = Arrays.stream(ids).map(gene -> new ContainsStringFilter<>(gene,
                 PatternProperty.CSB)).collect(Collectors.toList());
 
-        if (operator == BooleanOperator.AND) {
-            patternFilters.addAll(containsStringFilters);
-        }else if (operator == BooleanOperator.OR){
-            OrFilter<Pattern> orFilter = new OrFilter<>(containsStringFilters);
-            patternFilters.add(orFilter);
-        }
+        addFiltersBooleanOperator(containsStringFilters, operator);
     }
 
     public void clear() {
@@ -235,7 +252,7 @@ public class FamiliesFilter {
 
         protected String strToFind;
 
-        protected Function<T, ? extends Object> propertyFunction;
+        protected Function<T, ?> propertyFunction;
 
         StringFilter(String str, ColumnProperty<T> patternProperty) {
             strToFind = str;
@@ -257,10 +274,38 @@ public class FamiliesFilter {
 
                 String str = (String) result;
 
-                if (this.strToFind.equals("")) {
-                    return true;
-                }
-                return this.strToFind.toLowerCase().matches(str.toLowerCase());
+                return isMatching(str);
+            }
+
+            return false;
+        }
+
+        protected boolean isMatching(String str){
+            if (this.strToFind.equals("")) {
+                return true;
+            }
+            return this.strToFind.toLowerCase().matches(str.toLowerCase());
+        }
+    }
+
+    private class ContainsStringFilterPreprocess<T, E> extends ContainsStringFilter<T> {
+
+        Function<E, String> preprocessFunction;
+        Class<E> paramType;
+
+        public ContainsStringFilterPreprocess(String str, ColumnProperty<T> patternProperty,
+                                              Function<E, String> preprocessFunction, Class<E> paramType) {
+            super(str, patternProperty);
+            this.preprocessFunction = preprocessFunction;
+            this.paramType = paramType;
+        }
+
+        public boolean include(T obj) {
+
+            Object result = propertyFunction.apply(obj);
+            if (result != null && paramType.isAssignableFrom(result.getClass())) {
+                String str = preprocessFunction.apply((E)result);
+                return isContained(str);
             }
 
             return false;
@@ -281,14 +326,19 @@ public class FamiliesFilter {
 
                 String patternStr = (String) result;
 
-                if (this.strToFind.equals("")) {
-                    return true;
-                }
-
-                return patternStr.toLowerCase().contains(this.strToFind.toLowerCase());
+                return isContained(patternStr);
             }
 
             return false;
+        }
+
+        protected boolean isContained(String str){
+
+            if (this.strToFind.equals("")) {
+                return true;
+            }
+
+            return str.toLowerCase().contains(this.strToFind.toLowerCase());
         }
     }
 
@@ -367,6 +417,7 @@ public class FamiliesFilter {
         public static boolean aLessEqb(double a, double b){
             return a <= b;
         }
+
         public static boolean aLargerEqb(double a, double b){
             return a >= b;
         }

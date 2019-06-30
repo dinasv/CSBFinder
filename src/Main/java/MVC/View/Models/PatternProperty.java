@@ -3,6 +3,7 @@ package MVC.View.Models;
 /**
  */
 
+import Model.Genomes.Gene;
 import Model.Patterns.Pattern;
 
 import java.util.function.Function;
@@ -15,7 +16,8 @@ public enum PatternProperty implements ColumnProperty<Pattern> {
     INSTANCE_COUNT(Pattern::getInstancesPerGenome, Integer.class),
     CSB(Pattern::toString, String.class),
     MAIN_CATEGORY(Pattern::getMainFunctionalCategory, String.class),
-    FAMILY_ID(Pattern::getFamilyId, Integer.class);
+    FAMILY_ID(Pattern::getFamilyId, Integer.class),
+    GENES(Pattern::getPatternGenes, Gene[].class);
 
     private final Function<Pattern, ?> patternFunction;
     private final Class<?> returnType;
@@ -25,7 +27,7 @@ public enum PatternProperty implements ColumnProperty<Pattern> {
         this.returnType = returnType;
     }
 
-    public Function<Pattern, ? extends Object> getFunction(){
+    public Function<Pattern, ?> getFunction(){
         return patternFunction;
     }
 

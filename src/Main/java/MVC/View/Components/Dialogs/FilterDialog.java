@@ -11,6 +11,8 @@ import javax.swing.event.DocumentListener;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.function.Consumer;
+
 import static java.awt.GridBagConstraints.*;
 
 /**
@@ -46,26 +48,30 @@ public class FilterDialog extends JDialog{
     private JSpinner minCount;
     private JSpinner maxCount;
 
-    private final JLabel STRAND_LABEL = new JLabel("Patterns strand:");
+    private final JLabel STRAND_LABEL = new JLabel("CSB strand:");
     private ButtonGroup strandBtns;
     private JRadioButton allStrandTypesBtn;
     private JRadioButton multiStrandTypesBtn;
     private JRadioButton oneStrandTypesBtn;
     private JPanel patternStrandPanel;
 
-    private final JLabel PATTERN_ID_LABEL = new JLabel("Pattern IDs:");
+    private final JLabel PATTERN_ID_LABEL = new JLabel("CSB IDs:");
     private JTextField patternIds;
 
     private final JLabel FAMILY_ID_LABEL = new JLabel("Family IDs:");
     private JTextField familyIds;
 
-    private final JLabel PATTERN_GENES_LABEL = new JLabel("Pattern with genes:");
+    private final JLabel PATTERN_GENES_LABEL = new JLabel("CSB with gene IDs:");
     private JTextField patternGenes;
     private JComboBox<BooleanOperator> genesComboBox;
 
-    private final JLabel FUNCTIONAL_CATEGORY_LABEL = new JLabel("Functional category:");
-    private JTextField functionalCategory;
+    private final JLabel MAIN_FUNCTIONAL_CATEGORY_LABEL = new JLabel("CSB main functional category:");
+    private JTextField mainFunctionalCategory;
     private JComboBox<FunctionalCategoryOption> functionalCategoryComboBox;
+
+    private final JLabel PATTERN_GENES_CATEGORY_LABEL = new JLabel("Keep CSBs that contain functional description:");
+    private JTextField genesCategory;
+    private JComboBox<BooleanOperator> genesCategoryComboBox;
 
     private GridBagConstraints gc;
 
@@ -169,30 +175,35 @@ public class FilterDialog extends JDialog{
         maxScore.addChangeListener(e -> request.setMaxScore((int)maxScore.getValue()));
 
         minCount.addChangeListener(e -> request.setMinInstanceCount((int)minCount.getValue()));
-        maxCount.addChangeListener(e -> request.setMinInstanceCount((int)maxCount.getValue()));
+        maxCount.addChangeListener(e -> request.setMaxInstanceCount((int)maxCount.getValue()));
 
-        patternIds.getDocument().addDocumentListener((TextChangeListener) e ->
-                request.setPatternIds(patternIds.getText()));
+        addTextFieldListener(patternIds, request::setPatternIds);
 
-        familyIds.getDocument().addDocumentListener((TextChangeListener) e -> {
-            request.setFamilyIds(familyIds.getText());
-        });
+        addTextFieldListener(familyIds, request::setFamilyIds);
 
-        patternGenes.getDocument().addDocumentListener((TextChangeListener) e ->
-                request.setPatternGenes(patternGenes.getText()));
-
+        addTextFieldListener(patternGenes, request::setPatternGenes);
         genesComboBox.addActionListener(e ->
                 request.setGenesOperator(genesComboBox.getItemAt(genesComboBox.getSelectedIndex())));
 
-        functionalCategory.getDocument().addDocumentListener((TextChangeListener) e ->
-                request.setFunctionalCategory(functionalCategory.getText()));
 
+        addTextFieldListener(genesCategory, request::setGenesCategory);
+        genesCategoryComboBox.addActionListener(e ->
+                request.setGenesCategoryOperator(
+                        genesCategoryComboBox.getItemAt(genesCategoryComboBox.getSelectedIndex())));
+
+        addTextFieldListener(mainFunctionalCategory, request::setMainFunctionalCategory);
         functionalCategoryComboBox.addActionListener(e ->
                 request.setFunctionalCategoryOption(functionalCategoryComboBox.getItemAt(
                         functionalCategoryComboBox.getSelectedIndex())));
 
 
 
+    }
+
+    private void addTextFieldListener(JTextField textField, Consumer<String> requestFunc){
+        textField.getDocument().addDocumentListener((TextChangeListener) e -> {
+            requestFunc.accept(textField.getText());
+        });
     }
 
     private void addBtnListener(JRadioButton btn){
@@ -244,9 +255,13 @@ public class FilterDialog extends JDialog{
 
         genesComboBox = new JComboBox<>(BooleanOperator.values());
 
-        functionalCategory = new JTextField();
+        mainFunctionalCategory = new JTextField();
 
         functionalCategoryComboBox = new JComboBox<>(FunctionalCategoryOption.values());
+
+        genesCategory = new JTextField();
+
+        genesCategoryComboBox = new JComboBox<>(BooleanOperator.values());
 
     }
 
@@ -264,7 +279,8 @@ public class FilterDialog extends JDialog{
         patternIds.setText(PATTERN_IDS_DEF);
         familyIds.setText(FAMILY_IDS_DEF);
         patternGenes.setText(PATTERN_GENES_DEF);
-        functionalCategory.setText(FUNCTIONAL_CATEGORY_DEF);
+        mainFunctionalCategory.setText(FUNCTIONAL_CATEGORY_DEF);
+        genesCategory.setText(FUNCTIONAL_CATEGORY_DEF);
     }
 
     private void setCountModel(){
@@ -307,10 +323,15 @@ public class FilterDialog extends JDialog{
         addComponentToGC(1, y, 1, 0.2, insetField, 1, patternGenes, LINE_START);
         addComponentToGC(2, y++, 1, 0.2, insetField, 2, genesComboBox, LINE_START);
 
-        addComponentToGC(0, y, 1, 0.2, insetLabel, 1, FUNCTIONAL_CATEGORY_LABEL, LINE_START);
-        functionalCategory.setColumns(TEXT_FIELD_SIZE);
-        addComponentToGC(1, y, 1, 0.2, insetField, 1, functionalCategory, LINE_START);
+        addComponentToGC(0, y, 1, 0.2, insetLabel, 1, MAIN_FUNCTIONAL_CATEGORY_LABEL, LINE_START);
+        mainFunctionalCategory.setColumns(TEXT_FIELD_SIZE);
+        addComponentToGC(1, y, 1, 0.2, insetField, 1, mainFunctionalCategory, LINE_START);
         addComponentToGC(2, y++, 1, 0.2, insetField, 2, functionalCategoryComboBox, LINE_START);
+
+        addComponentToGC(0, y, 1, 0.2, insetLabel, 1, PATTERN_GENES_CATEGORY_LABEL, LINE_START);
+        genesCategory.setColumns(TEXT_FIELD_SIZE);
+        addComponentToGC(1, y, 1, 0.2, insetField, 1, genesCategory, LINE_START);
+        addComponentToGC(2, y++, 1, 0.2, insetField, 2, genesCategoryComboBox, LINE_START);
 
         addComponentToGC(0, y, 1, 0.2, insetLabel, 1, FAMILY_ID_LABEL, LINE_START);
         familyIds.setColumns(TEXT_FIELD_SIZE);

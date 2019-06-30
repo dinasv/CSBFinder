@@ -21,8 +21,10 @@ public class FilterRequest implements Request{
     private String patternGenes;
     private BooleanOperator genesOperator;
     private String familyIds;
+    private String genesCategory;
+    private BooleanOperator genesCategoryOperator;
 
-    private String functionalCategory;
+    private String mainFunctionalCategory;
     private FunctionalCategoryOption functionalCategoryOption;
 
     public FilterRequest(){
@@ -41,8 +43,10 @@ public class FilterRequest implements Request{
         patternGenes = null;
         familyIds = null;
         genesOperator = BooleanOperator.AND;
-        functionalCategory = null;
+        mainFunctionalCategory = null;
         functionalCategoryOption = FunctionalCategoryOption.INCLUDE;
+        genesCategory = null;
+        genesCategoryOperator = BooleanOperator.AND;
     }
 
     public void setMinCSBLength(int minCSBLength) {
@@ -134,12 +138,12 @@ public class FilterRequest implements Request{
         this.familyIds = familyIds;
     }
 
-    public Optional<String> getFunctionalCategory() {
-        return Optional.ofNullable(functionalCategory);
+    public Optional<String> getMainFunctionalCategory() {
+        return Optional.ofNullable(mainFunctionalCategory);
     }
 
-    public void setFunctionalCategory(String functionalCategory) {
-        this.functionalCategory = functionalCategory;
+    public void setMainFunctionalCategory(String functionalCategory) {
+        this.mainFunctionalCategory = functionalCategory;
     }
 
     public FunctionalCategoryOption getFunctionalCategoryOption() {
@@ -148,5 +152,21 @@ public class FilterRequest implements Request{
 
     public void setFunctionalCategoryOption(FunctionalCategoryOption functionalCategoryOption) {
         this.functionalCategoryOption = functionalCategoryOption;
+    }
+
+    public Optional<String> getGenesCategory() {
+        return Optional.ofNullable(genesCategory);
+    }
+
+    public void setGenesCategory(String genesCategory) {
+        this.genesCategory = genesCategory;
+    }
+
+    public BooleanOperator getGenesCategoryOperator() {
+        return genesCategoryOperator;
+    }
+
+    public void setGenesCategoryOperator(BooleanOperator genesCategoryOperator) {
+        this.genesCategoryOperator = genesCategoryOperator;
     }
 }

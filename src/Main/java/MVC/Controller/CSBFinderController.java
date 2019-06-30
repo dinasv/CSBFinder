@@ -59,6 +59,7 @@ public class CSBFinderController {
     public List<COG> getCogsInfo(Gene[] genes) {
         return model.getCogsInfo(genes);
     }
+
     public COG getCogInfo(String cogId) {
         return model.getCogInfo(cogId);
     }

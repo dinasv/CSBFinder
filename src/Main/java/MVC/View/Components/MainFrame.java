@@ -10,6 +10,7 @@ import MVC.View.Images.Icon;
 import MVC.View.Listeners.*;
 import MVC.View.Components.Panels.GenomePanel;
 import MVC.View.Components.Panels.SummaryPanel;
+import Model.Genomes.Gene;
 import Model.OrthologyGroups.COG;
 import Model.Patterns.Pattern;
 import Model.PostProcess.Family;
@@ -23,6 +24,9 @@ import java.util.*;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.function.Consumer;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 public class MainFrame extends JFrame {
 
@@ -197,11 +201,18 @@ public class MainFrame extends JFrame {
         filterRequest.getFamilyIds().ifPresent(val -> familiesFilter.setFamilyIds(val));
         filterRequest.getPatternStrand().ifPresent(val -> familiesFilter.setStrand(val));
         filterRequest.getPatternGenes().ifPresent(val -> familiesFilter.setGenes(val, filterRequest.getGenesOperator()));
-        filterRequest.getFunctionalCategory().ifPresent(val -> familiesFilter.setFunctionalCategory(val,
+        filterRequest.getMainFunctionalCategory().ifPresent(val -> familiesFilter.setFunctionalCategory(val,
                 filterRequest.getFunctionalCategoryOption()));
 
-        familiesFilter.applyFilters();
+        Function<Gene[], String> genesToCogsDesc = (Gene[] genes) -> {
+            List<COG> cogs = controller.getCogsInfo(genes);
+            return cogs.stream().map(COG::toString).collect(Collectors.joining(" "));
+        };
 
+        filterRequest.getGenesCategory().ifPresent(val -> familiesFilter.setGeneCategory(val,
+                filterRequest.getGenesCategoryOperator(), genesToCogsDesc));
+
+        familiesFilter.applyFilters();
         List<Family> filteredFamilies = familiesFilter.getFilteredFamilies();
         summaryPanel.setFilteredFamilies(filteredFamilies);
 
