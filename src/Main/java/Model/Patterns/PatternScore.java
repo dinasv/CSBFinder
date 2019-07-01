@@ -19,14 +19,14 @@ public class PatternScore {
     /**
      * Array used for memoization, as each patterns with the same length have the same basic q_val
      */
-    double[] pValues;
+    private double[] pValues;
     /**
      * Total number of input genomes
      */
-    int numberOfGenomes;
-    int avgGenomeSize;
+    private int numberOfGenomes;
+    private int avgGenomeSize;
 
-    Expm1 expm1 = new Expm1();
+    private Expm1 expm1 = new Expm1();
 
     /**
      * for each cog, a set of genomes (bac_index) in which the cog appears
@@ -65,8 +65,8 @@ public class PatternScore {
 
             Map<Integer, Integer> currGenomeParalogCount = genomeToCogParalogCount.get(genomeId);
             double paralogCountLogSum = patternLetters.stream()
-                    .map(cog -> currGenomeParalogCount.get(cog))
-                    .mapToDouble((count) -> Math.log(count)).sum();
+                    .map(currGenomeParalogCount::get)
+                    .mapToDouble(Math::log).sum();
 
             if (paralogCountLogSum > paralogCountLogSum) {
                 maxLogParalogCount = paralogCountLogSum;

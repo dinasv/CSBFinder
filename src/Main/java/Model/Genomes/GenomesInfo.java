@@ -1,6 +1,9 @@
 package Model.Genomes;
 
+import Model.Patterns.Pattern;
+
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  */
@@ -11,6 +14,8 @@ public class GenomesInfo {
      */
     private Map<Integer, Genome> genomesById;
     private Map<String, Genome> genomesByName;
+
+    private double[][] distnacesBetweenGenomes;
 
     private int countReplicons;
 
@@ -30,6 +35,8 @@ public class GenomesInfo {
     public GenomesInfo(){
         genomesByName = new HashMap<>();
         genomesById = new HashMap<>();
+
+        distnacesBetweenGenomes = new double[0][0];
 
         maxGenomeSize = 0;
         countReplicons = 0;
@@ -158,5 +165,58 @@ public class GenomesInfo {
 
     public void setDatasetLengthSum(int dataset_length_sum) {
         this.datasetLengthSum = dataset_length_sum;
+    }
+
+    public void computeDistancesBetweenGenomesAllVsAll(){
+
+        distnacesBetweenGenomes = new double[genomesById.size()][genomesById.size()];
+
+        List<Genome> genomes = new ArrayList<>(genomesById.values());
+
+        for (int i = 0; i < genomes.size()-1; i++) {
+            Genome genome1 = genomes.get(i);
+
+            for (int j = i+1; j < genomes.size(); j++) {
+                Genome genome2 = genomes.get(j);
+
+                computeDistancesBetweenGenomes(genome1, genome2);
+            }
+        }
+    }
+
+    private void computeDistancesBetweenGenomes(Genome genome1, Genome genome2){
+
+        Set<Gene> genes1 = getGeneSet(genome1);
+        Set<Gene> genes2 = getGeneSet(genome2);
+
+        Set<Gene> union = new HashSet<>(genes1);
+        union.addAll(genes2);
+        Set<Gene> intersection = new HashSet<>(genes1);
+        intersection.retainAll(genes2);
+
+        double distance = (double)intersection.size()/union.size();
+
+        distnacesBetweenGenomes[genome1.getId()][genome2.getId()] = distance;
+        distnacesBetweenGenomes[genome2.getId()][genome1.getId()] = distance;
+    }
+
+    private Set<Gene> getGeneSet(Genome genome){
+        Set<Gene> genes = new HashSet<>();
+
+        for (Replicon replicon: genome.getReplicons()){
+            genes.addAll(replicon.getGenes().stream().filter(gene -> !gene.getCogId().equals(Alphabet.UNK_CHAR))
+                    .map(gene -> new Gene(gene.getCogId(), Strand.INVALID)).collect(Collectors.toList()));
+        }
+
+        return genes;
+    }
+
+    public double getGenomesDistance(int genomeId1, int genomeId2){
+
+        if (genomeId1 >= distnacesBetweenGenomes.length || genomeId2 >= distnacesBetweenGenomes.length
+            || genomeId1 < 0 || genomeId2 < 0){
+            return -1;
+        }
+        return distnacesBetweenGenomes[genomeId1][genomeId2];
     }
 }
