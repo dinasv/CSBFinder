@@ -95,8 +95,7 @@ public class CSBFinderWorkflow {
 
     private void computeScores(List<Pattern> patterns){
 
-        PatternScore patternScore = new PatternScore(gi.getMaxGenomeSize(), gi.getNumberOfGenomes(), gi.getDatasetLengthSum(),
-                gi.cogToContainingGenomes, gi.genomeToCogParalogCount);
+        PatternScore patternScore = new PatternScore(gi, 1);
 
         for (Pattern pattern : patterns) {
             List<Integer> patternLetters = new ArrayList<>();
@@ -105,7 +104,8 @@ public class CSBFinderWorkflow {
                 patternLetters.add(gi.getLetter(gene));
             }
 
-            double score = patternScore.computePatternScore(patternLetters, params.maxInsertion, pattern.getInstancesPerGenome());
+            double score = patternScore.computePatternScore(patternLetters, params.maxInsertion,
+                    pattern.getInstanceGenomeIds());
             pattern.setScore(score);
         }
     }

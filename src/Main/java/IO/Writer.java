@@ -103,7 +103,7 @@ public class Writer {
         String catalogLine = pattern.getPatternId() + "\t" + pattern.getLength() + "\t";
 
         catalogLine += DF.format(pattern.getScore()) + "\t"
-                + pattern.getInstancesPerGenome() + "\t"
+                + pattern.getInstancesPerGenomeCount() + "\t"
                 + pattern.toString() + "\t";
 
         catalogLine += familyId;

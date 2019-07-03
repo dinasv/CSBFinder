@@ -1,7 +1,5 @@
 package Model.Genomes;
 
-import Model.Patterns.Pattern;
-
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -15,7 +13,7 @@ public class GenomesInfo {
     private Map<Integer, Genome> genomesById;
     private Map<String, Genome> genomesByName;
 
-    private double[][] distnacesBetweenGenomes;
+    private double[][] distancesBetweenGenomes;
 
     private int countReplicons;
 
@@ -36,7 +34,7 @@ public class GenomesInfo {
         genomesByName = new HashMap<>();
         genomesById = new HashMap<>();
 
-        distnacesBetweenGenomes = new double[0][0];
+        distancesBetweenGenomes = new double[0][0];
 
         maxGenomeSize = 0;
         countReplicons = 0;
@@ -169,12 +167,15 @@ public class GenomesInfo {
 
     public void computeDistancesBetweenGenomesAllVsAll(){
 
-        distnacesBetweenGenomes = new double[genomesById.size()][genomesById.size()];
+        distancesBetweenGenomes = new double[genomesById.size()][genomesById.size()];
 
         List<Genome> genomes = new ArrayList<>(genomesById.values());
 
-        for (int i = 0; i < genomes.size()-1; i++) {
+        for (int i = 0; i < genomes.size(); i++) {
             Genome genome1 = genomes.get(i);
+
+            //the distance between a genome and itself is 1
+            distancesBetweenGenomes[i][i] = 1;
 
             for (int j = i+1; j < genomes.size(); j++) {
                 Genome genome2 = genomes.get(j);
@@ -196,8 +197,8 @@ public class GenomesInfo {
 
         double distance = (double)intersection.size()/union.size();
 
-        distnacesBetweenGenomes[genome1.getId()][genome2.getId()] = distance;
-        distnacesBetweenGenomes[genome2.getId()][genome1.getId()] = distance;
+        distancesBetweenGenomes[genome1.getId()][genome2.getId()] = distance;
+        distancesBetweenGenomes[genome2.getId()][genome1.getId()] = distance;
     }
 
     private Set<Gene> getGeneSet(Genome genome){
@@ -213,10 +214,10 @@ public class GenomesInfo {
 
     public double getGenomesDistance(int genomeId1, int genomeId2){
 
-        if (genomeId1 >= distnacesBetweenGenomes.length || genomeId2 >= distnacesBetweenGenomes.length
+        if (genomeId1 >= distancesBetweenGenomes.length || genomeId2 >= distancesBetweenGenomes.length
             || genomeId1 < 0 || genomeId2 < 0){
             return -1;
         }
-        return distnacesBetweenGenomes[genomeId1][genomeId2];
+        return distancesBetweenGenomes[genomeId1][genomeId2];
     }
 }

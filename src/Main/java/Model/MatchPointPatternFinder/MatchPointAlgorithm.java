@@ -230,8 +230,8 @@ public class MatchPointAlgorithm implements Algorithm {
         Pattern subPattern = patterns.get(subPatternStr);
 
         if (subPattern != null) {
-            int patternCount = pattern.getInstancesPerGenome();
-            int subPatternCount = subPattern.getInstancesPerGenome();
+            int patternCount = pattern.getInstancesPerGenomeCount();
+            int subPatternCount = subPattern.getInstancesPerGenomeCount();
             if (subPatternCount == patternCount) {
                 patternsToRemove.add(subPatternStr);
             }

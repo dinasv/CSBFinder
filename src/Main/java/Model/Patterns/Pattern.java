@@ -29,7 +29,7 @@ public class Pattern {
 
     private Locations locations;
 
-    private int instancesPerGenome;
+    private int instancesPerGenomeCount;
 
     public Pattern(){
         this(null, new Gene[0]);
@@ -52,7 +52,7 @@ public class Pattern {
 
         locations = new Locations();
 
-        instancesPerGenome = -1;
+        instancesPerGenomeCount = -1;
     }
 
 
@@ -82,13 +82,13 @@ public class Pattern {
             }
         }
 
-        instancesPerGenome = -1;
+        instancesPerGenomeCount = -1;
     }
 
 
     public void addInstanceLocation(InstanceLocation patternLocation){
         locations.addLocation(patternLocation);
-        instancesPerGenome = -1;
+        instancesPerGenomeCount = -1;
     }
 
 
@@ -201,14 +201,18 @@ public class Pattern {
         this.familyId = familyId;
     }
 
-    public int getInstancesPerGenome(){
+    public Collection<Integer> getInstanceGenomeIds(){
+        return locations.getInstanceLocations().stream()
+                .collect(Collectors.groupingBy(InstanceLocation::getGenomeId)).keySet();
+    }
 
-        if (instancesPerGenome == -1){
-            instancesPerGenome = locations.getInstanceLocations().stream()
-                    .collect(Collectors.groupingBy(InstanceLocation::getGenomeId)).size();
+    public int getInstancesPerGenomeCount(){
+
+        if (instancesPerGenomeCount == -1){
+            instancesPerGenomeCount = getInstanceGenomeIds().size();
         }
 
-        return instancesPerGenome;
+        return instancesPerGenomeCount;
     }
 
     public String toString(){

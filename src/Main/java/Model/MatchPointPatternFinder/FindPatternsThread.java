@@ -92,7 +92,7 @@ public class FindPatternsThread implements Callable<Object> {
 
             pattern = extendedPattern;
             //pruning
-            if (pattern.getInstancesPerGenome() < quorum) {
+            if (pattern.getInstancesPerGenomeCount() < quorum) {
                 return;
             }
         }
@@ -169,7 +169,7 @@ public class FindPatternsThread implements Callable<Object> {
         }
 
 
-        if (extendedPattern.getInstancesPerGenome() >= quorum
+        if (extendedPattern.getInstancesPerGenomeCount() >= quorum
                 && extendedPattern.getLength() >= minPatternLength) {
 
             patterns.put(extendedPatternStr, extendedPattern);

@@ -1,12 +1,23 @@
+import IO.Parsers;
+import Model.Genomes.Gene;
+import Model.Genomes.GenomesInfo;
+import Model.Genomes.Strand;
 import Model.Patterns.PatternScore;
 import org.junit.Assert;
 import org.junit.Test;
 
+import java.io.IOException;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  */
 public class ScoreTest {
+
+    private final String GENOMES_FILE_PATH = this.getClass().getResource("/genomes8.fasta").getPath();
 
     @Test
     public void testScore() throws Exception {
@@ -19,8 +30,8 @@ public class ScoreTest {
         double PARALOG_FREQUENCY = Math.log(10)*50;
         double epsilon = 0.01;
 
-        PatternScore patternScore = new PatternScore(MAX_GENOME_SIZE, NUMBER_OF_GENOMES, DATASET_LENGTH_SUM, new HashMap<>(),
-                new HashMap<>());
+        PatternScore patternScore = new PatternScore(MAX_GENOME_SIZE, NUMBER_OF_GENOMES, DATASET_LENGTH_SUM,
+                new HashMap<>(), new HashMap<>());
 
         double score = patternScore.pvalCrossGenome(PATTERN_LENGTH, MAX_INSERTIONS, PARALOG_FREQUENCY, GENOMES_WITH_INSTANCE);
 
@@ -45,7 +56,7 @@ public class ScoreTest {
                 new HashMap<>());
 
         double score = patternScore.pvalCrossGenome(PATTERN_LENGTH, MAX_INSERTIONS, PARALOG_FREQUENCY, GENOMES_WITH_INSTANCE);
-        System.out.println(score);
+
         Assert.assertFalse(Double.isInfinite(score));
     }
 
@@ -65,10 +76,52 @@ public class ScoreTest {
         int PARALOG_FREQUENCY = 1;
         double epsilon = 1;
 
-        PatternScore patternScore = new PatternScore(MAX_GENOME_SIZE, NUMBER_OF_GENOMES, DATASET_LENGTH_SUM, new HashMap<>(),
+        PatternScore patternScore = new PatternScore(MAX_GENOME_SIZE, NUMBER_OF_GENOMES, DATASET_LENGTH_SUM,
+                new HashMap<>(),
                 new HashMap<>());
 
         double score = patternScore.pvalCrossGenome(PATTERN_LENGTH, MAX_INSERTIONS, PARALOG_FREQUENCY, GENOMES_WITH_INSTANCE);
         Assert.assertEquals(607, score, epsilon);
+    }
+
+    @Test
+    public void testNumOfGenomesCorrection() throws IOException {
+
+        GenomesInfo gi = Parsers.parseGenomesFile(GENOMES_FILE_PATH);
+
+        // all genomes are independent
+        double delta = 1;
+        PatternScore patternScore = new PatternScore(gi, delta);
+
+        Assert.assertEquals(3, patternScore.getNumberOfGenomes());
+
+        // any two genomes are considered similar
+        delta = 0;
+        patternScore = new PatternScore(gi, delta);
+
+        Assert.assertEquals(1, patternScore.getNumberOfGenomes());
+
+        delta = 0.6;
+        patternScore = new PatternScore(gi, delta);
+
+        Assert.assertEquals(2, patternScore.getNumberOfGenomes());
+
+    }
+
+    @Test
+    public void testNumOfInstancesCorrection() throws IOException {
+
+        GenomesInfo gi = Parsers.parseGenomesFile(GENOMES_FILE_PATH);
+
+        double dist = gi.getGenomesDistance(0, 1);
+        double epsilon = 0.001;
+        Collection<Integer> genomeIds = Arrays.asList(0, 1);
+
+        PatternScore patternScore = new PatternScore(gi, dist-epsilon);
+        Assert.assertEquals(1, patternScore.calcCorrectedNumOfGenomes(genomeIds));
+
+        patternScore = new PatternScore(gi, dist+epsilon);
+        Assert.assertEquals(2, patternScore.calcCorrectedNumOfGenomes(genomeIds));
+
     }
 }

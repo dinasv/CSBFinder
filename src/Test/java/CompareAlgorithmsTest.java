@@ -107,7 +107,7 @@ public class CompareAlgorithmsTest {
 
             int index = patternsAlg2.indexOf(pattern);
             Pattern alg2Pattern = patternsAlg2.get(index);
-            Assert.assertEquals(pattern.getInstancesPerGenome(), alg2Pattern.getInstancesPerGenome());
+            Assert.assertEquals(pattern.getInstancesPerGenomeCount(), alg2Pattern.getInstancesPerGenomeCount());
         }
     }
 

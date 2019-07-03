@@ -13,7 +13,7 @@ public enum PatternProperty implements ColumnProperty<Pattern> {
     ID(Pattern::getPatternId, String.class),
     LENGTH(Pattern::getLength, Integer.class),
     SCORE(Pattern::getScore, Double.class),
-    INSTANCE_COUNT(Pattern::getInstancesPerGenome, Integer.class),
+    INSTANCE_COUNT(Pattern::getInstancesPerGenomeCount, Integer.class),
     CSB(Pattern::toString, String.class),
     MAIN_CATEGORY(Pattern::getMainFunctionalCategory, String.class),
     FAMILY_ID(Pattern::getFamilyId, Integer.class),

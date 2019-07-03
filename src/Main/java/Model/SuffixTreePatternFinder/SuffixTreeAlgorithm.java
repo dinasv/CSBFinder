@@ -197,8 +197,8 @@ public class SuffixTreeAlgorithm implements Algorithm {
         Pattern subPattern = patterns.get(subPatternStr);
 
         if (subPattern != null) {
-            int patternCount = pattern.getInstancesPerGenome();
-            int suffixCount = subPattern.getInstancesPerGenome();
+            int patternCount = pattern.getInstancesPerGenomeCount();
+            int suffixCount = subPattern.getInstancesPerGenomeCount();
             if (suffixCount == patternCount) {
                 patternsToRemove.add(subPatternStr);
             }
