@@ -20,7 +20,8 @@ public class CSBFinderRequest implements Request{
     private String geneInfoFilePath = null;
     private boolean multCount = true;
     private boolean nonDirectons = false;
-    private float familyClusterThreshold = 0.8f;
+    private double familyClusterThreshold = 0.8;
+    private double genomesDistanceThreshold = 1;
     private ClusterBy clusterType = ClusterBy.SCORE;
     private ClusterDenominator clusterDenominator = ClusterDenominator.MIN_SET;
     private AlgorithmType algorithmType = AlgorithmType.SUFFIX_TREE;
@@ -105,12 +106,16 @@ public class CSBFinderRequest implements Request{
         this.nonDirectons = nonDirectons;
     }
 
-    public float getFamilyClusterThreshold() {
+    public double getFamilyClusterThreshold() {
         return familyClusterThreshold;
     }
 
-    public void setFamilyClusterThreshold(float familyClusterThreshold) {
+    public void setFamilyClusterThreshold(double familyClusterThreshold) {
         this.familyClusterThreshold = familyClusterThreshold;
+    }
+
+    public void setGenomesDistanceThreshold(double genomesDistanceThreshold) {
+        this.genomesDistanceThreshold = genomesDistanceThreshold;
     }
 
     public ClusterBy getClusterType() {
@@ -175,6 +180,9 @@ public class CSBFinderRequest implements Request{
 
         argList.add("-alg");
         argList.add(algorithmType.toString());
+
+        argList.add("-delta");
+        argList.add(String.valueOf(genomesDistanceThreshold));
 
         if (nonDirectons) {
             argList.add("-non-directons");

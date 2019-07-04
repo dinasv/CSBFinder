@@ -279,8 +279,6 @@ public class Parsers {
             throw new IOException("An exception occurred while reading " + filePath);
         }
 
-        genomesInfo.computeDistancesBetweenGenomesAllVsAll();
-
         return genomesInfo;
 
     }

@@ -104,8 +104,12 @@ public class Parameters {
     @Parameter(names={"-skip-cluster-step"}, description = "Skip the clustering to families step", order = 17)
     public boolean skipClusterStep = false;
 
+    @Parameter(names={"-delta"}, description = "A parameter for score computation. Two genomes with distance above " +
+            "delta are considered similar", order = 18)
+    public double delta = 1;
+
     @Parameter(names={"-procs"}, description = "Number of processes. 0 designates the maximal number of " +
-            "available processes", order = 18)
+            "available processes", order = 19)
     public int procCount = 1;
 
     @Parameter(names={"--mismatch", "-err"}, description = "Maximal number of mismatches allowed", hidden = true)

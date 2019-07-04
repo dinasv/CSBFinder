@@ -167,6 +167,10 @@ public class GenomesInfo {
 
     public void computeDistancesBetweenGenomesAllVsAll(){
 
+        if (distancesBetweenGenomes.length == genomesById.size()){
+            return;
+        }
+
         distancesBetweenGenomes = new double[genomesById.size()][genomesById.size()];
 
         List<Genome> genomes = new ArrayList<>(genomesById.values());

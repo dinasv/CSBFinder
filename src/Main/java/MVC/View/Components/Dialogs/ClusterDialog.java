@@ -19,6 +19,8 @@ import static java.awt.GridBagConstraints.LINE_START;
 
 public class ClusterDialog extends JDialog {
 
+    private final static double CLUSTER_THRESHOLD = 0.8;
+
     private JLabel clusterTypeLabel;
     private JLabel clusterDenominatorLabel;
     private JLabel familyClusterThresholdLabel;
@@ -26,7 +28,8 @@ public class ClusterDialog extends JDialog {
 
     private JList<ClusterBy> clusterTypeField;
     private JList<ClusterDenominator> clusterDenominatorField;
-    private JSlider familyClusterThreshold;
+    private JSpinner familyClusterThresholdSpinner;
+    private JSlider familyClusterThresholdSlider;
 
     private JButton apply;
     private RunListener<CSBFinderRequest> runListener;
@@ -75,7 +78,7 @@ public class ClusterDialog extends JDialog {
 
     private void initRequest(CSBFinderRequest request) {
 
-        request.setFamilyClusterThreshold(familyClusterThreshold.getValue() / 10.0f);
+        request.setFamilyClusterThreshold(familyClusterThresholdSlider.getValue());
         request.setClusterType(clusterTypeField.getSelectedValue());
         request.setClusterDenominator(clusterDenominatorField.getSelectedValue());
 
@@ -91,7 +94,9 @@ public class ClusterDialog extends JDialog {
 
         clusterDenominatorField = new JList<>();
 
-        familyClusterThreshold = new JSlider();
+        familyClusterThresholdSlider = new JSlider();
+
+        familyClusterThresholdSpinner = new JSpinner();
 
     }
 
@@ -129,18 +134,7 @@ public class ClusterDialog extends JDialog {
 
     public void initFields() {
 
-        // family cluster threshold
-        thresholdLabel = new JLabel("0.8");
-        thresholdLabel.setBorder(BorderFactory.createEtchedBorder());
-        familyClusterThreshold.setModel(new DefaultBoundedRangeModel(8, 0, 0, 10));
-        Hashtable<Integer, JLabel> table = new Hashtable<>();
-        table.put(0, new JLabel("0"));
-        table.put(10, new JLabel("1"));
-        familyClusterThreshold.setLabelTable(table);
-        familyClusterThreshold.setPaintLabels(true);
-        familyClusterThreshold.addChangeListener(e -> {
-            thresholdLabel.setText(String.valueOf(familyClusterThreshold.getValue() / 10.0));
-        });
+        setSpinnerSliderDoubleModel(familyClusterThresholdSlider, familyClusterThresholdSpinner, CLUSTER_THRESHOLD);
 
         // Cluster Type
         initEnumList(clusterTypeField, Arrays.asList(ClusterBy.values()));
@@ -148,7 +142,48 @@ public class ClusterDialog extends JDialog {
         // Cluster Denominator
         initEnumList(clusterDenominatorField, Arrays.asList(ClusterDenominator.values()));
 
+    }
 
+    private void setSpinnerSliderDoubleModel(JSlider slider, JSpinner spinner, double defaultVal){
+        int min = 0;
+        int max = 100;
+
+        slider.setModel(new DefaultBoundedRangeModel((int)(defaultVal*max), 0, min, max));
+
+        Hashtable<Integer, JLabel> table = new Hashtable<>();
+        table.put(min, new JLabel(String.valueOf(0)));
+        table.put(max, new JLabel(String.valueOf(1)));
+        slider.setLabelTable(table);
+
+        slider.setPaintLabels(true);
+
+        spinner.setModel(new SpinnerNumberModel(defaultVal, 0, 1, 0.05));
+        setSpinnerWidth(spinner, 3);
+
+        spinner.addChangeListener(e -> slider.setValue((int)((double)spinner.getValue()*max)));
+
+        slider.addChangeListener(e -> spinner.setValue((double) slider.getValue()/max));
+
+    }
+
+    private JFormattedTextField getTextField(JSpinner spinner) {
+        JComponent editor = spinner.getEditor();
+        if (editor instanceof JSpinner.DefaultEditor) {
+            return ((JSpinner.DefaultEditor)editor).getTextField();
+        } else {
+            System.err.println("Unexpected editor type: "
+                    + spinner.getEditor().getClass()
+                    + " isn't a descendant of DefaultEditor");
+            return null;
+        }
+    }
+
+
+    private void setSpinnerWidth(JSpinner spinner, int width){
+        JFormattedTextField textField = getTextField(spinner);
+        if (textField != null ) {
+            textField.setColumns(width);
+        }
     }
 
     private <T extends Enum> void initEnumList(JList<T> jList, List<T> enumValues){
@@ -167,8 +202,8 @@ public class ClusterDialog extends JDialog {
         int y = 0;
 
         addComponentToGC(0, y, 1, 0.2, insetLabel, familyClusterThresholdLabel, LINE_START);
-        addComponentToGC(1, y, 1, 0.2, insetField, familyClusterThreshold, LINE_START);
-        addComponentToGC(2, y++, 1, 0.2, insetField, thresholdLabel, LINE_START);
+        addComponentToGC(1, y, 1, 0.2, insetField, familyClusterThresholdSlider, LINE_START);
+        addComponentToGC(2, y++, 1, 0.2, insetField, familyClusterThresholdSpinner, LINE_START);
 
         addComponentToGC(0, y, 1, 0.2, insetLabel, clusterTypeLabel, FIRST_LINE_START);
         addComponentToGC(1, y++, 1, 0.2, insetField, clusterTypeField, FIRST_LINE_START);

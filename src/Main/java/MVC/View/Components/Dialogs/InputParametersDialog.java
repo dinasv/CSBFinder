@@ -26,6 +26,8 @@ public class InputParametersDialog extends JDialog {
     private final static int MAX_PATTERN_LENGTH_DEF = Integer.MAX_VALUE;
     private final static int MIN_COUNT_DEF = 1;
     private final static int MAX_COUNT_DEF = Integer.MAX_VALUE;
+    private final static double CLUSTER_THRESHOLD = 0.8;
+    private final static double GENOMES_DIST_THRESHOLD = 1;
 
     private final static int TEXT_FIELD_COLS = 13;
 
@@ -39,9 +41,10 @@ public class InputParametersDialog extends JDialog {
     private JLabel patternFilePathLabel;
     //private JLabel bcountLabel;
     private JLabel familyClusterThresholdLabel;
+    private JLabel genomesThresholdLabel;
     private JLabel segmentToDirectonsLabel;
     private JLabel algorithmLabel;
-    private JLabel thresholdLabel;
+    //private JLabel thresholdLabel;
 
     private JList<ClusterBy> clusterTypeField;
     private JList<ClusterDenominator> clusterDenominatorField;
@@ -56,9 +59,12 @@ public class InputParametersDialog extends JDialog {
     private JSpinner maxPatternLengthComponent;
     private JTextField patternFilePath;
     //private JCheckBox bcount;
-    private JSlider familyClusterThreshold;
+    private JSpinner familyClusterThresholdSpinner;
+    private JSlider familyClusterThresholdSlider;
     private JCheckBox segmentToDirectons;
     private JButton loadPatternBtn;
+    private JSpinner genomesDistSpinner;
+    private JSlider genomesDistSlider;
 
     private JButton run;
     private RunListener<CSBFinderRequest> runListener;
@@ -118,7 +124,8 @@ public class InputParametersDialog extends JDialog {
         String patternPath = patternFilePath.getText();
         request.setCsbPatternFilePath("optional".equals(patternPath) || "".equals(patternPath) ? null : patternFilePath.getText());
         //request.setMultCount(bcount.isSelected());
-        request.setFamilyClusterThreshold(familyClusterThreshold.getValue() / 10.0f);
+        request.setFamilyClusterThreshold((double)familyClusterThresholdSpinner.getValue());
+        request.setGenomesDistanceThreshold((double)genomesDistSpinner.getValue());
         request.setClusterType(clusterTypeField.getSelectedValue());
         request.setAlgorithm(algorithmField.getSelectedValue());
         request.setNonDirectons(!segmentToDirectons.isSelected());
@@ -141,20 +148,19 @@ public class InputParametersDialog extends JDialog {
 
         numOfInsertions = new JSpinner();
 
-        //quorumWithoutInsertions = new JSpinner();
-        //quorumWithoutInsertionsSlider = new JSlider();
-
         minPatternLength = new JSpinner();
 
         maxPatternLengthComponent = new JSpinner();
 
         patternFilePath = new JTextField();
 
-        //bcount = new JCheckBox();
-
         segmentToDirectons = new JCheckBox();
 
-        familyClusterThreshold = new JSlider();
+        familyClusterThresholdSpinner = new JSpinner();
+        familyClusterThresholdSlider = new JSlider();
+
+        genomesDistSpinner = new JSpinner();
+        genomesDistSlider = new JSlider();
 
         loadPatternBtn = new JButton("Load File");
         loadPatternBtn.addActionListener(e -> {
@@ -232,6 +238,11 @@ public class InputParametersDialog extends JDialog {
         desc = "Threshold used in the process of clustering CSBs to families.";
         familyClusterThresholdLabel = initLabel(icon, labelName, desc);
 
+        labelName = "Genomes Distance Threshold";
+        desc = "In the computation of CSB score, two genomes with distance larger than this threshold are considered " +
+                "to be from the same phylogenetic group.";
+        genomesThresholdLabel = initLabel(icon, labelName, desc);
+
         labelName = "Cluster CSBs By";
         desc = "In the greedy CSB clustering to families, CSBs are sorted based on 'score' or 'length'.";
         clusterTypeLabel = initLabel(icon, labelName, desc);
@@ -267,15 +278,7 @@ public class InputParametersDialog extends JDialog {
         numOfInsertions.setModel(new SpinnerNumberModel(0, 0, 100, 1));
         setSpinnerWidth(numOfInsertions, TEXT_FIELD_COLS);
 
-        setQuorumModel(MIN_COUNT_DEF, MAX_COUNT_DEF);
-        // Quorum without insertions
-        /*
-        quorumWithoutInsertions.setModel(new SpinnerNumberModel(1, 1, 2000, 1));
-        ((JSpinner.DefaultEditor)quorumWithoutInsertions.getEditor()).getTextField().setColumns(3);
-        quorumWithoutInsertionsSlider.setModel(new DefaultBoundedRangeModel(1, 0, 1, 2000));
-        quorumWithoutInsertions.addChangeListener(e -> quorumWithoutInsertionsSlider.setValue((Integer) quorumWithoutInsertions.getValue()));
-        quorumWithoutInsertionsSlider.addChangeListener(e -> quorumWithoutInsertions.setValue(quorumWithoutInsertionsSlider.getValue()));
-        */
+        setSpinnerSliderModel(quorum, quorumSlider, MIN_COUNT_DEF, MAX_COUNT_DEF);
 
         setPatternLengthModels(MIN_PATTERN_LENGTH_DEF, MAX_PATTERN_LENGTH_DEF);
 
@@ -283,21 +286,9 @@ public class InputParametersDialog extends JDialog {
         patternFilePath.setText("optional");
         patternFilePath.setColumns(TEXT_FIELD_COLS);
 
-        // bcount
-        //bcount.setSelected(true);
+        setSpinnerSliderDoubleModel(familyClusterThresholdSlider, familyClusterThresholdSpinner, CLUSTER_THRESHOLD);
 
-        // family cluster threshold
-        thresholdLabel = new JLabel("0.8");
-        thresholdLabel.setBorder(BorderFactory.createEtchedBorder());
-        familyClusterThreshold.setModel(new DefaultBoundedRangeModel(8, 0, 0, 10));
-        Hashtable<Integer, JLabel> table = new Hashtable<>();
-        table.put(0, new JLabel("0"));
-        table.put(10, new JLabel("1"));
-        familyClusterThreshold.setLabelTable(table);
-        familyClusterThreshold.setPaintLabels(true);
-        familyClusterThreshold.addChangeListener(e -> {
-            thresholdLabel.setText(String.valueOf(familyClusterThreshold.getValue() / 10.0));
-        });
+        setSpinnerSliderDoubleModel(genomesDistSlider, genomesDistSpinner, GENOMES_DIST_THRESHOLD);
 
         // Cluster Type
         initEnumList(clusterTypeField, Arrays.asList(ClusterBy.values()));
@@ -311,14 +302,34 @@ public class InputParametersDialog extends JDialog {
         segmentToDirectons.setSelected(true);
     }
 
-    private void setQuorumModel(int min, int max){
-        // Quorum
-        quorum.setModel(new SpinnerNumberModel(min, min, max, 1));
-        setSpinnerWidth(quorum, 3);
-        quorumSlider.setModel(new DefaultBoundedRangeModel(min, 0, min, max));
-        quorum.addChangeListener(e -> quorumSlider.setValue((Integer) quorum.getValue()));
-        quorumSlider.addChangeListener(e -> quorum.setValue(quorumSlider.getValue()));
+    private void setSpinnerSliderDoubleModel(JSlider slider, JSpinner spinner, double defaultVal){
+        int min = 0;
+        int max = 100;
 
+        slider.setModel(new DefaultBoundedRangeModel((int)(defaultVal*max), 0, min, max));
+
+        Hashtable<Integer, JLabel> table = new Hashtable<>();
+        table.put(min, new JLabel(String.valueOf(0)));
+        table.put(max, new JLabel(String.valueOf(1)));
+        slider.setLabelTable(table);
+
+        slider.setPaintLabels(true);
+
+        spinner.setModel(new SpinnerNumberModel(defaultVal, 0, 1, 0.05));
+        setSpinnerWidth(spinner, 3);
+
+        spinner.addChangeListener(e -> slider.setValue((int)((double)spinner.getValue()*max)));
+
+        slider.addChangeListener(e -> spinner.setValue((double) slider.getValue()/max));
+
+    }
+
+    private void setSpinnerSliderModel(JSpinner spinner, JSlider slider, int min, int max){
+        spinner.setModel(new SpinnerNumberModel(min, min, max, 1));
+        setSpinnerWidth(spinner, 3);
+        slider.setModel(new DefaultBoundedRangeModel(min, 0, min, max));
+        spinner.addChangeListener(e -> slider.setValue((int) spinner.getValue()));
+        slider.addChangeListener(e -> spinner.setValue(slider.getValue()));
     }
 
     private void setPatternLengthModels(int min, int max){
@@ -379,21 +390,21 @@ public class InputParametersDialog extends JDialog {
         addComponentToGC(1, y, 1, 0.2, insetField, patternFilePath, LINE_START);
         addComponentToGC(2, y++, 1, 0.2, insetField, loadPatternBtn, LINE_START);
 
-        /*
-        addComponentToGC(0, y, 1, 0.1, insetLabel, bcountLabel, LINE_START);
-        addComponentToGC(1, y++, 1, 0.1, insetField, bcount, LINE_START);
-        */
         addComponentToGC(0, y, 1, 0.2, insetLabel, algorithmLabel, FIRST_LINE_START);
         addComponentToGC(1, y++, 1, 0.2, insetField, algorithmField, FIRST_LINE_START);
         addComponentToGC(1, y++, 1, 1, insetField, new JLabel(""), FIRST_LINE_START);
+
+        addComponentToGC(0, y, 1, 0.2, insetLabel, genomesThresholdLabel, LINE_START);
+        addComponentToGC(1, y, 1, 0.2, insetField, genomesDistSlider, LINE_START);
+        addComponentToGC(2, y++, 1, 0.2, insetField, genomesDistSpinner, LINE_START);
 
         title = new JLabel("Clustering to families parameters:");
         title.setFont(new Font(title.getFont().getName(), Font.BOLD, 16));
         addComponentToGC(0, y++, 1, 0.6, insetLabel, title, LINE_START);
 
         addComponentToGC(0, y, 1, 0.2, insetLabel, familyClusterThresholdLabel, LINE_START);
-        addComponentToGC(1, y, 1, 0.2, insetField, familyClusterThreshold, LINE_START);
-        addComponentToGC(2, y++, 1, 0.2, insetField, thresholdLabel, LINE_START);
+        addComponentToGC(1, y, 1, 0.2, insetField, familyClusterThresholdSlider, LINE_START);
+        addComponentToGC(2, y++, 1, 0.2, insetField, familyClusterThresholdSpinner, LINE_START);
 
         addComponentToGC(0, y, 1, 0.2, insetLabel, clusterTypeLabel, FIRST_LINE_START);
         addComponentToGC(1, y++, 1, 0.2, insetField, clusterTypeField, FIRST_LINE_START);
@@ -421,7 +432,7 @@ public class InputParametersDialog extends JDialog {
         if (numberOfGenomes > 0) {
             setPatternLengthModels(MIN_PATTERN_LENGTH_DEF, maxGenomeSize);
 
-            setQuorumModel(MIN_COUNT_DEF, numberOfGenomes);
+            setSpinnerSliderModel(quorum, quorumSlider, MIN_COUNT_DEF, numberOfGenomes);
         }
     }
 
