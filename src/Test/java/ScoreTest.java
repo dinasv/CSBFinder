@@ -88,6 +88,7 @@ public class ScoreTest {
     public void testNumOfGenomesCorrection() throws IOException {
 
         GenomesInfo gi = Parsers.parseGenomesFile(GENOMES_FILE_PATH);
+        gi.computeDistancesBetweenGenomesAllVsAll();
 
         // all genomes are independent
         double delta = 1;
@@ -112,6 +113,7 @@ public class ScoreTest {
     public void testNumOfInstancesCorrection() throws IOException {
 
         GenomesInfo gi = Parsers.parseGenomesFile(GENOMES_FILE_PATH);
+        gi.computeDistancesBetweenGenomesAllVsAll();
 
         double dist = gi.getGenomesDistance(0, 1);
         double epsilon = 0.001;

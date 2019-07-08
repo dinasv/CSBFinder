@@ -10,6 +10,7 @@ public class GenomeParsingTest {
     public void testRefGenomesEqualOutput() throws Exception {
 
         GenomesInfo gi = Parsers.parseGenomesFile(GENOMES_FILE_PATH);
+        gi.computeDistancesBetweenGenomesAllVsAll();
 
         double DELTA = 0.001;
         Assert.assertEquals(0.8, gi.getGenomesDistance(0, 1), DELTA);
