@@ -95,7 +95,9 @@ public class CSBFinderWorkflow {
 
     private void computeScores(List<Pattern> patterns){
 
-        gi.computeDistancesBetweenGenomesAllVsAll();
+        if (params.delta != 1) {
+            gi.computeDistancesBetweenGenomesAllVsAll();
+        }
         PatternScore patternScore = new PatternScore(gi, params.delta);
 
         for (Pattern pattern : patterns) {

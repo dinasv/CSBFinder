@@ -80,7 +80,7 @@ public class PatternScore {
 
     public int calcCorrectedNumOfGenomes(Collection<Integer> genomeIds){
 
-        if (genomesInfo == null){
+        if (genomesInfo == null || delta == 1){
             return -1;
         }
 
