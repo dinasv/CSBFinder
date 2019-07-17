@@ -2,7 +2,7 @@ package MVC.View.Requests;
 
 import MVC.View.Components.Dialogs.BooleanOperator;
 import MVC.View.Components.Dialogs.FunctionalCategoryOption;
-import MVC.View.Models.Filters.PatternStrand;
+import MVC.View.Tables.Filters.PatternStrand;
 
 import java.util.Optional;
 

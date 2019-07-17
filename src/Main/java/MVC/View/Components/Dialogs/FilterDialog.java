@@ -2,7 +2,7 @@ package MVC.View.Components.Dialogs;
 
 import MVC.View.Events.RunEvent;
 import MVC.View.Listeners.RunListener;
-import MVC.View.Models.Filters.PatternStrand;
+import MVC.View.Tables.Filters.PatternStrand;
 import MVC.View.Requests.FilterRequest;
 
 import javax.swing.*;
@@ -213,11 +213,9 @@ public class FilterDialog extends JDialog{
     }
 
     private void setClearAllActionListner(){
-        clearAll.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                initFields();
-                request.initAllFields();
-            }
+        clearAll.addActionListener(e -> {
+            initFields();
+            request.initAllFields();
         });
     }
 

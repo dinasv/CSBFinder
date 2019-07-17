@@ -106,9 +106,9 @@ public class CSBSummaryPanel extends JPanel {
 
                         int startIndex = doc.getLength();
 
-                        doc.insertString(doc.getLength(), cog.getCogID(), textStyle);
+                        doc.insertString(doc.getLength(), cog.getCogId(), textStyle);
                         //sb.append(cog.getCogID());
-                        highlightInfos.add(new HighlightInfo(startIndex, doc.getLength(), colorsUsed.get(cog.getCogID())));
+                        highlightInfos.add(new HighlightInfo(startIndex, doc.getLength(), colorsUsed.get(cog.getCogId())));
 
                         StringBuilder sb = new StringBuilder();
                         sb.append(" ");

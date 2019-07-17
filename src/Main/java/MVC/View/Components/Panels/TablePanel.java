@@ -3,8 +3,8 @@ package MVC.View.Components.Panels;
 import Model.PostProcess.Family;
 import MVC.View.Events.RowClickedEvent;
 import MVC.View.Listeners.RowClickedListener;
-import MVC.View.Models.ColumnProperty;
-import MVC.View.Models.CSBFinderTableModel;
+import MVC.View.Tables.ColumnProperty;
+import MVC.View.Tables.CSBFinderTableModel;
 
 import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;

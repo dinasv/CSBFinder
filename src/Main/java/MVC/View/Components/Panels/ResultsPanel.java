@@ -1,11 +1,11 @@
 package MVC.View.Components.Panels;
 
+import MVC.View.Tables.FamilyProperty;
 import Model.Patterns.Pattern;
 import Model.PostProcess.Family;
 import MVC.View.Events.OpenDialogEvent;
 import MVC.View.Listeners.Listener;
 import MVC.View.Listeners.RowClickedListener;
-import MVC.View.Models.*;
 
 import javax.swing.*;
 import java.awt.*;
@@ -20,29 +20,29 @@ public class ResultsPanel extends JPanel {
 
     private static final double FAMILIES_PANEL_WEIGHT = 0.3;
 
-    private static PatternProperty[] patternsColumns = {
-            PatternProperty.ID,
-            PatternProperty.LENGTH,
-            PatternProperty.SCORE,
-            PatternProperty.INSTANCE_COUNT,
-            PatternProperty.CSB,
-            PatternProperty.MAIN_CATEGORY,
+    private static MVC.View.Tables.PatternProperty[] patternsColumns = {
+            MVC.View.Tables.PatternProperty.ID,
+            MVC.View.Tables.PatternProperty.LENGTH,
+            MVC.View.Tables.PatternProperty.SCORE,
+            MVC.View.Tables.PatternProperty.INSTANCE_COUNT,
+            MVC.View.Tables.PatternProperty.CSB,
+            MVC.View.Tables.PatternProperty.MAIN_CATEGORY,
     };
 
-    private static FamilyProperty[] familyColumns = {
-            FamilyProperty.FAMILY_ID,
-            FamilyProperty.SCORE,
-            FamilyProperty.LONGEST_MEMBER,
-            FamilyProperty.MEMBERS,
+    private static MVC.View.Tables.FamilyProperty[] familyColumns = {
+            MVC.View.Tables.FamilyProperty.FAMILY_ID,
+            MVC.View.Tables.FamilyProperty.SCORE,
+            MVC.View.Tables.FamilyProperty.LONGEST_MEMBER,
+            MVC.View.Tables.FamilyProperty.MEMBERS,
     };
 
     public ResultsPanel(ImageIcon filterIcon) {
 
-        PatternsTableModel patternsTableModel = new PatternsTableModel(patternsColumns);
-        FamilyTableModel familyTableModel = new FamilyTableModel(familyColumns);
+        MVC.View.Tables.PatternsTableModel patternsTableModel = new MVC.View.Tables.PatternsTableModel(patternsColumns);
+        MVC.View.Tables.FamilyTableModel familyTableModel = new MVC.View.Tables.FamilyTableModel(familyColumns);
 
         familiesPanel = new TablePanel<>(FamilyProperty.FAMILY_ID, familyTableModel);
-        familyPatternsPanel = new TablePanel<>(PatternProperty.ID, patternsTableModel);
+        familyPatternsPanel = new TablePanel<>(MVC.View.Tables.PatternProperty.ID, patternsTableModel);
 
         setLayout(new BorderLayout(2,2));
         setSplitPane();

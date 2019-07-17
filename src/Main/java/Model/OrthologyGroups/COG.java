@@ -22,19 +22,12 @@ public class COG{
         geneName = "";
     }
 
-    public COG(COG other, String cogDesc){
-        this.cogId = cogId;
-        this.cogDesc = cogDesc;
-    }
     public String getCogId() {
         return cogId;
     }
+
     public void setFunctionalLetters(String[] functionalLetters){
         this.functionalLetters = functionalLetters;
-    }
-
-    public String getCogID(){
-        return cogId;
     }
 
     public String getCogDesc(){

@@ -1,4 +1,4 @@
-package MVC.View.Models.Filters;
+package MVC.View.Tables.Filters;
 
 /**
  */

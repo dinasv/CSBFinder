@@ -1,4 +1,4 @@
-package MVC.View.Models;
+package MVC.View.Tables;
 
 import Model.PostProcess.Family;
 

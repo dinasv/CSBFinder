@@ -14,7 +14,7 @@ import Model.Genomes.Gene;
 import Model.OrthologyGroups.COG;
 import Model.Patterns.Pattern;
 import Model.PostProcess.Family;
-import MVC.View.Models.Filters.FamiliesFilter;
+import MVC.View.Tables.Filters.FamiliesFilter;
 import MVC.View.Requests.FilterRequest;
 
 import javax.swing.*;
@@ -24,7 +24,6 @@ import java.util.*;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -271,7 +270,7 @@ public class MainFrame extends JFrame {
                 String msg = "";
 
                 @Override
-                protected Void doInBackground() throws Exception {
+                protected Void doInBackground() {
                     clearPanels();
                     msg = controller.clusterToFamilies(request.getFamilyClusterThreshold(),
                             request.getClusterType(), request.getClusterDenominator());
@@ -303,7 +302,7 @@ public class MainFrame extends JFrame {
                 String msg = "";
 
                 @Override
-                protected Void doInBackground() throws Exception {
+                protected Void doInBackground() {
                     clearPanels();
                     request.setInputGenomeFilesPath(controller.getInputGenomesPath());
                     msg = controller.findCSBs(request);
@@ -379,7 +378,7 @@ public class MainFrame extends JFrame {
 
                     SwingWorker<Void, Void> swingWorker = new SwingWorker<Void, Void>() {
                         @Override
-                        protected Void doInBackground() throws Exception {
+                        protected Void doInBackground() {
                             msg = controller.saveOutputFiles(e.getOutputType(), e.getOutputDirectory(),
                                     e.getDatasetName(), familiesFilter.getFilteredFamilies());
                             return null;
@@ -490,7 +489,7 @@ public class MainFrame extends JFrame {
                     String msg = "";
 
                     @Override
-                    protected Void doInBackground() throws Exception {
+                    protected Void doInBackground() {
 
                         msg = controller.loadCogInfo(f.getPath());
                         return null;
@@ -554,8 +553,8 @@ public class MainFrame extends JFrame {
         genomesPanel.setGeneTooltipListener(event -> {
             COG cog = controller.getCogInfo(event.getCogId());
             if (cog != null){
-                event.getSrc().setToolTipText(String.format("<html>%s<br>%s</html>",
-                        String.join("/", cog.getFunctionalCategories()), cog.getCogDesc()));
+                event.getSrc().setToolTipText(String.format("<html>%s<br>%s | %s</html>",
+                        String.join("/", cog.getFunctionalCategories()), cog.getCogDesc(), cog.getGeneName()));
             }
         });
     }

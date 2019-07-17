@@ -1,13 +1,13 @@
-package MVC.View.Models.Filters;
+package MVC.View.Tables.Filters;
 
 import MVC.View.Components.Dialogs.BooleanOperator;
 import MVC.View.Components.Dialogs.FunctionalCategoryOption;
+import MVC.View.Tables.ColumnProperty;
 import Model.Genomes.Gene;
 import Model.Patterns.Pattern;
 import Model.PostProcess.Family;
-import MVC.View.Models.ColumnProperty;
-import MVC.View.Models.FamilyProperty;
-import MVC.View.Models.PatternProperty;
+import MVC.View.Tables.FamilyProperty;
+import MVC.View.Tables.PatternProperty;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -75,7 +75,7 @@ public class FamiliesFilter {
         patternFilters.add(orFilter);
     }
 
-    public void setStrand(PatternStrand patternStrand) {
+    public void setStrand(MVC.View.Tables.Filters.PatternStrand patternStrand) {
         patternFilters.add(new StrandFilter(patternStrand));
     }
 
@@ -202,9 +202,9 @@ public class FamiliesFilter {
 
         private Integer value;
         private NumberComparison numberComparison;
-        private ColumnProperty<T> patternProperty;
+        private MVC.View.Tables.ColumnProperty<T> patternProperty;
 
-        NumberFilter(int value, NumberComparison numberComparison, ColumnProperty<T> patternProperty) {
+        NumberFilter(int value, NumberComparison numberComparison, MVC.View.Tables.ColumnProperty<T> patternProperty) {
             this.value = value;
             this.patternProperty = patternProperty;
             this.numberComparison = numberComparison;
@@ -212,7 +212,7 @@ public class FamiliesFilter {
 
         @Override
         public boolean include(T obj) {
-            Function<T, ? extends Object> function = patternProperty.getFunction();
+            Function<T, ?> function = patternProperty.getFunction();
 
             Object result = function.apply(obj);
             if (result instanceof Number) {
@@ -226,9 +226,9 @@ public class FamiliesFilter {
 
     private class StrandFilter implements Filter<Pattern> {
 
-        private PatternStrand patternStrand;
+        private MVC.View.Tables.Filters.PatternStrand patternStrand;
 
-        public StrandFilter(PatternStrand patternStrand) {
+        public StrandFilter(MVC.View.Tables.Filters.PatternStrand patternStrand) {
             this.patternStrand = patternStrand;
         }
 
@@ -240,11 +240,8 @@ public class FamiliesFilter {
 
         @Override
         public boolean include(Pattern pattern) {
-            if (patternStrand == PatternStrand.ALL ||
-                    isMultiStrand(pattern.getPatternGenes()) == patternStrand.isMultiStrand) {
-                return true;
-            }
-            return false;
+            return patternStrand == PatternStrand.ALL ||
+                    isMultiStrand(pattern.getPatternGenes()) == patternStrand.isMultiStrand;
         }
     }
 
@@ -254,7 +251,7 @@ public class FamiliesFilter {
 
         protected Function<T, ?> propertyFunction;
 
-        StringFilter(String str, ColumnProperty<T> patternProperty) {
+        StringFilter(String str, MVC.View.Tables.ColumnProperty<T> patternProperty) {
             strToFind = str;
             this.propertyFunction = patternProperty.getFunction();
         }
@@ -262,7 +259,7 @@ public class FamiliesFilter {
 
     private class MatchStringFilter<T> extends StringFilter<T> {
 
-        public MatchStringFilter(String str, ColumnProperty<T> patternProperty) {
+        public MatchStringFilter(String str, MVC.View.Tables.ColumnProperty<T> patternProperty) {
             super(str, patternProperty);
         }
 
@@ -293,7 +290,7 @@ public class FamiliesFilter {
         Function<E, String> preprocessFunction;
         Class<E> paramType;
 
-        public ContainsStringFilterPreprocess(String str, ColumnProperty<T> patternProperty,
+        public ContainsStringFilterPreprocess(String str, MVC.View.Tables.ColumnProperty<T> patternProperty,
                                               Function<E, String> preprocessFunction, Class<E> paramType) {
             super(str, patternProperty);
             this.preprocessFunction = preprocessFunction;
