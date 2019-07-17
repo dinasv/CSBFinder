@@ -92,7 +92,7 @@ public class InstancesPanel extends JPanel {
         }
     }
 
-    public void setData(Pattern pattern, Map<Integer, List<InstanceLocation>> genomeToInstances) {
+    public void setData(Pattern pattern, List<Map.Entry<String, List<InstanceLocation>>> genomeToInstances) {
 
         rows.clear();
 
@@ -102,7 +102,7 @@ public class InstancesPanel extends JPanel {
         List<GenesInstance> genesInstanceInnerList;
         int x;
         int y = 0;
-        for (Map.Entry<Integer, List<InstanceLocation>> genomeInstances: genomeToInstances.entrySet()) {
+        for (Map.Entry<String, List<InstanceLocation>> genomeInstances: genomeToInstances) {
             x = 0;
 
             List<InstanceLocation> locationsInGenome = genomeInstances.getValue();

@@ -25,7 +25,7 @@ public class GenomePanelContainer extends JPanel {
     private ViewMode viewMode;
     private int scrollWidth;
     private Pattern patternInView;
-    private Map<Integer, List<InstanceLocation>> genomeToInstances;
+    private List<Map.Entry<String, List<InstanceLocation>>> genomeToInstances;
 
     public GenomePanelContainer(Map<String, Color> colorsUsed){
 
@@ -47,7 +47,7 @@ public class GenomePanelContainer extends JPanel {
 
         genomesInfo = null;
         patternInView = null;
-        genomeToInstances = new HashMap<>();
+        genomeToInstances = new ArrayList<>();
 
         scrollWidth = 0;
     }
@@ -95,11 +95,21 @@ public class GenomePanelContainer extends JPanel {
         genomeNames.add("CSB");//first label
 
         genomeToInstances = pattern.getPatternLocations().getSortedLocations().stream()
-                .collect(Collectors.groupingBy(InstanceLocation::getGenomeId));
+                .collect(Collectors.groupingBy(location -> genomesInfo.getGenomeName(location.getGenomeId())))
+                .entrySet().stream()
+                .sorted(Comparator.comparing(Map.Entry::getKey))
+                .collect(Collectors.toList());
 
-        genomeNames.addAll(genomeToInstances.keySet()
+        /*
+        List<Map.Entry<String, List<InstanceLocation>>> instances =  genomeToInstances.entrySet().stream()
+                .map(e -> new AbstractMap.SimpleEntry<>(genomesInfo.getGenomeName(e.getKey()), e.getValue()))
+                .sorted(Comparator.comparing(AbstractMap.SimpleEntry::getKey))
+                .collect(Collectors.toList());
+        */
+
+        genomeNames.addAll(genomeToInstances
                 .stream()
-                .map(key -> genomesInfo.getGenomeName(key))
+                .map(Map.Entry::getKey)
                 .collect(Collectors.toList()));
 
         instancesPanel.setData(pattern, genomeToInstances);

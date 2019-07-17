@@ -78,7 +78,7 @@ public class ClusterDialog extends JDialog {
 
     private void initRequest(CSBFinderRequest request) {
 
-        request.setFamilyClusterThreshold(familyClusterThresholdSlider.getValue());
+        request.setFamilyClusterThreshold((double)familyClusterThresholdSpinner.getValue());
         request.setClusterType(clusterTypeField.getSelectedValue());
         request.setClusterDenominator(clusterDenominatorField.getSelectedValue());
 
