@@ -28,8 +28,8 @@ public class LabelShape implements Shape{
     }
 
     @Override
-    public String getTooltip(Point point) {
-        return "";
+    public Shape getShapeWithPoint(Point point) {
+        return this;
     }
 
     public int getLabelHeight(Graphics g){
@@ -50,6 +50,10 @@ public class LabelShape implements Shape{
 
     public Label getLabel(){
         return label;
+    }
+
+    public int getX(){
+        return x;
     }
 
 }

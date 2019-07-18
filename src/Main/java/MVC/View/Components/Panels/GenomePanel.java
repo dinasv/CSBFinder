@@ -1,8 +1,11 @@
 package MVC.View.Components.Panels;
 
+import MVC.View.Components.Shapes.GeneShape;
+import MVC.View.Events.DoubleClickGeneEvent;
 import Model.Genomes.GenomesInfo;
+import Model.Genomes.Strand;
 import Model.Patterns.Pattern;
-import MVC.View.Events.GeneTooltipEvent;
+import MVC.View.Events.TooltipGeneEvent;
 import MVC.View.Listeners.Listener;
 
 import javax.swing.*;
@@ -63,7 +66,17 @@ public class GenomePanel extends JPanel {
         return viewInstancesPanel.getColorsUsed();
     }
 
-    public void setGeneTooltipListener(Listener<GeneTooltipEvent> geneTooltipListener) {
+    public void setGeneTooltipListener(Listener<TooltipGeneEvent> geneTooltipListener) {
         viewInstancesPanel.setGeneTooltipListener(geneTooltipListener);
     }
+
+    public void setGeneDoubleClickListener(Listener<DoubleClickGeneEvent> geneDoubleClickListener) {
+        viewInstancesPanel.setGeneDoubleClickListener(geneDoubleClickListener);
+    }
+
+    public void alignGenes(GeneShape anchorGene, int viewX){
+        viewInstancesPanel.alignGenes(anchorGene, viewX);
+    }
+
+
 }

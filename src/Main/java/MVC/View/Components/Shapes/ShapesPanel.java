@@ -1,10 +1,14 @@
 package MVC.View.Components.Shapes;
 
-import MVC.View.Events.GeneTooltipEvent;
+import MVC.View.Events.DoubleClickGeneEvent;
+import MVC.View.Events.TooltipGeneEvent;
 import MVC.View.Listeners.Listener;
+import com.beust.jcommander.internal.Lists;
 
 import java.awt.*;
+import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.Collections;
 import java.util.List;
 
 import java.util.ArrayList;
@@ -18,7 +22,8 @@ public class ShapesPanel extends JPanel{
     private int containersDist;
     private int panelHeight;
 
-    private Listener<GeneTooltipEvent> geneTooltipListener;
+    private Listener<TooltipGeneEvent> geneTooltipListener;
+    private Listener<DoubleClickGeneEvent> doubleClickListener;
 
     public ShapesPanel(List<List<GenesInstance>> shapesInstanceList, int containersDist, Color backgroundColor) {
 
@@ -31,6 +36,25 @@ public class ShapesPanel extends JPanel{
         setPanelSize();
 
         addShapes();
+
+        addMouseListener(new MouseAdapter(){
+            @Override
+            public void mouseClicked(MouseEvent e){
+                if(e.getClickCount()==2){
+                    doubleClickEventOccured(e);
+                }
+            }
+        });
+    }
+
+    private void doubleClickEventOccured(MouseEvent e){
+        for (Shape shape : shapes) {
+            if (shape.containsPoint(e.getPoint())) {
+                doubleClickListener.eventOccurred(
+                        new DoubleClickGeneEvent(this, shape.getShapeWithPoint(e.getPoint())));
+                break;
+            }
+        }
     }
 
     private void setPanelSize(){
@@ -68,6 +92,7 @@ public class ShapesPanel extends JPanel{
             }
         }
         repaint();
+        revalidate();
     }
 
     private void addDiagonalLine(int x, int sameRepliconInstanceCount, GenesInstance genesInstance,
@@ -107,15 +132,22 @@ public class ShapesPanel extends JPanel{
         setPreferredSize(new Dimension(width, panelHeight));
     }
 
+
+
     @Override
     public String getToolTipText(MouseEvent event) {
+        tooltipGeneEventOccured(event, geneTooltipListener);
+        return super.getToolTipText(event);
+        //return null;
+    }
+
+    private void tooltipGeneEventOccured(MouseEvent event, Listener<TooltipGeneEvent> listener){
         for (Shape shape : shapes) {
             if (shape.containsPoint(event.getPoint())) {
-                geneTooltipListener.eventOccurred(new GeneTooltipEvent(this, shape.getTooltip(event.getPoint())));
-                return super.getToolTipText(event);
+                listener.eventOccurred(new TooltipGeneEvent(this, shape.getShapeWithPoint(event.getPoint())));
+                break;
             }
         }
-        return null;
     }
 
 
@@ -132,8 +164,35 @@ public class ShapesPanel extends JPanel{
         return panelHeight;
     }
 
-    public void setGeneTooltipListener(Listener<GeneTooltipEvent> geneTooltipListener) {
+    public void setGeneTooltipListener(Listener<TooltipGeneEvent> geneTooltipListener) {
         this.geneTooltipListener = geneTooltipListener;
+    }
+
+    public void setDoubleClickListener(Listener<DoubleClickGeneEvent> doubleClickListener) {
+        this.doubleClickListener = doubleClickListener;
+    }
+
+    public GeneShape getGeneShapeWithLabel(String anchorGeneLabel){
+        if (shapesInstanceList.size() == 0 || shapesInstanceList.get(0).size() == 0) {
+            return null;
+        }
+
+        GenesInstance instance = shapesInstanceList.get(0).get(0);
+        return instance.getGeneShapeWithLabel(anchorGeneLabel);
+
+    }
+
+    public void reverse(){
+        for (List<GenesInstance> instances : shapesInstanceList){
+            for (GenesInstance genesInstance : instances){
+                genesInstance.reverse();
+            }
+        }
+
+        shapes.clear();
+
+        addShapes();
+
     }
 
 }

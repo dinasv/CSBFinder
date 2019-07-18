@@ -1,9 +1,12 @@
 package MVC.View.Components.Panels;
 
+import MVC.View.Components.Shapes.GeneShape;
+import MVC.View.Events.DoubleClickGeneEvent;
 import Model.Genomes.GenomesInfo;
+import Model.Genomes.Strand;
 import Model.Patterns.InstanceLocation;
 import Model.Patterns.Pattern;
-import MVC.View.Events.GeneTooltipEvent;
+import MVC.View.Events.TooltipGeneEvent;
 import MVC.View.Listeners.Listener;
 
 import javax.swing.*;
@@ -100,13 +103,6 @@ public class GenomePanelContainer extends JPanel {
                 .sorted(Comparator.comparing(Map.Entry::getKey))
                 .collect(Collectors.toList());
 
-        /*
-        List<Map.Entry<String, List<InstanceLocation>>> instances =  genomeToInstances.entrySet().stream()
-                .map(e -> new AbstractMap.SimpleEntry<>(genomesInfo.getGenomeName(e.getKey()), e.getValue()))
-                .sorted(Comparator.comparing(AbstractMap.SimpleEntry::getKey))
-                .collect(Collectors.toList());
-        */
-
         genomeNames.addAll(genomeToInstances
                 .stream()
                 .map(Map.Entry::getKey)
@@ -135,9 +131,19 @@ public class GenomePanelContainer extends JPanel {
         return instancesPanel.getColorsUsed();
     }
 
-    public void setGeneTooltipListener(Listener<GeneTooltipEvent> geneTooltipListener) {
+    public void setGeneTooltipListener(Listener<TooltipGeneEvent> geneTooltipListener) {
         this.instancesPanel.setGeneTooltipListener(geneTooltipListener);
     }
+
+    public void setGeneDoubleClickListener(Listener<DoubleClickGeneEvent> geneTooltipListener) {
+        this.instancesPanel.setDoubleClickListener(geneTooltipListener);
+    }
+
+    public void alignGenes(GeneShape anchorGene, int viewX){
+        instancesPanel.alignPanels(anchorGene, viewX);
+    }
+
+
 
     private enum ViewMode {
         PATTERNS,

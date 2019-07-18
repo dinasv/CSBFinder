@@ -29,8 +29,12 @@ public class DiagLinesShape implements Shape{
     }
 
     @Override
-    public String getTooltip(Point point) {
-        return "";
+    public Shape getShapeWithPoint(Point point) {
+        return this;
+    }
+
+    public int getX(){
+        return x1;
     }
 
 }

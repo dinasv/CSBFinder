@@ -1,14 +1,12 @@
 package MVC.View.Components.Panels;
 
-import Model.Genomes.Genome;
-import Model.Genomes.GenomesInfo;
-import Model.Genomes.Replicon;
+import MVC.View.Events.DoubleClickGeneEvent;
+import Model.Genomes.*;
 import Model.Patterns.InstanceLocation;
 import Model.Patterns.Pattern;
 import MVC.View.Components.Shapes.*;
 import MVC.View.Components.Shapes.Label;
-import Model.Genomes.Gene;
-import MVC.View.Events.GeneTooltipEvent;
+import MVC.View.Events.TooltipGeneEvent;
 import MVC.View.Listeners.Listener;
 
 import javax.swing.*;
@@ -40,7 +38,9 @@ public class InstancesPanel extends JPanel {
 
     private int numOfNeighbors;
 
-    private Listener<GeneTooltipEvent> geneTooltipListener;
+    private Listener<TooltipGeneEvent> geneTooltipListener;
+
+    private Listener<DoubleClickGeneEvent> doubleClickListener;
 
     public InstancesPanel(Map<String, Color> colorsUsed) {
 
@@ -51,6 +51,7 @@ public class InstancesPanel extends JPanel {
         this.firstRowHeight = 0;
 
         rows = new ArrayList<>();
+        //rowsPanels = new ArrayList<>();
 
         this.colorsUsed = colorsUsed;
 
@@ -129,8 +130,12 @@ public class InstancesPanel extends JPanel {
         }
     }
 
-    public void setGeneTooltipListener(Listener<GeneTooltipEvent> geneTooltipListener) {
+    public void setGeneTooltipListener(Listener<TooltipGeneEvent> geneTooltipListener) {
         this.geneTooltipListener = geneTooltipListener;
+    }
+
+    public void setDoubleClickListener(Listener<DoubleClickGeneEvent> doubleClickListener) {
+        this.doubleClickListener = doubleClickListener;
     }
 
     private void addPatternRow(Pattern pattern){
@@ -194,6 +199,7 @@ public class InstancesPanel extends JPanel {
         ShapesPanel shapesPanel = new ShapesPanel(shapesInstanceList, CONTAINERS_DIST, backgroundColor);
         shapesPanel.setToolTipText("");
         shapesPanel.setGeneTooltipListener(geneTooltipListener);
+        shapesPanel.setDoubleClickListener(doubleClickListener);
 
         MouseAdapter ma = new MouseAdapterScroller(shapesPanel);
         shapesPanel.addMouseListener(ma);
@@ -294,5 +300,31 @@ public class InstancesPanel extends JPanel {
         return firstRowHeight;
     }
 
+    public void alignPanels(GeneShape anchorGene, int viewX){
+        for (ShapesPanel row : rows){
+            String cogId = anchorGene.getLabel().getText();
+            GeneShape geneShape = row.getGeneShapeWithLabel(cogId);
 
+            if (geneShape == null){
+                break;
+            }
+
+            int deltaX = anchorGene.getX() - viewX;
+
+            if (geneShape.getStrand() != anchorGene.getStrand()){
+                row.reverse();
+            }
+
+            int x = geneShape.getX();
+
+            JViewport viewPort = (JViewport) SwingUtilities.getAncestorOfClass(JViewport.class, row);
+            if (viewPort != null) {
+
+                Rectangle view = viewPort.getViewRect();
+                view.x = x - deltaX;
+
+                row.scrollRectToVisible(view);
+            }
+        }
+    }
 }

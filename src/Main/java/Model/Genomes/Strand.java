@@ -41,4 +41,13 @@ public enum Strand {
 
         return strand;
     }
+
+    public Strand reverseStrand(){
+        if (this == FORWARD){
+            return REVERSE;
+        }else if (this == REVERSE){
+            return FORWARD;
+        }
+        return INVALID;
+    }
 }

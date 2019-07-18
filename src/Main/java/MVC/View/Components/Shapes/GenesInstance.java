@@ -2,6 +2,7 @@ package MVC.View.Components.Shapes;
 
 import java.awt.*;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -65,6 +66,35 @@ public class GenesInstance implements Shape{
 
 
         width = calcWidth();
+
+        setElementsCoordinates();
+    }
+
+    private void setElementsCoordinates(){
+
+        int currX = x;
+        int currY = y;
+
+        if (repliconNameLabel != null) {
+            currY += NAME_LABEL_HEIGHT;
+        }
+
+        currX = setGenesCoordinates(currX, currY, leftNeighborsShapeList);
+
+        currX = setGenesCoordinates(currX, currY, instanceShapesList);
+
+        setGenesCoordinates(currX, currY, rightNeighborsShapeList);
+
+    }
+
+    private int setGenesCoordinates(int currX, int currY, List<GeneShape> genes){
+        for (GeneShape geneShape : genes) {
+            geneShape.setX(currX);
+            geneShape.setY(currY);
+
+            currX += geneShape.getWidth() + DIST_SHAPES;
+        }
+        return currX;
     }
 
     private int calcWidth(){
@@ -113,26 +143,20 @@ public class GenesInstance implements Shape{
 
     public void draw(Graphics g) {
 
-        int currX = x;
-        int currY = y;
+        int width = drawGenes(g, leftNeighborsShapeList);
+        int currX = x + width;
 
-        if (repliconNameLabel != null) {
-            currY += NAME_LABEL_HEIGHT;
-        }
-
-        currX = drawGenes(g, currX, currY, leftNeighborsShapeList);
-
+        //Draw white rectangle around the instance
         g.setColor(Color.WHITE);
         g.fillRect(currX-DIST_SHAPES/2, y, instanceShapesWidth, height);
         g.setColor(Color.black);
         g.drawRect(currX-DIST_SHAPES/2, y, instanceShapesWidth, height);
 
-        currX = drawGenes(g, currX, currY, instanceShapesList);
+        drawGenes(g, instanceShapesList);
 
-        drawGenes(g, currX, currY, rightNeighborsShapeList);
+        drawGenes(g, rightNeighborsShapeList);
 
         drawLabels(g);
-
 
     }
 
@@ -142,38 +166,37 @@ public class GenesInstance implements Shape{
     }
 
     @Override
-    public String getTooltip(Point point) {
-        String geneTooltip = "";
+    public Shape getShapeWithPoint(Point point) {
+        Shape geneWithPoint = null;
         if (point.x <= x + leftNeighborsWidth){
-            geneTooltip = getGeneText(point, leftNeighborsShapeList);
+            geneWithPoint = getGeneWithPoint(point, leftNeighborsShapeList);
         }else if (point.x <= x + leftNeighborsWidth + instanceShapesWidth){
-            geneTooltip = getGeneText(point, instanceShapesList);
+            geneWithPoint = getGeneWithPoint(point, instanceShapesList);
         }else if (point.x <= x + leftNeighborsWidth + instanceShapesWidth + rightNeighborsWidth){
-            geneTooltip = getGeneText(point, rightNeighborsShapeList);
+            geneWithPoint = getGeneWithPoint(point, rightNeighborsShapeList);
         }
 
-        return geneTooltip;
+        return geneWithPoint;
     }
 
-    private String getGeneText(Point point, List<GeneShape> geneShapes){
+    private Shape getGeneWithPoint(Point point, List<GeneShape> geneShapes){
         for (GeneShape geneShape: geneShapes) {
             if (geneShape.containsPoint(point)){
-                return geneShape.toString();
+                return geneShape;
             }
         }
         return null;
     }
 
-    private int drawGenes(Graphics g, int currX, int currY, List<GeneShape> genes){
+    private int drawGenes(Graphics g, List<GeneShape> genes){
+        int width = 0;
         for (GeneShape geneShape : genes) {
-            geneShape.setX(currX);
-            geneShape.setY(currY);
 
             geneShape.draw(g);
 
-            currX += geneShape.getWidth() + DIST_SHAPES;
+            width += geneShape.getWidth() + DIST_SHAPES;
         }
-        return currX;
+        return width;
     }
 
     private void drawLabels(Graphics g){
@@ -191,7 +214,35 @@ public class GenesInstance implements Shape{
         }
     }
 
+    public GeneShape getGeneShapeWithLabel(String label){
+        for (GeneShape geneShape: instanceShapesList) {
+            if (geneShape.getLabel().getText().equals(label)){
+                return geneShape;
+            }
+        }
+        return null;
+    }
+
     public String toString(){
         return leftNeighborsShapeList.toString() + instanceShapesList.toString() + rightNeighborsShapeList.toString();
+    }
+
+    private void reverseGeneList(List<GeneShape> geneList){
+        Collections.reverse(geneList);
+        for (GeneShape gene : geneList){
+            gene.setStrand(gene.getStrand().reverseStrand());
+        }
+    }
+
+    public void reverse(){
+        reverseGeneList(instanceShapesList);
+        reverseGeneList(leftNeighborsShapeList);
+        reverseGeneList(rightNeighborsShapeList);
+
+        List<GeneShape> temp = rightNeighborsShapeList;
+        rightNeighborsShapeList = leftNeighborsShapeList;
+        leftNeighborsShapeList = temp;
+
+        setElementsCoordinates();
     }
 }

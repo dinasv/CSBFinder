@@ -5,12 +5,15 @@ import MVC.Controller.CSBFinderController;
 import MVC.View.Components.Dialogs.*;
 import MVC.View.Components.Panels.TableView;
 import MVC.View.Components.Panels.TablesHistory;
+import MVC.View.Components.Shapes.GeneShape;
 import MVC.View.Events.*;
 import MVC.View.Images.Icon;
 import MVC.View.Listeners.*;
 import MVC.View.Components.Panels.GenomePanel;
 import MVC.View.Components.Panels.SummaryPanel;
+import Model.Genomes.Alphabet;
 import Model.Genomes.Gene;
+import Model.Genomes.Strand;
 import Model.OrthologyGroups.COG;
 import Model.Patterns.Pattern;
 import Model.PostProcess.Family;
@@ -137,7 +140,7 @@ public class MainFrame extends JFrame {
         setShowOnlyTablesListener();
         setCSBFinderDoneListener();
         setGeneTooltipListener();
-
+        setGeneDoubleClickListener();
         setLoadButtonListener();
         setImportSessionButtonListener();
         setLoadCogInfoButtonListener();
@@ -555,6 +558,31 @@ public class MainFrame extends JFrame {
             if (cog != null){
                 event.getSrc().setToolTipText(String.format("<html>%s<br>%s | %s</html>",
                         String.join("/", cog.getFunctionalCategories()), cog.getCogDesc(), cog.getGeneName()));
+            }
+        });
+    }
+
+
+    /**
+     * When gene is double clicked, align all identical genes in other instances on the same vertical line
+     */
+    private void setGeneDoubleClickListener() {
+        genomesPanel.setGeneDoubleClickListener(event -> {
+            GeneShape anchorGene = event.getAnchorGene();
+            if (anchorGene == null){
+                return;
+            }
+
+            String cogId = anchorGene.getLabel().getText();
+            if (!cogId.equals(Alphabet.UNK_CHAR)) {
+
+                JViewport viewPort = (JViewport) SwingUtilities.getAncestorOfClass(JViewport.class, event.getSrc());
+                if (viewPort != null) {
+                    Rectangle view = viewPort.getViewRect();
+                    //int x = event.getGeneX() - view.x;
+                    genomesPanel.alignGenes(anchorGene, view.x);
+                }
+
             }
         });
     }

@@ -62,8 +62,8 @@ public class GeneShape implements Shape{
     }
 
     @Override
-    public String getTooltip(Point point) {
-        return "";
+    public Shape getShapeWithPoint(Point point) {
+        return this;
     }
 
     private void drawGene(Graphics g){
@@ -147,6 +147,6 @@ public class GeneShape implements Shape{
     }
 
     public String toString(){
-        return label.getText();
+        return label.getText() + strand.toString();
     }
 }
