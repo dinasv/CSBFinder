@@ -20,7 +20,7 @@ public class ScoreTest {
     private final String GENOMES_FILE_PATH = this.getClass().getResource("/genomes8.fasta").getPath();
 
     @Test
-    public void testScore() throws Exception {
+    public void testScore() {
         int MAX_GENOME_SIZE = 2000;
         int NUMBER_OF_GENOMES = 1500;
         int DATASET_LENGTH_SUM = MAX_GENOME_SIZE * NUMBER_OF_GENOMES;
@@ -43,7 +43,7 @@ public class ScoreTest {
      * @throws Exception
      */
     @Test
-    public void testScoreLargePattern() throws Exception {
+    public void testScoreLargePattern() {
         int MAX_GENOME_SIZE = 20000;
         int NUMBER_OF_GENOMES = 30000;
         int DATASET_LENGTH_SUM = MAX_GENOME_SIZE * NUMBER_OF_GENOMES;
@@ -60,10 +60,26 @@ public class ScoreTest {
         Assert.assertFalse(Double.isInfinite(score));
     }
 
+    @Test
+    public void testScoreSmallPattern() {
+        int MAX_GENOME_SIZE = 4000;
+        int NUMBER_OF_GENOMES = 1500;
+        int DATASET_LENGTH_SUM = MAX_GENOME_SIZE * NUMBER_OF_GENOMES;
+        int PATTERN_LENGTH = 2;
+        int GENOMES_WITH_INSTANCE = 1000;
+        int MAX_INSERTIONS = 10;
+        int PARALOG_FREQUENCY = 1;
+
+        PatternScore patternScore = new PatternScore(MAX_GENOME_SIZE, NUMBER_OF_GENOMES, DATASET_LENGTH_SUM, new HashMap<>(),
+                new HashMap<>());
+
+        double score = patternScore.pvalCrossGenome(PATTERN_LENGTH, MAX_INSERTIONS, PARALOG_FREQUENCY, GENOMES_WITH_INSTANCE);
+
+        Assert.assertFalse(Double.isInfinite(score));
+    }
 
     /**
-     * Test if the score for large values is not infinity
-     * @throws Exception
+     *
      */
     @Test
     public void testAvgScore() {

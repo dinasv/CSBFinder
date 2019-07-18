@@ -325,19 +325,22 @@ This file shohuld contain specific CSB patterns which the user is interested to 
 This file should use the following format:
 ```
 >[unique pattern ID, must be an integer]
-[homology group IDs seperated by hyphens]
+[homology group IDs seperated by commas]
 >[unique pattern ID, must be an integer]
-[homology group IDs seperated by hyphens]
+[homology group IDs seperated by commas]
 ```
 
 #### Example
 ```
 >1
-COG3736-COG3504-COG2948-COG0630
+COG3736,COG3504,COG2948,COG0630
 >564654
-COG3736-COG3504-COG2948
+COG3736,COG3504,COG2948
 ....
 ```
+
+> If you are running without segmentation to directons, you should add a strand to each homology group ID
+e.g. COG3736+,COG3504+,COG2948-,COG0630+
 
 <a name='output'>Output files</a>
 --------------
