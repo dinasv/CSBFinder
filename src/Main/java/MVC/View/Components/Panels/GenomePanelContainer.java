@@ -17,6 +17,9 @@ import java.util.stream.Collectors;
 
 public class GenomePanelContainer extends JPanel {
 
+    private JPanel content;
+    private JScrollPane scroll;
+
     private InstancesLabelsPanel labelsPanel;
     private InstancesPanel instancesPanel;
 
@@ -26,33 +29,41 @@ public class GenomePanelContainer extends JPanel {
     private GenomesInfo genomesInfo;
 
     private ViewMode viewMode;
-    private int scrollWidth;
+
     private Pattern patternInView;
+    private List<Pattern> patternsInView;
+
     private List<Map.Entry<String, List<InstanceLocation>>> genomeToInstances;
 
     public GenomePanelContainer(Map<String, Color> colorsUsed){
-
-        this.colorsUsed = colorsUsed;
-
-        setLayout(new GridBagLayout());
-        setGCLayout();
-
-        instancesPanel = new InstancesPanel(colorsUsed);
-
-        labelsPanel = new InstancesLabelsPanel();
-
-        gc.gridx = 0; gc.gridy = 0; gc.weightx = 0.2; gc.anchor = GridBagConstraints.FIRST_LINE_START;
-        add(labelsPanel, gc);
-        gc.gridx = 1; gc.gridy = 0; gc.weightx = 0.8; gc.anchor = GridBagConstraints.FIRST_LINE_START;
-        add(instancesPanel, gc);
 
         viewMode = ViewMode.NONE;
 
         genomesInfo = null;
         patternInView = null;
+        patternsInView = null;
         genomeToInstances = new ArrayList<>();
 
-        scrollWidth = 0;
+        this.colorsUsed = colorsUsed;
+
+        content = new JPanel(new GridBagLayout());
+
+        setLayout(new BorderLayout());
+
+        instancesPanel = new InstancesPanel(colorsUsed);
+        labelsPanel = new InstancesLabelsPanel();
+
+        gc = new GridBagConstraints();
+        gc.gridx = 0; gc.gridy = 0; gc.weightx = 0.2; gc.anchor = GridBagConstraints.FIRST_LINE_START;
+        content.add(labelsPanel, gc);
+        gc.gridx = 1; gc.gridy = 0; gc.weightx = 0.8; gc.anchor = GridBagConstraints.FIRST_LINE_START;
+        content.add(instancesPanel, gc);
+
+        scroll = new JScrollPane(content);
+        scroll.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+
+        add(scroll, BorderLayout.CENTER);
+
     }
 
     public void setGenomesInfo(GenomesInfo genomesInfo){
@@ -65,13 +76,16 @@ public class GenomePanelContainer extends JPanel {
 
         if (viewMode == ViewMode.INSTANCES){
             instancesPanel.setData(patternInView, genomeToInstances);
-            instancesPanel.displayInstances(scrollWidth);
+            instancesPanel.displayInstances();
         }
 
     }
 
-    public void displayPatterns(List<Pattern> patterns, int scrollWidth){
+    public void displayPatterns(List<Pattern> patterns){
+
         viewMode = ViewMode.PATTERNS;
+        patternsInView = patterns;
+
         List<String> patternNames = patterns.stream()
                                             .map(Pattern::getPatternId)
                                             .map(String::valueOf)
@@ -82,14 +96,13 @@ public class GenomePanelContainer extends JPanel {
         labelsPanel.displayInstancesLabels(patternNames, instancesPanel.getFirstRowHeight(),
                 instancesPanel.getFirstRowHeight());
 
-        this.scrollWidth = scrollWidth - labelsPanel.getPanelWidth();
-        instancesPanel.showData(this.scrollWidth);
+        instancesPanel.showData(calcInstancesScrollWidth());
 
-        revalidate();
-        repaint();
+        content.revalidate();
+        content.repaint();
     }
 
-    public void displayInstances(Pattern pattern, int scrollWidth) {
+    public void displayInstances(Pattern pattern) {
 
         viewMode = ViewMode.INSTANCES;
         patternInView = pattern;
@@ -111,20 +124,20 @@ public class GenomePanelContainer extends JPanel {
         instancesPanel.setData(pattern, genomeToInstances);
         labelsPanel.displayInstancesLabels(genomeNames, instancesPanel.getFirstRowHeight(), instancesPanel.getRowHeight());
 
-        this.scrollWidth = scrollWidth-labelsPanel.getPanelWidth();
-        instancesPanel.displayInstances(this.scrollWidth);
+        instancesPanel.displayInstances(calcInstancesScrollWidth());
 
-        revalidate();
-        repaint();
+        content.revalidate();
+        content.repaint();
+    }
+
+    private int calcInstancesScrollWidth(){
+        int scrollWidth = scroll.getViewport().getSize().width;
+        return scrollWidth - labelsPanel.getPanelWidth();
     }
 
     public void clearPanel(){
         instancesPanel.clearPanel();
         labelsPanel.clearPanel();
-    }
-
-    private void setGCLayout() {
-        gc = new GridBagConstraints();
     }
 
     public Map<String,Color> getColorsUsed(){
@@ -141,6 +154,28 @@ public class GenomePanelContainer extends JPanel {
 
     public void alignGenes(GeneShape anchorGene, int viewX){
         instancesPanel.alignPanels(anchorGene, viewX);
+    }
+
+    public void zoomOut(int zoomUnit){
+        clearPanel();
+        instancesPanel.zoomOut(zoomUnit);
+
+        diplayView();
+    }
+
+
+    public void zoomIn(int zoomUnit){
+        clearPanel();
+        instancesPanel.zoomIn(zoomUnit);
+        diplayView();
+    }
+
+    private void diplayView(){
+        if (viewMode == ViewMode.INSTANCES){
+            displayInstances(patternInView);
+        }else if (viewMode == ViewMode.PATTERNS){
+            displayPatterns(patternsInView);
+        }
     }
 
 

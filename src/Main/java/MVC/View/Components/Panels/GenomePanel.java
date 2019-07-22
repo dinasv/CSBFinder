@@ -15,17 +15,14 @@ import java.util.List;
 
 public class GenomePanel extends JPanel {
 
-    private JScrollPane scroll;
     private GenomePanelContainer viewInstancesPanel;
 
     public GenomePanel(Map<String, Color> colorsUsed ) {
         setLayout(new BorderLayout());
 
         viewInstancesPanel = new GenomePanelContainer(colorsUsed);
-        scroll = new JScrollPane(viewInstancesPanel);
-        scroll.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
 
-        add(scroll, BorderLayout.CENTER);
+        add(viewInstancesPanel, BorderLayout.CENTER);
 
     }
 
@@ -41,17 +38,15 @@ public class GenomePanel extends JPanel {
     }
 
     public void displayInstances(Pattern pattern) {
-        int scrollWidth = scroll.getViewport().getSize().width;
 
-        viewInstancesPanel.displayInstances(pattern, scrollWidth);
+        viewInstancesPanel.displayInstances(pattern);
         viewInstancesPanel.revalidate();
         viewInstancesPanel.repaint();
     }
 
     public void displayPatterns(List<Pattern> patterns) {
-        int scrollWidth = scroll.getViewport().getSize().width;
 
-        viewInstancesPanel.displayPatterns(patterns, scrollWidth);
+        viewInstancesPanel.displayPatterns(patterns);
         viewInstancesPanel.revalidate();
         viewInstancesPanel.repaint();
     }
@@ -78,5 +73,11 @@ public class GenomePanel extends JPanel {
         viewInstancesPanel.alignGenes(anchorGene, viewX);
     }
 
+    public void zoomOut(int zoomUnit){
+        viewInstancesPanel.zoomOut(zoomUnit);
+    }
 
+    public void zoomIn(int zoomUnit){
+        viewInstancesPanel.zoomIn(zoomUnit);
+    }
 }

@@ -6,7 +6,9 @@ import MVC.View.Components.Dialogs.*;
 import MVC.View.Components.Panels.TableView;
 import MVC.View.Components.Panels.TablesHistory;
 import MVC.View.Components.Shapes.GeneShape;
+import MVC.View.Components.Shapes.Label;
 import MVC.View.Events.*;
+import MVC.View.Events.Event;
 import MVC.View.Images.Icon;
 import MVC.View.Listeners.*;
 import MVC.View.Components.Panels.GenomePanel;
@@ -38,6 +40,11 @@ public class MainFrame extends JFrame {
     private static final String LOADING_MSG = "Loading File";
     private static final int MSG_WIDTH = 500;
 
+    private static final int ZOOM_MIN = 12;
+    private static final int ZOOM_MAX = 32;
+    private static final int ZOOM_UNIT = 2;
+    private int zoom;
+
     private ExecutorService threadPool = Executors.newFixedThreadPool(1);
 
     private CSBFinderController controller;
@@ -51,6 +58,7 @@ public class MainFrame extends JFrame {
 
     private InputParametersDialog inputParamsDialog;
     private ClusterDialog clusterDialog;
+    private RankDialog rankDialog;
     private FilterDialog filterDialog;
     private SaveDialog saveDialog;
 
@@ -78,6 +86,8 @@ public class MainFrame extends JFrame {
     }
 
     public void init() {
+        zoom = Label.DEFAULT_FONT.getSize();
+
         setExtendedState(JFrame.MAXIMIZED_BOTH);
         setMinimumSize(new Dimension(450, 350));
         this.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
@@ -89,6 +99,7 @@ public class MainFrame extends JFrame {
         genomesPanel.clearPanel();
         summaryPanel.clearPanel();
 
+        toolbar.disablRankeBtn();
         toolbar.disableClusterBtn();
         toolbar.disableSaveBtn();
         menuBar.disableSaveBtn();
@@ -101,6 +112,7 @@ public class MainFrame extends JFrame {
 
         inputParamsDialog = new InputParametersDialog(fc);
         clusterDialog = new ClusterDialog();
+        rankDialog = new RankDialog();
         filterDialog = new FilterDialog();
         saveDialog = new SaveDialog(fc, this);
 
@@ -129,9 +141,11 @@ public class MainFrame extends JFrame {
     private void setEventListeners() {
         setRunCSBFinderListener();
         setRunClusteringListener();
+        setComputeScoreListener();
         setSelectParamsListener();
         setOpenSaveDialogListener();
         setClusterListener();
+        setRankListener();
         setPatternRowClickedListener();
         setFamilyRowClickedListener();
         setFilterTableListener();
@@ -145,6 +159,8 @@ public class MainFrame extends JFrame {
         setImportSessionButtonListener();
         setLoadCogInfoButtonListener();
         setSaveButtonListener();
+        setZoomOutListener();
+        setZoomInListener();
     }
 
     private void displayFamilyTable(List<Family> familyList) {
@@ -161,13 +177,18 @@ public class MainFrame extends JFrame {
     private void enableBtnsResultsDisplay(){
         menuBar.enableSaveFileBtn();
         toolbar.enableSaveBtn();
+        toolbar.enableRankBtn();
+        toolbar.enableZoomOutBtn();
+        toolbar.enableZoomInBtn();
         summaryPanel.enableFilterBtn();
         toolbar.enableClusterBtn();
     }
 
     private void disableBtnsInit(){
         toolbar.disableSelectParamsBtn();
-
+        toolbar.disablRankeBtn();
+        toolbar.disabZoomOutBtn();
+        toolbar.disabZoomInBtn();
         toolbar.disableSaveBtn();
         menuBar.disableSaveBtn();
 
@@ -290,6 +311,36 @@ public class MainFrame extends JFrame {
         });
     }
 
+    private void setComputeScoreListener() {
+            rankDialog.setRunListener(e -> {
+
+                SwingUtilities.invokeLater(() -> {
+                    rankDialog.setVisible(false);
+                    progressBar.start(RUNNING_MSG);
+                });
+
+                SwingWorker<Void, Void> swingWorker = new SwingWorker<Void, Void>() {
+
+                    CSBFinderRequest request = e.getRequest();
+                    String msg = "";
+
+                    @Override
+                    protected Void doInBackground() {
+                        clearPanels();
+                        msg = controller.computeScores(request.getGenomesDistanceThreshold());
+                        return null;
+                    }
+
+                    @Override
+                    protected void done() {
+                        progressBar.done("");
+                        JOptionPane.showMessageDialog(MainFrame.this, formatMsgWidth(msg));
+                    }
+                };
+                swingWorker.execute();
+            });
+        }
+
 
     private void setRunCSBFinderListener() {
         inputParamsDialog.setRunListener(e -> {
@@ -326,6 +377,13 @@ public class MainFrame extends JFrame {
         toolbar.setClusterListener(e -> {
             clusterDialog.setLocationRelativeTo(null);
             clusterDialog.setVisible(true);
+        });
+    }
+
+    private void setRankListener() {
+        toolbar.setRankListener(e -> {
+            rankDialog.setLocationRelativeTo(null);
+            rankDialog.setVisible(true);
         });
     }
 
@@ -402,6 +460,50 @@ public class MainFrame extends JFrame {
         saveDialog.setSaveOutputListener(listener);
 
     }
+
+    private void setZoomOutListener(){
+        toolbar.setZoomOutListener(event -> {
+            if (zoom <= ZOOM_MIN) {
+                toolbar.disabZoomOutBtn();
+                return;
+            }
+
+            toolbar.enableZoomInBtn();
+            zoom -= ZOOM_UNIT;
+            SwingWorker<Void, Void> swingWorker = new SwingWorker<Void, Void>() {
+                @Override
+                protected Void doInBackground() {
+                    genomesPanel.zoomOut(ZOOM_UNIT);
+                    return null;
+                }
+            };
+
+            swingWorker.execute();
+
+        });
+    }
+
+    private void setZoomInListener(){
+            toolbar.setZoomInListener(event -> {
+                if (zoom >= ZOOM_MAX) {
+                    toolbar.disabZoomInBtn();
+                    return;
+                }
+
+                toolbar.enableZoomOutBtn();
+                zoom += ZOOM_UNIT;
+                SwingWorker<Void, Void> swingWorker = new SwingWorker<Void, Void>() {
+                    @Override
+                    protected Void doInBackground() {
+                        genomesPanel.zoomIn(ZOOM_UNIT);
+                        return null;
+                    }
+                };
+
+                swingWorker.execute();
+
+            });
+        }
 
     private String formatMsgWidth(String msg){
         String html = "<html><body width='%s'>%s";

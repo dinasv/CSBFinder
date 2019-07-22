@@ -82,7 +82,7 @@ public class CSBFinderWorkflow {
     private List<Family> processPatterns(){
 
         patternsCount = patterns.size();
-        computeScores(patterns);
+        computeScores(patterns, params.delta);
 
         List<Family> families = new ArrayList<>();
         if (params.skipClusterStep){
@@ -93,12 +93,16 @@ public class CSBFinderWorkflow {
         return families;
     }
 
-    private void computeScores(List<Pattern> patterns){
+    public void computeScores(double threshold){
+        computeScores(patterns, threshold);
+    }
 
-        if (params.delta != 1) {
+    private void computeScores(List<Pattern> patterns, double threshold){
+
+        if (threshold != 1) {
             gi.computeDistancesBetweenGenomesAllVsAll();
         }
-        PatternScore patternScore = new PatternScore(gi, params.delta);
+        PatternScore patternScore = new PatternScore(gi, threshold);
 
         for (Pattern pattern : patterns) {
             List<Integer> patternLetters = new ArrayList<>();

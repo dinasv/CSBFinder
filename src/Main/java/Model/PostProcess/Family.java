@@ -119,7 +119,7 @@ public class Family {
     }
 
     public void sortPatternsAndSetScore(){
-        Collections.sort(patterns, new Pattern.ScoreComparator());
+        patterns.sort(new Pattern.ScoreComparator());
         score = getTopScoringPattern().getScore();
     }
 

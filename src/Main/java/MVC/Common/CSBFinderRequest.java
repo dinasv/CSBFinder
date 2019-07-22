@@ -118,6 +118,10 @@ public class CSBFinderRequest implements Request{
         this.genomesDistanceThreshold = genomesDistanceThreshold;
     }
 
+    public double getGenomesDistanceThreshold() {
+        return genomesDistanceThreshold;
+    }
+
     public ClusterBy getClusterType() {
         return clusterType;
     }

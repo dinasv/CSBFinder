@@ -10,7 +10,10 @@ public enum Icon {
     RUN("/right-arrow.png", "run icon"),
     CLUSTER("/network.png", "cluster icon"),
     SAVE("/save.png", "save icon"),
-    FILTER("/funnel.png", "include results icon");
+    FILTER("/funnel.png", "include results icon"),
+    RANK("/ranking.png", "rank icon"),
+    ZOOM_OUT("/zoom-out.png", "zoom out icon"),
+    ZOOM_IN("/zoom-in.png", "zoom out icon");
 
     private ImageIcon icon;
 

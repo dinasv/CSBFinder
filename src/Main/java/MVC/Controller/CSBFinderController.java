@@ -91,6 +91,9 @@ public class CSBFinderController {
     public String clusterToFamilies(double threshold, ClusterBy clusterBy, ClusterDenominator clusterDenominator){
         return model.clusterToFamilies(threshold, clusterBy, clusterDenominator);
     }
+    public String computeScores(double threshold){
+        return model.computeScores(threshold);
+    }
 
 }
 

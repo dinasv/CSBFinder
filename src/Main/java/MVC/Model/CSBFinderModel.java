@@ -191,6 +191,23 @@ public class CSBFinderModel {
         return msg;
     }
 
+    public String computeScores(double threshold){
+        String msg = "";
+        try{
+            workflow.computeScores(threshold);
+            msg = "Scores recomputed";
+        }catch (Exception e){
+            msg = "Something went wrong";
+        }
+
+        families.forEach(Family::sortPatternsAndSetScore);
+
+        csbFinderDoneListener.CSBFinderDoneOccurred(new CSBFinderDoneEvent(families));
+
+        return msg;
+    }
+
+
     public String loadCogInfo(String path){
         cogInfo = new CogInfo();
 

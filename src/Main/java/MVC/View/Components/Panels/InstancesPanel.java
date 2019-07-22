@@ -23,6 +23,8 @@ public class InstancesPanel extends JPanel {
     private static final int CONTAINERS_DIST = 50;
     private static final int PADDING = 4;
 
+    private Font geneLabelFont;
+
     private Random rnd = new Random();
 
     private  Map<String, Color> colorsUsed;
@@ -42,16 +44,19 @@ public class InstancesPanel extends JPanel {
 
     private Listener<DoubleClickGeneEvent> doubleClickListener;
 
+    private int scrollWidth = 0;
+
     public InstancesPanel(Map<String, Color> colorsUsed) {
 
         setGCLayout();
         setLayout(new GridBagLayout());
 
+        geneLabelFont = Label.DEFAULT_FONT;
+
         this.rowHeight = 0;
         this.firstRowHeight = 0;
 
         rows = new ArrayList<>();
-        //rowsPanels = new ArrayList<>();
 
         this.colorsUsed = colorsUsed;
 
@@ -59,7 +64,13 @@ public class InstancesPanel extends JPanel {
 
     }
 
+    public void displayInstances() {
+        displayInstances(scrollWidth);
+    }
+
     public void displayInstances(int scrollWidth) {
+        this.scrollWidth = scrollWidth;
+
         clearPanel();
         showData(scrollWidth);
         revalidate();
@@ -265,7 +276,7 @@ public class InstancesPanel extends JPanel {
             }else {
                 color = getRandomColor();
             }
-            GeneShape geneShape = new GeneShape(color, gene, getGraphics());
+            GeneShape geneShape = new GeneShape(color, gene, getGraphics(), geneLabelFont);
 
             geneShapesList.add(geneShape);
             colorsUsed.put(gene.getCogId(), color);
@@ -326,5 +337,14 @@ public class InstancesPanel extends JPanel {
                 row.scrollRectToVisible(view);
             }
         }
+    }
+
+
+    public void zoomOut(int zoomUnit){
+        geneLabelFont = new Font(geneLabelFont.getName(), geneLabelFont.getStyle(), geneLabelFont.getSize() - zoomUnit);
+    }
+
+    public void zoomIn(int zoomUnit){
+        geneLabelFont = new Font(geneLabelFont.getName(), geneLabelFont.getStyle(), geneLabelFont.getSize() + zoomUnit);
     }
 }

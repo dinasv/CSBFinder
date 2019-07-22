@@ -25,18 +25,27 @@ public class GeneShape implements Shape{
 
     private int rectWidth;
 
-    public GeneShape(Color color, Gene gene, Graphics graphics) {
-        this(0, 0, color, gene, graphics);
+    private Graphics graphics;
+
+    public GeneShape(Color color, Gene gene, Graphics graphics, Font font) {
+        this(0, 0, color, gene, graphics, font);
     }
 
-    public GeneShape(int x, int y, Color color, Gene gene, Graphics graphics) {
+    public GeneShape(int x, int y, Color color, Gene gene, Graphics graphics, Font font) {
         this.x = x;
         this.y = y;
 
         this.color = color;
+        this.graphics = graphics;
 
-        this.label = new Label(gene.getCogId());
+        this.label = new Label(gene.getCogId(), font);
         this.strand = gene.getStrand();
+
+        calculateDimensions();
+
+    }
+
+    private void calculateDimensions(){
 
         graphics.setFont(label.getFont());
         labelWidth = graphics.getFontMetrics().stringWidth(label.getText());
@@ -46,7 +55,6 @@ public class GeneShape implements Shape{
 
         height = labelHeight + PADDING_MEDIUM;
         width = ARROW_WIDTH + rectWidth;
-
     }
 
     public void draw(Graphics g) {

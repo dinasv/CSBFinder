@@ -44,4 +44,5 @@ public class Label {
     public void setColor(Color color) {
         this.color = color;
     }
+
 }
