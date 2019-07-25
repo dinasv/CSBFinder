@@ -32,12 +32,12 @@ public class LabelShape implements Shape{
         return this;
     }
 
-    public int getLabelHeight(Graphics g){
-        return g.getFontMetrics().getHeight();
+    public int getLabelHeight(){
+        return label.getHeight();
     }
 
-    public int getLabelWidth(Graphics g){
-        return g.getFontMetrics().stringWidth(label.getText());
+    public int getLabelWidth(){
+        return label.getWidth();
     }
 
     public void setX(int x){

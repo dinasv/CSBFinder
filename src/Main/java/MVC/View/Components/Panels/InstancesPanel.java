@@ -244,10 +244,10 @@ public class InstancesPanel extends JPanel {
         List<GeneShape> instanceShapesList = getGeneShapesList(getGenes(replicon, instanceStartIndex, instanceEndIndex));
         List<GeneShape> rightNeighbors = getGeneShapesList(getGenes(replicon, instanceEndIndex, rightEndIndex));
 
-        Label instanceNameLabel = new Label(repliconName);
+        Label instanceNameLabel = new Label(repliconName, geneLabelFont, getGraphics());
 
-        Label instanceStartIndexLabel = new Label(Integer.toString(leftStartIndex));
-        Label instanceEndIndexLabel = new Label(Integer.toString(rightEndIndex-1));
+        Label instanceStartIndexLabel = new Label(Integer.toString(leftStartIndex), geneLabelFont, getGraphics());
+        Label instanceEndIndexLabel = new Label(Integer.toString(rightEndIndex-1), geneLabelFont, getGraphics());
 
         return new GenesInstance(instanceShapesList, leftNeighbors, rightNeighbors, x, y, instanceNameLabel,
                 instanceStartIndexLabel, instanceEndIndexLabel);

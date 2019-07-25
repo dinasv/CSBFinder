@@ -6,19 +6,23 @@ import java.awt.*;
 public class Label {
 
     public final static Font DEFAULT_FONT = new Font("Monospaced", Font.BOLD, 24);
+    private final static Color DEFAULT_COLOR = Color.black;
 
     private String text;
     private Font font;
     private Color color;
 
-    public Label(String text, Font font){
+    private Graphics graphics;
+
+    public Label(String text, Font font, Graphics graphics){
         this.text = text;
         this.font = font;
-        color = Color.black;
+        color = DEFAULT_COLOR;
+        this.graphics = graphics;
     }
 
-    public Label(String text){
-        this(text, DEFAULT_FONT);
+    public Label(String text, Graphics graphics){
+        this(text, DEFAULT_FONT, graphics);
     }
 
     public String getText() {
@@ -43,6 +47,16 @@ public class Label {
 
     public void setColor(Color color) {
         this.color = color;
+    }
+
+    public int getWidth(){
+        graphics.setFont(font);
+        return graphics.getFontMetrics().stringWidth(text);
+    }
+
+    public int getHeight(){
+        graphics.setFont(font);
+        return graphics.getFontMetrics().getAscent();
     }
 
 }

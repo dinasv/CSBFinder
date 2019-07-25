@@ -512,9 +512,13 @@ Thanks to Alexander Lerman for help with the initial user interface
 
  This code modified a Generalized Suffix Tree code from https://github.com/abahgat/suffixtree, copyright 2012 Alessandro Bahgat Shehata, licensed under the <a href="http://www.apache.org/licenses/LICENSE-2.0"> Apache License, Version 2.0 </a> 
  
- The User Interface uses icons made by <a href="https://www.flaticon.com/authors/roundicons" title="Roundicons">Roundicons</a>, 
+ The User Interface uses icons made by
  <a href="https://www.flaticon.com/authors/smashicons" title="Smashicons">Smashicons</a>,
-  and <a href="https://www.flaticon.com/authors/kiranshastry" title="Kiranshastry">Kiranshastry</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a>, licensed by <a href="http://creativecommons.org/licenses/by/3.0/" title="Creative Commons BY 3.0" target="_blank">CC 3.0 BY</a>
+   <a href="https://www.flaticon.com/authors/kiranshastry" title="Kiranshastry">Kiranshastry</a>, 
+  <a href="https://www.flaticon.com/authors/dave-gandy" title="Dave Gandy">Dave Gandy</a>, 
+  <a href="https://www.freepik.com/" title="Freepik">Freepik</a>,
+  <a href="https://www.flaticon.com/authors/icon-works" title="Icon Works">Icon Works</a>
+  from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a>, licensed by <a href="http://creativecommons.org/licenses/by/3.0/" title="Creative Commons BY 3.0" target="_blank">CC 3.0 BY</a>
 
 CSBFinder uses install4j - a multi-platform installer builder   
 [![install4j](https://www.ej-technologies.com/images/product_banners/install4j_medium.png "install4j")](https://www.ej-technologies.com/products/install4j/overview.html)

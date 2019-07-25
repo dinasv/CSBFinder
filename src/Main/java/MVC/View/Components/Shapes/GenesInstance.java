@@ -51,13 +51,13 @@ public class GenesInstance implements Shape{
         height = 0;
         if (instanceShapesList.size()>0){
             height = instanceShapesList.get(0).getHeight();
-            height += repliconNameLabel == null ? 0 : NAME_LABEL_HEIGHT;
-            height += startLocationLabel == null ? 0 : LOCATION_LABELS_HEIGHT;
+            height += repliconNameLabel == null ? 0 : repliconNameLabel.getHeight();
+            height += startLocationLabel == null ? 0 : startLocationLabel.getHeight();
         }
 
         int labelStartX = x + NAME_LABEL_PADDING;
         this.repliconNameLabel = repliconNameLabel == null ? null :
-                new LabelShape(labelStartX, y + (int) (NAME_LABEL_HEIGHT * 0.75), repliconNameLabel);
+                new LabelShape(labelStartX, y + (int) (repliconNameLabel.getHeight() * 0.75), repliconNameLabel);
 
         this.startLocationLabel = startLocationLabel == null ? null :
                 new LabelShape(labelStartX, y + height, startLocationLabel);
@@ -76,7 +76,7 @@ public class GenesInstance implements Shape{
         int currY = y;
 
         if (repliconNameLabel != null) {
-            currY += NAME_LABEL_HEIGHT;
+            currY += repliconNameLabel.getLabelHeight();
         }
 
         currX = setGenesCoordinates(currX, currY, leftNeighborsShapeList);
@@ -122,11 +122,16 @@ public class GenesInstance implements Shape{
     }
 
     public int getGeneY(){
-        return y + NAME_LABEL_HEIGHT;
+
+        //return y + NAME_LABEL_HEIGHT;
+        int nameLabelHeight = repliconNameLabel == null ? 0 : repliconNameLabel.getLabelHeight();
+        return y + nameLabelHeight;
     }
 
     public int getGeneEndY(){
-        return y + height - LOCATION_LABELS_HEIGHT;
+        //return y + height - LOCATION_LABELS_HEIGHT;
+        int locationLabelsHeight = startLocationLabel == null ? 0 : startLocationLabel.getLabelHeight();
+        return y + height - locationLabelsHeight;
     }
 
     public List<GeneShape> getInstanceShapesList(){
@@ -201,7 +206,7 @@ public class GenesInstance implements Shape{
 
     private void drawLabels(Graphics g){
         if (endLocationLabel != null) {
-            int endLabelWidth = endLocationLabel.getLabelWidth(g);
+            int endLabelWidth = endLocationLabel.getLabelWidth();
 
             endLocationLabel.setX(x + width - endLabelWidth);
             endLocationLabel.draw(g);

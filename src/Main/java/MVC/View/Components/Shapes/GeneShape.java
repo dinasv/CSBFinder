@@ -38,7 +38,7 @@ public class GeneShape implements Shape{
         this.color = color;
         this.graphics = graphics;
 
-        this.label = new Label(gene.getCogId(), font);
+        this.label = new Label(gene.getCogId(), font, graphics);
         this.strand = gene.getStrand();
 
         calculateDimensions();
@@ -47,9 +47,8 @@ public class GeneShape implements Shape{
 
     private void calculateDimensions(){
 
-        graphics.setFont(label.getFont());
-        labelWidth = graphics.getFontMetrics().stringWidth(label.getText());
-        labelHeight = graphics.getFontMetrics().getAscent();
+        labelWidth = label.getWidth();
+        labelHeight = label.getHeight();
 
         rectWidth = labelWidth + PADDING_MEDIUM;
 
