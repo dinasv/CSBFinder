@@ -17,7 +17,7 @@ public class ProgressBar extends JDialog {
         close.addActionListener(this::actionPerformed);
         close.setVisible(false);
 
-        messageLabel = new JLabel("asdsdasdas");
+        messageLabel = new JLabel();
 
         bar = new JProgressBar();
         bar.setIndeterminate(true);

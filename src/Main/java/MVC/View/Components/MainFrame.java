@@ -3,16 +3,13 @@ package MVC.View.Components;
 import MVC.Common.CSBFinderRequest;
 import MVC.Controller.CSBFinderController;
 import MVC.View.Components.Dialogs.*;
-import MVC.View.Components.Panels.TableView;
-import MVC.View.Components.Panels.TablesHistory;
+import MVC.View.Components.Panels.*;
 import MVC.View.Components.Shapes.GeneShape;
 import MVC.View.Components.Shapes.Label;
 import MVC.View.Events.*;
 import MVC.View.Events.Event;
 import MVC.View.Images.Icon;
 import MVC.View.Listeners.*;
-import MVC.View.Components.Panels.GenomePanel;
-import MVC.View.Components.Panels.SummaryPanel;
 import Model.Genomes.Alphabet;
 import Model.Genomes.Gene;
 import Model.Genomes.Strand;
@@ -51,6 +48,7 @@ public class MainFrame extends JFrame {
 
     private Menu menuBar;
     private Toolbar toolbar;
+    private StatusBar statusBar;
 
     private GenomePanel genomesPanel;
     private SummaryPanel summaryPanel;
@@ -104,6 +102,8 @@ public class MainFrame extends JFrame {
         toolbar.disableSaveBtn();
         menuBar.disableSaveBtn();
         summaryPanel.disableFilterBtn();
+
+        statusBar.clearText();
     }
 
     public void initComponents() {
@@ -117,17 +117,21 @@ public class MainFrame extends JFrame {
         saveDialog = new SaveDialog(fc, this);
 
         toolbar = new Toolbar();
+        statusBar = new StatusBar();
         genomesPanel = new GenomePanel(colorsUsed);
 
         summaryPanel = new SummaryPanel(Icon.FILTER.getIcon());
 
         menuBar = new Menu(fc, this);
 
+
+
         disableBtnsInit();
 
         setEventListeners();
 
         add(toolbar, BorderLayout.NORTH);
+        add(statusBar, BorderLayout.SOUTH);
 
         JPanel top = new JPanel(new BorderLayout());
         top.add(genomesPanel, BorderLayout.CENTER);
@@ -171,6 +175,8 @@ public class MainFrame extends JFrame {
 
             summaryPanel.setFamilyData(familyList);
             familiesFilter.setFamilies(familyList);
+
+            statusBar.updateStatus(familyList);
         }
     }
 
@@ -238,6 +244,7 @@ public class MainFrame extends JFrame {
         familiesFilter.applyFilters();
         List<Family> filteredFamilies = familiesFilter.getFilteredFamilies();
         summaryPanel.setFilteredFamilies(filteredFamilies);
+        statusBar.updateStatus(filteredFamilies);
 
         tableRowClickFromHistory();
 
