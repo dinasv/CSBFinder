@@ -3,12 +3,10 @@ package MVC.View.Components.Shapes;
 import MVC.View.Events.DoubleClickGeneEvent;
 import MVC.View.Events.TooltipGeneEvent;
 import MVC.View.Listeners.Listener;
-import com.beust.jcommander.internal.Lists;
 
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.util.Collections;
 import java.util.List;
 
 import java.util.ArrayList;

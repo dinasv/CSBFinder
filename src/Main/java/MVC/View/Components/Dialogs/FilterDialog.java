@@ -279,6 +279,10 @@ public class FilterDialog extends JDialog{
         patternGenes.setText(PATTERN_GENES_DEF);
         mainFunctionalCategory.setText(FUNCTIONAL_CATEGORY_DEF);
         genesCategory.setText(FUNCTIONAL_CATEGORY_DEF);
+
+        genesCategoryComboBox.setSelectedIndex(0);
+        genesComboBox.setSelectedIndex(0);
+        functionalCategoryComboBox.setSelectedIndex(0);
     }
 
     private void setCountModel(){

@@ -124,8 +124,6 @@ public class MainFrame extends JFrame {
 
         menuBar = new Menu(fc, this);
 
-
-
         disableBtnsInit();
 
         setEventListeners();

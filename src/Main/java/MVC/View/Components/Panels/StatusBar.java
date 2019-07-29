@@ -1,5 +1,6 @@
 package MVC.View.Components.Panels;
 
+import MVC.View.Images.Icon;
 import Model.PostProcess.Family;
 
 import javax.swing.*;
@@ -11,9 +12,10 @@ public class StatusBar extends JPanel {
     JLabel label;
 
     public StatusBar(){
-        setLayout(new BorderLayout());
+        setLayout(new FlowLayout(FlowLayout.LEADING));
 
         label = new JLabel();
+        //add(new JLabel( Icon.LOAD.getIcon()));
         add(label);
     }
 

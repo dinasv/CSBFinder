@@ -11,8 +11,8 @@ import Model.OrthologyGroups.COG;
 
 public class CSBSummaryPanel extends JPanel {
 
-    JTextPane summary;
-    JScrollPane scroll;
+    private JTextPane summary;
+    private JScrollPane scroll;
 
     private static final String NEWLINE = "\n";
     private static final String NO_COG_INFO_WARNING = "Oops, No gene information was found. " +
@@ -81,11 +81,15 @@ public class CSBSummaryPanel extends JPanel {
             //highlight text
             Highlighter.HighlightPainter painter;
             for (HighlightInfo highlightInfo : highlightInfos) {
+                if (highlightInfo == null){
+                    continue;
+                }
                 painter = new DefaultHighlighter.DefaultHighlightPainter(highlightInfo.getColor());
                 try {
+
                     highlighter.addHighlight(highlightInfo.getStart(), highlightInfo.getEnd(), painter);
                 } catch (BadLocationException e) {
-
+                    //skip
                 }
             }
             summary.setCaretPosition(0);
