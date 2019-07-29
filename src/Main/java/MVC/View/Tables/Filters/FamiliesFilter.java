@@ -42,6 +42,11 @@ public class FamiliesFilter {
     }
 
     public void setFamilyIds(String familyIds){
+
+        if (familyIds == null || familyIds.length() == 0){
+            return;
+        }
+
         String[] ids = familyIds.split(SEPARATOR);
 
         List<Filter<Family>> numberFilters = new ArrayList<>();
@@ -66,6 +71,11 @@ public class FamiliesFilter {
     }
 
     public void setPatternIds(String patternIds) {
+
+        if (patternIds == null || patternIds.length() == 0){
+            return;
+        }
+
         String[] ids = patternIds.split(SEPARATOR);
         List<Filter<Pattern>> matchFilters = Arrays.stream(ids)
                 .map(id -> new MatchStringFilter<>(id, PatternProperty.ID))
@@ -105,6 +115,10 @@ public class FamiliesFilter {
 
     public void setGeneCategory(String genes, BooleanOperator operator, Function<Gene[], String> genesToCogsDesc){
 
+        if (genes == null || genes.length() == 0){
+            return;
+        }
+
         String[] functionalCategories = genes.split(SEPARATOR);
 
         List<Filter<Pattern>> containsStringFilters = Arrays.stream(functionalCategories).map(category ->
@@ -126,6 +140,10 @@ public class FamiliesFilter {
 
     public void setFunctionalCategory(String functionalCategory, FunctionalCategoryOption option){
 
+        if (functionalCategory == null || functionalCategory.length() == 0){
+            return;
+        }
+
         String[] functionalCategories = functionalCategory.split(SEPARATOR);
 
         List<Filter<Pattern>> containsStringFilters = Arrays.stream(functionalCategories).map(category ->
@@ -142,6 +160,11 @@ public class FamiliesFilter {
 
 
     public void setGenes(String genes, BooleanOperator operator){
+
+        if (genes == null || genes.length() == 0){
+            return;
+        }
+
         String[] ids = genes.split(SEPARATOR);
 
         List<Filter<Pattern>> containsStringFilters = Arrays.stream(ids).map(gene -> new ContainsStringFilter<>(gene,
