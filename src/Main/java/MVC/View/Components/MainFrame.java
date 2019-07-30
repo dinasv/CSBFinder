@@ -37,7 +37,7 @@ public class MainFrame extends JFrame {
     private static final String LOADING_MSG = "Loading File";
     private static final int MSG_WIDTH = 500;
 
-    private static final int ZOOM_MIN = 12;
+    private static final int ZOOM_MIN = 6;
     private static final int ZOOM_MAX = 32;
     private static final int ZOOM_UNIT = 2;
     private int zoom;
@@ -268,19 +268,27 @@ public class MainFrame extends JFrame {
         filterDialog.setApplyFilterListener(e -> {
             FilterRequest request = e.getRequest();
 
-            SwingUtilities.invokeLater(() -> filterDialog.setVisible(false));
+            SwingUtilities.invokeLater(() -> {
+                filterDialog.setVisible(false);
+                progressBar.start(RUNNING_MSG);
+            });
 
             SwingWorker<Void, Void> swingWorker = new SwingWorker<Void, Void>() {
 
                 @Override
                 protected Void doInBackground() {
-
                     genomesPanel.clearPanel();
                     setFilters(request);
 
                     return null;
                 }
+
+                @Override
+                protected void done() {
+                    progressBar.done("");
+                }
             };
+
             swingWorker.execute();
         });
     }
