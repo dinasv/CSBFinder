@@ -15,7 +15,7 @@ import java.util.*;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class GenomePanelContainer extends JPanel {
+public class GenesViewPanel extends JPanel {
 
     private JPanel content;
     private JScrollPane scroll;
@@ -34,8 +34,9 @@ public class GenomePanelContainer extends JPanel {
     private List<Pattern> patternsInView;
 
     private List<Map.Entry<String, List<InstanceLocation>>> genomeToInstances;
+    private List<String> genomeNames;
 
-    public GenomePanelContainer(Map<String, Color> colorsUsed){
+    public GenesViewPanel(Map<String, Color> colorsUsed){
 
         viewMode = ViewMode.NONE;
 
@@ -43,6 +44,7 @@ public class GenomePanelContainer extends JPanel {
         patternInView = null;
         patternsInView = null;
         genomeToInstances = new ArrayList<>();
+        genomeNames = new ArrayList<>();
 
         this.colorsUsed = colorsUsed;
 
@@ -107,27 +109,33 @@ public class GenomePanelContainer extends JPanel {
         viewMode = ViewMode.INSTANCES;
         patternInView = pattern;
 
-        List<String> genomeNames = new ArrayList<>();
-        genomeNames.add("CSB");//first label
-
         genomeToInstances = pattern.getPatternLocations().getSortedLocations().stream()
                 .collect(Collectors.groupingBy(location -> genomesInfo.getGenomeName(location.getGenomeId())))
                 .entrySet().stream()
                 .sorted(Comparator.comparing(Map.Entry::getKey))
                 .collect(Collectors.toList());
 
+        genomeNames = new ArrayList<>();
         genomeNames.addAll(genomeToInstances
                 .stream()
                 .map(Map.Entry::getKey)
                 .collect(Collectors.toList()));
 
         instancesPanel.setData(pattern, genomeToInstances);
-        labelsPanel.displayInstancesLabels(genomeNames, instancesPanel.getFirstRowHeight(), instancesPanel.getRowHeight());
+
+        List<String> labels = new ArrayList<>();
+        labels.add("CSB");//first label
+        labels.addAll(genomeNames);
+        labelsPanel.displayInstancesLabels(labels, instancesPanel.getFirstRowHeight(), instancesPanel.getRowHeight());
 
         instancesPanel.displayInstances(calcInstancesScrollWidth());
 
         content.revalidate();
         content.repaint();
+    }
+
+    public List<String> getGenomeNames(){
+        return genomeNames;
     }
 
     private int calcInstancesScrollWidth(){
@@ -136,6 +144,8 @@ public class GenomePanelContainer extends JPanel {
     }
 
     public void clearPanel(){
+        genomeToInstances.clear();
+        genomeNames.clear();
         instancesPanel.clearPanel();
         labelsPanel.clearPanel();
     }
@@ -177,7 +187,6 @@ public class GenomePanelContainer extends JPanel {
             displayPatterns(patternsInView);
         }
     }
-
 
 
     private enum ViewMode {

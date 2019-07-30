@@ -105,7 +105,6 @@ public class Controller {
      * Executes CSBFinder and prints colinear synteny blocks
      *
      * @return
-     * @throws Exception
      */
 
     private void pipeline(){

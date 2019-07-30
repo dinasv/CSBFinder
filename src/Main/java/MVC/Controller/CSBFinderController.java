@@ -4,6 +4,7 @@ import Model.ClusterBy;
 import Model.ClusterDenominator;
 import Model.Genomes.Gene;
 import Model.Genomes.GenomesInfo;
+import Model.Genomes.Taxon;
 import Model.OutputType;
 import Model.PostProcess.Family;
 import MVC.Common.*;
@@ -14,6 +15,7 @@ import Model.Patterns.Pattern;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 public class CSBFinderController {
@@ -41,6 +43,10 @@ public class CSBFinderController {
 
     public String loadCogInfo(String path){
         return this.model.loadCogInfo(path);
+    }
+
+    public String loadTaxa(String path){
+        return this.model.loadTaxa(path);
     }
 
     public void calculateMainFunctionalCategory(){
@@ -91,8 +97,13 @@ public class CSBFinderController {
     public String clusterToFamilies(double threshold, ClusterBy clusterBy, ClusterDenominator clusterDenominator){
         return model.clusterToFamilies(threshold, clusterBy, clusterDenominator);
     }
+
     public String computeScores(double threshold){
         return model.computeScores(threshold);
+    }
+
+    public Map<String, Taxon> getGenomeToTaxa(){
+        return model.getGenomeToTaxa();
     }
 
 }

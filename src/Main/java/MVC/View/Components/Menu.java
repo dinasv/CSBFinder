@@ -21,11 +21,13 @@ public class Menu implements ActionListener {
     private static final String LOAD_GENOMES = "Genomes File";
     private static final String LOAD_SESSION = "Session File";
     private static final String LOAD_COG_INFO = "Orthology Information File";
+    private static final String LOAD_TAXA = "Taxonomy File";
     private static final String SAVE_FILES = "Save";
 
     private Listener<LoadFileEvent> loadGenomesListener;
     private Listener<LoadFileEvent> importSessionListener;
     private Listener<LoadFileEvent> loadCogInfoListener;
+    private Listener<LoadFileEvent> loadTaxaListener;
     private Listener<OpenDialogEvent> saveOutputListener;
 
     private JMenuBar mainMenu;
@@ -34,6 +36,7 @@ public class Menu implements ActionListener {
     private JMenuItem importGenomesMenuItem;
     private JMenuItem importSessionMenuItem;
     private JMenuItem importOrthologyInfoMenuItem;
+    private JMenuItem importTaxaMenuItem;
     private JMenuItem saveItem;
 
     private JFileChooser fileChooser;
@@ -52,6 +55,7 @@ public class Menu implements ActionListener {
         importGenomesMenuItem.addActionListener(this);
         importSessionMenuItem.addActionListener(this);
         importOrthologyInfoMenuItem.addActionListener(this);
+        importTaxaMenuItem.addActionListener(this);
     }
 
     private void createFileMenu(){
@@ -66,10 +70,12 @@ public class Menu implements ActionListener {
         importGenomesMenuItem = new JMenuItem(LOAD_GENOMES);
         importSessionMenuItem = new JMenuItem(LOAD_SESSION);
         importOrthologyInfoMenuItem = new JMenuItem(LOAD_COG_INFO);
+        importTaxaMenuItem = new JMenuItem(LOAD_TAXA);
 
         submenuImport.add(importGenomesMenuItem);
         submenuImport.add(importSessionMenuItem);
         submenuImport.add(importOrthologyInfoMenuItem);
+        submenuImport.add(importTaxaMenuItem);
         //menuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_I, ActionEvent.ALT_MASK));
 
         //Save
@@ -105,6 +111,12 @@ public class Menu implements ActionListener {
             case LOAD_COG_INFO:
                 initInputFileChooser(e.getActionCommand());
                 loadEventOccured(e, loadCogInfoListener);
+
+                break;
+            case LOAD_TAXA:
+
+                initInputFileChooser(e.getActionCommand());
+                loadEventOccured(e, loadTaxaListener);
 
                 break;
             case SAVE_FILES:
@@ -145,6 +157,10 @@ public class Menu implements ActionListener {
 
     public void setLoadCogInfoListener(Listener<LoadFileEvent> loadCogInfoListener) {
         this.loadCogInfoListener = loadCogInfoListener;
+    }
+
+    public void setLoadTaxaListener(Listener<LoadFileEvent> loadTaxaListener) {
+        this.loadTaxaListener = loadTaxaListener;
     }
 
     public void setSaveOutputListener(Listener<OpenDialogEvent> saveOutputListener) {

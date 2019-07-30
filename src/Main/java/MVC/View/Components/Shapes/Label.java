@@ -50,11 +50,19 @@ public class Label {
     }
 
     public int getWidth(){
+        if (graphics == null){
+            return 0;
+        }
+
         graphics.setFont(font);
         return graphics.getFontMetrics().stringWidth(text);
     }
 
     public int getHeight(){
+        if (graphics == null){
+            return 0;
+        }
+
         graphics.setFont(font);
         return graphics.getFontMetrics().getAscent();
     }

@@ -25,6 +25,7 @@ public class CSBFinderModel {
 
     private GenomesInfo gi;
     private CogInfo cogInfo;
+    private Map<String,Taxon> genomeToTaxa;
 
     private String arguments;
     private String inputGenomesPath;
@@ -39,6 +40,7 @@ public class CSBFinderModel {
         cogInfo = new CogInfo();
         arguments = "";
         inputGenomesPath = "";
+        genomeToTaxa = new HashMap<>();
     }
 
     public String getUNKchar(){
@@ -228,6 +230,25 @@ public class CSBFinderModel {
         return msg;
     }
 
+
+    public String loadTaxa(String path){
+
+        String msg = "";
+        genomeToTaxa = new HashMap<>();
+
+        if (path != null) {
+            try {
+                genomeToTaxa = Parsers.parseTaxaFile(path);
+
+                msg = "Loaded Taxa File";
+
+            }catch (Exception e){
+                msg = e.getMessage() + "\n";
+            }
+        }
+        return msg;
+    }
+
     public void calculateMainFunctionalCategory(){
         if (cogInfo.cogInfoExists() && families != null){
             families.forEach(family -> family.getPatterns()
@@ -344,5 +365,9 @@ public class CSBFinderModel {
 
     public int getMaxGenomeSize(){
         return gi.getMaxGenomeSize();
+    }
+
+    public Map<String, Taxon> getGenomeToTaxa() {
+        return genomeToTaxa;
     }
 }

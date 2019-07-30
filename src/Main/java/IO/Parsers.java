@@ -15,6 +15,7 @@ import java.util.*;
 
 public class Parsers {
 
+
     private final static String PATTERN_DELIMITER = ",";
     private final static String[] INSTANCE_HEADER = {"[Family ID]", "[Length]", "[Score]", "[Count]", "[Genes]", "[Family FAMILY_ID]"};
     private final static String INSTANCE_HEADER_DELIMITER = "\t";
@@ -26,6 +27,9 @@ public class Parsers {
     private final static String COG_LINE_DELIMITER = ";";
     private final static String[] LOCATIONS_LINE = {"[Genome Name]", "[Replicon Name|[Start Index, End Index]]"};
     private final static String LOCATIONS_LINE_DELIMITER = "\t";
+    private final static String TAXA_DELIMITER = ",";
+    private final static String[] TAXA_LINE = {"[Genome Name]","[Kingdom]","[Phylum]","[Class]","[Genus]"};
+
 
     final static String GENOMES_START = "<genomes>";
     final static String GENOMES_END = "<\\genomes>";
@@ -280,6 +284,60 @@ public class Parsers {
         }
 
         return genomesInfo;
+
+    }
+
+
+    public static Map<String, Taxon> parseTaxaFile(String filePath)
+            throws IOException, IllegalArgumentException {
+
+        if (filePath == null) {
+            throw new IllegalArgumentException();
+        }
+
+        Map<String, Taxon> genomeToTaxon = new HashMap<>();
+
+        try (BufferedReader br = new BufferedReader(new FileReader(filePath))) {
+
+            String header = br.readLine();
+
+            String line = br.readLine();
+            int lineNumber = 0;
+
+            while (line != null) {
+                lineNumber++;
+
+                String[] splitLine = line.split(TAXA_DELIMITER);
+
+
+                if (splitLine.length < TAXA_LINE.length) {
+                    throw new IllegalArgumentException(errorMessage(String.join(TAXA_DELIMITER, TAXA_LINE),
+                            line, lineNumber, filePath));
+                }
+
+                String genomeName = splitLine[0];
+                String kingdom = splitLine[1];
+                String phylum = splitLine[2];
+                String taxClass = splitLine[3];
+                String genus = splitLine[4];
+
+                Taxon taxon = new Taxon(kingdom.intern(), phylum.intern(), taxClass.intern(), genus.intern());
+
+                genomeToTaxon.put(genomeName, taxon);
+
+                line = br.readLine();
+            }
+
+        } catch (FileNotFoundException e) {
+            throw new FileNotFoundException("File " + filePath + " was not found.");
+        } catch (IOException e) {
+            throw new IOException("An exception occurred while reading " + filePath);
+        }
+
+        return genomeToTaxon;
+    }
+
+    private static void readTaxaFile(BufferedReader br){
 
     }
 

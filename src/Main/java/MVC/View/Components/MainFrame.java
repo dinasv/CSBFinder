@@ -7,12 +7,11 @@ import MVC.View.Components.Panels.*;
 import MVC.View.Components.Shapes.GeneShape;
 import MVC.View.Components.Shapes.Label;
 import MVC.View.Events.*;
-import MVC.View.Events.Event;
 import MVC.View.Images.Icon;
 import MVC.View.Listeners.*;
 import Model.Genomes.Alphabet;
 import Model.Genomes.Gene;
-import Model.Genomes.Strand;
+import Model.Genomes.Taxon;
 import Model.OrthologyGroups.COG;
 import Model.Patterns.Pattern;
 import Model.PostProcess.Family;
@@ -50,7 +49,7 @@ public class MainFrame extends JFrame {
     private Toolbar toolbar;
     private StatusBar statusBar;
 
-    private GenomePanel genomesPanel;
+    private MiddlePanel middlePanel;
     private SummaryPanel summaryPanel;
     private ProgressBar progressBar;
 
@@ -94,7 +93,7 @@ public class MainFrame extends JFrame {
 
     public void clearPanels() {
         tablesHistory.clearAll();
-        genomesPanel.clearPanel();
+        middlePanel.clearPanel();
         summaryPanel.clearPanel();
 
         toolbar.disablRankeBtn();
@@ -118,7 +117,7 @@ public class MainFrame extends JFrame {
 
         toolbar = new Toolbar();
         statusBar = new StatusBar();
-        genomesPanel = new GenomePanel(colorsUsed);
+        middlePanel = new MiddlePanel(colorsUsed);
 
         summaryPanel = new SummaryPanel(Icon.FILTER.getIcon());
 
@@ -132,7 +131,7 @@ public class MainFrame extends JFrame {
         add(statusBar, BorderLayout.SOUTH);
 
         JPanel top = new JPanel(new BorderLayout());
-        top.add(genomesPanel, BorderLayout.CENTER);
+        top.add(middlePanel, BorderLayout.CENTER);
 
         JSplitPane split = new JSplitPane(JSplitPane.VERTICAL_SPLIT, true, top, summaryPanel);
         split.setResizeWeight(0.5);
@@ -160,6 +159,7 @@ public class MainFrame extends JFrame {
         setLoadButtonListener();
         setImportSessionButtonListener();
         setLoadCogInfoButtonListener();
+        setLoadTaxaListener();
         setSaveButtonListener();
         setZoomOutListener();
         setZoomInListener();
@@ -205,7 +205,7 @@ public class MainFrame extends JFrame {
         if (controller.getNumberOfGenomes() > 0) {
             inputParamsDialog.setGenomeData(controller.getNumberOfGenomes(), controller.getMaxGenomeSize());
             filterDialog.setGenomeData(controller.getNumberOfGenomes(), controller.getMaxGenomeSize());
-            genomesPanel.setGenomesInfo(controller.getGenomeInfo());
+            middlePanel.setGenomesInfo(controller.getGenomeInfo());
 
             toolbar.enableSelectParamsBtn();
 
@@ -277,7 +277,7 @@ public class MainFrame extends JFrame {
 
                 @Override
                 protected Void doInBackground() {
-                    genomesPanel.clearPanel();
+                    middlePanel.clearPanel();
                     setFilters(request);
 
                     return null;
@@ -416,14 +416,14 @@ public class MainFrame extends JFrame {
 
 
     private void setNumOfNeighborsListener() {
-        toolbar.setNumOfNeighborsListener(e -> genomesPanel.setNumOfNeighbors(e.getNumOfNeighbors()));
+        toolbar.setNumOfNeighborsListener(e -> middlePanel.setNumOfNeighbors(e.getNumOfNeighbors()));
     }
 
     private void setShowOnlyTablesListener() {
         toolbar.setShowOnlyTablesListener(e -> {
             boolean isShowOnlyTables = e.isShowOnlyTables();
             if (isShowOnlyTables){
-                genomesPanel.clearPanel();
+                middlePanel.clearPanel();
             }else{
                 tableRowClickFromHistory();
                 //summaryPanel.fireTableDataChanged();
@@ -486,7 +486,7 @@ public class MainFrame extends JFrame {
             SwingWorker<Void, Void> swingWorker = new SwingWorker<Void, Void>() {
                 @Override
                 protected Void doInBackground() {
-                    genomesPanel.zoomOut(ZOOM_UNIT);
+                    middlePanel.zoomOut(ZOOM_UNIT);
                     return null;
                 }
             };
@@ -508,7 +508,7 @@ public class MainFrame extends JFrame {
                 SwingWorker<Void, Void> swingWorker = new SwingWorker<Void, Void>() {
                     @Override
                     protected Void doInBackground() {
-                        genomesPanel.zoomIn(ZOOM_UNIT);
+                        middlePanel.zoomIn(ZOOM_UNIT);
                         return null;
                     }
                 };
@@ -626,6 +626,41 @@ public class MainFrame extends JFrame {
         });
     }
 
+    private void setLoadTaxaListener() {
+        menuBar.setLoadTaxaListener(e -> {
+
+            File f = e.getFilePath();
+            if (f.exists() && !f.isDirectory()) {
+
+                SwingUtilities.invokeLater(() -> progressBar.start(LOADING_MSG));
+
+                SwingWorker<Void, Void> swingWorker = new SwingWorker<Void, Void>() {
+
+                    String msg = "";
+
+                    @Override
+                    protected Void doInBackground() {
+
+                        msg = controller.loadTaxa(f.getPath());
+                        Map<String, Taxon> genomeToTaxa = controller.getGenomeToTaxa();
+                        middlePanel.setGenomeToTaxa(genomeToTaxa);
+
+                        return null;
+                    }
+
+                    @Override
+                    protected void done() {
+
+                        progressBar.done("");
+                        tableRowClickFromHistory();
+                        JOptionPane.showMessageDialog(MainFrame.this, formatMsgWidth(msg));
+                    }
+                };
+                swingWorker.execute();
+            }
+        });
+    }
+
 
     /**
      * Tables click listeners
@@ -635,15 +670,15 @@ public class MainFrame extends JFrame {
             Pattern pattern = event.getRow();
 
             tablesHistory.setPattern(pattern);
-            genomesPanel.clearPanel();
-            genomesPanel.setNumOfNeighbors(toolbar.getNumOfNeighbors());
+            middlePanel.clearPanel();
+            middlePanel.setNumOfNeighbors(toolbar.getNumOfNeighbors());
             if (!toolbar.isShowOnlyTables()) {
-                genomesPanel.displayInstances(pattern);
+                middlePanel.displayInstances(pattern);
             }
 
             List<COG> patternCOGs = controller.getCogsInfo(pattern.getPatternGenes());
             Set<COG> insertedGenes = controller.getInsertedGenes(pattern, patternCOGs);
-            summaryPanel.setCogInfo(patternCOGs, insertedGenes, genomesPanel.getColorsUsed());
+            summaryPanel.setCogInfo(patternCOGs, insertedGenes, middlePanel.getColorsUsed());
         });
     }
 
@@ -653,22 +688,22 @@ public class MainFrame extends JFrame {
 
             tablesHistory.setFamily(family);
             summaryPanel.setFamilyPatternsData(family);
-            genomesPanel.clearPanel();
+            middlePanel.clearPanel();
 
             if (!toolbar.isShowOnlyTables()) {
-                genomesPanel.displayPatterns(family.getPatterns());
+                middlePanel.displayPatterns(family.getPatterns());
             }
 
             List<COG> patternCOGs = new ArrayList<>();
             for (Pattern pattern : family.getPatterns()) {
                 patternCOGs.addAll(controller.getCogsInfo(pattern.getPatternGenes()));
             }
-            summaryPanel.setCogInfo(patternCOGs, new HashSet<>(), genomesPanel.getColorsUsed());
+            summaryPanel.setCogInfo(patternCOGs, new HashSet<>(), middlePanel.getColorsUsed());
         });
     }
 
     private void setGeneTooltipListener() {
-        genomesPanel.setGeneTooltipListener(event -> {
+        middlePanel.setGeneTooltipListener(event -> {
             COG cog = controller.getCogInfo(event.getCogId());
             if (cog != null){
                 event.getSrc().setToolTipText(String.format("<html>%s<br>%s | %s</html>",
@@ -682,7 +717,7 @@ public class MainFrame extends JFrame {
      * When gene is double clicked, align all identical genes in other instances on the same vertical line
      */
     private void setGeneDoubleClickListener() {
-        genomesPanel.setGeneDoubleClickListener(event -> {
+        middlePanel.setGeneDoubleClickListener(event -> {
             GeneShape anchorGene = event.getAnchorGene();
             if (anchorGene == null){
                 return;
@@ -695,7 +730,7 @@ public class MainFrame extends JFrame {
                 if (viewPort != null) {
                     Rectangle view = viewPort.getViewRect();
                     //int x = event.getGeneX() - view.x;
-                    genomesPanel.alignGenes(anchorGene, view.x);
+                    middlePanel.alignGenes(anchorGene, view.x);
                 }
 
             }
