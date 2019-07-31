@@ -317,7 +317,7 @@ public class InstancesPanel extends JPanel {
             GeneShape geneShape = row.getGeneShapeWithLabel(cogId);
 
             if (geneShape == null){
-                break;
+                continue;
             }
 
             int deltaX = anchorGene.getX() - viewX;

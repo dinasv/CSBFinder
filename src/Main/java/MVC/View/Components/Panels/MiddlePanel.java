@@ -26,7 +26,7 @@ public class MiddlePanel extends JPanel {
 
         JTabbedPane tabbedPane = new JTabbedPane();
 
-        tabbedPane.addTab("Genes View", viewInstancesPanel);
+        tabbedPane.addTab("Gene View", viewInstancesPanel);
         tabbedPane.addTab("Taxa View",  taxaPanel);
 
         setLayout(new BorderLayout());

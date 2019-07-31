@@ -91,7 +91,7 @@ public class TaxaPanel extends JPanel{
 
     private void insertInto(String genomeName, Taxon taxon, int taxaLevel, DefaultMutableTreeNode node){
 
-        if (taxaLevel == NUM_OF_LEVELS) {
+        if (taxaLevel > NUM_OF_LEVELS) {
             DefaultMutableTreeNode genome = new DefaultMutableTreeNode(genomeName);
             model.insertNodeInto(genome, node, node.getChildCount());
 
