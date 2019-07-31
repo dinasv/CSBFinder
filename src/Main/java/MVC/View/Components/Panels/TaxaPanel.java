@@ -48,27 +48,7 @@ public class TaxaPanel extends JPanel{
         this.genomeToTaxa = genomeToTaxa;
     }
 
-    private class TaxaInfo {
-        public String taxaName;
-        public int genomesCount;
 
-        public TaxaInfo(String taxaName, int genomesCount) {
-            this.taxaName = taxaName;
-            this.genomesCount = genomesCount;
-        }
-
-        public String toString() {
-            return taxaName + " [" + genomesCount + "]";
-        }
-
-        public void setGenomesCount(int genomesCount){
-            this.genomesCount = genomesCount;
-        }
-
-        public void incrementGenomesCount(){
-            this.genomesCount += 1;
-        }
-    }
 
 
     public void displayTaxa(List<String> genomeNames) {
@@ -130,7 +110,10 @@ public class TaxaPanel extends JPanel{
             if (taxaInfo.taxaName.equals(taxon.getTaxaAtLevel(taxaLevel))) {
                 taxaInfo.incrementGenomesCount();
                 nextNode = child;
-
+                //insert ordered alphabetically
+            }else if (taxaInfo.taxaName.compareTo(taxon.getTaxaAtLevel(taxaLevel)) > 0){
+                nextNode = new DefaultMutableTreeNode(new TaxaInfo(taxon.getTaxaAtLevel(taxaLevel), 1));
+                model.insertNodeInto(nextNode, node, i);
             }
         }
 
@@ -146,6 +129,28 @@ public class TaxaPanel extends JPanel{
     public void clear(){
         topNode.removeAllChildren();
         model.reload();
+    }
+
+    private class TaxaInfo {
+        public String taxaName;
+        public int genomesCount;
+
+        public TaxaInfo(String taxaName, int genomesCount) {
+            this.taxaName = taxaName;
+            this.genomesCount = genomesCount;
+        }
+
+        public String toString() {
+            return taxaName + " [" + genomesCount + "]";
+        }
+
+        public void setGenomesCount(int genomesCount){
+            this.genomesCount = genomesCount;
+        }
+
+        public void incrementGenomesCount(){
+            this.genomesCount += 1;
+        }
     }
 
 }
