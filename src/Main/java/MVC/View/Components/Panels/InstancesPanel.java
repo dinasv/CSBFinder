@@ -22,6 +22,7 @@ public class InstancesPanel extends JPanel {
 
     private static final int CONTAINERS_DIST = 50;
     private static final int PADDING = 4;
+    private static final int ALIGNMENT_PADDING = 10000;
 
     private Font geneLabelFont;
 
@@ -115,7 +116,7 @@ public class InstancesPanel extends JPanel {
         int x;
         int y = 0;
         for (Map.Entry<String, List<InstanceLocation>> genomeInstances: genomeToInstances) {
-            x = 0;
+            x = ALIGNMENT_PADDING;
 
             List<InstanceLocation> locationsInGenome = genomeInstances.getValue();
             List<List<GenesInstance>> genomeShapesInstances = new ArrayList<>();
@@ -163,13 +164,25 @@ public class InstancesPanel extends JPanel {
 
         for (ShapesPanel row: rows){
             rowIndex = addInstancePanelRow(row, rowIndex, scrollWidth, row.getPanelHeight()+PADDING);
+            alignRow(row);
+        }
+    }
+
+    private void alignRow(ShapesPanel row){
+        JViewport viewPort = (JViewport) SwingUtilities.getAncestorOfClass(JViewport.class, row);
+        if (viewPort != null) {
+
+            Rectangle view = viewPort.getViewRect();
+            view.x = ALIGNMENT_PADDING;
+
+            row.scrollRectToVisible(view);
         }
     }
 
     private ShapesPanel createPatternRow(Gene[] patternGenes){
 
         List<GenesInstance> genesInstanceInnerList = new ArrayList<>();
-        genesInstanceInnerList.add(getShapesCSB(patternGenes, 0, 0));
+        genesInstanceInnerList.add(getShapesCSB(patternGenes, ALIGNMENT_PADDING, 0));
 
         List<List<GenesInstance>> shapesInstanceOuterList = new ArrayList<>();
         shapesInstanceOuterList.add(genesInstanceInnerList);
@@ -207,7 +220,7 @@ public class InstancesPanel extends JPanel {
 
     private ShapesPanel getInstancesRowPanel(List<List<GenesInstance>> shapesInstanceList, Color backgroundColor) {
 
-        ShapesPanel shapesPanel = new ShapesPanel(shapesInstanceList, CONTAINERS_DIST, backgroundColor);
+        ShapesPanel shapesPanel = new ShapesPanel(shapesInstanceList, CONTAINERS_DIST, backgroundColor, ALIGNMENT_PADDING);
         shapesPanel.setToolTipText("");
         shapesPanel.setGeneTooltipListener(geneTooltipListener);
         shapesPanel.setDoubleClickListener(doubleClickListener);

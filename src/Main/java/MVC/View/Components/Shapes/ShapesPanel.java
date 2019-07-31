@@ -19,15 +19,18 @@ public class ShapesPanel extends JPanel{
     private List<List<GenesInstance>> shapesInstanceList;
     private int containersDist;
     private int panelHeight;
+    private int alignmentPadding;
 
     private Listener<TooltipGeneEvent> geneTooltipListener;
     private Listener<DoubleClickGeneEvent> doubleClickListener;
 
-    public ShapesPanel(List<List<GenesInstance>> shapesInstanceList, int containersDist, Color backgroundColor) {
+    public ShapesPanel(List<List<GenesInstance>> shapesInstanceList, int containersDist, Color backgroundColor,
+                       int alignmentPadding) {
 
         this.containersDist = containersDist;
         shapes = new ArrayList<>();
         this.shapesInstanceList = shapesInstanceList;
+        this.alignmentPadding = alignmentPadding;
 
         setBackground(backgroundColor);
 
@@ -126,6 +129,7 @@ public class ShapesPanel extends JPanel{
         }
 
         width -= containersDist /2;
+        width += 2*alignmentPadding;
 
         setPreferredSize(new Dimension(width, panelHeight));
     }
