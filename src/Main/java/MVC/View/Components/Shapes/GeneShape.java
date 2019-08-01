@@ -8,8 +8,8 @@ import java.awt.*;
 public class GeneShape implements Shape{
 
     private final static int PADDING_SMALL = 5;
-    private final static int PADDING_MEDIUM = 20;
-    private final static int ARROW_WIDTH = 30;
+   // private final static int PADDING_MEDIUM = 20;
+    //private final static int ARROW_WIDTH = 30;
 
     private int x, y;
 
@@ -24,6 +24,7 @@ public class GeneShape implements Shape{
     private int labelHeight;
 
     private int rectWidth;
+    private int arroWidth;
 
     private Graphics graphics;
 
@@ -50,10 +51,11 @@ public class GeneShape implements Shape{
         labelWidth = label.getWidth();
         labelHeight = label.getHeight();
 
-        rectWidth = labelWidth + PADDING_MEDIUM;
+        rectWidth = labelWidth + labelWidth/6;
+        arroWidth = rectWidth/4;
 
-        height = labelHeight + PADDING_MEDIUM;
-        width = ARROW_WIDTH + rectWidth;
+        height = labelHeight + labelHeight/2;
+        width = arroWidth + rectWidth;
     }
 
     public void draw(Graphics g) {
@@ -79,8 +81,8 @@ public class GeneShape implements Shape{
         int arrowEndX = x + width;
 
         if (strand == Strand.REVERSE){
-            rectStartX = x + ARROW_WIDTH;
-            arrowStartX =  x + ARROW_WIDTH;
+            rectStartX = x + arroWidth;
+            arrowStartX =  x + arroWidth;
             arrowEndX = x;
         }
 
@@ -99,7 +101,7 @@ public class GeneShape implements Shape{
 
         int labelPositionX = x + (rectWidth-labelWidth)/2;
         if (strand == Strand.REVERSE){
-            labelPositionX += ARROW_WIDTH;
+            labelPositionX += arroWidth;
         }
 
         g.drawString(label.getText(), labelPositionX, y + height/2 + PADDING_SMALL);

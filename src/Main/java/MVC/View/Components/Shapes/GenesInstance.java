@@ -18,9 +18,7 @@ public class GenesInstance implements Shape{
 
     //the distance between shapes
     private int DIST_SHAPES = 10;
-    private int NAME_LABEL_HEIGHT = 22;
     private int NAME_LABEL_PADDING = 2;
-    private int LOCATION_LABELS_HEIGHT = 15;
 
     private LabelShape repliconNameLabel;
     private LabelShape startLocationLabel;
