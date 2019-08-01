@@ -240,11 +240,6 @@ public class MainFrame extends JFrame {
                 filterRequest.getGenesCategoryOperator(), genesToCogsDesc));
 
         familiesFilter.applyFilters();
-        List<Family> filteredFamilies = familiesFilter.getFilteredFamilies();
-        summaryPanel.setFilteredFamilies(filteredFamilies);
-        statusBar.updateStatus(filteredFamilies);
-
-        tableRowClickFromHistory();
 
     }
 
@@ -279,6 +274,12 @@ public class MainFrame extends JFrame {
                 protected Void doInBackground() {
                     middlePanel.clearPanel();
                     setFilters(request);
+
+                    List<Family> filteredFamilies = familiesFilter.getFilteredFamilies();
+                    summaryPanel.setFilteredFamilies(filteredFamilies);
+                    statusBar.updateStatus(filteredFamilies);
+
+                    tableRowClickFromHistory();
 
                     return null;
                 }

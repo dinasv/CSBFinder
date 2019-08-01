@@ -65,17 +65,19 @@ public class InstancesPanel extends JPanel {
 
     }
 
-    public void displayInstances() {
-        displayInstances(scrollWidth);
+    public void displayGenes() {
+        displayGenes(scrollWidth);
     }
 
-    public void displayInstances(int scrollWidth) {
+    public void displayGenes(int scrollWidth) {
         this.scrollWidth = scrollWidth;
 
         clearPanel();
         showData(scrollWidth);
         revalidate();
+        alignRowsToDefault();
         repaint();
+
     }
 
     public void clearPanel(){
@@ -164,6 +166,11 @@ public class InstancesPanel extends JPanel {
 
         for (ShapesPanel row: rows){
             rowIndex = addInstancePanelRow(row, rowIndex, scrollWidth, row.getPanelHeight()+PADDING);
+        }
+    }
+
+    public void alignRowsToDefault(){
+        for (ShapesPanel row: rows){
             alignRow(row);
         }
     }
@@ -172,10 +179,11 @@ public class InstancesPanel extends JPanel {
         JViewport viewPort = (JViewport) SwingUtilities.getAncestorOfClass(JViewport.class, row);
         if (viewPort != null) {
 
-            Rectangle view = viewPort.getViewRect();
-            view.x = ALIGNMENT_PADDING;
+            viewPort.setViewPosition( new Point(ALIGNMENT_PADDING, 0) );
 
-            row.scrollRectToVisible(view);
+            //revalidate and repaint scroll
+            row.getParent().revalidate();
+            row.getParent().repaint();
         }
     }
 
@@ -335,7 +343,8 @@ public class InstancesPanel extends JPanel {
 
             int deltaX = anchorGene.getX() - viewX;
 
-            if (geneShape.getStrand() != anchorGene.getStrand()){
+            Strand anchorStrand = anchorGene.getStrand() == Strand.INVALID ? Strand.FORWARD : anchorGene.getStrand();
+            if (geneShape.getStrand() != anchorStrand && geneShape.getStrand() != Strand.INVALID){
                 row.reverse();
             }
 
@@ -344,10 +353,11 @@ public class InstancesPanel extends JPanel {
             JViewport viewPort = (JViewport) SwingUtilities.getAncestorOfClass(JViewport.class, row);
             if (viewPort != null) {
 
-                Rectangle view = viewPort.getViewRect();
-                view.x = x - deltaX;
+                Point p = viewPort.getViewPosition();
+                p.x = x - deltaX;
 
-                row.scrollRectToVisible(view);
+                viewPort.setViewPosition(p);
+
             }
         }
     }

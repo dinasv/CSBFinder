@@ -3,7 +3,6 @@ package MVC.View.Components.Panels;
 import MVC.View.Components.Shapes.GeneShape;
 import MVC.View.Events.DoubleClickGeneEvent;
 import Model.Genomes.GenomesInfo;
-import Model.Genomes.Strand;
 import Model.Patterns.InstanceLocation;
 import Model.Patterns.Pattern;
 import MVC.View.Events.TooltipGeneEvent;
@@ -78,7 +77,7 @@ public class GenesViewPanel extends JPanel {
 
         if (viewMode == ViewMode.INSTANCES){
             instancesPanel.setData(patternInView, genomeToInstances);
-            instancesPanel.displayInstances();
+            instancesPanel.displayGenes();
         }
 
     }
@@ -98,7 +97,7 @@ public class GenesViewPanel extends JPanel {
         labelsPanel.displayInstancesLabels(patternNames, instancesPanel.getFirstRowHeight(),
                 instancesPanel.getFirstRowHeight());
 
-        instancesPanel.showData(calcInstancesScrollWidth());
+        instancesPanel.displayGenes(calcInstancesScrollWidth());
 
         content.revalidate();
         content.repaint();
@@ -128,11 +127,12 @@ public class GenesViewPanel extends JPanel {
         labels.addAll(genomeNames);
         labelsPanel.displayInstancesLabels(labels, instancesPanel.getFirstRowHeight(), instancesPanel.getRowHeight());
 
-        instancesPanel.displayInstances(calcInstancesScrollWidth());
+        instancesPanel.displayGenes(calcInstancesScrollWidth());
 
         content.revalidate();
         content.repaint();
     }
+
 
     public List<String> getGenomeNames(){
         return genomeNames;
