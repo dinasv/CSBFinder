@@ -12,6 +12,7 @@ import java.util.List;
 public class TaxaPanel extends JPanel{
 
     private static final int NUM_OF_LEVELS = 4;
+    private static final int NUM_OF_LEVELS_TO_DISPLAY = 3;
     private JTree tree;
     private DefaultTreeModel model;
 
@@ -49,8 +50,6 @@ public class TaxaPanel extends JPanel{
     }
 
 
-
-
     public void displayTaxa(List<String> genomeNames) {
         if (genomeToTaxa.size() == 0){
             return;
@@ -74,7 +73,7 @@ public class TaxaPanel extends JPanel{
 
     private void expandAll(int taxaLevel, DefaultMutableTreeNode node){
 
-        if (taxaLevel == NUM_OF_LEVELS) {
+        if (taxaLevel == NUM_OF_LEVELS_TO_DISPLAY) {
             return;
         }
 
