@@ -28,13 +28,13 @@ public class Parsers {
     private final static String[] LOCATIONS_LINE = {"[Genome Name]", "[Replicon Name|[Start Index, End Index]]"};
     private final static String LOCATIONS_LINE_DELIMITER = "\t";
     private final static String TAXA_DELIMITER = ",";
-    private final static String[] TAXA_LINE = {"[Genome Name]","[Kingdom]","[Phylum]","[Class]","[Genus]"};
+    private final static String[] TAXA_LINE = {"[Genome Name]","[Kingdom]","[Phylum]","[Class]","[Genus]","[Species]"};
 
 
-    final static String GENOMES_START = "<genomes>";
-    final static String GENOMES_END = "<\\genomes>";
-    final static String INSTANCES_START = "<instances>";
-    final static String INSTANCES_END = "<\\instances>";
+    private final static String GENOMES_START = "<genomes>";
+    private final static String GENOMES_END = "<\\genomes>";
+    private final static String INSTANCES_START = "<instances>";
+    private final static String INSTANCES_END = "<\\instances>";
 
     public static List<Pattern> parseReferenceGenomesFile(GenomesInfo genomesInfo, String referenceGenomesPath)
             throws IOException {
@@ -320,8 +320,10 @@ public class Parsers {
                 String phylum = splitLine[2];
                 String taxClass = splitLine[3];
                 String genus = splitLine[4];
+                String species = splitLine[5];
 
-                Taxon taxon = new Taxon(kingdom.intern(), phylum.intern(), taxClass.intern(), genus.intern());
+                Taxon taxon = new Taxon(kingdom.intern(), phylum.intern(), taxClass.intern(), genus.intern(),
+                        species.intern());
 
                 genomeToTaxon.put(genomeName, taxon);
 

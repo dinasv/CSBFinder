@@ -11,7 +11,7 @@ import java.util.List;
 
 public class TaxaPanel extends JPanel{
 
-    private static final int NUM_OF_LEVELS = 3;
+    private static final int NUM_OF_LEVELS = 4;
     private JTree tree;
     private DefaultTreeModel model;
 
