@@ -30,18 +30,12 @@ public class CSBSummaryPanel extends JPanel {
         setLayout(new BorderLayout());
         summary = new JTextPane();
         summary.setEditable(false);
-        //summary.setFont(new Font("Serif", Font.PLAIN, 16));
-
 
         titleStyle = summary.addStyle("Title", null);
-        //StyleConstants.setFontFamily(titleStyle, "Serif");
-        StyleConstants.setFontSize(titleStyle, 20);
+        StyleConstants.setFontSize(titleStyle, 12);
         StyleConstants.setBold(titleStyle, true);
 
-        textStyle = summary.addStyle("Title", null);
-        //StyleConstants.setFontFamily(textStyle, "Serif");
-        StyleConstants.setFontSize(textStyle, 16);
-
+        textStyle = summary.addStyle("Text", null);
 
         scroll = new JScrollPane(summary);
         scroll.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
@@ -122,7 +116,6 @@ public class CSBSummaryPanel extends JPanel {
                         sb.append(" | ");
                         sb.append(cog.getGeneName());
 
-                        sb.append(NEWLINE);
                         sb.append(NEWLINE);
 
                         doc.insertString(doc.getLength(), sb.toString(), textStyle);
