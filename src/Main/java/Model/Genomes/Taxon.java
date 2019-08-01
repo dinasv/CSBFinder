@@ -11,16 +11,39 @@ public class Taxon {
     public final String genus;
     public final String species;
 
+    private static Map<String, Integer> countTaxa = new HashMap<>();
+
     public Taxon(String kingdom, String phylum, String taxClass, String genus, String species){
         this.kingdom = kingdom;
         this.phylum = phylum;
         this.taxClass = taxClass;
         this.genus = genus;
         this.species = species;
+
+        updateCountTaxa(kingdom);
+        updateCountTaxa(phylum);
+        updateCountTaxa(taxClass);
+        updateCountTaxa(genus);
+        updateCountTaxa(species);
     }
 
     public Taxon(){
         this(NO_TAXA,NO_TAXA,NO_TAXA,NO_TAXA,NO_TAXA);
+    }
+
+    private void updateCountTaxa(String taxa){
+        int count = countTaxa.getOrDefault(taxa, 0);
+        count += 1;
+        countTaxa.put(taxa, count);
+    }
+
+    public static int getTaxaCount(String taxa){
+
+        if (taxa.equals(NO_TAXA)){
+            return -1;
+        }
+
+        return countTaxa.getOrDefault(taxa, -1);
     }
 
     public String getTaxaAtLevel(int level){

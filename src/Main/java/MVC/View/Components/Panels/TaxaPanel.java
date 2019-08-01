@@ -141,7 +141,14 @@ public class TaxaPanel extends JPanel{
         }
 
         public String toString() {
-            return taxaName + " [" + genomesCount + "]";
+            int totalTaxa = Taxon.getTaxaCount(taxaName);
+
+            String text = String.format("%s [%s]", taxaName, genomesCount);
+            if (totalTaxa != -1){
+                text = String.format("%s [%s/%s]", taxaName, genomesCount, totalTaxa);
+            }
+
+            return text;
         }
 
         public void setGenomesCount(int genomesCount){
