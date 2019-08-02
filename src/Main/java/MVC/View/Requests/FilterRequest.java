@@ -22,7 +22,9 @@ public class FilterRequest implements Request{
     private BooleanOperator genesOperator;
     private String familyIds;
     private String genesCategory;
+    private String genesCategoryExclude;
     private BooleanOperator genesCategoryOperator;
+    //private BooleanOperator genesCategoryExcludeOperator;
 
     private String mainFunctionalCategory;
     private FunctionalCategoryOption functionalCategoryOption;
@@ -169,4 +171,23 @@ public class FilterRequest implements Request{
     public void setGenesCategoryOperator(BooleanOperator genesCategoryOperator) {
         this.genesCategoryOperator = genesCategoryOperator;
     }
+
+    /*
+    public void setGenesCategoryExcludeOperator(BooleanOperator genesCategoryOperator) {
+        this.genesCategoryOperator = genesCategoryOperator;
+    }
+
+    public BooleanOperator getGenesCategoryExcludeOperator() {
+        return genesCategoryExcludeOperator;
+    }*/
+
+    public Optional<String> getGenesCategoryExclude() {
+        return Optional.ofNullable(genesCategoryExclude);
+    }
+
+    public void setGenesCategoryExclude(String genesCategoryExclude) {
+        this.genesCategoryExclude = genesCategoryExclude;
+    }
+
+
 }

@@ -73,6 +73,10 @@ public class FilterDialog extends JDialog{
     private JTextField genesCategory;
     private JComboBox<BooleanOperator> genesCategoryComboBox;
 
+    private final JLabel PATTERN_GENES_CATEGORY_EXCLUDE_LABEL = new JLabel("Exclude CSBs that contain functional description:");
+    private JTextField genesCategoryExclude;
+    //private JComboBox<BooleanOperator> genesCategoryExcludeComboBox;
+
     private GridBagConstraints gc;
 
     private JButton applyFilter;
@@ -191,6 +195,12 @@ public class FilterDialog extends JDialog{
                 request.setGenesCategoryOperator(
                         genesCategoryComboBox.getItemAt(genesCategoryComboBox.getSelectedIndex())));
 
+        addTextFieldListener(genesCategoryExclude, request::setGenesCategoryExclude);
+        /*
+        genesCategoryExclude.addActionListener(e ->
+                request.setGenesCategoryExcludeOperator(
+                        genesCategoryExcludeComboBox.getItemAt(genesCategoryExcludeComboBox.getSelectedIndex())));
+        */
         addTextFieldListener(mainFunctionalCategory, request::setMainFunctionalCategory);
         functionalCategoryComboBox.addActionListener(e ->
                 request.setFunctionalCategoryOption(functionalCategoryComboBox.getItemAt(
@@ -261,6 +271,10 @@ public class FilterDialog extends JDialog{
 
         genesCategoryComboBox = new JComboBox<>(BooleanOperator.values());
 
+        genesCategoryExclude = new JTextField();
+
+        //genesCategoryExcludeComboBox = new JComboBox<>(BooleanOperator.values());
+
     }
 
     private void initFields(){
@@ -279,8 +293,10 @@ public class FilterDialog extends JDialog{
         patternGenes.setText(PATTERN_GENES_DEF);
         mainFunctionalCategory.setText(FUNCTIONAL_CATEGORY_DEF);
         genesCategory.setText(FUNCTIONAL_CATEGORY_DEF);
+        genesCategoryExclude.setText(FUNCTIONAL_CATEGORY_DEF);
 
         genesCategoryComboBox.setSelectedIndex(0);
+        //genesCategoryExcludeComboBox.setSelectedIndex(0);
         genesComboBox.setSelectedIndex(0);
         functionalCategoryComboBox.setSelectedIndex(0);
     }
@@ -334,6 +350,11 @@ public class FilterDialog extends JDialog{
         genesCategory.setColumns(TEXT_FIELD_SIZE);
         addComponentToGC(1, y, 1, 0.2, insetField, 1, genesCategory, LINE_START);
         addComponentToGC(2, y++, 1, 0.2, insetField, 2, genesCategoryComboBox, LINE_START);
+
+        addComponentToGC(0, y, 1, 0.2, insetLabel, 1, PATTERN_GENES_CATEGORY_EXCLUDE_LABEL, LINE_START);
+        genesCategoryExclude.setColumns(TEXT_FIELD_SIZE);
+        addComponentToGC(1, y++, 1, 0.2, insetField, 1, genesCategoryExclude, LINE_START);
+        //addComponentToGC(2, y++, 1, 0.2, insetField, 2, genesCategoryExcludeComboBox, LINE_START);
 
         addComponentToGC(0, y, 1, 0.2, insetLabel, 1, FAMILY_ID_LABEL, LINE_START);
         familyIds.setColumns(TEXT_FIELD_SIZE);

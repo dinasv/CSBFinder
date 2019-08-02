@@ -119,14 +119,31 @@ public class FamiliesFilter {
             return;
         }
 
-        String[] functionalCategories = genes.split(SEPARATOR);
-
-        List<Filter<Pattern>> containsStringFilters = Arrays.stream(functionalCategories).map(category ->
-                new ContainsStringFilterPreprocess<>(category, PatternProperty.GENES,
-                        genesToCogsDesc, Gene[].class)).collect(Collectors.toList());
+        List<Filter<Pattern>> containsStringFilters = getContainsGeneCatFilters(genes, genesToCogsDesc);
 
         addFiltersBooleanOperator(containsStringFilters, operator);
 
+    }
+    public void setGeneCategoryExclude(String genes, Function<Gene[], String> genesToCogsDesc){
+
+        if (genes == null || genes.length() == 0){
+            return;
+        }
+
+        List<Filter<Pattern>> containsStringFilters = getContainsGeneCatFilters(genes, genesToCogsDesc);
+
+        NotFilter<Pattern> notFilter = new NotFilter<>(containsStringFilters);
+        patternFilters.add(notFilter);
+
+    }
+
+    private List<Filter<Pattern>> getContainsGeneCatFilters(String str, Function<Gene[], String> func){
+
+        String[] functionalCategories = str.split(SEPARATOR);
+
+        return Arrays.stream(functionalCategories).map(category ->
+                new ContainsStringFilterPreprocess<>(category, PatternProperty.GENES,
+                        func, Gene[].class)).collect(Collectors.toList());
     }
 
     private void addFiltersBooleanOperator(List<Filter<Pattern>> filters, BooleanOperator operator){

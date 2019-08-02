@@ -243,6 +243,9 @@ public class MainFrame extends JFrame {
         filterRequest.getGenesCategory().ifPresent(val -> familiesFilter.setGeneCategory(val,
                 filterRequest.getGenesCategoryOperator(), genesToCogsDesc));
 
+        filterRequest.getGenesCategoryExclude().ifPresent(val -> familiesFilter.setGeneCategoryExclude(val,
+                genesToCogsDesc));
+
         familiesFilter.applyFilters();
 
     }
