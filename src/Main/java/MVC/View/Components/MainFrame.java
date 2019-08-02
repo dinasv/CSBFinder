@@ -65,6 +65,10 @@ public class MainFrame extends JFrame {
 
     private JFileChooser fc;
 
+    private Listener<LoadFileEvent> loadSessionListener;
+    private Listener<LoadFileEvent> loadTaxaListener;
+    private Listener<LoadFileEvent> loadCogInfoListener;
+
     public MainFrame(CSBFinderController controller) {
         super(PROGRAM_NAME);
 
@@ -524,11 +528,23 @@ public class MainFrame extends JFrame {
         return String.format(html, MSG_WIDTH, msg);
     }
 
+    public void invokeLoadSessionListener(String path){
+        loadSessionListener.eventOccurred(new LoadFileEvent(this, new File(path)));
+    }
+
+    public void invokeLoadCogInfoListener(String path){
+        loadCogInfoListener.eventOccurred(new LoadFileEvent(this, new File(path)));
+    }
+
+    public void invokeLoadTaxaListener(String path){
+        loadTaxaListener.eventOccurred(new LoadFileEvent(this, new File(path)));
+    }
+
     /**
      * Load files listeners
      */
     private void setLoadButtonListener() {
-        menuBar.setLoadGenomesListener(e -> {
+        Listener<LoadFileEvent> loadGenomesListener = e -> {
 
             File f = e.getFilePath();
             if (f.exists() && !f.isDirectory()) {
@@ -558,11 +574,12 @@ public class MainFrame extends JFrame {
                 };
                 swingWorker.execute();
             }
-        });
+        };
+        menuBar.setLoadGenomesListener(loadGenomesListener);
     }
 
     private void setImportSessionButtonListener() {
-        menuBar.setImportSessionListener(e -> {
+        loadSessionListener = e -> {
 
             File f = e.getFilePath();
             if (f.exists() && !f.isDirectory()) {
@@ -592,11 +609,12 @@ public class MainFrame extends JFrame {
 
                 threadPool.submit(swingWorker);
             }
-        });
+        };
+        menuBar.setImportSessionListener(loadSessionListener);
     }
 
     private void setLoadCogInfoButtonListener() {
-        menuBar.setLoadCogInfoListener(e -> {
+        loadCogInfoListener = e -> {
 
             File f = e.getFilePath();
             if (f.exists() && !f.isDirectory()) {
@@ -624,11 +642,12 @@ public class MainFrame extends JFrame {
                 };
                 swingWorker.execute();
             }
-        });
+        };
+        menuBar.setLoadCogInfoListener(loadCogInfoListener);
     }
 
     private void setLoadTaxaListener() {
-        menuBar.setLoadTaxaListener(e -> {
+        loadTaxaListener = e -> {
 
             File f = e.getFilePath();
             if (f.exists() && !f.isDirectory()) {
@@ -659,7 +678,8 @@ public class MainFrame extends JFrame {
                 };
                 swingWorker.execute();
             }
-        });
+        };
+        menuBar.setLoadTaxaListener(loadTaxaListener);
     }
 
 
