@@ -21,11 +21,14 @@ import MVC.View.Requests.FilterRequest;
 import javax.swing.*;
 import java.awt.*;
 import java.io.File;
+import java.io.IOException;
 import java.util.*;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.function.Consumer;
 import java.util.function.Function;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 public class MainFrame extends JFrame {
@@ -72,6 +75,8 @@ public class MainFrame extends JFrame {
     public MainFrame(CSBFinderController controller) {
         super(PROGRAM_NAME);
 
+        progressBar = new ProgressBar(this);
+
         fc = new JFileChooser(System.getProperty("user.dir"));
         familiesFilter = new FamiliesFilter();
         tablesHistory = new TablesHistory();
@@ -82,7 +87,7 @@ public class MainFrame extends JFrame {
         initComponents();
         init();
 
-        progressBar = new ProgressBar(this);
+
 
     }
 
@@ -434,7 +439,6 @@ public class MainFrame extends JFrame {
                 middlePanel.clearPanel();
             }else{
                 tableRowClickFromHistory();
-                //summaryPanel.fireTableDataChanged();
             }
         });
     }
@@ -547,141 +551,84 @@ public class MainFrame extends JFrame {
      * Load files listeners
      */
     private void setLoadButtonListener() {
-        Listener<LoadFileEvent> loadGenomesListener = e -> {
 
-            File f = e.getFilePath();
-            if (f.exists() && !f.isDirectory()) {
-
-                SwingUtilities.invokeLater(() -> progressBar.start(LOADING_MSG));
-
-                SwingWorker<Void, Void> swingWorker = new SwingWorker<Void, Void>() {
-
-                    String msg = "";
-
-                    @Override
-                    protected Void doInBackground() {
-                        msg = controller.loadInputGenomesFile(f.getPath());
-                        return null;
-                    }
-
-                    @Override
-                    protected void done() {
-                        clearPanels();
-
-                        setGenomesData(f.getPath());
-
-                        progressBar.done("");
-
-                        JOptionPane.showMessageDialog(MainFrame.this, formatMsgWidth(msg));
-                    }
-                };
-                swingWorker.execute();
+        Function<File, String> doInBackgroundFunc = (File f) -> {
+            clearPanels();
+            try {
+                controller.loadInputGenomesFile(f.getPath());
+            }catch (IOException exception){
+                return exception.getMessage();
             }
+            return null;
         };
+
+        Consumer<File> doneFunc = (File f) -> {
+            clearPanels();
+            setGenomesData(f.getPath());
+        };
+
+        Listener<LoadFileEvent> loadGenomesListener = new LoadFileListener(doInBackgroundFunc, doneFunc, MainFrame.this, progressBar);
+
         menuBar.setLoadGenomesListener(loadGenomesListener);
     }
 
     private void setImportSessionButtonListener() {
-        loadSessionListener = e -> {
 
-            File f = e.getFilePath();
-            if (f.exists() && !f.isDirectory()) {
-
-                SwingUtilities.invokeLater(() -> progressBar.start(LOADING_MSG));
-
-                SwingWorker<Void, Void> swingWorker = new SwingWorker<Void, Void>() {
-
-                    String msg = "";
-
-                    @Override
-                    protected Void doInBackground() {
-                        clearPanels();
-                        msg = controller.loadSessionFile(f.getPath());
-                        return null;
-                    }
-
-                    @Override
-                    protected void done() {
-
-                        setGenomesData(f.getPath());
-
-                        progressBar.done("");
-                        JOptionPane.showMessageDialog(MainFrame.this, formatMsgWidth(msg));
-                    }
-                };
-
-                threadPool.submit(swingWorker);
+        Function<File, String> doInBackgroundFunc = (File f) -> {
+            clearPanels();
+            try {
+                controller.loadSessionFile(f.getPath());
+            }catch (IOException exception){
+                return exception.getMessage();
             }
+            return null;
         };
+
+        Consumer<File> doneFunc = (File f) -> {
+            setGenomesData(f.getPath());
+        };
+
+        loadSessionListener = new LoadFileListener(doInBackgroundFunc, doneFunc, MainFrame.this, progressBar);
+
         menuBar.setImportSessionListener(loadSessionListener);
     }
 
     private void setLoadCogInfoButtonListener() {
-        loadCogInfoListener = e -> {
-
-            File f = e.getFilePath();
-            if (f.exists() && !f.isDirectory()) {
-
-                SwingUtilities.invokeLater(() -> progressBar.start(LOADING_MSG));
-
-                SwingWorker<Void, Void> swingWorker = new SwingWorker<Void, Void>() {
-
-                    String msg = "";
-
-                    @Override
-                    protected Void doInBackground() {
-
-                        msg = controller.loadCogInfo(f.getPath());
-                        return null;
-                    }
-
-                    @Override
-                    protected void done() {
-
-                        progressBar.done("");
-                        tableRowClickFromHistory();
-                        JOptionPane.showMessageDialog(MainFrame.this, formatMsgWidth(msg));
-                    }
-                };
-                swingWorker.execute();
+        Function<File, String> doInBackgroundFunc = (File f) -> {
+            try {
+                controller.loadCogInfo(f.getPath());
+            }catch (IOException exception){
+                return exception.getMessage();
             }
+            return null;
         };
+
+        Consumer<File> doneFunc = (File f) -> {
+            tableRowClickFromHistory();
+        };
+
+        loadCogInfoListener = new LoadFileListener(doInBackgroundFunc, doneFunc, MainFrame.this, progressBar);
         menuBar.setLoadCogInfoListener(loadCogInfoListener);
     }
 
     private void setLoadTaxaListener() {
-        loadTaxaListener = e -> {
 
-            File f = e.getFilePath();
-            if (f.exists() && !f.isDirectory()) {
-
-                SwingUtilities.invokeLater(() -> progressBar.start(LOADING_MSG));
-
-                SwingWorker<Void, Void> swingWorker = new SwingWorker<Void, Void>() {
-
-                    String msg = "";
-
-                    @Override
-                    protected Void doInBackground() {
-
-                        msg = controller.loadTaxa(f.getPath());
-                        Map<String, Taxon> genomeToTaxa = controller.getGenomeToTaxa();
-                        middlePanel.setGenomeToTaxa(genomeToTaxa);
-
-                        return null;
-                    }
-
-                    @Override
-                    protected void done() {
-
-                        progressBar.done("");
-                        tableRowClickFromHistory();
-                        JOptionPane.showMessageDialog(MainFrame.this, formatMsgWidth(msg));
-                    }
-                };
-                swingWorker.execute();
+        Function<File, String> doInBackgroundFunc = (File f) -> {
+            try {
+                controller.loadTaxa(f.getPath());
+                Map<String, Taxon> genomeToTaxa = controller.getGenomeToTaxa();
+                middlePanel.setGenomeToTaxa(genomeToTaxa);
+            }catch (IOException exception){
+                return exception.getMessage();
             }
+            return null;
         };
+
+        Consumer<File> doneFunc = (File f) -> {
+            tableRowClickFromHistory();
+        };
+
+        loadTaxaListener = new LoadFileListener(doInBackgroundFunc, doneFunc, MainFrame.this, progressBar);
         menuBar.setLoadTaxaListener(loadTaxaListener);
     }
 
@@ -753,7 +700,6 @@ public class MainFrame extends JFrame {
                 JViewport viewPort = (JViewport) SwingUtilities.getAncestorOfClass(JViewport.class, event.getSrc());
                 if (viewPort != null) {
                     Rectangle view = viewPort.getViewRect();
-                    //int x = event.getGeneX() - view.x;
                     middlePanel.alignGenes(anchorGene, view.x);
                 }
 

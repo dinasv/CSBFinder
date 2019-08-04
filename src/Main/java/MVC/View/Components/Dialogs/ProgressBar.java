@@ -47,9 +47,9 @@ public class ProgressBar extends JDialog {
 
     public void start(String title) {
         setTitle(title);
-        setVisible(true);
         bar.setVisible(true);
         close.setVisible(false);
+        setVisible(true);
     }
 
     public void done(String message) {

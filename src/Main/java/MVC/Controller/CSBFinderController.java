@@ -70,21 +70,21 @@ public class CSBFinderController {
         model.setCSBFinderDoneListener(listener);
     }
 
-    public String loadInputGenomesFile(String filePath) {
+    public void loadInputGenomesFile(String filePath) throws IOException {
 
-        return this.model.loadInputGenomesFile(filePath);
+        this.model.loadInputGenomesFile(filePath);
     }
 
-    public String loadSessionFile(String filePath) {
-        return this.model.loadSessionFile(filePath);
+    public void loadSessionFile(String filePath) throws IOException {
+        this.model.loadSessionFile(filePath);
     }
 
-    public String loadCogInfo(String path){
-        return this.model.loadCogInfo(path);
+    public void loadCogInfo(String path) throws IOException {
+        this.model.loadCogInfo(path);
     }
 
-    public String loadTaxa(String path){
-        return this.model.loadTaxa(path);
+    public void loadTaxa(String path) throws IOException {
+        this.model.loadTaxa(path);
     }
 
     public void calculateMainFunctionalCategory(){

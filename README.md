@@ -91,7 +91,7 @@ make take a few minutes.
 
     2. The "Run" button should be enabled. Click on this button to set the parameters.
  
-    3. A dialog appears. Hover over the question mark icon next to each parameter for an explanation of each parameter. 
+    3. A progressBar appears. Hover over the question mark icon next to each parameter for an explanation of each parameter. 
 After setting the parameters, click on "Run". This can take a few minutes, depending on the size of the dataset and 
 on the parameters specified. 
 
@@ -319,7 +319,7 @@ This file shohuld contain specific CSB patterns which the user is interested to 
 
 - This is an optional input text file
 - The path to this file is provided in:
-    - User Interface: In the dialog opened after clicking on the "Run" button
+    - User Interface: In the progressBar opened after clicking on the "Run" button
     - Command Line: "--patterns" or "-p" option
 
 This file should use the following format:
@@ -422,7 +422,7 @@ is recommended (sets the maximal JAVA heap size to 6GB).
 Now execute CSBfinder and choose `File->Import->Genomes File`, it may take a few minutes to load the selected file.
 
 ##### Input Parameters
-Click on the "Run" button, and a dialog will open.
+Click on the "Run" button, and a progressBar will open.
 
 The screenshot below shows a typical parameter setting.
 - The quorum parameter is set to 50 (i.e., each CSB must have instances in at least 50 input genomes).  
@@ -461,7 +461,7 @@ The output files will be now located in the output directory
 Upload the dataset by clicking on the "Load Input Model.Genomes" button.
 
 ##### Input Parameters
-Click on the "Run" button, and a dialog will open.
+Click on the "Run" button, and a progressBar will open.
 
 The screenshot below shows a typical parameter setting.
 - The quorum parameter is set to 10 (i.e., each CSB must have instances in at least 50 input genomes).  

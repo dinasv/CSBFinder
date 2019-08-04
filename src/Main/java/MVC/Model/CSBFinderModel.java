@@ -12,6 +12,7 @@ import Model.PostProcess.Family;
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.ParameterException;
 
+import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -51,51 +52,42 @@ public class CSBFinderModel {
         return inputGenomesPath;
     }
 
-    public String loadInputGenomesFile(String path) {
+    public void loadInputGenomesFile(String path) throws IOException {
 
-        String msg = "";
         try {
             gi = Parsers.parseGenomesFile(path);
             inputGenomesPath = path;
-            msg = "Loaded " + gi.getNumberOfGenomes() + " genomes.";
             workflow = new CSBFinderWorkflow(gi);
         }catch(Exception e){
             gi = new GenomesInfo();
-            msg = e.getMessage();
+            throw e;
         }
-
-        return msg;
     }
 
-    public String loadSessionFile(String path) {
+    public void loadSessionFile(String path) throws IOException {
 
         String msg = "";
         gi = new GenomesInfo();
         families = new ArrayList<>();
         workflow = null;
 
-        try {
-            String[] args = Parsers.parseSessionFileFirstLine(path);
-            JCommander jCommander = parseArgs(args);
+        String[] args = Parsers.parseSessionFileFirstLine(path);
+        JCommander jCommander = parseArgs(args);
 
-            if (jCommander == null){
-                return String.format("The first line in the file %s should contain valid arguments", path);
-            }
-
-            Parsers.parseSessionFile(families, path, gi);
-
-            workflow = new CSBFinderWorkflow(gi);
-            workflow.setParameters(params);
-            workflow.setPatterns(families.stream().map(Family::getPatterns).flatMap(List::stream)
-                    .collect(Collectors.toList()));
-
-            csbFinderDoneListener.CSBFinderDoneOccurred(new CSBFinderDoneEvent(families));
-            msg = "Loaded session file.";
-
-        }catch(Exception e){
-            msg = e.getMessage();
+        if (jCommander == null){
+            throw new IOException(String.format("The first line in the file %s should contain valid arguments", path));
         }
-        return msg;
+
+        Parsers.parseSessionFile(families, path, gi);
+
+        workflow = new CSBFinderWorkflow(gi);
+        workflow.setParameters(params);
+        workflow.setPatterns(families.stream().map(Family::getPatterns).flatMap(List::stream)
+                .collect(Collectors.toList()));
+
+        csbFinderDoneListener.CSBFinderDoneOccurred(new CSBFinderDoneEvent(families));
+        msg = "Loaded session file.";
+
     }
 
 
@@ -210,43 +202,29 @@ public class CSBFinderModel {
     }
 
 
-    public String loadCogInfo(String path){
+    public void loadCogInfo(String path) throws IOException {
         cogInfo = new CogInfo();
 
-        String msg = "";
         Map<String, COG> cogInfoTable = null;
 
         boolean cogInfoExists = (path != null);
         if (cogInfoExists) {
-            try {
-                cogInfoTable = Parsers.parseCogInfoTable(path);
-                this.cogInfo.setCogInfo(cogInfoTable);
-                calculateMainFunctionalCategory();
-                msg = "Loaded orthology information table";
-            }catch (Exception e){
-                msg = e.getMessage() + "\n";
-            }
+            cogInfoTable = Parsers.parseCogInfoTable(path);
+            this.cogInfo.setCogInfo(cogInfoTable);
+            calculateMainFunctionalCategory();
         }
-        return msg;
     }
 
 
-    public String loadTaxa(String path){
+    public void loadTaxa(String path) throws IOException {
 
-        String msg = "";
         genomeToTaxa = new HashMap<>();
 
         if (path != null) {
-            try {
-                genomeToTaxa = Parsers.parseTaxaFile(path);
 
-                msg = "Loaded Taxa File";
+            genomeToTaxa = Parsers.parseTaxaFile(path);
 
-            }catch (Exception e){
-                msg = e.getMessage() + "\n";
-            }
         }
-        return msg;
     }
 
     public void calculateMainFunctionalCategory(){
