@@ -15,7 +15,8 @@ public class SaveDialog {
 
     private Listener<SaveOutputEvent> saveOutputListener;
 
-    private static final String SAVE_FILES_DIALOG_NAME = "Select Directory";
+    private static final String SAVE_FILES_DIALOG_BTN_NAME = "Select Directory";
+    private static final String SAVE_FILES_DIALOG_NAME = "Save";
 
     public SaveDialog(JFileChooser fileChooser, JFrame mainFrame){
         this.fileChooser = fileChooser;
@@ -25,7 +26,7 @@ public class SaveDialog {
 
     public void openDialog(){
         initOutputFileChooser();
-        int action = fileChooser.showDialog(mainFrame, SAVE_FILES_DIALOG_NAME);
+        int action = fileChooser.showDialog(mainFrame, SAVE_FILES_DIALOG_BTN_NAME);
         saveOutputListener.eventOccurred(new SaveOutputEvent(outputTypeChooser.getChosenOutput(),
                 outputTypeChooser.getDatasetName(), fileChooser.getSelectedFile().getAbsolutePath(), action));
     }
@@ -34,6 +35,7 @@ public class SaveDialog {
         fileChooser.resetChoosableFileFilters();
         fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
         fileChooser.setAccessory(outputTypeChooser);
+        fileChooser.setDialogTitle(SAVE_FILES_DIALOG_NAME);
     }
 
     public void setSaveOutputListener(Listener<SaveOutputEvent> saveOutputListener) {

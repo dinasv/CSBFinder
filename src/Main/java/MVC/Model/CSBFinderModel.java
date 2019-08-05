@@ -215,24 +215,15 @@ public class CSBFinderModel {
     }
 
 
-    public String saveOutputFiles(OutputType outputFileType, String outputDir, String datasetName,
+    public void saveOutputFiles(OutputType outputFileType, String outputDir, String datasetName,
                                   List<Family> families) {
         System.out.println("Writing to files");
 
-        String msg = "";
-        try {
-            params.outputDir = outputDir;
-            params.datasetName = datasetName;
-            params.outputFileType = outputFileType;
+        params.outputDir = outputDir;
+        params.datasetName = datasetName;
+        params.outputFileType = outputFileType;
 
-            Writer writer = WriteUtils.writeFamiliesToFiles(families, gi,  cogInfo, params, arguments);
-
-            msg = "CSBs written to files.";
-        }catch (Exception e){
-            msg = e.getMessage();
-        }
-
-        return msg;
+        Writer writer = WriteUtils.writeFamiliesToFiles(families, gi,  cogInfo, params, arguments);
     }
 
     /**

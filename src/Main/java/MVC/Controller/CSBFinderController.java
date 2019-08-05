@@ -38,7 +38,7 @@ public class CSBFinderController {
                 String[] splitLine= line.trim().split(":");
 
                 String type = splitLine[0];
-                String path = splitLine[1];
+                String path = splitLine.length > 1 ? splitLine[1] : "";
 
                 if (path.length() > 0) {
                     switch (type) {
@@ -63,7 +63,7 @@ public class CSBFinderController {
             System.out.println("Problem reading config.txt file");
             //skip
         } catch (Exception e){
-            System.out.println(e);
+            System.out.println(e.getMessage());
         }
     }
 
@@ -92,9 +92,9 @@ public class CSBFinderController {
         this.model.calculateMainFunctionalCategory();
     }
 
-    public String saveOutputFiles(OutputType outputFileType, String outputDir, String datasetName,
+    public void saveOutputFiles(OutputType outputFileType, String outputDir, String datasetName,
                                   List<Family> families) {
-        return this.model.saveOutputFiles(outputFileType, outputDir, datasetName, families);
+        this.model.saveOutputFiles(outputFileType, outputDir, datasetName, families);
     }
 
     public void findCSBs(CSBFinderRequest request) throws IOException, IllegalArgumentException {

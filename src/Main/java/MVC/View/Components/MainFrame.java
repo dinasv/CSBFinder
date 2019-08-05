@@ -277,7 +277,7 @@ public class MainFrame extends JFrame {
     private void setApplyFilterListener() {
 
         Function<FilterRequest, String> doInBackgroundFunc = (FilterRequest request) -> {
-
+            filterDialog.setVisible(false);
             middlePanel.clearPanel();
             setFilters(request);
 
@@ -428,6 +428,7 @@ public class MainFrame extends JFrame {
 
 
     private void setSaveButtonListener() {
+
         Listener<SaveOutputEvent> listener = new Listener<SaveOutputEvent>() {
             String msg = "";
 
@@ -441,7 +442,7 @@ public class MainFrame extends JFrame {
                     SwingWorker<Void, Void> swingWorker = new SwingWorker<Void, Void>() {
                         @Override
                         protected Void doInBackground() {
-                            msg = controller.saveOutputFiles(e.getOutputType(), e.getOutputDirectory(),
+                            controller.saveOutputFiles(e.getOutputType(), e.getOutputDirectory(),
                                     e.getDatasetName(), familiesFilter.getFilteredFamilies());
                             return null;
                         }
@@ -449,7 +450,7 @@ public class MainFrame extends JFrame {
                         @Override
                         protected void done() {
                             progressBar.done("");
-                            JOptionPane.showMessageDialog(MainFrame.this, formatMsgWidth(msg));
+                            //JOptionPane.showMessageDialog(MainFrame.this, formatMsgWidth(msg));
                         }
                     };
 
