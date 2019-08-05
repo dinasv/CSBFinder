@@ -79,7 +79,7 @@ public class Controller {
      * Read patterns from a file if a file is given
      * @return
      */
-    private List<Pattern> readPatternsFromFile() throws Exception{
+    private List<Pattern> readPatternsFromFile() throws IOException, IllegalArgumentException {
         List<Pattern> patterns = new ArrayList<>();
         String path = params.inputPatternsFilePath;
 

@@ -10,6 +10,7 @@ import MVC.Model.CSBFinderModel;
 import MVC.View.Components.MainFrame;
 import Model.OrthologyGroups.COG;
 import Model.Patterns.Pattern;
+import com.beust.jcommander.ParameterException;
 
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
@@ -96,8 +97,8 @@ public class CSBFinderController {
         return this.model.saveOutputFiles(outputFileType, outputDir, datasetName, families);
     }
 
-    public String findCSBs(CSBFinderRequest request) {
-        return this.model.findCSBs(request);
+    public void findCSBs(CSBFinderRequest request) throws IOException, IllegalArgumentException {
+        this.model.findCSBs(request);
     }
 
     public List<COG> getCogsInfo(Gene[] genes) {
@@ -132,12 +133,13 @@ public class CSBFinderController {
         return model.getInputGenomesPath();
     }
 
-    public String clusterToFamilies(double threshold, ClusterBy clusterBy, ClusterDenominator clusterDenominator){
-        return model.clusterToFamilies(threshold, clusterBy, clusterDenominator);
+    public void clusterToFamilies(double threshold, ClusterBy clusterBy, ClusterDenominator clusterDenominator)
+            throws ParameterException{
+        model.clusterToFamilies(threshold, clusterBy, clusterDenominator);
     }
 
-    public String computeScores(double threshold){
-        return model.computeScores(threshold);
+    public void computeScores(double threshold) throws ParameterException {
+        model.computeScores(threshold);
     }
 
     public Map<String, Taxon> getGenomeToTaxa(){

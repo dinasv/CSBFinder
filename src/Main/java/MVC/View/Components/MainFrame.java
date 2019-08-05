@@ -9,6 +9,8 @@ import MVC.View.Components.Shapes.Label;
 import MVC.View.Events.*;
 import MVC.View.Images.Icon;
 import MVC.View.Listeners.*;
+import MVC.View.Requests.Request;
+import MVC.View.Workers.CustomSwingWorker;
 import Model.Genomes.Alphabet;
 import Model.Genomes.Gene;
 import Model.Genomes.Taxon;
@@ -17,6 +19,7 @@ import Model.Patterns.Pattern;
 import Model.PostProcess.Family;
 import MVC.View.Tables.Filters.FamiliesFilter;
 import MVC.View.Requests.FilterRequest;
+import com.beust.jcommander.ParameterException;
 
 import javax.swing.*;
 import java.awt.*;
@@ -272,131 +275,104 @@ public class MainFrame extends JFrame {
     }
 
     private void setApplyFilterListener() {
-        filterDialog.setApplyFilterListener(e -> {
-            FilterRequest request = e.getRequest();
 
-            SwingUtilities.invokeLater(() -> {
-                filterDialog.setVisible(false);
-                progressBar.start(RUNNING_MSG);
-            });
+        Function<FilterRequest, String> doInBackgroundFunc = (FilterRequest request) -> {
 
-            SwingWorker<Void, Void> swingWorker = new SwingWorker<Void, Void>() {
+            middlePanel.clearPanel();
+            setFilters(request);
 
-                @Override
-                protected Void doInBackground() {
-                    middlePanel.clearPanel();
-                    setFilters(request);
+            List<Family> filteredFamilies = familiesFilter.getFilteredFamilies();
+            summaryPanel.setFilteredFamilies(filteredFamilies);
+            statusBar.updateStatus(filteredFamilies);
 
-                    List<Family> filteredFamilies = familiesFilter.getFilteredFamilies();
-                    summaryPanel.setFilteredFamilies(filteredFamilies);
-                    statusBar.updateStatus(filteredFamilies);
+            tableRowClickFromHistory();
 
-                    tableRowClickFromHistory();
+            return null;
+        };
 
-                    return null;
-                }
+        Consumer<FilterRequest> doneFunc = request -> {
+            progressBar.done("");
+        };
 
-                @Override
-                protected void done() {
-                    progressBar.done("");
-                }
-            };
+        RequestListener<FilterRequest> listener = new RequestListener<>(doInBackgroundFunc, doneFunc,
+                MainFrame.this, progressBar);
+        filterDialog.setApplyFilterListener(listener);
 
-            swingWorker.execute();
-        });
     }
 
     private void setRunClusteringListener() {
-        clusterDialog.setRunListener(e -> {
 
-            SwingUtilities.invokeLater(() -> {
-                clusterDialog.setVisible(false);
-                progressBar.start(RUNNING_MSG);
-            });
+        Function<CSBFinderRequest, String> doInBackgroundFunc = (CSBFinderRequest request) -> {
 
-            SwingWorker<Void, Void> swingWorker = new SwingWorker<Void, Void>() {
+            clusterDialog.setVisible(false);
+            clearPanels();
 
-                CSBFinderRequest request = e.getRequest();
-                String msg = "";
+            try {
+                controller.clusterToFamilies(request.getFamilyClusterThreshold(),
+                        request.getClusterType(), request.getClusterDenominator());
+            } catch (ParameterException exception) {
+                return exception.getMessage();
+            }
+            return null;
+        };
 
-                @Override
-                protected Void doInBackground() {
-                    clearPanels();
-                    msg = controller.clusterToFamilies(request.getFamilyClusterThreshold(),
-                            request.getClusterType(), request.getClusterDenominator());
-                    return null;
-                }
+        Consumer<CSBFinderRequest> doneFunc = request -> {
+            progressBar.done("");
+        };
 
-                @Override
-                protected void done() {
-                    progressBar.done("");
-                    JOptionPane.showMessageDialog(MainFrame.this, formatMsgWidth(msg));
-                }
-            };
-            swingWorker.execute();
-        });
+        RequestListener<CSBFinderRequest> listener = new RequestListener<>(doInBackgroundFunc, doneFunc,
+                MainFrame.this, progressBar);
+        clusterDialog.setRunListener(listener);
+
     }
 
     private void setComputeScoreListener() {
-            rankDialog.setRunListener(e -> {
 
-                SwingUtilities.invokeLater(() -> {
-                    rankDialog.setVisible(false);
-                    progressBar.start(RUNNING_MSG);
-                });
+        Function<CSBFinderRequest, String> doInBackgroundFunc = (CSBFinderRequest request) -> {
+            rankDialog.setVisible(false);
+            clearPanels();
 
-                SwingWorker<Void, Void> swingWorker = new SwingWorker<Void, Void>() {
+            try {
+                controller.computeScores(request.getGenomesDistanceThreshold());
+            } catch (ParameterException exception) {
+                return exception.getMessage();
+            }
+            return null;
+        };
 
-                    CSBFinderRequest request = e.getRequest();
-                    String msg = "";
+        Consumer<CSBFinderRequest> doneFunc = request -> {
+            progressBar.done("");
+        };
 
-                    @Override
-                    protected Void doInBackground() {
-                        clearPanels();
-                        msg = controller.computeScores(request.getGenomesDistanceThreshold());
-                        return null;
-                    }
+        RequestListener<CSBFinderRequest> listener = new RequestListener<>(doInBackgroundFunc, doneFunc,
+                MainFrame.this, progressBar);
+        rankDialog.setRunListener(listener);
 
-                    @Override
-                    protected void done() {
-                        progressBar.done("");
-                        JOptionPane.showMessageDialog(MainFrame.this, formatMsgWidth(msg));
-                    }
-                };
-                swingWorker.execute();
-            });
-        }
+    }
 
 
     private void setRunCSBFinderListener() {
-        inputParamsDialog.setRunListener(e -> {
 
-            SwingUtilities.invokeLater(() -> {
-                inputParamsDialog.setVisible(false);
-                progressBar.start(RUNNING_MSG);
-            });
+        Function<CSBFinderRequest, String> doInBackgroundFunc = (CSBFinderRequest request) -> {
+            inputParamsDialog.setVisible(false);
+            clearPanels();
+            request.setInputGenomeFilesPath(controller.getInputGenomesPath());
+            try {
+                controller.findCSBs(request);
+            } catch (IOException exception) {
+                return exception.getMessage();
+            }
+            return null;
+        };
 
-            SwingWorker<Void, Void> swingWorker = new SwingWorker<Void, Void>() {
+        Consumer<CSBFinderRequest> doneFunc = request -> {
+            progressBar.done("");
+        };
 
-                CSBFinderRequest request = e.getRequest();
-                String msg = "";
+        RequestListener<CSBFinderRequest> listener = new RequestListener<>(doInBackgroundFunc, doneFunc,
+                MainFrame.this, progressBar);
+        inputParamsDialog.setRunListener(listener);
 
-                @Override
-                protected Void doInBackground() {
-                    clearPanels();
-                    request.setInputGenomeFilesPath(controller.getInputGenomesPath());
-                    msg = controller.findCSBs(request);
-                    return null;
-                }
-
-                @Override
-                protected void done() {
-                    progressBar.done("");
-                    JOptionPane.showMessageDialog(MainFrame.this, formatMsgWidth(msg));
-                }
-            };
-            swingWorker.execute();
-        });
     }
 
     private void setClusterListener() {

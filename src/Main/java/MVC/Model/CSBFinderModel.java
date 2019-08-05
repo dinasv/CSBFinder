@@ -110,34 +110,29 @@ public class CSBFinderModel {
         }
     }
 
-    public String findCSBs(CSBFinderRequest request) {
+    public void findCSBs(CSBFinderRequest request) throws IOException, IllegalArgumentException {
         String[] args = request.toArgArray();
 
-        return findCSBs(args);
+        findCSBs(args);
     }
 
-    public String findCSBs(String[] args) {
+    public void findCSBs(String[] args) throws IOException, IllegalArgumentException {
         JCommander jcommander = parseArgs(args);
         if (jcommander != null){
-            return this.findCSBs();
+            this.findCSBs();
         }
-        return "";
     }
 
 
     /**
      * Need to load genomes first
      */
-    private String findCSBs() {
-
-        String msg = "";
+    private void findCSBs() throws IOException, IllegalArgumentException{
 
         if (gi == null || gi.getNumberOfGenomes() == 0){
-            msg = "Need to read genomes first.";
-            return msg;
+            throw new IllegalStateException("Need to read genomes first.");
         }else if(workflow == null){
-            msg = "CSBFinder workflow was not created yet.";
-            return msg;
+            throw new IllegalStateException("CSBFinder workflow was not created yet.");
         }
 
         families = new ArrayList<>();
@@ -145,12 +140,9 @@ public class CSBFinderModel {
         long startTime = System.nanoTime();
 
         List<Pattern> patternsFromFile;
-        try {
-            patternsFromFile = readPatternsFromFile();
-        }catch (Exception e){
-            msg = e.getMessage();
-            return msg;
-        }
+
+        //could throw exception
+        patternsFromFile = readPatternsFromFile();
 
         workflow.setPatternsFromFile(patternsFromFile);
 
@@ -161,44 +153,32 @@ public class CSBFinderModel {
 
         families = workflow.run(params);
 
-        msg += workflow.getPatternsCount() + " CSBs found";
-
-        System.out.println(msg);
         System.out.println("Took " + (System.nanoTime() - startTime) / Math.pow(10, 9) + " seconds");
 
         csbFinderDoneListener.CSBFinderDoneOccurred(new CSBFinderDoneEvent(families));
 
-        return msg;
     }
 
-    public String clusterToFamilies(double threshold, ClusterBy clusterBy, ClusterDenominator clusterDenominator){
-        String msg = "";
+    public void clusterToFamilies(double threshold, ClusterBy clusterBy, ClusterDenominator clusterDenominator)
+            throws ParameterException{
+
         try{
             families = workflow.clusterToFamilies(threshold, clusterBy, clusterDenominator);
-            msg = "Clustered to " + families.size() + " families";
+            csbFinderDoneListener.CSBFinderDoneOccurred(new CSBFinderDoneEvent(families));
         }catch (Exception e){
-            msg = "Something went wrong";
+            throw new ParameterException("Something went wrong");
         }
 
-        csbFinderDoneListener.CSBFinderDoneOccurred(new CSBFinderDoneEvent(families));
-
-        return msg;
     }
 
-    public String computeScores(double threshold){
-        String msg = "";
+    public void computeScores(double threshold) throws ParameterException{
         try{
             workflow.computeScores(threshold);
-            msg = "Scores recomputed";
+            families.forEach(Family::sortPatternsAndSetScore);
+            csbFinderDoneListener.CSBFinderDoneOccurred(new CSBFinderDoneEvent(families));
         }catch (Exception e){
-            msg = "Something went wrong";
+            throw new ParameterException("Something went wrong");
         }
-
-        families.forEach(Family::sortPatternsAndSetScore);
-
-        csbFinderDoneListener.CSBFinderDoneOccurred(new CSBFinderDoneEvent(families));
-
-        return msg;
     }
 
 
@@ -259,7 +239,7 @@ public class CSBFinderModel {
      * Read patterns from a file if a file is given, and putWithSuffix them in a suffix trie
      * @return
      */
-    private List<Pattern> readPatternsFromFile() throws Exception{
+    private List<Pattern> readPatternsFromFile() throws IOException, IllegalArgumentException{
         List<Pattern> patterns = new ArrayList<>();
         if (params.inputPatternsFilePath != null) {
 

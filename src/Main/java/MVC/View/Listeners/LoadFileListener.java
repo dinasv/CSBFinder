@@ -1,8 +1,8 @@
 package MVC.View.Listeners;
 
 import MVC.View.Components.Dialogs.ProgressBar;
-import MVC.View.Components.LoadFileSwingWorker;
-import MVC.View.Components.SwingWorkerCompletionWaiter;
+import MVC.View.Workers.CustomSwingWorker;
+import MVC.View.Workers.SwingWorkerCompletionWaiter;
 import MVC.View.Events.LoadFileEvent;
 
 import javax.swing.*;
@@ -34,8 +34,8 @@ public class LoadFileListener implements Listener<LoadFileEvent> {
         File f = event.getFilePath();
         if (f.exists() && !f.isDirectory()) {
 
-            SwingWorker<Void, Void> swingWorker = new LoadFileSwingWorker(doInBackgroundFunc, doneFunc,
-                    f, parent);
+            SwingWorker<Void, Void> swingWorker = new CustomSwingWorker<>(doInBackgroundFunc, doneFunc,
+                    parent, f);
 
             swingWorker.addPropertyChangeListener(new SwingWorkerCompletionWaiter(progressBar));
             swingWorker.execute();
