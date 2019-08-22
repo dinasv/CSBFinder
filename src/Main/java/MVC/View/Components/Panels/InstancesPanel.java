@@ -283,7 +283,7 @@ public class InstancesPanel extends JPanel {
             instanceList = repliconGenes.subList(startIndex, endIndex);
         }
 
-        return instanceList.toArray(new Gene[instanceList.size()]);
+        return instanceList.toArray(new Gene[0]);
     }
 
     private List<GeneShape> getGeneShapesList(Gene[] genes){

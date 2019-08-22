@@ -239,9 +239,7 @@ public class Pattern {
     public static class ScoreComparator implements Comparator<Pattern> {
         @Override
         public int compare(Pattern o1, Pattern o2) {
-            if (o2.getScore() < o1.getScore()) return -1;
-            if (o2.getScore() > o1.getScore()) return 1;
-            return 0;
+            return Double.compare(o2.getScore(), o1.getScore());
         }
     }
 

@@ -656,6 +656,7 @@ public class MainFrame extends JFrame {
             if (cog != null){
                 event.getSrc().setToolTipText(String.format("<html>%s<br>%s | %s</html>",
                         String.join("/", cog.getFunctionalCategories()), cog.getCogDesc(), cog.getGeneName()));
+                System.out.println(cog.getGeneName());
             }
         });
     }
