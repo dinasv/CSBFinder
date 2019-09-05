@@ -62,7 +62,6 @@ public class GenesInstance implements Shape{
 
         this.endLocationLabel = endLocationLabel == null ? null : new LabelShape(x, y + height, endLocationLabel);
 
-
         width = calcWidth();
 
         setElementsCoordinates();
@@ -82,6 +81,8 @@ public class GenesInstance implements Shape{
         currX = setGenesCoordinates(currX, currY, instanceShapesList);
 
         setGenesCoordinates(currX, currY, rightNeighborsShapeList);
+
+
 
     }
 
@@ -245,6 +246,8 @@ public class GenesInstance implements Shape{
         List<GeneShape> temp = rightNeighborsShapeList;
         rightNeighborsShapeList = leftNeighborsShapeList;
         leftNeighborsShapeList = temp;
+
+        calcWidth();
 
         setElementsCoordinates();
     }
