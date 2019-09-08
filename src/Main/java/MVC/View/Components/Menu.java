@@ -12,6 +12,7 @@ import MVC.View.Listeners.Listener;
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
 
 /**
@@ -19,10 +20,12 @@ import java.awt.event.KeyEvent;
 public class Menu implements ActionListener {
 
     private static final String LOAD_GENOMES = "Genomes File";
-    private static final String LOAD_SESSION = "Session File";
+
     private static final String LOAD_COG_INFO = "Orthology Information File";
     private static final String LOAD_TAXA = "Taxonomy File";
     private static final String SAVE_FILES = "Save";
+    private static final String EXPORT_FILES = "Export";
+    private static final String OPEN = "Open...";
 
     private Listener<LoadFileEvent> loadGenomesListener;
     private Listener<LoadFileEvent> importSessionListener;
@@ -34,10 +37,12 @@ public class Menu implements ActionListener {
     private JMenu menu;
     private JMenu submenuImport;
     private JMenuItem importGenomesMenuItem;
-    private JMenuItem importSessionMenuItem;
+
     private JMenuItem importOrthologyInfoMenuItem;
     private JMenuItem importTaxaMenuItem;
     private JMenuItem saveItem;
+    private JMenuItem exportItem;
+    private JMenuItem openItem;
 
     private JFileChooser fileChooser;
 
@@ -53,9 +58,11 @@ public class Menu implements ActionListener {
 
         saveItem.addActionListener(this);
         importGenomesMenuItem.addActionListener(this);
-        importSessionMenuItem.addActionListener(this);
+
         importOrthologyInfoMenuItem.addActionListener(this);
         importTaxaMenuItem.addActionListener(this);
+        openItem.addActionListener(this);
+        exportItem.addActionListener(this);
     }
 
     private void createFileMenu(){
@@ -68,22 +75,34 @@ public class Menu implements ActionListener {
         submenuImport.setMnemonic(KeyEvent.VK_I);
 
         importGenomesMenuItem = new JMenuItem(LOAD_GENOMES);
-        importSessionMenuItem = new JMenuItem(LOAD_SESSION);
+
         importOrthologyInfoMenuItem = new JMenuItem(LOAD_COG_INFO);
         importTaxaMenuItem = new JMenuItem(LOAD_TAXA);
 
         submenuImport.add(importGenomesMenuItem);
-        submenuImport.add(importSessionMenuItem);
+
         submenuImport.add(importOrthologyInfoMenuItem);
         submenuImport.add(importTaxaMenuItem);
-        //menuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_I, ActionEvent.ALT_MASK));
+
 
         //Save
         saveItem = new JMenuItem(SAVE_FILES);
         saveItem.setMnemonic(KeyEvent.VK_S);
+        saveItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, InputEvent.CTRL_MASK));//Save
+
+        exportItem = new JMenuItem(EXPORT_FILES);
+        openItem = new JMenuItem(OPEN);
+
+        menu.add(openItem);
+        saveItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_O, InputEvent.CTRL_MASK));//Save
+
+        menu.add(submenuImport);
+
+        menu.addSeparator();
 
         menu.add(saveItem);
-        menu.add(submenuImport);
+        menu.add(exportItem);
+
     }
 
     public void enableSaveFileBtn() {
@@ -103,7 +122,7 @@ public class Menu implements ActionListener {
                 loadEventOccured(e, loadGenomesListener);
 
                 break;
-            case LOAD_SESSION:
+            case OPEN:
                 initInputFileChooser(e.getActionCommand());
                 loadEventOccured(e, importSessionListener);
 
@@ -120,6 +139,10 @@ public class Menu implements ActionListener {
 
                 break;
             case SAVE_FILES:
+
+                break;
+
+            case EXPORT_FILES:
 
                 saveOutputListener.eventOccurred(new OpenDialogEvent());
 
