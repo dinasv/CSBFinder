@@ -1,5 +1,6 @@
 package MVC.View.Components;
 
+import MVC.View.Listeners.EventListener;
 import MVC.View.Requests.CSBFinderRequest;
 import MVC.Controller.CSBFinderController;
 import MVC.View.Components.Dialogs.*;
@@ -37,7 +38,7 @@ public class MainFrame extends JFrame {
     private static final String PROGRAM_NAME = "CSBFinder";
     private static final String DEFAULT_SESSION_NAME = "Session1";
     private static final String RUNNING_MSG = "Running...";
-    private static final String EXPORT_MSG = "Saving Files...";
+    private static final String EXPORT_MSG = "Saving...";
     private static final String LOADING_MSG = "Loading File";
     private static final int MSG_WIDTH = 500;
 
@@ -65,6 +66,7 @@ public class MainFrame extends JFrame {
     private RankDialog rankDialog;
     private FilterDialog filterDialog;
     private ExportDialog exportDialog;
+    private SaveDialog saveDialog;
 
     private FamiliesFilter familiesFilter;
 
@@ -75,6 +77,7 @@ public class MainFrame extends JFrame {
     private Listener<LoadFileEvent> loadSessionListener;
     private Listener<LoadFileEvent> loadTaxaListener;
     private Listener<LoadFileEvent> loadCogInfoListener;
+    private Listener<SimpleEvent> saveListener;
 
     public MainFrame(CSBFinderController controller) {
 
@@ -127,6 +130,7 @@ public class MainFrame extends JFrame {
         rankDialog = new RankDialog();
         filterDialog = new FilterDialog();
         exportDialog = new ExportDialog(fc, this);
+        saveDialog = new SaveDialog();
 
         toolbar = new Toolbar();
         statusBar = new StatusBar();
@@ -174,6 +178,7 @@ public class MainFrame extends JFrame {
         setLoadCogInfoButtonListener();
         setLoadTaxaListener();
         setExportButtonListener();
+        setSaveDialogListener();
         setSaveListener();
         setZoomOutListener();
         setZoomInListener();
@@ -404,18 +409,67 @@ public class MainFrame extends JFrame {
         //toolbar.setSaveListener(listener);
     }
 
+    private void setSaveDialogListener(){
+        Listener<Event> listener = event -> {
+
+            if (currentSessionFile == null) {
+                //TODO save as
+            } else {
+
+                String DIALOG_TEXT = "Saving will overwrite the current session file, " +
+                        "only filtered CSBs will be kept. Would you like to continue?";
+
+                Object[] options = {"Save Anyway",
+                        "Save As...",
+                        "Cancel"};
+
+                int value = JOptionPane.showOptionDialog(this,
+                        DIALOG_TEXT,
+                        "Save",
+                        JOptionPane.YES_NO_CANCEL_OPTION,
+                        JOptionPane.QUESTION_MESSAGE,
+                        null,
+                        options,
+                        options[2]);
+
+                if (value == JOptionPane.YES_OPTION) {
+                    saveListener.eventOccurred(new SimpleEvent());
+                }
+            }
+
+            //saveDialog.setLocationRelativeTo(null);
+            //saveDialog.setVisible(true);
+        };
+        menuBar.setSaveListener(listener);
+    }
+
 
     private void setSaveListener(){
 
+        /*
         Listener<Event> listener = event -> {
             if (currentSessionFile == null) {
                 //TODO save as
             } else {
                 controller.saveSession(familiesFilter.getFilteredFamilies(), currentSessionFile);
             }
+        };*/
+
+        Function<SimpleEvent, String> doInBackgroundFunc = (SimpleEvent e) -> {
+
+            controller.saveSession(familiesFilter.getFilteredFamilies(), currentSessionFile);
+
+            return null;
         };
 
-        menuBar.setSaveListener(listener);
+        Consumer<SimpleEvent> doneFunc = request -> {
+            progressBar.done("");
+        };
+
+        saveListener = new EventListener<>(doInBackgroundFunc, doneFunc,
+                MainFrame.this, progressBar, EXPORT_MSG);
+
+        //menuBar.setSaveListener(listener);
 
     }
 
@@ -458,8 +512,8 @@ public class MainFrame extends JFrame {
             progressBar.done("");
         };
 
-        SaveFileListener listener = new SaveFileListener(doInBackgroundFunc, doneFunc,
-                MainFrame.this, progressBar);
+        EventListener<ExportEvent> listener = new EventListener<>(doInBackgroundFunc, doneFunc,
+                MainFrame.this, progressBar, EXPORT_MSG);
         exportDialog.setListener(listener);
 
     }

@@ -1,10 +1,7 @@
 package MVC.View.Components;
 
 import MVC.View.Components.Dialogs.InputFileChooser;
-import MVC.View.Events.Event;
-import MVC.View.Events.LoadFileEvent;
-import MVC.View.Events.OpenDialogEvent;
-import MVC.View.Events.SimpleEvent;
+import MVC.View.Events.*;
 import MVC.View.Listeners.Listener;
 
 

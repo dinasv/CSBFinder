@@ -27,6 +27,9 @@ public class ExportDialog {
     public void openDialog(){
         initOutputFileChooser();
         int action = fileChooser.showDialog(mainFrame, SAVE_FILES_DIALOG_BTN_NAME);
+        if (action != JFileChooser.APPROVE_OPTION) {
+            return;
+        }
         exportListener.eventOccurred(new ExportEvent(outputTypeChooser.getChosenOutput(),
                 outputTypeChooser.getDatasetName(), fileChooser.getSelectedFile().getAbsolutePath(), action));
     }
