@@ -42,6 +42,8 @@ public class MainFrame extends JFrame {
     private static final String LOADING_MSG = "Loading File";
     private static final int MSG_WIDTH = 500;
 
+    private static final String SESSION_FILE_EXTENSION = "csb";
+
     private File currentSessionFile;
 
     private static final int ZOOM_MIN = 6;
@@ -131,7 +133,7 @@ public class MainFrame extends JFrame {
         filterDialog = new FilterDialog();
         exportDialog = new ExportDialog(fc, this);
         saveDialog = new SaveDialog(this);
-        saveAsDialog = new SaveAsDialog(fc, this);
+        saveAsDialog = new SaveAsDialog(fc, this, SESSION_FILE_EXTENSION);
 
         toolbar = new Toolbar();
         statusBar = new StatusBar();
@@ -139,7 +141,7 @@ public class MainFrame extends JFrame {
 
         summaryPanel = new SummaryPanel(Icon.FILTER.getIcon());
 
-        menuBar = new Menu(fc, this);
+        menuBar = new Menu(fc, this, SESSION_FILE_EXTENSION);
 
         disableBtnsInit();
 

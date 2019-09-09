@@ -1,6 +1,5 @@
 package MVC.View.Components.Dialogs;
 
-import MVC.View.Events.ExportEvent;
 import MVC.View.Events.FileEvent;
 import MVC.View.Listeners.Listener;
 
@@ -18,12 +17,14 @@ public class SaveAsDialog {
 
     private static final String SAVE_FILES_DIALOG_BTN_NAME = "Save";
     private static final String DIALOG_NAME = "Save As...";
-    private static final String SESSION_FILE_EXTENSION = "txt";
-    private static final String[] EXTENSIONS = {SESSION_FILE_EXTENSION};
 
-    public SaveAsDialog(JFileChooser fileChooser, JFrame mainFrame){
+    private String sessionFileExtension;
+    //private static final String SESSION_FILE_EXTENSION = "csb";
+
+    public SaveAsDialog(JFileChooser fileChooser, JFrame mainFrame, String sessionFileExtension){
         this.fileChooser = fileChooser;
         this.mainFrame = mainFrame;
+        this.sessionFileExtension = sessionFileExtension;
     }
 
     public void openDialog(){
@@ -36,8 +37,8 @@ public class SaveAsDialog {
         File file = fileChooser.getSelectedFile();
         String ext = FileTypeFilter.getExtension(file);
 
-        if (!SESSION_FILE_EXTENSION.equals(ext)){
-            file = new File(file.toString() + "." + SESSION_FILE_EXTENSION);
+        if (!sessionFileExtension.equals(ext)){
+            file = new File(file.toString() + "." + sessionFileExtension);
         }
 
         saveListener.eventOccurred(new FileEvent(this, file));
@@ -45,7 +46,8 @@ public class SaveAsDialog {
 
     private void initOutputFileChooser(){
         fileChooser.resetChoosableFileFilters();
-        fileChooser.addChoosableFileFilter(new FileTypeFilter(EXTENSIONS));
+        String[] extensions = {sessionFileExtension};
+        fileChooser.addChoosableFileFilter(new FileTypeFilter(extensions));
         fileChooser.setAcceptAllFileFilterUsed(false);
         fileChooser.setAccessory(null);
         fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);

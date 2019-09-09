@@ -24,6 +24,7 @@ public class Menu implements ActionListener {
     private static final String OPEN = "Open...";
     private static final String[] LOAD_EXTENSIONS = {"fasta", "txt"};
 
+    private String sessionFileExtension;
 
     private Listener<FileEvent> loadGenomesListener;
     private Listener<FileEvent> importSessionListener;
@@ -47,10 +48,12 @@ public class Menu implements ActionListener {
 
     private JFrame mainFrame;
 
-    public Menu(JFileChooser fileChooser, JFrame mainFrame){
+    public Menu(JFileChooser fileChooser, JFrame mainFrame, String sessionFileExtension){
         this.fileChooser = fileChooser;
-        mainMenu = new JMenuBar();
         this.mainFrame = mainFrame;
+        this.sessionFileExtension = sessionFileExtension;
+
+        mainMenu = new JMenuBar();
         this.mainFrame.setJMenuBar(mainMenu);
 
         createFileMenu();
@@ -117,23 +120,24 @@ public class Menu implements ActionListener {
 
         switch (e.getActionCommand()){
             case LOAD_GENOMES:
-                initInputFileChooser(e.getActionCommand());
+                initInputFileChooser(e.getActionCommand(), LOAD_EXTENSIONS);
                 loadEventOccured(e, loadGenomesListener);
 
                 break;
             case OPEN:
-                initInputFileChooser(e.getActionCommand());
+                String[] extensions = {sessionFileExtension};
+                initInputFileChooser(e.getActionCommand(), extensions);
                 loadEventOccured(e, importSessionListener);
 
                 break;
             case LOAD_COG_INFO:
-                initInputFileChooser(e.getActionCommand());
+                initInputFileChooser(e.getActionCommand(), LOAD_EXTENSIONS);
                 loadEventOccured(e, loadCogInfoListener);
 
                 break;
             case LOAD_TAXA:
 
-                initInputFileChooser(e.getActionCommand());
+                initInputFileChooser(e.getActionCommand(), LOAD_EXTENSIONS);
                 loadEventOccured(e, loadTaxaListener);
 
                 break;
@@ -149,13 +153,13 @@ public class Menu implements ActionListener {
         }
     }
 
-    private void initInputFileChooser(String action){
+    private void initInputFileChooser(String action, String[] extensions){
 
         fileChooser.resetChoosableFileFilters();
-        fileChooser.addChoosableFileFilter(new FileTypeFilter(LOAD_EXTENSIONS));
+        fileChooser.addChoosableFileFilter(new FileTypeFilter(extensions));
         fileChooser.setAcceptAllFileFilterUsed(false);
         fileChooser.setAccessory(null);
-        fileChooser.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
+        fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
         fileChooser.setDialogTitle(action);
 
     }
