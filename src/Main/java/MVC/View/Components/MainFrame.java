@@ -67,6 +67,7 @@ public class MainFrame extends JFrame {
     private FilterDialog filterDialog;
     private ExportDialog exportDialog;
     private SaveDialog saveDialog;
+    private SaveAsDialog saveAsDialog;
 
     private FamiliesFilter familiesFilter;
 
@@ -74,10 +75,10 @@ public class MainFrame extends JFrame {
 
     private JFileChooser fc;
 
-    private Listener<LoadFileEvent> loadSessionListener;
-    private Listener<LoadFileEvent> loadTaxaListener;
-    private Listener<LoadFileEvent> loadCogInfoListener;
-    private Listener<SimpleEvent> saveListener;
+    private Listener<FileEvent> loadSessionListener;
+    private Listener<FileEvent> loadTaxaListener;
+    private Listener<FileEvent> loadCogInfoListener;
+    private Listener<FileEvent> saveListener;
 
     public MainFrame(CSBFinderController controller) {
 
@@ -94,7 +95,6 @@ public class MainFrame extends JFrame {
         setLayout(new BorderLayout());
         initComponents();
         init();
-
     }
 
     public void init() {
@@ -130,7 +130,8 @@ public class MainFrame extends JFrame {
         rankDialog = new RankDialog();
         filterDialog = new FilterDialog();
         exportDialog = new ExportDialog(fc, this);
-        saveDialog = new SaveDialog();
+        saveDialog = new SaveDialog(this);
+        saveAsDialog = new SaveAsDialog(fc, this);
 
         toolbar = new Toolbar();
         statusBar = new StatusBar();
@@ -406,71 +407,46 @@ public class MainFrame extends JFrame {
         Listener<OpenDialogEvent> listener = e -> exportDialog.openDialog();
 
         menuBar.setExportListener(listener);
-        //toolbar.setSaveListener(listener);
     }
 
     private void setSaveDialogListener(){
-        Listener<Event> listener = event -> {
+        Listener<OpenDialogEvent> listener = event -> {
 
             if (currentSessionFile == null) {
-                //TODO save as
+                saveAsDialog.openDialog();
             } else {
-
-                String DIALOG_TEXT = "Saving will overwrite the current session file, " +
-                        "only filtered CSBs will be kept. Would you like to continue?";
-
-                Object[] options = {"Save Anyway",
-                        "Save As...",
-                        "Cancel"};
-
-                int value = JOptionPane.showOptionDialog(this,
-                        DIALOG_TEXT,
-                        "Save",
-                        JOptionPane.YES_NO_CANCEL_OPTION,
-                        JOptionPane.QUESTION_MESSAGE,
-                        null,
-                        options,
-                        options[2]);
+                int value = saveDialog.showDialog();
 
                 if (value == JOptionPane.YES_OPTION) {
-                    saveListener.eventOccurred(new SimpleEvent());
+                    saveListener.eventOccurred(new FileEvent(this, currentSessionFile));
+                }else if (value == JOptionPane.NO_OPTION){
+                    saveAsDialog.openDialog();
                 }
             }
 
-            //saveDialog.setLocationRelativeTo(null);
-            //saveDialog.setVisible(true);
         };
         menuBar.setSaveListener(listener);
+        toolbar.setSaveListener(listener);
     }
 
 
     private void setSaveListener(){
 
-        /*
-        Listener<Event> listener = event -> {
-            if (currentSessionFile == null) {
-                //TODO save as
-            } else {
-                controller.saveSession(familiesFilter.getFilteredFamilies(), currentSessionFile);
-            }
-        };*/
+        Function<FileEvent, String> doInBackgroundFunc = (FileEvent e) -> {
 
-        Function<SimpleEvent, String> doInBackgroundFunc = (SimpleEvent e) -> {
-
-            controller.saveSession(familiesFilter.getFilteredFamilies(), currentSessionFile);
+            controller.saveSession(familiesFilter.getFilteredFamilies(), e.getFile());
 
             return null;
         };
 
-        Consumer<SimpleEvent> doneFunc = request -> {
+        Consumer<FileEvent> doneFunc = request -> {
             progressBar.done("");
         };
 
         saveListener = new EventListener<>(doInBackgroundFunc, doneFunc,
                 MainFrame.this, progressBar, EXPORT_MSG);
 
-        //menuBar.setSaveListener(listener);
-
+        saveAsDialog.setListener(saveListener);
     }
 
 
@@ -568,15 +544,15 @@ public class MainFrame extends JFrame {
     }
 
     public void invokeLoadSessionListener(String path){
-        loadSessionListener.eventOccurred(new LoadFileEvent(this, new File(path)));
+        loadSessionListener.eventOccurred(new FileEvent(this, new File(path)));
     }
 
     public void invokeLoadCogInfoListener(String path){
-        loadCogInfoListener.eventOccurred(new LoadFileEvent(this, new File(path)));
+        loadCogInfoListener.eventOccurred(new FileEvent(this, new File(path)));
     }
 
     public void invokeLoadTaxaListener(String path){
-        loadTaxaListener.eventOccurred(new LoadFileEvent(this, new File(path)));
+        loadTaxaListener.eventOccurred(new FileEvent(this, new File(path)));
     }
 
     /**
@@ -584,7 +560,7 @@ public class MainFrame extends JFrame {
      */
     private void setLoadButtonListener() {
 
-        Function<LoadFileEvent, String> doInBackgroundFunc = (LoadFileEvent e) -> {
+        Function<FileEvent, String> doInBackgroundFunc = (FileEvent e) -> {
             clearPanels();
             try {
                 File f = e.getFile();
@@ -595,13 +571,13 @@ public class MainFrame extends JFrame {
             return null;
         };
 
-        Consumer<LoadFileEvent> doneFunc = (LoadFileEvent e) -> {
+        Consumer<FileEvent> doneFunc = (FileEvent e) -> {
             clearPanels();
             setGenomesData();
             setTitle(formatProgramTitle(DEFAULT_SESSION_NAME));
         };
 
-        Listener<LoadFileEvent> loadGenomesListener = new LoadFileListener(doInBackgroundFunc, doneFunc,
+        Listener<FileEvent> loadGenomesListener = new LoadFileListener(doInBackgroundFunc, doneFunc,
                 MainFrame.this, progressBar);
 
         menuBar.setLoadGenomesListener(loadGenomesListener);
@@ -609,7 +585,7 @@ public class MainFrame extends JFrame {
 
     private void setImportSessionButtonListener() {
 
-        Function<LoadFileEvent, String> doInBackgroundFunc = (LoadFileEvent e) -> {
+        Function<FileEvent, String> doInBackgroundFunc = (FileEvent e) -> {
             clearPanels();
             try {
                 controller.loadSessionFile(e.getFile().getPath());
@@ -619,7 +595,7 @@ public class MainFrame extends JFrame {
             return null;
         };
 
-        Consumer<LoadFileEvent> doneFunc = (LoadFileEvent e) -> {
+        Consumer<FileEvent> doneFunc = (FileEvent e) -> {
             setGenomesData();
             setTitle(formatProgramTitle(e.getFile().getName()));
             currentSessionFile = e.getFile();
@@ -635,7 +611,7 @@ public class MainFrame extends JFrame {
     }
 
     private void setLoadCogInfoButtonListener() {
-        Function<LoadFileEvent, String> doInBackgroundFunc = (LoadFileEvent e) -> {
+        Function<FileEvent, String> doInBackgroundFunc = (FileEvent e) -> {
             try {
                 controller.loadCogInfo(e.getFile().getPath());
             }catch (IOException exception){
@@ -644,7 +620,7 @@ public class MainFrame extends JFrame {
             return null;
         };
 
-        Consumer<LoadFileEvent> doneFunc = (LoadFileEvent f) -> {
+        Consumer<FileEvent> doneFunc = (FileEvent f) -> {
             tableRowClickFromHistory();
         };
 
@@ -654,7 +630,7 @@ public class MainFrame extends JFrame {
 
     private void setLoadTaxaListener() {
 
-        Function<LoadFileEvent, String> doInBackgroundFunc = (LoadFileEvent e) -> {
+        Function<FileEvent, String> doInBackgroundFunc = (FileEvent e) -> {
             try {
                 controller.loadTaxa(e.getFile().getPath());
                 Map<String, Taxon> genomeToTaxa = controller.getGenomeToTaxa();
@@ -665,7 +641,7 @@ public class MainFrame extends JFrame {
             return null;
         };
 
-        Consumer<LoadFileEvent> doneFunc = (LoadFileEvent e) -> {
+        Consumer<FileEvent> doneFunc = (FileEvent e) -> {
             tableRowClickFromHistory();
         };
 

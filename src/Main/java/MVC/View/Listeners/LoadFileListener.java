@@ -2,18 +2,18 @@ package MVC.View.Listeners;
 
 import MVC.View.Components.Dialogs.ProgressBar;
 
-import MVC.View.Events.LoadFileEvent;
+import MVC.View.Events.FileEvent;
 
 import java.awt.*;
 import java.io.File;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
-public class LoadFileListener extends EventListener<LoadFileEvent> {
+public class LoadFileListener extends EventListener<FileEvent> {
 
     private static final String LOADING_MSG = "Loading File";
 
-    public LoadFileListener(Function<LoadFileEvent, String> doInBackgroundFunc, Consumer<LoadFileEvent> doneFunc,
+    public LoadFileListener(Function<FileEvent, String> doInBackgroundFunc, Consumer<FileEvent> doneFunc,
                             Component parent,
                             ProgressBar progressBar){
 
@@ -21,7 +21,7 @@ public class LoadFileListener extends EventListener<LoadFileEvent> {
     }
 
     @Override
-    public void eventOccurred(LoadFileEvent event) {
+    public void eventOccurred(FileEvent event) {
         File f = event.getFile();
         if (!f.exists() || f.isDirectory()) {
             return;

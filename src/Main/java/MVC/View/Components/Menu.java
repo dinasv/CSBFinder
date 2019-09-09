@@ -1,6 +1,6 @@
 package MVC.View.Components;
 
-import MVC.View.Components.Dialogs.InputFileChooser;
+import MVC.View.Components.Dialogs.FileTypeFilter;
 import MVC.View.Events.*;
 import MVC.View.Listeners.Listener;
 
@@ -22,13 +22,15 @@ public class Menu implements ActionListener {
     private static final String SAVE_FILES = "Save";
     private static final String EXPORT_FILES = "Export";
     private static final String OPEN = "Open...";
+    private static final String[] LOAD_EXTENSIONS = {"fasta", "txt"};
 
-    private Listener<LoadFileEvent> loadGenomesListener;
-    private Listener<LoadFileEvent> importSessionListener;
-    private Listener<LoadFileEvent> loadCogInfoListener;
-    private Listener<LoadFileEvent> loadTaxaListener;
+
+    private Listener<FileEvent> loadGenomesListener;
+    private Listener<FileEvent> importSessionListener;
+    private Listener<FileEvent> loadCogInfoListener;
+    private Listener<FileEvent> loadTaxaListener;
     private Listener<OpenDialogEvent> exportListener;
-    private Listener<Event> saveListener;
+    private Listener<OpenDialogEvent> saveListener;
 
     private JMenuBar mainMenu;
     private JMenu menu;
@@ -136,7 +138,7 @@ public class Menu implements ActionListener {
 
                 break;
             case SAVE_FILES:
-                saveListener.eventOccurred(new SimpleEvent());
+                saveListener.eventOccurred(new OpenDialogEvent());
                 break;
 
             case EXPORT_FILES:
@@ -149,7 +151,8 @@ public class Menu implements ActionListener {
 
     private void initInputFileChooser(String action){
 
-        fileChooser.addChoosableFileFilter(new InputFileChooser());
+        fileChooser.resetChoosableFileFilters();
+        fileChooser.addChoosableFileFilter(new FileTypeFilter(LOAD_EXTENSIONS));
         fileChooser.setAcceptAllFileFilterUsed(false);
         fileChooser.setAccessory(null);
         fileChooser.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
@@ -157,29 +160,29 @@ public class Menu implements ActionListener {
 
     }
 
-    private void loadEventOccured(ActionEvent e, Listener<LoadFileEvent> listener){
+    private void loadEventOccured(ActionEvent e, Listener<FileEvent> listener){
 
         int action = fileChooser.showDialog(mainFrame, "Import");
 
         if (action == JFileChooser.APPROVE_OPTION) {
-            listener.eventOccurred(new LoadFileEvent(e, fileChooser.getSelectedFile()));
+            listener.eventOccurred(new FileEvent(e, fileChooser.getSelectedFile()));
         }
     }
 
 
-    public void setImportSessionListener(Listener<LoadFileEvent> importSessionListener) {
+    public void setImportSessionListener(Listener<FileEvent> importSessionListener) {
         this.importSessionListener = importSessionListener;
     }
 
-    public void setLoadGenomesListener(Listener<LoadFileEvent> loadGenomesListener) {
+    public void setLoadGenomesListener(Listener<FileEvent> loadGenomesListener) {
         this.loadGenomesListener = loadGenomesListener;
     }
 
-    public void setLoadCogInfoListener(Listener<LoadFileEvent> loadCogInfoListener) {
+    public void setLoadCogInfoListener(Listener<FileEvent> loadCogInfoListener) {
         this.loadCogInfoListener = loadCogInfoListener;
     }
 
-    public void setLoadTaxaListener(Listener<LoadFileEvent> loadTaxaListener) {
+    public void setLoadTaxaListener(Listener<FileEvent> loadTaxaListener) {
         this.loadTaxaListener = loadTaxaListener;
     }
 
@@ -187,7 +190,7 @@ public class Menu implements ActionListener {
         this.exportListener = exportListener;
     }
 
-    public void setSaveListener(Listener<Event> listener) {
+    public void setSaveListener(Listener<OpenDialogEvent> listener) {
         this.saveListener = listener;
     }
 
