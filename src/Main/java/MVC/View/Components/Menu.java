@@ -11,6 +11,8 @@ import java.awt.event.ActionListener;
 import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
 
+import static java.awt.event.ActionEvent.CTRL_MASK;
+
 /**
  */
 public class Menu implements ActionListener {
@@ -20,6 +22,7 @@ public class Menu implements ActionListener {
     private static final String LOAD_COG_INFO = "Orthology Information File";
     private static final String LOAD_TAXA = "Taxonomy File";
     private static final String SAVE_FILES = "Save";
+    private static final String SAVE_AS_FILES = "Save As...";
     private static final String EXPORT_FILES = "Export";
     private static final String OPEN = "Open...";
     private static final String[] LOAD_EXTENSIONS = {"fasta", "txt"};
@@ -32,6 +35,7 @@ public class Menu implements ActionListener {
     private Listener<FileEvent> loadTaxaListener;
     private Listener<OpenDialogEvent> exportListener;
     private Listener<OpenDialogEvent> saveListener;
+    private Listener<OpenDialogEvent> saveAsListener;
 
     private JMenuBar mainMenu;
     private JMenu menu;
@@ -41,6 +45,7 @@ public class Menu implements ActionListener {
     private JMenuItem importOrthologyInfoMenuItem;
     private JMenuItem importTaxaMenuItem;
     private JMenuItem saveItem;
+    private JMenuItem saveAsItem;
     private JMenuItem exportItem;
     private JMenuItem openItem;
 
@@ -65,6 +70,7 @@ public class Menu implements ActionListener {
         importTaxaMenuItem.addActionListener(this);
         openItem.addActionListener(this);
         exportItem.addActionListener(this);
+        saveAsItem.addActionListener(this);
     }
 
     private void createFileMenu(){
@@ -92,6 +98,10 @@ public class Menu implements ActionListener {
         saveItem.setMnemonic(KeyEvent.VK_S);
         saveItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, InputEvent.CTRL_MASK));
 
+        //Save
+        saveAsItem = new JMenuItem(SAVE_AS_FILES);
+        saveAsItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, InputEvent.SHIFT_MASK+InputEvent.CTRL_MASK));
+
         exportItem = new JMenuItem(EXPORT_FILES);
         openItem = new JMenuItem(OPEN);
 
@@ -103,6 +113,10 @@ public class Menu implements ActionListener {
         menu.addSeparator();
 
         menu.add(saveItem);
+        menu.add(saveAsItem);
+
+        menu.addSeparator();
+
         menu.add(exportItem);
 
     }
@@ -113,6 +127,22 @@ public class Menu implements ActionListener {
 
     public void disableSaveBtn() {
         saveItem.setEnabled(false);
+    }
+
+    public void enableSaveAsFileBtn() {
+        saveAsItem.setEnabled(true);
+    }
+
+    public void disableSaveAsBtn() {
+        saveAsItem.setEnabled(false);
+    }
+
+    public void enableExportBtn() {
+        exportItem.setEnabled(true);
+    }
+
+    public void disableExportBtn() {
+        exportItem.setEnabled(false);
     }
 
     @Override
@@ -143,6 +173,9 @@ public class Menu implements ActionListener {
                 break;
             case SAVE_FILES:
                 saveListener.eventOccurred(new OpenDialogEvent());
+                break;
+            case SAVE_AS_FILES:
+                saveAsListener.eventOccurred(new OpenDialogEvent());
                 break;
 
             case EXPORT_FILES:
@@ -196,6 +229,10 @@ public class Menu implements ActionListener {
 
     public void setSaveListener(Listener<OpenDialogEvent> listener) {
         this.saveListener = listener;
+    }
+
+    public void setSaveAsListener(Listener<OpenDialogEvent> listener) {
+        this.saveAsListener = listener;
     }
 
 

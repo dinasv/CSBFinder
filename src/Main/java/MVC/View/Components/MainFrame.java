@@ -81,6 +81,7 @@ public class MainFrame extends JFrame {
     private Listener<FileEvent> loadTaxaListener;
     private Listener<FileEvent> loadCogInfoListener;
     private Listener<FileEvent> saveListener;
+    private Listener<OpenDialogEvent> saveAsListener;
 
     public MainFrame(CSBFinderController controller) {
 
@@ -118,6 +119,8 @@ public class MainFrame extends JFrame {
         toolbar.disableClusterBtn();
         toolbar.disableSaveBtn();
         menuBar.disableSaveBtn();
+        menuBar.disableSaveAsBtn();
+        menuBar.disableExportBtn();
         summaryPanel.disableFilterBtn();
 
         statusBar.clearText();
@@ -183,6 +186,7 @@ public class MainFrame extends JFrame {
         setExportButtonListener();
         setSaveDialogListener();
         setSaveListener();
+        setSaveAsDialogListener();
         setZoomOutListener();
         setZoomInListener();
     }
@@ -202,6 +206,8 @@ public class MainFrame extends JFrame {
 
     private void enableBtnsResultsDisplay(){
         menuBar.enableSaveFileBtn();
+        menuBar.enableSaveAsFileBtn();
+        menuBar.enableExportBtn();
         toolbar.enableSaveBtn();
         toolbar.enableRankBtn();
         toolbar.enableZoomOutBtn();
@@ -216,7 +222,10 @@ public class MainFrame extends JFrame {
         toolbar.disabZoomOutBtn();
         toolbar.disabZoomInBtn();
         toolbar.disableSaveBtn();
+
         menuBar.disableSaveBtn();
+        menuBar.disableExportBtn();
+        menuBar.disableSaveAsBtn();
 
         summaryPanel.disableFilterBtn();
     }
@@ -415,14 +424,16 @@ public class MainFrame extends JFrame {
         Listener<OpenDialogEvent> listener = event -> {
 
             if (currentSessionFile == null) {
-                saveAsDialog.openDialog();
+                saveAsListener.eventOccurred(new OpenDialogEvent());
+                //saveAsDialog.openDialog();
             } else {
                 int value = saveDialog.showDialog();
 
                 if (value == JOptionPane.YES_OPTION) {
                     saveListener.eventOccurred(new FileEvent(this, currentSessionFile));
                 }else if (value == JOptionPane.NO_OPTION){
-                    saveAsDialog.openDialog();
+                    //saveAsDialog.openDialog();
+                    saveAsListener.eventOccurred(new OpenDialogEvent());
                 }
             }
 
@@ -449,6 +460,12 @@ public class MainFrame extends JFrame {
                 MainFrame.this, progressBar, EXPORT_MSG);
 
         saveAsDialog.setListener(saveListener);
+    }
+
+    private void setSaveAsDialogListener(){
+        saveAsListener = e -> saveAsDialog.openDialog();
+
+        menuBar.setSaveAsListener(saveAsListener);
     }
 
 
