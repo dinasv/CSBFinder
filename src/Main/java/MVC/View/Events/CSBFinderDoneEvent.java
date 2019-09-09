@@ -1,4 +1,4 @@
-package MVC.Common;
+package MVC.View.Events;
 
 import Model.PostProcess.Family;
 

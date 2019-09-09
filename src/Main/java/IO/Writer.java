@@ -32,13 +32,21 @@ public class Writer {
     public Writer(boolean debug, String instancesFileName, String outputPath,
                   PatternsWriter patternsWriter){
 
+        this(debug, patternsWriter);
+
+        catalogInstancesPath = outputPath + instancesFileName + ".fasta";
+    }
+
+    public Writer(boolean debug,
+                  PatternsWriter patternsWriter){
+
         this.patternsWriter = patternsWriter;
 
         this.debug = debug;
 
-        catalogInstancesPath = outputPath + instancesFileName + ".fasta";
-
         instancesFile = null;
+
+        catalogInstancesPath = null;
 
     }
 

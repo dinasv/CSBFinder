@@ -170,8 +170,8 @@ public class Controller {
 
             printToScreen("Writing to files");
 
-            //writer = writeFamiliesToFiles(families, cogInfoExists, gi, cogInfo);
-            writer = WriteUtils.writeFamiliesToFiles(families, gi, cogInfo, params, arguments);
+            //writer = writeExportFiles(families, cogInfoExists, gi, cogInfo);
+            writer = WriteUtils.writeExportFiles(families, gi, cogInfo, params, arguments);
 
             MemoryUtils.measure();
 

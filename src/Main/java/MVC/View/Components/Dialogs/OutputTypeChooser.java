@@ -29,12 +29,12 @@ public class OutputTypeChooser extends JPanel {
         JRadioButton btn2 = new JRadioButton(OutputType.XLSX.toString());
         btn2.setActionCommand(OutputType.XLSX.toString());
 
-        JRadioButton btn3 = new JRadioButton(OutputType.SESSION.toString());
-        btn3.setActionCommand(OutputType.SESSION.toString());
+        //JRadioButton btn3 = new JRadioButton(OutputType.SESSION.toString());
+        //btn3.setActionCommand(OutputType.SESSION.toString());
 
         radioBtns.add(btn1);
         radioBtns.add(btn2);
-        radioBtns.add(btn3);
+        //radioBtns.add(btn3);
 
         JLabel outputTypeLabel = new JLabel("Output type:", JLabel.LEFT);
         //Put the radio buttons in a column in a panel.
@@ -42,7 +42,7 @@ public class OutputTypeChooser extends JPanel {
         radioPanel.add(outputTypeLabel);
         radioPanel.add(btn1);
         radioPanel.add(btn2);
-        radioPanel.add(btn3);
+        //radioPanel.add(btn3);
 
         GridBagConstraints c = new GridBagConstraints();
         c.gridx = 0; c.gridy = 0;

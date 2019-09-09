@@ -1,16 +1,15 @@
 package MVC.View.Components;
 
-import MVC.Common.CSBFinderRequest;
+import MVC.View.Requests.CSBFinderRequest;
 import MVC.Controller.CSBFinderController;
 import MVC.View.Components.Dialogs.*;
 import MVC.View.Components.Panels.*;
 import MVC.View.Components.Shapes.GeneShape;
 import MVC.View.Components.Shapes.Label;
 import MVC.View.Events.*;
+import MVC.View.Events.Event;
 import MVC.View.Images.Icon;
 import MVC.View.Listeners.*;
-import MVC.View.Requests.Request;
-import MVC.View.Workers.CustomSwingWorker;
 import Model.Genomes.Alphabet;
 import Model.Genomes.Gene;
 import Model.Genomes.Taxon;
@@ -31,16 +30,18 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.function.Consumer;
 import java.util.function.Function;
-import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 public class MainFrame extends JFrame {
 
     private static final String PROGRAM_NAME = "CSBFinder";
+    private static final String DEFAULT_SESSION_NAME = "Session1";
     private static final String RUNNING_MSG = "Running...";
-    private static final String SAVING_MSG = "Saving Files...";
+    private static final String EXPORT_MSG = "Saving Files...";
     private static final String LOADING_MSG = "Loading File";
     private static final int MSG_WIDTH = 500;
+
+    private File currentSessionFile;
 
     private static final int ZOOM_MIN = 6;
     private static final int ZOOM_MAX = 32;
@@ -63,7 +64,7 @@ public class MainFrame extends JFrame {
     private ClusterDialog clusterDialog;
     private RankDialog rankDialog;
     private FilterDialog filterDialog;
-    private SaveDialog saveDialog;
+    private ExportDialog exportDialog;
 
     private FamiliesFilter familiesFilter;
 
@@ -76,7 +77,8 @@ public class MainFrame extends JFrame {
     private Listener<LoadFileEvent> loadCogInfoListener;
 
     public MainFrame(CSBFinderController controller) {
-        super(PROGRAM_NAME);
+
+        super(formatProgramTitle(DEFAULT_SESSION_NAME));
 
         progressBar = new ProgressBar(this);
 
@@ -90,11 +92,10 @@ public class MainFrame extends JFrame {
         initComponents();
         init();
 
-
-
     }
 
     public void init() {
+        currentSessionFile = null;
         zoom = Label.DEFAULT_FONT.getSize();
 
         setExtendedState(JFrame.MAXIMIZED_BOTH);
@@ -125,7 +126,7 @@ public class MainFrame extends JFrame {
         clusterDialog = new ClusterDialog();
         rankDialog = new RankDialog();
         filterDialog = new FilterDialog();
-        saveDialog = new SaveDialog(fc, this);
+        exportDialog = new ExportDialog(fc, this);
 
         toolbar = new Toolbar();
         statusBar = new StatusBar();
@@ -156,7 +157,7 @@ public class MainFrame extends JFrame {
         setRunClusteringListener();
         setComputeScoreListener();
         setSelectParamsListener();
-        setOpenSaveDialogListener();
+        setOpenExportDialogListener();
         setClusterListener();
         setRankListener();
         setPatternRowClickedListener();
@@ -172,7 +173,8 @@ public class MainFrame extends JFrame {
         setImportSessionButtonListener();
         setLoadCogInfoButtonListener();
         setLoadTaxaListener();
-        setSaveButtonListener();
+        setExportButtonListener();
+        setSaveListener();
         setZoomOutListener();
         setZoomInListener();
     }
@@ -211,7 +213,7 @@ public class MainFrame extends JFrame {
         summaryPanel.disableFilterBtn();
     }
 
-    private void setGenomesData(String filePath){
+    private void setGenomesData(){
         familiesFilter.clear();
 
         if (controller.getNumberOfGenomes() > 0) {
@@ -221,7 +223,6 @@ public class MainFrame extends JFrame {
 
             toolbar.enableSelectParamsBtn();
 
-            setTitle(String.format("%s - %s", PROGRAM_NAME, filePath));
         } else {
             disableBtnsInit();
         }
@@ -396,11 +397,26 @@ public class MainFrame extends JFrame {
         });
     }
 
-    private void setOpenSaveDialogListener(){
-        Listener<OpenDialogEvent> listener = e -> saveDialog.openDialog();
+    private void setOpenExportDialogListener(){
+        Listener<OpenDialogEvent> listener = e -> exportDialog.openDialog();
 
-        menuBar.setSaveOutputListener(listener);
-        toolbar.setSaveListener(listener);
+        menuBar.setExportListener(listener);
+        //toolbar.setSaveListener(listener);
+    }
+
+
+    private void setSaveListener(){
+
+        Listener<Event> listener = event -> {
+            if (currentSessionFile == null) {
+                //TODO save as
+            } else {
+                controller.saveSession(familiesFilter.getFilteredFamilies(), currentSessionFile);
+            }
+        };
+
+        menuBar.setSaveListener(listener);
+
     }
 
 
@@ -427,39 +443,24 @@ public class MainFrame extends JFrame {
     }
 
 
-    private void setSaveButtonListener() {
+    private void setExportButtonListener() {
 
-        Listener<SaveOutputEvent> listener = new Listener<SaveOutputEvent>() {
-            String msg = "";
+        Function<ExportEvent, String> doInBackgroundFunc = (ExportEvent e) -> {
 
-            @Override
-            public void eventOccurred(SaveOutputEvent e) {
+            controller.exportFiles(e.getOutputType(), e.getOutputDirectory(),
+                        e.getDatasetName(), familiesFilter.getFilteredFamilies());
 
-                if (e.getAction() == JFileChooser.APPROVE_OPTION) {
 
-                    SwingUtilities.invokeLater(() -> progressBar.start(SAVING_MSG));
-
-                    SwingWorker<Void, Void> swingWorker = new SwingWorker<Void, Void>() {
-                        @Override
-                        protected Void doInBackground() {
-                            controller.saveOutputFiles(e.getOutputType(), e.getOutputDirectory(),
-                                    e.getDatasetName(), familiesFilter.getFilteredFamilies());
-                            return null;
-                        }
-
-                        @Override
-                        protected void done() {
-                            progressBar.done("");
-                            //JOptionPane.showMessageDialog(MainFrame.this, formatMsgWidth(msg));
-                        }
-                    };
-
-                    swingWorker.execute();
-                }
-            }
+            return null;
         };
 
-        saveDialog.setSaveOutputListener(listener);
+        Consumer<ExportEvent> doneFunc = request -> {
+            progressBar.done("");
+        };
+
+        SaveFileListener listener = new SaveFileListener(doInBackgroundFunc, doneFunc,
+                MainFrame.this, progressBar);
+        exportDialog.setListener(listener);
 
     }
 
@@ -529,9 +530,10 @@ public class MainFrame extends JFrame {
      */
     private void setLoadButtonListener() {
 
-        Function<File, String> doInBackgroundFunc = (File f) -> {
+        Function<LoadFileEvent, String> doInBackgroundFunc = (LoadFileEvent e) -> {
             clearPanels();
             try {
+                File f = e.getFile();
                 controller.loadInputGenomesFile(f.getPath());
             }catch (IOException exception){
                 return exception.getMessage();
@@ -539,30 +541,34 @@ public class MainFrame extends JFrame {
             return null;
         };
 
-        Consumer<File> doneFunc = (File f) -> {
+        Consumer<LoadFileEvent> doneFunc = (LoadFileEvent e) -> {
             clearPanels();
-            setGenomesData(f.getPath());
+            setGenomesData();
+            setTitle(formatProgramTitle(DEFAULT_SESSION_NAME));
         };
 
-        Listener<LoadFileEvent> loadGenomesListener = new LoadFileListener(doInBackgroundFunc, doneFunc, MainFrame.this, progressBar);
+        Listener<LoadFileEvent> loadGenomesListener = new LoadFileListener(doInBackgroundFunc, doneFunc,
+                MainFrame.this, progressBar);
 
         menuBar.setLoadGenomesListener(loadGenomesListener);
     }
 
     private void setImportSessionButtonListener() {
 
-        Function<File, String> doInBackgroundFunc = (File f) -> {
+        Function<LoadFileEvent, String> doInBackgroundFunc = (LoadFileEvent e) -> {
             clearPanels();
             try {
-                controller.loadSessionFile(f.getPath());
+                controller.loadSessionFile(e.getFile().getPath());
             }catch (IOException exception){
                 return exception.getMessage();
             }
             return null;
         };
 
-        Consumer<File> doneFunc = (File f) -> {
-            setGenomesData(f.getPath());
+        Consumer<LoadFileEvent> doneFunc = (LoadFileEvent e) -> {
+            setGenomesData();
+            setTitle(formatProgramTitle(e.getFile().getName()));
+            currentSessionFile = e.getFile();
         };
 
         loadSessionListener = new LoadFileListener(doInBackgroundFunc, doneFunc, MainFrame.this, progressBar);
@@ -570,17 +576,21 @@ public class MainFrame extends JFrame {
         menuBar.setImportSessionListener(loadSessionListener);
     }
 
+    private static String formatProgramTitle(String fileName){
+        return String.format("%s - %s", PROGRAM_NAME, fileName);
+    }
+
     private void setLoadCogInfoButtonListener() {
-        Function<File, String> doInBackgroundFunc = (File f) -> {
+        Function<LoadFileEvent, String> doInBackgroundFunc = (LoadFileEvent e) -> {
             try {
-                controller.loadCogInfo(f.getPath());
+                controller.loadCogInfo(e.getFile().getPath());
             }catch (IOException exception){
                 return exception.getMessage();
             }
             return null;
         };
 
-        Consumer<File> doneFunc = (File f) -> {
+        Consumer<LoadFileEvent> doneFunc = (LoadFileEvent f) -> {
             tableRowClickFromHistory();
         };
 
@@ -590,9 +600,9 @@ public class MainFrame extends JFrame {
 
     private void setLoadTaxaListener() {
 
-        Function<File, String> doInBackgroundFunc = (File f) -> {
+        Function<LoadFileEvent, String> doInBackgroundFunc = (LoadFileEvent e) -> {
             try {
-                controller.loadTaxa(f.getPath());
+                controller.loadTaxa(e.getFile().getPath());
                 Map<String, Taxon> genomeToTaxa = controller.getGenomeToTaxa();
                 middlePanel.setGenomeToTaxa(genomeToTaxa);
             }catch (IOException exception){
@@ -601,7 +611,7 @@ public class MainFrame extends JFrame {
             return null;
         };
 
-        Consumer<File> doneFunc = (File f) -> {
+        Consumer<LoadFileEvent> doneFunc = (LoadFileEvent e) -> {
             tableRowClickFromHistory();
         };
 

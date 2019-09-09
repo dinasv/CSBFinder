@@ -2,7 +2,7 @@ package MVC.View.Components.Dialogs;
 
 import Model.ClusterBy;
 import Model.ClusterDenominator;
-import MVC.Common.CSBFinderRequest;
+import MVC.View.Requests.CSBFinderRequest;
 import MVC.View.Events.RunEvent;
 import MVC.View.Listeners.RunListener;
 

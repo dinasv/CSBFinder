@@ -1,21 +1,19 @@
 package MVC.Controller;
 
+import MVC.View.Listeners.CSBFinderDoneListener;
+import MVC.View.Requests.CSBFinderRequest;
 import Model.ClusterBy;
 import Model.ClusterDenominator;
 import Model.Genomes.*;
 import Model.OutputType;
 import Model.PostProcess.Family;
-import MVC.Common.*;
 import MVC.Model.CSBFinderModel;
 import MVC.View.Components.MainFrame;
 import Model.OrthologyGroups.COG;
 import Model.Patterns.Pattern;
 import com.beust.jcommander.ParameterException;
 
-import java.io.BufferedReader;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
+import java.io.*;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -92,9 +90,13 @@ public class CSBFinderController {
         this.model.calculateMainFunctionalCategory();
     }
 
-    public void saveOutputFiles(OutputType outputFileType, String outputDir, String datasetName,
-                                  List<Family> families) {
-        this.model.saveOutputFiles(outputFileType, outputDir, datasetName, families);
+    public void exportFiles(OutputType outputFileType, String outputDir, String datasetName,
+                            List<Family> families) {
+        this.model.exportFiles(outputFileType, outputDir, datasetName, families);
+    }
+
+    public void saveSession(List<Family> families, File currentSession) {
+        this.model.saveSession(families, currentSession);
     }
 
     public void findCSBs(CSBFinderRequest request) throws IOException, IllegalArgumentException {

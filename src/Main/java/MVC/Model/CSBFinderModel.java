@@ -1,17 +1,20 @@
 package MVC.Model;
 
+import MVC.View.Events.CSBFinderDoneEvent;
+import MVC.View.Listeners.CSBFinderDoneListener;
+import MVC.View.Requests.CSBFinderRequest;
 import Model.Genomes.*;
 import Model.OrthologyGroups.COG;
 import Model.OrthologyGroups.CogInfo;
 import Model.Patterns.InstanceLocation;
 import Model.Patterns.Pattern;
 import IO.*;
-import MVC.Common.*;
 import Model.*;
 import Model.PostProcess.Family;
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.ParameterException;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -214,16 +217,21 @@ public class CSBFinderModel {
         }
     }
 
+    public void saveSession(List<Family> families, File currentSession){
+        Writer writer = WriteUtils.saveSessionFile(families, gi,  cogInfo, params, arguments, currentSession);
+    }
 
-    public void saveOutputFiles(OutputType outputFileType, String outputDir, String datasetName,
-                                  List<Family> families) {
+
+    public void exportFiles(OutputType outputFileType, String outputDir, String datasetName,
+                            List<Family> families) {
+
         System.out.println("Writing to files");
 
         params.outputDir = outputDir;
         params.datasetName = datasetName;
         params.outputFileType = outputFileType;
 
-        Writer writer = WriteUtils.writeFamiliesToFiles(families, gi,  cogInfo, params, arguments);
+        Writer writer = WriteUtils.writeExportFiles(families, gi,  cogInfo, params, arguments);
     }
 
     /**

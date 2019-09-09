@@ -34,10 +34,9 @@ public class CustomSwingWorker<T> extends SwingWorker<Void, Void>{
     @Override
     protected void done() {
 
-        doneFunc.accept(arg);
-
-        //An exception occurred
-        if (msg != null) {
+        if (msg == null) {
+            doneFunc.accept(arg);
+        }else{//An exception occurred
             JOptionPane.showMessageDialog(parent, formatMsgWidth(msg));
         }
     }

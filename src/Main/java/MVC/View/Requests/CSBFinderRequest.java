@@ -1,4 +1,4 @@
-package MVC.Common;
+package MVC.View.Requests;
 
 import Model.AlgorithmType;
 import Model.ClusterBy;

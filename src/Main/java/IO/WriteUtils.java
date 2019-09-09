@@ -6,6 +6,7 @@ import Model.OutputType;
 import Model.Parameters;
 import Model.PostProcess.Family;
 
+import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
@@ -14,8 +15,24 @@ import java.util.List;
  */
 public class WriteUtils {
 
-    public static Writer writeFamiliesToFiles(List<Family> families, GenomesInfo genomesInfo,
-                                        CogInfo cogInfo, Parameters params, String arguments){
+    public static Writer saveSessionFile(List<Family> families, GenomesInfo genomesInfo, CogInfo cogInfo,
+                                         Parameters params,
+                                         String arguments, File currSession){
+
+        SessionWriter sessionWriter = new SessionWriter(currSession.getPath(), genomesInfo);
+        sessionWriter.writeHeader(arguments);
+        sessionWriter.writeGenomes(genomesInfo.getGenomesByName());
+
+        Writer writer = new Writer(params.debug, sessionWriter);
+
+        writer.printFamilies(families, cogInfo);
+        writer.closeFiles();
+
+        return writer;
+    }
+
+    public static Writer writeExportFiles(List<Family> families, GenomesInfo genomesInfo,
+                                          CogInfo cogInfo, Parameters params, String arguments){
 
         String outputPath = createOutputPath(params.outputDir);
 

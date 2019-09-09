@@ -33,8 +33,8 @@ public class SessionWriter implements PatternsWriter {
 
         this.genomesInfo = genomesInfo;
 
-        String catalogPath = path + "_" + OutputType.SESSION.toString().toLowerCase() + ".txt";
-        file = Writer.createOutputPrintWriter(catalogPath);
+        //String catalogPath = path + "_" + OutputType.SESSION.toString().toLowerCase() + ".txt";
+        file = Writer.createOutputPrintWriter(path);
     }
 
     public void writeGenomes(Map<String, Genome> genomesMap){

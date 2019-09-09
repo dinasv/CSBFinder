@@ -6,7 +6,7 @@ public class LoadFileEvent implements Event{
 
     private File filePath;
 
-    public File getFilePath() {
+    public File getFile() {
         return filePath;
     }
 

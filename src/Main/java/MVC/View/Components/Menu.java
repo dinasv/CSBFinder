@@ -1,11 +1,10 @@
 package MVC.View.Components;
 
 import MVC.View.Components.Dialogs.InputFileChooser;
-import MVC.View.Components.Dialogs.OutputTypeChooser;
-import MVC.View.Components.Dialogs.SaveDialog;
+import MVC.View.Events.Event;
 import MVC.View.Events.LoadFileEvent;
 import MVC.View.Events.OpenDialogEvent;
-import MVC.View.Events.SaveOutputEvent;
+import MVC.View.Events.SimpleEvent;
 import MVC.View.Listeners.Listener;
 
 
@@ -31,7 +30,8 @@ public class Menu implements ActionListener {
     private Listener<LoadFileEvent> importSessionListener;
     private Listener<LoadFileEvent> loadCogInfoListener;
     private Listener<LoadFileEvent> loadTaxaListener;
-    private Listener<OpenDialogEvent> saveOutputListener;
+    private Listener<OpenDialogEvent> exportListener;
+    private Listener<Event> saveListener;
 
     private JMenuBar mainMenu;
     private JMenu menu;
@@ -88,13 +88,13 @@ public class Menu implements ActionListener {
         //Save
         saveItem = new JMenuItem(SAVE_FILES);
         saveItem.setMnemonic(KeyEvent.VK_S);
-        saveItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, InputEvent.CTRL_MASK));//Save
+        saveItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, InputEvent.CTRL_MASK));
 
         exportItem = new JMenuItem(EXPORT_FILES);
         openItem = new JMenuItem(OPEN);
 
         menu.add(openItem);
-        saveItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_O, InputEvent.CTRL_MASK));//Save
+        openItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_O, InputEvent.CTRL_MASK));
 
         menu.add(submenuImport);
 
@@ -139,12 +139,12 @@ public class Menu implements ActionListener {
 
                 break;
             case SAVE_FILES:
-
+                saveListener.eventOccurred(new SimpleEvent());
                 break;
 
             case EXPORT_FILES:
 
-                saveOutputListener.eventOccurred(new OpenDialogEvent());
+                exportListener.eventOccurred(new OpenDialogEvent());
 
                 break;
         }
@@ -186,8 +186,12 @@ public class Menu implements ActionListener {
         this.loadTaxaListener = loadTaxaListener;
     }
 
-    public void setSaveOutputListener(Listener<OpenDialogEvent> saveOutputListener) {
-        this.saveOutputListener = saveOutputListener;
+    public void setExportListener(Listener<OpenDialogEvent> exportListener) {
+        this.exportListener = exportListener;
+    }
+
+    public void setSaveListener(Listener<Event> listener) {
+        this.saveListener = listener;
     }
 
 

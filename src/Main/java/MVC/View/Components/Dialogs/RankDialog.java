@@ -1,20 +1,16 @@
 package MVC.View.Components.Dialogs;
 
-import MVC.Common.CSBFinderRequest;
+import MVC.View.Requests.CSBFinderRequest;
 import MVC.View.Events.RunEvent;
 import MVC.View.Listeners.RunListener;
-import Model.ClusterBy;
-import Model.ClusterDenominator;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.Arrays;
 import java.util.Hashtable;
 import java.util.List;
 
-import static java.awt.GridBagConstraints.FIRST_LINE_START;
 import static java.awt.GridBagConstraints.LINE_START;
 
 public class RankDialog extends JDialog {

@@ -3,7 +3,7 @@ package MVC.View.Events;
 import Model.OutputType;
 
 
-public class SaveOutputEvent implements Event {
+public class ExportEvent implements Event {
 
     private OutputType outputType;
     private String outputDirectory;
@@ -11,8 +11,8 @@ public class SaveOutputEvent implements Event {
     private int action;
 
 
-    public SaveOutputEvent(OutputType outputType,  String datasetName, String outputDirectory,
-                           int action) {
+    public ExportEvent(OutputType outputType, String datasetName, String outputDirectory,
+                       int action) {
         this.outputType = outputType;
         this.datasetName = datasetName;
         this.outputDirectory = outputDirectory;
