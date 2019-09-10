@@ -6,7 +6,7 @@ import java.awt.*;
 public class SaveDialog {
 
     private static final String DIALOG_TEXT = "Saving will overwrite the current session file, " +
-            "only filtered CSBs will be kept. Would you like to continue?";
+            "only the displayed CSBs will be kept.";
 
     private static final Object[] OPTIONS = {"Save Anyway",
             "Save As...",
@@ -25,7 +25,7 @@ public class SaveDialog {
                 DIALOG_TEXT,
                 "Save",
                 JOptionPane.YES_NO_CANCEL_OPTION,
-                JOptionPane.QUESTION_MESSAGE,
+                JOptionPane.INFORMATION_MESSAGE,
                 null,
                 OPTIONS,
                 OPTIONS[2]);

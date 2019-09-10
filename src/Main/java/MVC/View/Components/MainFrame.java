@@ -117,13 +117,19 @@ public class MainFrame extends JFrame {
 
         toolbar.disablRankeBtn();
         toolbar.disableClusterBtn();
-        toolbar.disableSaveBtn();
-        menuBar.disableSaveBtn();
+
         menuBar.disableSaveAsBtn();
         menuBar.disableExportBtn();
         summaryPanel.disableFilterBtn();
 
         statusBar.clearText();
+
+        disableSaveBtns();
+    }
+
+    private void disableSaveBtns(){
+        toolbar.disableSaveBtn();
+        menuBar.disableSaveBtn();
     }
 
     public void initComponents() {
@@ -205,29 +211,34 @@ public class MainFrame extends JFrame {
     }
 
     private void enableBtnsResultsDisplay(){
-        menuBar.enableSaveFileBtn();
         menuBar.enableSaveAsFileBtn();
         menuBar.enableExportBtn();
-        toolbar.enableSaveBtn();
         toolbar.enableRankBtn();
         toolbar.enableZoomOutBtn();
         toolbar.enableZoomInBtn();
         summaryPanel.enableFilterBtn();
         toolbar.enableClusterBtn();
+        enableSaveBtns();
     }
+
+    private void enableSaveBtns(){
+        menuBar.enableSaveFileBtn();
+        toolbar.enableSaveBtn();
+    }
+
 
     private void disableBtnsInit(){
         toolbar.disableSelectParamsBtn();
         toolbar.disablRankeBtn();
         toolbar.disabZoomOutBtn();
         toolbar.disabZoomInBtn();
-        toolbar.disableSaveBtn();
 
-        menuBar.disableSaveBtn();
         menuBar.disableExportBtn();
         menuBar.disableSaveAsBtn();
 
         summaryPanel.disableFilterBtn();
+
+        disableSaveBtns();
     }
 
     private void setGenomesData(){
@@ -292,6 +303,7 @@ public class MainFrame extends JFrame {
         }
     }
 
+
     private void setApplyFilterListener() {
 
         Function<FilterRequest, String> doInBackgroundFunc = (FilterRequest request) -> {
@@ -310,6 +322,7 @@ public class MainFrame extends JFrame {
 
         Consumer<FilterRequest> doneFunc = request -> {
             progressBar.done("");
+            enableSaveBtns();
         };
 
         RequestListener<FilterRequest> listener = new RequestListener<>(doInBackgroundFunc, doneFunc,
@@ -336,6 +349,7 @@ public class MainFrame extends JFrame {
 
         Consumer<CSBFinderRequest> doneFunc = request -> {
             progressBar.done("");
+            enableSaveBtns();
         };
 
         RequestListener<CSBFinderRequest> listener = new RequestListener<>(doInBackgroundFunc, doneFunc,
@@ -360,6 +374,7 @@ public class MainFrame extends JFrame {
 
         Consumer<CSBFinderRequest> doneFunc = request -> {
             progressBar.done("");
+            enableSaveBtns();
         };
 
         RequestListener<CSBFinderRequest> listener = new RequestListener<>(doInBackgroundFunc, doneFunc,
@@ -425,14 +440,12 @@ public class MainFrame extends JFrame {
 
             if (currentSessionFile == null) {
                 saveAsListener.eventOccurred(new OpenDialogEvent());
-                //saveAsDialog.openDialog();
             } else {
                 int value = saveDialog.showDialog();
 
                 if (value == JOptionPane.YES_OPTION) {
                     saveListener.eventOccurred(new FileEvent(this, currentSessionFile));
                 }else if (value == JOptionPane.NO_OPTION){
-                    //saveAsDialog.openDialog();
                     saveAsListener.eventOccurred(new OpenDialogEvent());
                 }
             }
@@ -448,12 +461,14 @@ public class MainFrame extends JFrame {
         Function<FileEvent, String> doInBackgroundFunc = (FileEvent e) -> {
 
             controller.saveSession(familiesFilter.getFilteredFamilies(), e.getFile());
+            setCurrentSessionFile(e.getFile());
 
             return null;
         };
 
         Consumer<FileEvent> doneFunc = request -> {
             progressBar.done("");
+            disableSaveBtns();
         };
 
         saveListener = new EventListener<>(doInBackgroundFunc, doneFunc,
@@ -616,13 +631,17 @@ public class MainFrame extends JFrame {
 
         Consumer<FileEvent> doneFunc = (FileEvent e) -> {
             setGenomesData();
-            setTitle(formatProgramTitle(e.getFile().getName()));
-            currentSessionFile = e.getFile();
+            setCurrentSessionFile(e.getFile());
         };
 
         loadSessionListener = new LoadFileListener(doInBackgroundFunc, doneFunc, MainFrame.this, progressBar);
 
         menuBar.setImportSessionListener(loadSessionListener);
+    }
+
+    private void setCurrentSessionFile(File file){
+        setTitle(formatProgramTitle(file.getName()));
+        currentSessionFile = file;
     }
 
     private static String formatProgramTitle(String fileName){
