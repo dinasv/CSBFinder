@@ -16,9 +16,13 @@ import com.beust.jcommander.ParameterException;
 import java.io.*;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 import java.util.Set;
 
 public class CSBFinderController {
+
+    private static final String PROPERTIES_FILE = "config.properties";
+    private Properties properties;
 
     public CSBFinderModel model;
     private MainFrame view;
@@ -26,44 +30,54 @@ public class CSBFinderController {
     public CSBFinderController() {
         this.model = new CSBFinderModel();
         this.view = new MainFrame(this);
-        parseConfigFile();
+
+        properties = new Properties();
+
+        readProperties();
+
     }
 
-    private void parseConfigFile(){
-        try (BufferedReader br = new BufferedReader(new FileReader("config.txt"))) {
-            String line = br.readLine();
-            while (line != null) {
-                String[] splitLine= line.trim().split(":");
-
-                String type = splitLine[0];
-                String path = splitLine.length > 1 ? splitLine[1] : "";
-
-                if (path.length() > 0) {
-                    switch (type) {
-                        case "session":
-                            view.invokeLoadSessionListener(path);
-                            break;
-                        case "orthology":
-                            view.invokeLoadCogInfoListener(path);
-                            break;
-                        case "taxonomy":
-                            view.invokeLoadTaxaListener(path);
-                            break;
-                    }
-                }
-
-                line = br.readLine();
-            }
+    private void readProperties(){
+        FileReader reader = null;
+        try {
+            reader = new FileReader(PROPERTIES_FILE);
         } catch (FileNotFoundException e) {
-            //no config file
-            System.out.println("No config.txt file");
+            //ignore
+        }
+
+        try {
+            properties.load(reader);
+
+            String path = properties.getProperty("session");
+            if (path != null){
+                view.invokeLoadSessionListener(path);
+            }
+
+            path = properties.getProperty("orthology");
+            if (path != null){
+                view.invokeLoadCogInfoListener(path);
+            }
+
+            path = properties.getProperty("taxonomy");
+            if (path != null){
+                view.invokeLoadTaxaListener(path);
+            }
+
         } catch (IOException e) {
-            System.out.println("Problem reading config.txt file");
-            //skip
-        } catch (Exception e){
-            System.out.println(e.getMessage());
+            System.out.println("A problem occurred while reading " + PROPERTIES_FILE);
         }
     }
+
+    public void addProperty(String key, String value){
+        properties.setProperty(key, value);
+
+        try {
+            properties.store(new FileWriter(PROPERTIES_FILE), null);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
 
     public void setCSBFinderDoneListener(CSBFinderDoneListener listener){
         model.setCSBFinderDoneListener(listener);
