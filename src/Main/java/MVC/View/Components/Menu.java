@@ -83,6 +83,7 @@ public class Menu implements ActionListener {
         submenuImport.setMnemonic(KeyEvent.VK_I);
 
         importGenomesMenuItem = new JMenuItem(LOAD_GENOMES);
+        importGenomesMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_G, InputEvent.CTRL_MASK));
 
         importOrthologyInfoMenuItem = new JMenuItem(LOAD_COG_INFO);
         importTaxaMenuItem = new JMenuItem(LOAD_TAXA);
