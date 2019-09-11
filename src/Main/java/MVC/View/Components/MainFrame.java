@@ -103,6 +103,7 @@ public class MainFrame extends JFrame {
 
         colorsUsed = new GeneColors();
         colorsUsed.setColor(controller.getUNKchar(), Color.lightGray);
+        controller.setGeneColors(colorsUsed);
 
         setLayout(new BorderLayout());
         initComponents();
@@ -142,7 +143,6 @@ public class MainFrame extends JFrame {
     }
 
     public void initComponents() {
-
 
         inputParamsDialog = new InputParametersDialog(fc);
         clusterDialog = new ClusterDialog();

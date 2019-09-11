@@ -35,6 +35,8 @@ public class CSBFinderModel {
     private String arguments;
     private String inputGenomesPath;
 
+    private GeneColors colors;
+
     public CSBFinderModel() {
 
         params = new Parameters();
@@ -46,6 +48,12 @@ public class CSBFinderModel {
         arguments = "";
         inputGenomesPath = "";
         genomeToTaxa = new HashMap<>();
+
+        colors = new GeneColors();
+    }
+
+    public void setGeneColors(GeneColors colors){
+        this.colors = colors;
     }
 
     public String getUNKchar(){
@@ -82,7 +90,7 @@ public class CSBFinderModel {
             throw new IOException(String.format("The first line in the file %s should contain valid arguments", path));
         }
 
-        Parsers.parseSessionFile(families, path, gi);
+        Parsers.parseSessionFile(families, path, gi, colors);
 
         workflow = new CSBFinderWorkflow(gi);
         workflow.setParameters(params);

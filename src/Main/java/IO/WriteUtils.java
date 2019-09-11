@@ -43,6 +43,12 @@ public class WriteUtils {
         String instancesFileName = catalogFileName + "_instances";
 
         String catalogPath = outputPath + catalogFileName;
+
+        if (params.outputFileType == OutputType.SESSION){
+            return saveSessionFile(families, genomesInfo, cogInfo, params, arguments, new GeneColors(),
+                    new File(catalogPath));
+        }
+
         //TODO: add as input parameter
         boolean includeFamilies = true;
 

@@ -1,16 +1,19 @@
 package IO;
 
+import MVC.View.Graphics.GeneColors;
 import Model.Genomes.*;
 import Model.OrthologyGroups.COG;
 import Model.Patterns.InstanceLocation;
 import Model.Patterns.Pattern;
 import Model.PostProcess.Family;
 
+import java.awt.*;
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.*;
+import java.util.List;
 
 
 public class Parsers {
@@ -35,6 +38,9 @@ public class Parsers {
     private final static String GENOMES_END = "<\\genomes>";
     private final static String INSTANCES_START = "<instances>";
     private final static String INSTANCES_END = "<\\instances>";
+    private final static String COLORS_START = "<colors>";
+    private final static String COLORS_END = "<\\colors>";
+    private final static String COLORS_DELIMITER = "=";
 
     public static List<Pattern> parseReferenceGenomesFile(GenomesInfo genomesInfo, String referenceGenomesPath)
             throws IOException {
@@ -223,7 +229,8 @@ public class Parsers {
     }
 
 
-    public static void parseSessionFile(List<Family> families, String filePath, GenomesInfo genomesInfo)
+    public static void parseSessionFile(List<Family> families, String filePath, GenomesInfo genomesInfo,
+                                        GeneColors colors)
             throws IOException, IllegalArgumentException {
 
         if (filePath == null) {
@@ -246,6 +253,8 @@ public class Parsers {
                     lineNumber = readGenomes(br, genomesInfo, filePath, GENOMES_END, lineNumber);
                 } else if (rawLine.startsWith(INSTANCES_START)) {
                     readInstances(br, genomesInfo, filePath, INSTANCES_END, lineNumber, families);
+                } else if (rawLine.startsWith(COLORS_START)) {
+                    readColors(br, COLORS_END, lineNumber, colors);
                 }
                 rawLine = br.readLine();
                 lineNumber++;
@@ -374,6 +383,30 @@ public class Parsers {
         families.addAll(familiesMap.values());
     }
 
+    private static void readColors(BufferedReader br, String end, int lineNumber,
+                                   GeneColors colors)
+            throws IOException {
+
+
+        String rawLine = br.readLine();
+        while (rawLine != null && !rawLine.equals(end)) {
+            lineNumber++;
+
+            String[] line = rawLine.trim().split(COLORS_DELIMITER);
+
+            String cogId = line[0];
+            String colorStr = line[1];
+
+            Color color = new Color(Integer.parseInt(colorStr));
+
+            colors.setColor(cogId, color);
+
+            rawLine = br.readLine();
+        }
+
+
+    }
+
     private static void parseInstanceLocations(String rawLine, GenomesInfo genomesInfo, int lineNumber, String filePath,
                                                Pattern pattern) {
 
@@ -415,6 +448,7 @@ public class Parsers {
 
         }
     }
+
 
     private static Family parseFamily(HashMap<Integer, Family> familiesMap, Pattern pattern, GenomesInfo genomesInfo) {
         Family family;

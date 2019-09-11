@@ -142,6 +142,10 @@ public class CSBFinderController {
         return model.getGenomeToTaxa();
     }
 
+    public void setGeneColors(GeneColors colors){
+        model.setGeneColors(colors);
+    }
+
 }
 
 
