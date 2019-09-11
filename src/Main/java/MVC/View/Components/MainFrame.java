@@ -487,7 +487,7 @@ public class MainFrame extends JFrame {
 
         Function<FileEvent, String> doInBackgroundFunc = (FileEvent e) -> {
 
-            controller.saveSession(familiesFilter.getFilteredFamilies(), e.getFile());
+            controller.saveSession(familiesFilter.getFilteredFamilies(), e.getFile(), colorsUsed);
             setCurrentSessionFile(e.getFile());
 
             return null;

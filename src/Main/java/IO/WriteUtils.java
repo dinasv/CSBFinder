@@ -1,5 +1,6 @@
 package IO;
 
+import MVC.View.Graphics.GeneColors;
 import Model.Genomes.GenomesInfo;
 import Model.OrthologyGroups.CogInfo;
 import Model.OutputType;
@@ -16,12 +17,13 @@ import java.util.List;
 public class WriteUtils {
 
     public static Writer saveSessionFile(List<Family> families, GenomesInfo genomesInfo, CogInfo cogInfo,
-                                         Parameters params,
-                                         String arguments, File currSession){
+                                         Parameters params, String arguments, GeneColors geneColors,
+                                         File currSession){
 
         SessionWriter sessionWriter = new SessionWriter(currSession.getPath(), genomesInfo);
         sessionWriter.writeHeader(arguments);
-        sessionWriter.writeGenomes(genomesInfo.getGenomesByName());
+        sessionWriter.writeGenomes();
+        sessionWriter.writeColors(geneColors);
 
         Writer writer = new Writer(params.debug, sessionWriter);
 
@@ -53,20 +55,14 @@ public class WriteUtils {
             case XLSX:
                 patternsWriter = new ExcelWriter(cogInfo.cogInfoExists(), includeFamilies, catalogPath);
                 break;
-            case SESSION:
-                SessionWriter sessionWriter = new SessionWriter(catalogPath, genomesInfo);
-                sessionWriter.writeHeader(arguments);
-                sessionWriter.writeGenomes(genomesInfo.getGenomesByName());
-                patternsWriter = sessionWriter;
-                break;
         }
 
         Writer writer = new Writer(params.debug, instancesFileName, outputPath, patternsWriter);
 
-        if (params.outputFileType != OutputType.SESSION){
-            writer.printInstances(families, genomesInfo);
-            writer.writeHeader(createHeader(cogInfo));
-        }
+
+        writer.printInstances(families, genomesInfo);
+        writer.writeHeader(createHeader(cogInfo));
+
 
         writer.printFamilies(families, cogInfo);
         writer.closeFiles();

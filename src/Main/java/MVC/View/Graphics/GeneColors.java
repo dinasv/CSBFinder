@@ -4,6 +4,7 @@ import Model.Genomes.Gene;
 
 import java.awt.*;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Random;
 
@@ -17,6 +18,7 @@ public class GeneColors {
     public GeneColors(){
         rnd = new Random();
         colorsUsed = new HashMap<>();
+
     }
 
 
@@ -53,5 +55,9 @@ public class GeneColors {
     public void setColor(String gene, Color color){
 
         colorsUsed.put(gene, color);
+    }
+
+    public Iterator<Map.Entry<String, Color>> getGeneToColor(){
+        return colorsUsed.entrySet().iterator();
     }
 }

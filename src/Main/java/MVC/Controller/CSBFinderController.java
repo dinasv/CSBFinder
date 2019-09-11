@@ -1,6 +1,7 @@
 package MVC.Controller;
 
 import MVC.ProgramProperties;
+import MVC.View.Graphics.GeneColors;
 import MVC.View.Listeners.CSBFinderDoneListener;
 import MVC.View.Requests.CSBFinderRequest;
 import Model.ClusterBy;
@@ -88,8 +89,8 @@ public class CSBFinderController {
         this.model.exportFiles(outputFileType, outputDir, datasetName, families);
     }
 
-    public void saveSession(List<Family> families, File currentSession) {
-        this.model.saveSession(families, currentSession);
+    public void saveSession(List<Family> families, File currentSession, GeneColors colors) {
+        this.model.saveSession(families, currentSession, colors);
     }
 
     public void findCSBs(CSBFinderRequest request) throws IOException, IllegalArgumentException {

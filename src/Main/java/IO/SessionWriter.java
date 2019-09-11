@@ -1,14 +1,17 @@
 package IO;
 
+import MVC.View.Graphics.GeneColors;
 import Model.OrthologyGroups.CogInfo;
 import Model.Genomes.*;
 import Model.OutputType;
 import Model.Patterns.Pattern;
 import Model.PostProcess.Family;
 
+import java.awt.*;
 import java.io.PrintWriter;
 import java.math.RoundingMode;
 import java.text.DecimalFormat;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -37,7 +40,9 @@ public class SessionWriter implements PatternsWriter {
         file = Writer.createOutputPrintWriter(path);
     }
 
-    public void writeGenomes(Map<String, Genome> genomesMap){
+    public void writeGenomes(){
+
+        Map<String, Genome> genomesMap = genomesInfo.getGenomesByName();
         file.write("<genomes>\n");
 
         for (Genome genome: genomesMap.values()){
@@ -50,6 +55,24 @@ public class SessionWriter implements PatternsWriter {
         }
 
         file.println("<\\genomes>");
+    }
+
+    public void writeColors(GeneColors colors){
+
+        for (Iterator<Map.Entry<String, Color>> it = colors.getGeneToColor(); it.hasNext(); ) {
+            Map.Entry<String, Color> entry = it.next();
+
+        }
+
+        Iterator<Map.Entry<String, Color>> it = colors.getGeneToColor();
+        file.write("<colors>\n");
+
+        it.forEachRemaining( entry -> {
+            String line = String.format("%s=%s", entry.getKey(), entry.getValue().getRGB());
+            file.println(line);
+        });
+
+        file.println("<\\colors>");
     }
 
     @Override

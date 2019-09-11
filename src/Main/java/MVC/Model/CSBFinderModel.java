@@ -1,6 +1,7 @@
 package MVC.Model;
 
 import MVC.View.Events.CSBFinderDoneEvent;
+import MVC.View.Graphics.GeneColors;
 import MVC.View.Listeners.CSBFinderDoneListener;
 import MVC.View.Requests.CSBFinderRequest;
 import Model.Genomes.*;
@@ -217,8 +218,8 @@ public class CSBFinderModel {
         }
     }
 
-    public void saveSession(List<Family> families, File currentSession){
-        Writer writer = WriteUtils.saveSessionFile(families, gi,  cogInfo, params, arguments, currentSession);
+    public void saveSession(List<Family> families, File currentSession, GeneColors colors){
+        Writer writer = WriteUtils.saveSessionFile(families, gi,  cogInfo, params, arguments, colors, currentSession);
     }
 
 
