@@ -2,6 +2,7 @@ package MVC.View.Components.Panels;
 
 import MVC.View.Components.Shapes.GeneShape;
 import MVC.View.Events.DoubleClickGeneEvent;
+import MVC.View.Graphics.GeneColors;
 import Model.Genomes.GenomesInfo;
 import Model.Genomes.Taxon;
 import Model.Patterns.Pattern;
@@ -19,7 +20,7 @@ public class MiddlePanel extends JPanel {
     private TaxaPanel taxaPanel;
 
 
-    public MiddlePanel(Map<String, Color> colorsUsed ) {
+    public MiddlePanel(GeneColors colorsUsed ) {
 
         viewInstancesPanel = new GenesViewPanel(colorsUsed);
         taxaPanel = new TaxaPanel();
@@ -77,9 +78,6 @@ public class MiddlePanel extends JPanel {
         viewInstancesPanel.repaint();
     }
 
-    public Map<String,Color> getColorsUsed(){
-        return viewInstancesPanel.getColorsUsed();
-    }
 
     public void setGeneTooltipListener(Listener<TooltipGeneEvent> geneTooltipListener) {
         viewInstancesPanel.setGeneTooltipListener(geneTooltipListener);

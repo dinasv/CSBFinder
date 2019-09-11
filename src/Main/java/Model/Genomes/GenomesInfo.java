@@ -48,14 +48,6 @@ public class GenomesInfo {
         alphabet = new Alphabet();
     }
 
-    public void initAlphabet(){
-        cogToContainingGenomes = new HashMap<>();
-
-        genomeToCogParalogCount = new HashMap<>();
-
-        alphabet = new Alphabet();
-    }
-
     public WordArray createWordArray(List<Gene> genes){
         return alphabet.createWordArray(genes);
     }
@@ -70,6 +62,10 @@ public class GenomesInfo {
 
     public int alphabetSize() {
         return alphabet.alphabetSize();
+    }
+
+    public Iterator<Gene> getAlphabetLetters(){
+        return alphabet.getAlphabetLetters();
     }
 
     public int getNumberOfGenomes(){

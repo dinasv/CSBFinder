@@ -1,6 +1,7 @@
 package MVC.View.Components.Panels;
 
 import MVC.View.Events.DoubleClickGeneEvent;
+import MVC.View.Graphics.GeneColors;
 import Model.Genomes.*;
 import Model.Patterns.InstanceLocation;
 import Model.Patterns.Pattern;
@@ -28,7 +29,7 @@ public class InstancesPanel extends JPanel {
 
     private Random rnd = new Random();
 
-    private  Map<String, Color> colorsUsed;
+    private GeneColors colorsUsed;
 
     private int rowHeight;
     private int firstRowHeight;
@@ -47,7 +48,7 @@ public class InstancesPanel extends JPanel {
 
     private int scrollWidth = 0;
 
-    public InstancesPanel(Map<String, Color> colorsUsed) {
+    public InstancesPanel(GeneColors colorsUsed) {
 
         setGCLayout();
         setLayout(new GridBagLayout());
@@ -290,21 +291,16 @@ public class InstancesPanel extends JPanel {
         List<GeneShape> geneShapesList = new ArrayList<>();
         for (Gene gene : genes) {
 
-            Color color;
+            Color color = colorsUsed.getColor(gene);
 
-            if (colorsUsed.containsKey(gene.getCogId())){
-                color = colorsUsed.get(gene.getCogId());
-            }else {
-                color = getRandomColor();
-            }
             GeneShape geneShape = new GeneShape(color, gene, getGraphics(), geneLabelFont);
 
             geneShapesList.add(geneShape);
-            colorsUsed.put(gene.getCogId(), color);
         }
         return geneShapesList;
     }
 
+    /*
     private Color getRandomColor(){
         float hue = rnd.nextFloat();
         // Saturation between 0.1 and 0.3
@@ -313,15 +309,11 @@ public class InstancesPanel extends JPanel {
         Color color = Color.getHSBColor(hue, saturation, luminance);
 
         return color;
-    }
+    }*/
 
 
     private void setGCLayout() {
         gc = new GridBagConstraints();
-    }
-
-    public Map<String,Color> getColorsUsed(){
-        return colorsUsed;
     }
 
     public int getRowHeight(){

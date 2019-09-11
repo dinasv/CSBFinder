@@ -3,7 +3,7 @@ package MVC.View.Components;
 import MVC.View.Events.*;
 
 import MVC.View.Events.Event;
-import MVC.View.Images.Icon;
+import MVC.View.Graphics.Icon;
 import MVC.View.Listeners.Listener;
 
 import javax.swing.*;

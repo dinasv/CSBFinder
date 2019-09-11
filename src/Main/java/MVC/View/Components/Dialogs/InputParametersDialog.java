@@ -80,7 +80,7 @@ public class InputParametersDialog extends JDialog {
     public InputParametersDialog(JFileChooser fc) {
 
         this.fc = fc;
-        this.questionMark = MVC.View.Images.Icon.QUESTION_MARK.getIcon();
+        this.questionMark = MVC.View.Graphics.Icon.QUESTION_MARK.getIcon();
         setTitle("Parameters");
 
         initLabels();

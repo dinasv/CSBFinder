@@ -6,6 +6,7 @@ import java.awt.*;
 import java.util.*;
 import java.util.List;
 
+import MVC.View.Graphics.GeneColors;
 import Model.OrthologyGroups.COG;
 
 
@@ -54,7 +55,7 @@ public class CSBSummaryPanel extends JPanel {
     }
 
 
-    public void displaySummary(List<COG> patternGenes, Collection<COG> InsertedGenes, Map<String, Color> colorsUsed) {
+    public void displaySummary(List<COG> patternGenes, Collection<COG> InsertedGenes, GeneColors colorsUsed) {
 
         clearPanel();
 
@@ -91,7 +92,7 @@ public class CSBSummaryPanel extends JPanel {
     }
 
     private void appendGenes(Collection<COG> genes, String title, List<HighlightInfo> highlightInfos,
-                             Map<String, Color> colorsUsed, Set<COG> genesUsed, StyledDocument doc){
+                             GeneColors colorsUsed, Set<COG> genesUsed, StyledDocument doc){
 
         if (genes.size() > 0) {
             try {
@@ -106,7 +107,7 @@ public class CSBSummaryPanel extends JPanel {
 
                         doc.insertString(doc.getLength(), cog.getCogId(), textStyle);
                         //sb.append(cog.getCogID());
-                        highlightInfos.add(new HighlightInfo(startIndex, doc.getLength(), colorsUsed.get(cog.getCogId())));
+                        highlightInfos.add(new HighlightInfo(startIndex, doc.getLength(), colorsUsed.getColor(cog.getCogId())));
 
                         StringBuilder sb = new StringBuilder();
                         sb.append(" ");

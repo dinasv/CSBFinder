@@ -61,6 +61,10 @@ public class Alphabet {
         return letterIndex;
     }
 
+    public Iterator<Gene> getAlphabetLetters(){
+        return indexToLetter.iterator();
+    }
+
     /**
      * Converts an array of strings to wordArray, using letterToIndex
      * @param genes each gene will we converted to a character with index

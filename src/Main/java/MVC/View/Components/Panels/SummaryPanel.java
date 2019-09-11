@@ -1,5 +1,6 @@
 package MVC.View.Components.Panels;
 
+import MVC.View.Graphics.GeneColors;
 import Model.Patterns.Pattern;
 import Model.PostProcess.Family;
 import Model.OrthologyGroups.COG;
@@ -60,7 +61,7 @@ public class SummaryPanel extends JSplitPane {
         resultsPanel.setFamilyRowClickedListener(listener);
     }
 
-    public void setCogInfo(List<COG> patternGenes, Collection<COG> insertedGenes, Map<String, Color> colorsUsed) {
+    public void setCogInfo(List<COG> patternGenes, Collection<COG> insertedGenes, GeneColors colorsUsed) {
         csbSummaryPanel.displaySummary(patternGenes, insertedGenes, colorsUsed);
     }
 

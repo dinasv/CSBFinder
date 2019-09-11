@@ -2,6 +2,7 @@ package MVC.View.Components.Panels;
 
 import MVC.View.Components.Shapes.GeneShape;
 import MVC.View.Events.DoubleClickGeneEvent;
+import MVC.View.Graphics.GeneColors;
 import Model.Genomes.GenomesInfo;
 import Model.Patterns.InstanceLocation;
 import Model.Patterns.Pattern;
@@ -24,7 +25,6 @@ public class GenesViewPanel extends JPanel {
 
     private GridBagConstraints gc;
 
-    private Map<String, Color> colorsUsed;
     private GenomesInfo genomesInfo;
 
     private ViewMode viewMode;
@@ -35,7 +35,7 @@ public class GenesViewPanel extends JPanel {
     private List<Map.Entry<String, List<InstanceLocation>>> genomeToInstances;
     private List<String> genomeNames;
 
-    public GenesViewPanel(Map<String, Color> colorsUsed){
+    public GenesViewPanel(GeneColors colorsUsed){
 
         viewMode = ViewMode.NONE;
 
@@ -44,8 +44,6 @@ public class GenesViewPanel extends JPanel {
         patternsInView = null;
         genomeToInstances = new ArrayList<>();
         genomeNames = new ArrayList<>();
-
-        this.colorsUsed = colorsUsed;
 
         content = new JPanel(new GridBagLayout());
 
@@ -150,9 +148,6 @@ public class GenesViewPanel extends JPanel {
         labelsPanel.clearPanel();
     }
 
-    public Map<String,Color> getColorsUsed(){
-        return instancesPanel.getColorsUsed();
-    }
 
     public void setGeneTooltipListener(Listener<TooltipGeneEvent> geneTooltipListener) {
         this.instancesPanel.setGeneTooltipListener(geneTooltipListener);

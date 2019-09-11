@@ -41,7 +41,7 @@ public class ClusterDialog extends JDialog {
 
     public ClusterDialog() {
 
-        this.questionMark = MVC.View.Images.Icon.QUESTION_MARK.getIcon();
+        this.questionMark = MVC.View.Graphics.Icon.QUESTION_MARK.getIcon();
         setTitle("Cluster to families");
 
         initLabels();

@@ -1,6 +1,7 @@
 package MVC.View.Components;
 
 import MVC.ProgramProperties;
+import MVC.View.Graphics.GeneColors;
 import MVC.View.Listeners.EventListener;
 import MVC.View.Requests.CSBFinderRequest;
 import MVC.Controller.CSBFinderController;
@@ -9,11 +10,11 @@ import MVC.View.Components.Panels.*;
 import MVC.View.Components.Shapes.GeneShape;
 import MVC.View.Components.Shapes.Label;
 import MVC.View.Events.*;
-import MVC.View.Events.Event;
-import MVC.View.Images.Icon;
+import MVC.View.Graphics.Icon;
 import MVC.View.Listeners.*;
 import Model.Genomes.Alphabet;
 import Model.Genomes.Gene;
+import Model.Genomes.GenomesInfo;
 import Model.Genomes.Taxon;
 import Model.OrthologyGroups.COG;
 import Model.Patterns.Pattern;
@@ -85,6 +86,7 @@ public class MainFrame extends JFrame {
     private Listener<OpenDialogEvent> saveAsListener;
 
     private ProgramProperties properties;
+    private GeneColors colorsUsed;
 
     public MainFrame(CSBFinderController controller, ProgramProperties properties) {
 
@@ -98,6 +100,9 @@ public class MainFrame extends JFrame {
         fc = new JFileChooser(System.getProperty("user.dir"));
         familiesFilter = new FamiliesFilter();
         tablesHistory = new TablesHistory();
+
+        colorsUsed = new GeneColors();
+        colorsUsed.setColor(controller.getUNKchar(), Color.lightGray);
 
         setLayout(new BorderLayout());
         initComponents();
@@ -137,8 +142,7 @@ public class MainFrame extends JFrame {
     }
 
     public void initComponents() {
-        Map<String, Color> colorsUsed = new HashMap<>();
-        colorsUsed.put(controller.getUNKchar(), Color.lightGray);
+
 
         inputParamsDialog = new InputParametersDialog(fc);
         clusterDialog = new ClusterDialog();
@@ -254,11 +258,16 @@ public class MainFrame extends JFrame {
             filterDialog.setGenomeData(controller.getNumberOfGenomes(), controller.getMaxGenomeSize());
             middlePanel.setGenomesInfo(controller.getGenomeInfo());
 
+            setGeneColors(controller.getGenomeInfo());
             toolbar.enableSelectParamsBtn();
 
         } else {
             disableBtnsInit();
         }
+    }
+
+    private void setGeneColors(GenomesInfo genomesInfo){
+        genomesInfo.getAlphabetLetters().forEachRemaining(colorsUsed::setColor);
     }
 
     private void setFilters(FilterRequest filterRequest){
@@ -723,7 +732,7 @@ public class MainFrame extends JFrame {
 
             List<COG> patternCOGs = controller.getCogsInfo(pattern.getPatternGenes());
             Set<COG> insertedGenes = controller.getInsertedGenes(pattern, patternCOGs);
-            summaryPanel.setCogInfo(patternCOGs, insertedGenes, middlePanel.getColorsUsed());
+            summaryPanel.setCogInfo(patternCOGs, insertedGenes, colorsUsed);
         });
     }
 
@@ -743,7 +752,7 @@ public class MainFrame extends JFrame {
             for (Pattern pattern : family.getPatterns()) {
                 patternCOGs.addAll(controller.getCogsInfo(pattern.getPatternGenes()));
             }
-            summaryPanel.setCogInfo(patternCOGs, new HashSet<>(), middlePanel.getColorsUsed());
+            summaryPanel.setCogInfo(patternCOGs, new HashSet<>(), colorsUsed);
         });
     }
 

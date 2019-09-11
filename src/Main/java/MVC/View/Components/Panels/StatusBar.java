@@ -1,6 +1,5 @@
 package MVC.View.Components.Panels;
 
-import MVC.View.Images.Icon;
 import Model.PostProcess.Family;
 
 import javax.swing.*;

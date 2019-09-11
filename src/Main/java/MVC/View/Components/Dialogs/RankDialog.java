@@ -31,7 +31,7 @@ public class RankDialog extends JDialog {
 
     public RankDialog() {
 
-        this.questionMark = MVC.View.Images.Icon.QUESTION_MARK.getIcon();
+        this.questionMark = MVC.View.Graphics.Icon.QUESTION_MARK.getIcon();
         setTitle("Compute scores for CSBs");
 
         initLabels();

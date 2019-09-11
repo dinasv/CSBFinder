@@ -1,4 +1,4 @@
-package MVC.View.Images;
+package MVC.View.Graphics;
 
 import javax.swing.*;
 
