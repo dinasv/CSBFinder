@@ -1,5 +1,6 @@
 package MVC.Controller;
 
+import MVC.ProgramProperties;
 import MVC.View.Listeners.CSBFinderDoneListener;
 import MVC.View.Requests.CSBFinderRequest;
 import Model.ClusterBy;
@@ -21,63 +22,41 @@ import java.util.Set;
 
 public class CSBFinderController {
 
-    private static final String PROPERTIES_FILE = "config.properties";
-    private Properties properties;
+
+
+    private ProgramProperties properties;
 
     public CSBFinderModel model;
     private MainFrame view;
 
     public CSBFinderController() {
+
+        properties = new ProgramProperties();
+        properties.loadProperties();
+
         this.model = new CSBFinderModel();
-        this.view = new MainFrame(this);
+        this.view = new MainFrame(this, properties);
 
-        properties = new Properties();
-
-        readProperties();
+        invokeListeners();
 
     }
 
-    private void readProperties(){
-        FileReader reader = null;
-        try {
-            reader = new FileReader(PROPERTIES_FILE);
-        } catch (FileNotFoundException e) {
-            //ignore
+    private void invokeListeners(){
+        String path = properties.getSessionPath();
+        if (path != null){
+            view.invokeLoadSessionListener(path);
         }
 
-        try {
-            properties.load(reader);
+        path = properties.getCogInfoPath();
+        if (path != null){
+            view.invokeLoadCogInfoListener(path);
+        }
 
-            String path = properties.getProperty("session");
-            if (path != null){
-                view.invokeLoadSessionListener(path);
-            }
-
-            path = properties.getProperty("orthology");
-            if (path != null){
-                view.invokeLoadCogInfoListener(path);
-            }
-
-            path = properties.getProperty("taxonomy");
-            if (path != null){
-                view.invokeLoadTaxaListener(path);
-            }
-
-        } catch (IOException e) {
-            System.out.println("A problem occurred while reading " + PROPERTIES_FILE);
+        path = properties.getTaxaPath();
+        if (path != null){
+            view.invokeLoadTaxaListener(path);
         }
     }
-
-    public void addProperty(String key, String value){
-        properties.setProperty(key, value);
-
-        try {
-            properties.store(new FileWriter(PROPERTIES_FILE), null);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
 
     public void setCSBFinderDoneListener(CSBFinderDoneListener listener){
         model.setCSBFinderDoneListener(listener);

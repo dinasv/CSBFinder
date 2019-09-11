@@ -1,5 +1,6 @@
 package MVC.View.Components;
 
+import MVC.ProgramProperties;
 import MVC.View.Listeners.EventListener;
 import MVC.View.Requests.CSBFinderRequest;
 import MVC.Controller.CSBFinderController;
@@ -83,17 +84,20 @@ public class MainFrame extends JFrame {
     private Listener<FileEvent> saveListener;
     private Listener<OpenDialogEvent> saveAsListener;
 
-    public MainFrame(CSBFinderController controller) {
+    private ProgramProperties properties;
+
+    public MainFrame(CSBFinderController controller, ProgramProperties properties) {
 
         super(formatProgramTitle(DEFAULT_SESSION_NAME));
+
+        this.controller = controller;
+        this.properties = properties;
 
         progressBar = new ProgressBar(this);
 
         fc = new JFileChooser(System.getProperty("user.dir"));
         familiesFilter = new FamiliesFilter();
         tablesHistory = new TablesHistory();
-
-        this.controller = controller;
 
         setLayout(new BorderLayout());
         initComponents();
@@ -195,6 +199,7 @@ public class MainFrame extends JFrame {
         setSaveAsDialogListener();
         setZoomOutListener();
         setZoomInListener();
+        setShowSaveMsgListener();
     }
 
     private void displayFamilyTable(List<Family> familyList) {
@@ -301,6 +306,14 @@ public class MainFrame extends JFrame {
                 summaryPanel.selectPattern(tablesHistory.getPattern().getPatternId());
             }
         }
+    }
+
+    private void setShowSaveMsgListener(){
+        Listener<DontShowSaveMsgEvent> listener = event -> {
+            properties.setShowSaveMsg(event.isShowSaveMsg());
+        };
+
+        saveDialog.setDontShowMsgListener(listener);
     }
 
 
@@ -441,7 +454,12 @@ public class MainFrame extends JFrame {
             if (currentSessionFile == null) {
                 saveAsListener.eventOccurred(new OpenDialogEvent());
             } else {
-                int value = saveDialog.showDialog();
+                int value;
+                if (properties.getShowSaveMsg()) {
+                    value = saveDialog.showDialog();
+                }else{
+                    value = JOptionPane.YES_OPTION; //save
+                }
 
                 if (value == JOptionPane.YES_OPTION) {
                     saveListener.eventOccurred(new FileEvent(this, currentSessionFile));
@@ -632,6 +650,7 @@ public class MainFrame extends JFrame {
         Consumer<FileEvent> doneFunc = (FileEvent e) -> {
             setGenomesData();
             setCurrentSessionFile(e.getFile());
+            disableSaveBtns();
         };
 
         loadSessionListener = new LoadFileListener(doInBackgroundFunc, doneFunc, MainFrame.this, progressBar);
