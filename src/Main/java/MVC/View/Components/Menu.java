@@ -3,6 +3,7 @@ package MVC.View.Components;
 import MVC.View.Components.Dialogs.FileTypeFilter;
 import MVC.View.Events.*;
 import MVC.View.Listeners.Listener;
+import Model.OutputType;
 
 
 import javax.swing.*;
@@ -10,8 +11,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
-
-import static java.awt.event.ActionEvent.CTRL_MASK;
 
 /**
  */
@@ -24,6 +23,8 @@ public class Menu implements ActionListener {
     private static final String SAVE_FILES = "Save";
     private static final String SAVE_AS_FILES = "Save As...";
     private static final String EXPORT_FILES = "Export";
+    private static final String EXPORT_TXT = "*.txt";
+    private static final String EXPORT_XLS = "*.xlsx";
     private static final String OPEN = "Open...";
     private static final String[] LOAD_EXTENSIONS = {"fasta", "txt"};
 
@@ -33,7 +34,7 @@ public class Menu implements ActionListener {
     private Listener<FileEvent> importSessionListener;
     private Listener<FileEvent> loadCogInfoListener;
     private Listener<FileEvent> loadTaxaListener;
-    private Listener<OpenDialogEvent> exportListener;
+    private Listener<OpenExportDialogEvent> exportListener;
     private Listener<OpenDialogEvent> saveListener;
     private Listener<OpenDialogEvent> saveAsListener;
 
@@ -46,7 +47,9 @@ public class Menu implements ActionListener {
     private JMenuItem importTaxaMenuItem;
     private JMenuItem saveItem;
     private JMenuItem saveAsItem;
-    private JMenuItem exportItem;
+    private JMenu submenuExport;
+    private JMenuItem exportItemTxt;
+    private JMenuItem exportItemXsl;
     private JMenuItem openItem;
 
     private JFileChooser fileChooser;
@@ -69,8 +72,9 @@ public class Menu implements ActionListener {
         importOrthologyInfoMenuItem.addActionListener(this);
         importTaxaMenuItem.addActionListener(this);
         openItem.addActionListener(this);
-        exportItem.addActionListener(this);
         saveAsItem.addActionListener(this);
+        exportItemTxt.addActionListener(this);
+        exportItemXsl.addActionListener(this);
     }
 
     private void createFileMenu(){
@@ -89,10 +93,8 @@ public class Menu implements ActionListener {
         importTaxaMenuItem = new JMenuItem(LOAD_TAXA);
 
         submenuImport.add(importGenomesMenuItem);
-
         submenuImport.add(importOrthologyInfoMenuItem);
         submenuImport.add(importTaxaMenuItem);
-
 
         //Save
         saveItem = new JMenuItem(SAVE_FILES);
@@ -103,7 +105,16 @@ public class Menu implements ActionListener {
         saveAsItem = new JMenuItem(SAVE_AS_FILES);
         saveAsItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, InputEvent.SHIFT_MASK+InputEvent.CTRL_MASK));
 
-        exportItem = new JMenuItem(EXPORT_FILES);
+        submenuExport = new JMenu(EXPORT_FILES);
+        submenuExport.setMnemonic(KeyEvent.VK_E);
+
+        exportItemTxt = new JMenuItem(EXPORT_TXT);
+        exportItemTxt.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_T, InputEvent.CTRL_MASK));
+        exportItemXsl = new JMenuItem(EXPORT_XLS);
+        exportItemTxt.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_X, InputEvent.CTRL_MASK));
+        submenuExport.add(exportItemTxt);
+        submenuExport.add(exportItemXsl);
+
         openItem = new JMenuItem(OPEN);
 
         menu.add(openItem);
@@ -118,7 +129,7 @@ public class Menu implements ActionListener {
 
         menu.addSeparator();
 
-        menu.add(exportItem);
+        menu.add(submenuExport);
 
     }
 
@@ -139,11 +150,11 @@ public class Menu implements ActionListener {
     }
 
     public void enableExportBtn() {
-        exportItem.setEnabled(true);
+        exportItemTxt.setEnabled(true);
     }
 
     public void disableExportBtn() {
-        exportItem.setEnabled(false);
+        exportItemTxt.setEnabled(false);
     }
 
     @Override
@@ -179,9 +190,14 @@ public class Menu implements ActionListener {
                 saveAsListener.eventOccurred(new OpenDialogEvent());
                 break;
 
-            case EXPORT_FILES:
+            case EXPORT_TXT:
 
-                exportListener.eventOccurred(new OpenDialogEvent());
+                exportListener.eventOccurred(new OpenExportDialogEvent(OutputType.TXT));
+
+                break;
+            case EXPORT_XLS:
+
+                exportListener.eventOccurred(new OpenExportDialogEvent(OutputType.XLSX));
 
                 break;
         }
@@ -224,7 +240,7 @@ public class Menu implements ActionListener {
         this.loadTaxaListener = loadTaxaListener;
     }
 
-    public void setExportListener(Listener<OpenDialogEvent> exportListener) {
+    public void setExportListener(Listener<OpenExportDialogEvent> exportListener) {
         this.exportListener = exportListener;
     }
 

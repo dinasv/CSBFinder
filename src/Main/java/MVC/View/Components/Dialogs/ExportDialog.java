@@ -2,6 +2,7 @@ package MVC.View.Components.Dialogs;
 
 import MVC.View.Events.ExportEvent;
 import MVC.View.Listeners.Listener;
+import Model.OutputType;
 
 import javax.swing.*;
 
@@ -24,13 +25,13 @@ public class ExportDialog {
         this.mainFrame = mainFrame;
     }
 
-    public void openDialog(){
+    public void openDialog(OutputType outputType){
         initOutputFileChooser();
         int action = fileChooser.showDialog(mainFrame, SAVE_FILES_DIALOG_BTN_NAME);
         if (action != JFileChooser.APPROVE_OPTION) {
             return;
         }
-        exportListener.eventOccurred(new ExportEvent(outputTypeChooser.getChosenOutput(),
+        exportListener.eventOccurred(new ExportEvent(outputType,
                 outputTypeChooser.getFileNameField(), fileChooser.getSelectedFile().getAbsolutePath(), action));
     }
 

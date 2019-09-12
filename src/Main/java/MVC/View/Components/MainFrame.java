@@ -452,7 +452,7 @@ public class MainFrame extends JFrame {
     }
 
     private void setOpenExportDialogListener(){
-        Listener<OpenDialogEvent> listener = e -> exportDialog.openDialog();
+        Listener<OpenExportDialogEvent> listener = e -> exportDialog.openDialog(e.getOutputType());
 
         menuBar.setExportListener(listener);
     }

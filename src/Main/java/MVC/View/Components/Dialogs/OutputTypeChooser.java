@@ -30,17 +30,8 @@ public class OutputTypeChooser extends JPanel {
         btn2.setActionCommand(OutputType.XLSX.toString());
 
 
-
         radioBtns.add(btn1);
         radioBtns.add(btn2);
-
-        JLabel outputTypeLabel = new JLabel("Output type:", JLabel.LEFT);
-        //Put the radio buttons in a column in a panel.
-        JPanel radioPanel = new JPanel(new GridLayout(0, 1));
-        radioPanel.add(outputTypeLabel);
-        radioPanel.add(btn1);
-        radioPanel.add(btn2);
-        //radioPanel.add(btn3);
 
         GridBagConstraints c = new GridBagConstraints();
         c.gridx = 0; c.gridy = 0;
@@ -48,8 +39,6 @@ public class OutputTypeChooser extends JPanel {
         c.gridx = 1;
         add(fileNameField, c);
 
-        c.gridx = 0; c.gridy = 1; c.weightx = 2;
-        add(radioPanel, c);
         setBorder(BorderFactory.createEmptyBorder(20,20,20,20));
     }
 
