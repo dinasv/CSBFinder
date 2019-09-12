@@ -87,8 +87,8 @@ public class MiddlePanel extends JPanel {
         viewInstancesPanel.setGeneDoubleClickListener(geneDoubleClickListener);
     }
 
-    public void alignGenes(GeneShape anchorGene, int viewX){
-        viewInstancesPanel.alignGenes(anchorGene, viewX);
+    public void alignGenes(GeneShape anchorGene, JPanel clickedPanel, int viewX){
+        viewInstancesPanel.alignGenes(anchorGene, clickedPanel, viewX);
     }
 
     public void zoomOut(int zoomUnit){

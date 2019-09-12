@@ -783,7 +783,7 @@ public class MainFrame extends JFrame {
                 JViewport viewPort = (JViewport) SwingUtilities.getAncestorOfClass(JViewport.class, event.getSrc());
                 if (viewPort != null) {
                     Rectangle view = viewPort.getViewRect();
-                    middlePanel.alignGenes(anchorGene, view.x);
+                    middlePanel.alignGenes(anchorGene, event.getSrc(), view.x);
                 }
 
             }

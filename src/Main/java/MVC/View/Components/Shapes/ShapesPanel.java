@@ -53,6 +53,7 @@ public class ShapesPanel extends JPanel{
             if (shape.containsPoint(e.getPoint())) {
                 doubleClickListener.eventOccurred(
                         new DoubleClickGeneEvent(this, shape.getShapeWithPoint(e.getPoint())));
+                System.out.println(e.getPoint().y);
                 break;
             }
         }

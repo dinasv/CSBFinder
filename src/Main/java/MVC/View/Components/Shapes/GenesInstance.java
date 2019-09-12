@@ -122,13 +122,11 @@ public class GenesInstance implements Shape{
 
     public int getGeneY(){
 
-        //return y + NAME_LABEL_HEIGHT;
         int nameLabelHeight = repliconNameLabel == null ? 0 : repliconNameLabel.getLabelHeight();
         return y + nameLabelHeight;
     }
 
     public int getGeneEndY(){
-        //return y + height - LOCATION_LABELS_HEIGHT;
         int locationLabelsHeight = startLocationLabel == null ? 0 : startLocationLabel.getLabelHeight();
         return y + height - locationLabelsHeight;
     }

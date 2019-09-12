@@ -323,8 +323,15 @@ public class InstancesPanel extends JPanel {
         return firstRowHeight;
     }
 
-    public void alignPanels(GeneShape anchorGene, int viewX){
+    public void alignPanels(GeneShape anchorGene, JPanel clickedPanel, int viewX){
+
+
         for (ShapesPanel row : rows){
+
+            if (row == clickedPanel){
+                continue;
+            }
+
             String cogId = anchorGene.getLabel().getText();
             GeneShape geneShape = row.getGeneShapeWithLabel(cogId);
 

@@ -5,6 +5,7 @@ import MVC.View.Components.Shapes.Shape;
 import Model.Genomes.Strand;
 
 import javax.swing.*;
+import java.awt.*;
 
 /**
  */
@@ -21,6 +22,7 @@ public class DoubleClickGeneEvent implements Event{
         strand = Strand.INVALID;
         this.cogId = "";
         this.src = src;
+
         anchorGene = null;
 
         if (shape instanceof GeneShape){
@@ -43,4 +45,5 @@ public class DoubleClickGeneEvent implements Event{
     public GeneShape getAnchorGene() {
         return anchorGene;
     }
+
 }

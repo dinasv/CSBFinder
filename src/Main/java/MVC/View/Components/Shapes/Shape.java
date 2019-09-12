@@ -10,8 +10,6 @@ public interface Shape {
 
     boolean containsPoint(Point point);
 
-    //String getShapeWithPoint(Point point);
-
     Shape getShapeWithPoint(Point point);
 
     int getX();

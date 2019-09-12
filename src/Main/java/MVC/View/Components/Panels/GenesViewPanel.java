@@ -174,8 +174,8 @@ public class GenesViewPanel extends JPanel {
         this.instancesPanel.setDoubleClickListener(geneTooltipListener);
     }
 
-    public void alignGenes(GeneShape anchorGene, int viewX){
-        instancesPanel.alignPanels(anchorGene, viewX);
+    public void alignGenes(GeneShape anchorGene, JPanel clickedPanel, int viewX){
+        instancesPanel.alignPanels(anchorGene, clickedPanel, viewX);
     }
 
     public void zoomOut(int zoomUnit){
