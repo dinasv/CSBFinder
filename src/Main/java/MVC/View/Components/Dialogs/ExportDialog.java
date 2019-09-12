@@ -15,8 +15,8 @@ public class ExportDialog {
 
     private Listener<ExportEvent> exportListener;
 
-    private static final String SAVE_FILES_DIALOG_BTN_NAME = "Select Directory";
-    private static final String SAVE_FILES_DIALOG_NAME = "Save";
+    private static final String SAVE_FILES_DIALOG_BTN_NAME = "Select Folder";
+    private static final String SAVE_FILES_DIALOG_NAME = "Choose a folder for the exported files";
 
     public ExportDialog(JFileChooser fileChooser, JFrame mainFrame){
         this.fileChooser = fileChooser;
@@ -31,7 +31,7 @@ public class ExportDialog {
             return;
         }
         exportListener.eventOccurred(new ExportEvent(outputTypeChooser.getChosenOutput(),
-                outputTypeChooser.getDatasetName(), fileChooser.getSelectedFile().getAbsolutePath(), action));
+                outputTypeChooser.getFileNameField(), fileChooser.getSelectedFile().getAbsolutePath(), action));
     }
 
     private void initOutputFileChooser(){

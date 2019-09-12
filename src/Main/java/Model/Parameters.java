@@ -60,8 +60,8 @@ public class Parameters {
             order = 9, hidden = true)
     public boolean multCount = false;
 
-    @Parameter(names={"--datasetname", "-ds"}, description = "Dataset name", order = 6)
-    public String datasetName = "dataset1";
+    @Parameter(names={"--export-file", "-e"}, description = "Export file name", order = 6)
+    public String exportFileName = "dataset1";
 
     @Parameter(names={"--patterns", "-p"}, description = "Input patterns file relative or absolute path", order = 7)
     public String inputPatternsFilePath = null;

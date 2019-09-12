@@ -237,7 +237,7 @@ public class CSBFinderModel {
         System.out.println("Writing to files");
 
         params.outputDir = outputDir;
-        params.datasetName = datasetName;
+        params.exportFileName = datasetName;
         params.outputFileType = outputFileType;
 
         Writer writer = WriteUtils.writeExportFiles(families, gi,  cogInfo, params, arguments);

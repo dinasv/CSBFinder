@@ -148,8 +148,8 @@ Optional:
       Default: Maximal sequence length
       Min Value: 2
       Max Value: Maximal sequence length
-- **--datasetname** DATASET_NAME ,**-ds** DATASET_NAME       
-      DATASET_NAME will be reflected in the output file name.   
+- **--export-file** EXPORT_FILE_NAME ,**-e** EXPORT_FILE_NAME       
+      EXPORT_FILE_NAME will be the prefix of the names of the *.xlsx/*.txt output files.   
       Default: dataset1
 - **--patterns** PATTERNS_FILE_NAME, **-p** PATTERNS_FILE_NAME    
       A name of a file, located in a directory named 'input', in the same directory as CSBFinder.jar.   
@@ -347,7 +347,7 @@ e.g. COG3736+,COG3504+,COG2948-,COG0630+
 After clicking on the "Save" button in the User Interface, or after execution via Command Line: two output files will 
 be written to the specified directory
 
-- **File 1: A Catalog of CSBs**: An excel file containing the discovered CSBs named "[dataset name]\_ins[number of allowed insertions]\_q[quorum parameter].xlsx"   
+- **File 1: A Catalog of CSBs**: An excel file containing the discovered CSBs named "[export file name].xlsx"   
     This file contains three sheets: 
     1. Catalog    
         - Each line describes a single CSB
@@ -439,7 +439,7 @@ directory, in the same matchPoint as CSBFinder.jar
 
 #### Command Line
 ``` 
-java -Xmx6g -jar CSBFinder.jar -in input/chromosomal_genomes.fasta -q 50 -ins 1 -ds Chromosomes 
+java -Xmx6g -jar CSBFinder.jar -in input/chromosomal_genomes.fasta -q 50 -ins 1 -e Chromosomes 
 -cog-info input/cog_info.txt
 ```
 ##### Input parameters
@@ -447,7 +447,7 @@ java -Xmx6g -jar CSBFinder.jar -in input/chromosomal_genomes.fasta -q 50 -ins 1 
 - The input genomes files is _chromosomal_genomes.fasta_ located in the input directory.  
 - The quorum parameter is set to 50 (i.e., each CSB must have instances in at least 50 input genomes).  
 - The number of allowed insertions in a CSB instance is one.  
-- The dataset name is _"Chromosomes"_
+- The export file name is _"Chromosomes"_
 - The gene orthology input file is _cog_info.txt_ located in the input directory
 
 ##### Output
@@ -478,14 +478,14 @@ directory, in the same matchPoint as CSBFinder.jar
 
 #### Command Line
 ``` 
-java -jar CSBFinder-[version]-jar-with-dependencies.jar -in input/plasmid_genomes.fasta -q 10 -ins 1 -ds plasmids 
+java -jar CSBFinder-[version]-jar-with-dependencies.jar -in input/plasmid_genomes.fasta -q 10 -ins 1 -e plasmids 
 -cog-info input/cog_info.txt
 ```
 ##### Input parameters 
 - The input genomes files is _plasmid_genomes.fasta_ located in the input directory.  
 - The quorum parameter is set to 10 (i.e., each CSB must have instances in at least 10 input genomes).  
 - The number of allowed insertions in a CSB instance is one.  
-- The dataset name is _"plasmids"_
+- The export file name is _"plasmids"_
 - The gene orthology input file is _cog_info.txt_ located in the input directory
 
 ##### Output

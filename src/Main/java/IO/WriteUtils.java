@@ -38,8 +38,8 @@ public class WriteUtils {
 
         String outputPath = createOutputPath(params.outputDir);
 
-        String parameters = "_ins" + params.maxInsertion + "_q" + params.quorum2;
-        String catalogFileName = params.datasetName + parameters;
+        //String parameters = "_ins" + params.maxInsertion + "_q" + params.quorum2;
+        String catalogFileName = params.exportFileName;
         String instancesFileName = catalogFileName + "_instances";
 
         String catalogPath = outputPath + catalogFileName;

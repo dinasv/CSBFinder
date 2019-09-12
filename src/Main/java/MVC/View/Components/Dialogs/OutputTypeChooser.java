@@ -10,16 +10,16 @@ import java.awt.*;
 public class OutputTypeChooser extends JPanel {
 
     private ButtonGroup radioBtns;
-    private JTextField datasetName;
+    private JTextField fileNameField;
 
     public OutputTypeChooser(){
         super(new GridBagLayout());
 
-        datasetName = new JTextField();
-        datasetName.setText("dataset");
-        datasetName.setColumns(10);
+        fileNameField = new JTextField();
+        fileNameField.setText("dataset");
+        fileNameField.setColumns(10);
 
-        JLabel datasetNameLabel = new JLabel("Dataset Name: ", JLabel.LEFT);
+        JLabel fileNameLabel = new JLabel("File Name: ", JLabel.LEFT);
 
         radioBtns = new ButtonGroup();
         JRadioButton btn1 = new JRadioButton(OutputType.TXT.toString());
@@ -29,12 +29,10 @@ public class OutputTypeChooser extends JPanel {
         JRadioButton btn2 = new JRadioButton(OutputType.XLSX.toString());
         btn2.setActionCommand(OutputType.XLSX.toString());
 
-        //JRadioButton btn3 = new JRadioButton(OutputType.SESSION.toString());
-        //btn3.setActionCommand(OutputType.SESSION.toString());
+
 
         radioBtns.add(btn1);
         radioBtns.add(btn2);
-        //radioBtns.add(btn3);
 
         JLabel outputTypeLabel = new JLabel("Output type:", JLabel.LEFT);
         //Put the radio buttons in a column in a panel.
@@ -46,9 +44,9 @@ public class OutputTypeChooser extends JPanel {
 
         GridBagConstraints c = new GridBagConstraints();
         c.gridx = 0; c.gridy = 0;
-        add(datasetNameLabel, c);
+        add(fileNameLabel, c);
         c.gridx = 1;
-        add(datasetName, c);
+        add(fileNameField, c);
 
         c.gridx = 0; c.gridy = 1; c.weightx = 2;
         add(radioPanel, c);
@@ -59,7 +57,7 @@ public class OutputTypeChooser extends JPanel {
         return OutputType.valueOf(radioBtns.getSelection().getActionCommand());
     }
 
-    public String getDatasetName(){
-        return datasetName.getText();
+    public String getFileNameField(){
+        return fileNameField.getText();
     }
 }
