@@ -35,21 +35,26 @@ public class GeneColors {
 
     public Color getColor(Gene gene){
 
-        return colorsUsed.getOrDefault(gene.getCogId(), DEFAULT_COLOR);
+        return setColor(gene);
 
     }
 
     public Color getColor(String gene){
 
-        return colorsUsed.getOrDefault(gene, DEFAULT_COLOR);
+        return setColor(gene);
 
     }
 
-    public void setColor(Gene gene){
+    private Color setColor(String gene){
+        Color color = colorsUsed.getOrDefault(gene, getRandomColor());
 
-        Color color = colorsUsed.getOrDefault(gene.getCogId(), getRandomColor());
+        colorsUsed.put(gene, color);
 
-        colorsUsed.put(gene.getCogId(), color);
+        return color;
+    }
+
+    public Color setColor(Gene gene){
+        return setColor(gene.getCogId());
     }
 
     public void setColor(String gene, Color color){

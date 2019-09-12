@@ -8,6 +8,7 @@ import Model.Patterns.InstanceLocation;
 import Model.Patterns.Pattern;
 import MVC.View.Events.TooltipGeneEvent;
 import MVC.View.Listeners.Listener;
+import com.beust.jcommander.internal.Lists;
 
 import javax.swing.*;
 import java.awt.*;
@@ -16,6 +17,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class GenesViewPanel extends JPanel {
+
+    private static final int MAX_PATTERNS_DISPLAY = 2000;
 
     private JPanel content;
     private JScrollPane scroll;
@@ -82,6 +85,12 @@ public class GenesViewPanel extends JPanel {
 
     public void displayPatterns(List<Pattern> patterns){
 
+        int notDisplayedPatterns = 0;
+        if (patterns.size() > MAX_PATTERNS_DISPLAY){
+            notDisplayedPatterns = patterns.size() - MAX_PATTERNS_DISPLAY;
+            patterns = patterns.subList(0, MAX_PATTERNS_DISPLAY);
+        }
+
         viewMode = ViewMode.PATTERNS;
         patternsInView = patterns;
 
@@ -91,11 +100,19 @@ public class GenesViewPanel extends JPanel {
                                             .map(id -> "CSB " + id)
                                             .collect(Collectors.toList());
 
+
+
         instancesPanel.setData(patterns);
         labelsPanel.displayInstancesLabels(patternNames, instancesPanel.getFirstRowHeight(),
                 instancesPanel.getFirstRowHeight());
 
         instancesPanel.displayGenes(calcInstancesScrollWidth());
+
+        if (notDisplayedPatterns == 1) {
+            instancesPanel.addLabelRow("One more CSB is not displayed");
+        } else if (notDisplayedPatterns > 1){
+            instancesPanel.addLabelRow(String.format("%d more CSBs are not displayed", notDisplayedPatterns));
+        }
 
         content.revalidate();
         content.repaint();

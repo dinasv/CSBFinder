@@ -27,8 +27,6 @@ public class InstancesPanel extends JPanel {
 
     private Font geneLabelFont;
 
-    private Random rnd = new Random();
-
     private GeneColors colorsUsed;
 
     private int rowHeight;
@@ -81,6 +79,15 @@ public class InstancesPanel extends JPanel {
 
     }
 
+    public void addLabelRow(String text){
+        JPanel panel = new JPanel();
+        JLabel label = new JLabel(text);
+        panel.add(label);
+
+        gc.gridx = 0; gc.gridy += 1; gc.anchor = GridBagConstraints.FIRST_LINE_START;
+        addInstancePanelRow(panel, scrollWidth, 25);
+    }
+
     public void clearPanel(){
         removeAll();
     }
@@ -103,6 +110,7 @@ public class InstancesPanel extends JPanel {
             if (instancesRowPanel != null) {
                 firstRowHeight = instancesRowPanel.getPanelHeight() + PADDING;
             }
+
 
             rows.add(instancesRowPanel);
         }
@@ -163,12 +171,16 @@ public class InstancesPanel extends JPanel {
     }
 
     public void showData(int scrollWidth){
-        int rowIndex = 0;
 
+        gc.gridx = 0; gc.gridy = 0; gc.anchor = GridBagConstraints.FIRST_LINE_START;
         for (ShapesPanel row: rows){
-            rowIndex = addInstancePanelRow(row, rowIndex, scrollWidth, row.getPanelHeight()+PADDING);
+            addInstancePanelRow(row, scrollWidth, row.getPanelHeight()+PADDING);
+            gc.gridy += 1;
         }
+
     }
+
+
 
     public void alignRowsToDefault(){
         for (ShapesPanel row: rows){
@@ -200,7 +212,7 @@ public class InstancesPanel extends JPanel {
 
     }
 
-    private int addInstancePanelRow(ShapesPanel instancesRowPanel, int rowIndex, int scrollWidth, int height){
+    private void addInstancePanelRow(JPanel instancesRowPanel, int scrollWidth, int height){
 
         JScrollPane scrollPane = new JScrollPane(instancesRowPanel);
         scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_NEVER);
@@ -209,10 +221,8 @@ public class InstancesPanel extends JPanel {
         scrollWidth -= 10;
         scrollPane.setPreferredSize(new Dimension(scrollWidth, height));
 
-        gc.gridx = 0; gc.gridy = rowIndex; gc.anchor = GridBagConstraints.FIRST_LINE_START;
         add(scrollPane, gc);
 
-        return rowIndex+1;
     }
 
 
@@ -299,17 +309,6 @@ public class InstancesPanel extends JPanel {
         }
         return geneShapesList;
     }
-
-    /*
-    private Color getRandomColor(){
-        float hue = rnd.nextFloat();
-        // Saturation between 0.1 and 0.3
-        float saturation = (rnd.nextInt(2000) + 1000) / 10000f;
-        float luminance = 0.9f;
-        Color color = Color.getHSBColor(hue, saturation, luminance);
-
-        return color;
-    }*/
 
 
     private void setGCLayout() {

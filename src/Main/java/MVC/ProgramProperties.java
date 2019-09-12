@@ -26,6 +26,7 @@ public class ProgramProperties {
             reader = new FileReader(PROPERTIES_FILE);
         } catch (FileNotFoundException e) {
             //ignore
+            return;
         }
 
         try {
@@ -46,15 +47,15 @@ public class ProgramProperties {
     }
 
     public String getSessionPath(){
-        return properties.getProperty(SESSION_PROPERTY, "");
+        return properties.getProperty(SESSION_PROPERTY);
     }
 
     public String getCogInfoPath(){
-        return properties.getProperty(COG_INFO_PROPERTY, "");
+        return properties.getProperty(COG_INFO_PROPERTY);
     }
 
     public String getTaxaPath(){
-        return properties.getProperty(TAXA_PROPERTY, "");
+        return properties.getProperty(TAXA_PROPERTY);
     }
 
     public void setShowSaveMsg(boolean value){
