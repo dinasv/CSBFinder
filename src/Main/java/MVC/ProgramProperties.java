@@ -62,8 +62,8 @@ public class ProgramProperties {
         addProperty(SHOW_SAVE_MSG_PROPERTY, Boolean.toString(value));
     }
 
-    public boolean getShowSaveMsg(){
-        String val = properties.getProperty(SHOW_SAVE_MSG_PROPERTY, "true");
+    public boolean showSaveMsg(){
+        String val = properties.getProperty(SHOW_SAVE_MSG_PROPERTY, Boolean.toString(true));
         return Boolean.valueOf(val);
     }
 

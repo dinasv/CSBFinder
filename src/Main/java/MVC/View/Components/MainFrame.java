@@ -464,7 +464,7 @@ public class MainFrame extends JFrame {
                 saveAsListener.eventOccurred(new OpenDialogEvent());
             } else {
                 int value;
-                if (properties.getShowSaveMsg()) {
+                if (properties.showSaveMsg()) {
                     value = saveDialog.showDialog();
                 }else{
                     value = JOptionPane.YES_OPTION; //save
@@ -501,11 +501,37 @@ public class MainFrame extends JFrame {
         saveListener = new EventListener<>(doInBackgroundFunc, doneFunc,
                 MainFrame.this, progressBar, EXPORT_MSG);
 
-        saveAsDialog.setListener(saveListener);
     }
 
     private void setSaveAsDialogListener(){
-        saveAsListener = e -> saveAsDialog.openDialog();
+        saveAsListener = e -> {
+            int action = saveAsDialog.openDialog();
+
+            if (action != JFileChooser.APPROVE_OPTION) {
+                return;
+            }
+
+            File file = fc.getSelectedFile();
+            String ext = FileTypeFilter.getExtension(file);
+
+            if (!SESSION_FILE_EXTENSION.equals(ext)){
+                file = new File(file.toString() + "." + SESSION_FILE_EXTENSION);
+            }
+
+            if (file.exists()){
+                int value = JOptionPane.showConfirmDialog(this,
+                        "By clicking on \"OK\" you will overwrite the file " + file.toString(),
+                        "Overwrite",
+                        JOptionPane.OK_CANCEL_OPTION,
+                        JOptionPane.INFORMATION_MESSAGE);
+
+                if (value != JOptionPane.OK_OPTION){
+                    return;
+                }
+            }
+
+            saveListener.eventOccurred(new FileEvent(this, file));
+        };
 
         menuBar.setSaveAsListener(saveAsListener);
     }

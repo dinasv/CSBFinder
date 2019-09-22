@@ -1,10 +1,6 @@
 package MVC.View.Components.Dialogs;
 
-import MVC.View.Events.FileEvent;
-import MVC.View.Listeners.Listener;
-
 import javax.swing.*;
-import java.io.File;
 
 /**
  */
@@ -13,13 +9,10 @@ public class SaveAsDialog {
     private JFileChooser fileChooser;
     private JFrame mainFrame;
 
-    private Listener<FileEvent> saveListener;
-
     private static final String SAVE_FILES_DIALOG_BTN_NAME = "Save";
     private static final String DIALOG_NAME = "Save As...";
 
     private String sessionFileExtension;
-    //private static final String SESSION_FILE_EXTENSION = "csb";
 
     public SaveAsDialog(JFileChooser fileChooser, JFrame mainFrame, String sessionFileExtension){
         this.fileChooser = fileChooser;
@@ -27,21 +20,10 @@ public class SaveAsDialog {
         this.sessionFileExtension = sessionFileExtension;
     }
 
-    public void openDialog(){
+    public int openDialog(){
         initOutputFileChooser();
-        int action = fileChooser.showDialog(mainFrame, SAVE_FILES_DIALOG_BTN_NAME);
-        if (action != JFileChooser.APPROVE_OPTION) {
-            return;
-        }
+        return fileChooser.showDialog(mainFrame, SAVE_FILES_DIALOG_BTN_NAME);
 
-        File file = fileChooser.getSelectedFile();
-        String ext = FileTypeFilter.getExtension(file);
-
-        if (!sessionFileExtension.equals(ext)){
-            file = new File(file.toString() + "." + sessionFileExtension);
-        }
-
-        saveListener.eventOccurred(new FileEvent(this, file));
     }
 
     private void initOutputFileChooser(){
@@ -54,7 +36,4 @@ public class SaveAsDialog {
         fileChooser.setDialogTitle(DIALOG_NAME);
     }
 
-    public void setListener(Listener<FileEvent> listener) {
-        this.saveListener = listener;
-    }
 }

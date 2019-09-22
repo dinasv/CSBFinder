@@ -137,7 +137,7 @@ public class FamiliesFilter {
 
         List<Filter<Pattern>> containsStringFilters = Arrays.stream(functionalCategories).map(category ->
                 new ContainsGenesFilter<>(category, PatternProperty.GENES,
-                        genesToCogsDesc, Gene[].class, 1)).collect(Collectors.toList());
+                        genesToCogsDesc, Gene[].class)).collect(Collectors.toList());
 
         NotFilter<Pattern> notFilter = new NotFilter<>(containsStringFilters);
         patternFilters.add(notFilter);
