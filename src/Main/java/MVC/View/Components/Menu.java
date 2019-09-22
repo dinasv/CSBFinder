@@ -111,7 +111,7 @@ public class Menu implements ActionListener {
         exportItemTxt = new JMenuItem(EXPORT_TXT);
         exportItemTxt.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_T, InputEvent.CTRL_MASK));
         exportItemXsl = new JMenuItem(EXPORT_XLS);
-        exportItemTxt.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_X, InputEvent.CTRL_MASK));
+        exportItemXsl.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_X, InputEvent.CTRL_MASK));
         submenuExport.add(exportItemTxt);
         submenuExport.add(exportItemXsl);
 

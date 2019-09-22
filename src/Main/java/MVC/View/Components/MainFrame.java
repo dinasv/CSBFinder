@@ -286,9 +286,9 @@ public class MainFrame extends JFrame {
         filterRequest.getMainFunctionalCategory().ifPresent(val -> familiesFilter.setFunctionalCategory(val,
                 filterRequest.getFunctionalCategoryOption()));
 
-        Function<Gene[], String> genesToCogsDesc = (Gene[] genes) -> {
+        Function<Gene[], List<String>> genesToCogsDesc = (Gene[] genes) -> {
             List<COG> cogs = controller.getCogsInfo(genes);
-            return cogs.stream().map(COG::toString).collect(Collectors.joining(" "));
+            return cogs.stream().map(COG::toString).collect(Collectors.toList());
         };
 
         filterRequest.getGenesCategory().ifPresent(val -> familiesFilter.setGeneCategory(val,

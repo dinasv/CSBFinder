@@ -9,9 +9,7 @@ import Model.PostProcess.Family;
 import MVC.View.Tables.FamilyProperty;
 import MVC.View.Tables.PatternProperty;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -113,37 +111,46 @@ public class FamiliesFilter {
         patternFilters.add(new NumberFilter<>(val, NumberComparison.LESS_EQ, PatternProperty.INSTANCE_COUNT));
     }
 
-    public void setGeneCategory(String genes, BooleanOperator operator, Function<Gene[], String> genesToCogsDesc){
+    public void setGeneCategory(String genes, BooleanOperator operator, Function<Gene[], List<String>> genesToCogsDesc){
 
         if (genes == null || genes.length() == 0){
             return;
         }
 
-        List<Filter<Pattern>> containsStringFilters = getContainsGeneCatFilters(genes, genesToCogsDesc);
+        String[] functionalCategories = genes.split(SEPARATOR);
+        Map<String, Integer> counter = getCounter(functionalCategories);
+
+        List<Filter<Pattern>> containsStringFilters = Arrays.stream(functionalCategories).map(category ->
+                new ContainsGenesFilter<>(category, PatternProperty.GENES,
+                        genesToCogsDesc, Gene[].class, counter.get(category))).collect(Collectors.toList());
 
         addFiltersBooleanOperator(containsStringFilters, operator);
 
     }
-    public void setGeneCategoryExclude(String genes, Function<Gene[], String> genesToCogsDesc){
+    public void setGeneCategoryExclude(String genes, Function<Gene[], List<String>> genesToCogsDesc){
 
         if (genes == null || genes.length() == 0){
             return;
         }
 
-        List<Filter<Pattern>> containsStringFilters = getContainsGeneCatFilters(genes, genesToCogsDesc);
+        String[] functionalCategories = genes.split(SEPARATOR);
+
+        List<Filter<Pattern>> containsStringFilters = Arrays.stream(functionalCategories).map(category ->
+                new ContainsGenesFilter<>(category, PatternProperty.GENES,
+                        genesToCogsDesc, Gene[].class, 1)).collect(Collectors.toList());
 
         NotFilter<Pattern> notFilter = new NotFilter<>(containsStringFilters);
         patternFilters.add(notFilter);
 
     }
 
-    private List<Filter<Pattern>> getContainsGeneCatFilters(String str, Function<Gene[], String> func){
-
-        String[] functionalCategories = str.split(SEPARATOR);
-
-        return Arrays.stream(functionalCategories).map(category ->
-                new ContainsStringFilterPreprocess<>(category, PatternProperty.GENES,
-                        func, Gene[].class)).collect(Collectors.toList());
+    private Map<String, Integer> getCounter(String[] strs){
+        Map<String, Integer> counter = new HashMap<>();
+        for (String s : strs) {
+            counter.putIfAbsent(s, 0);
+            counter.put(s, counter.get(s)+1);
+        }
+        return counter;
     }
 
     private void addFiltersBooleanOperator(List<Filter<Pattern>> filters, BooleanOperator operator){
@@ -325,24 +332,40 @@ public class FamiliesFilter {
         }
     }
 
-    private class ContainsStringFilterPreprocess<T, E> extends ContainsStringFilter<T> {
+    private class ContainsGenesFilter<T, E> extends ContainsStringFilter<T> {
 
-        Function<E, String> preprocessFunction;
-        Class<E> paramType;
+        private Function<E, List<String>> preprocessFunction;
+        private Class<E> paramType;
+        private int counter;
 
-        public ContainsStringFilterPreprocess(String str, MVC.View.Tables.ColumnProperty<T> patternProperty,
-                                              Function<E, String> preprocessFunction, Class<E> paramType) {
+        public ContainsGenesFilter(String str, MVC.View.Tables.ColumnProperty<T> patternProperty,
+                                   Function<E, List<String>> preprocessFunction, Class<E> paramType, int counter) {
             super(str, patternProperty);
             this.preprocessFunction = preprocessFunction;
             this.paramType = paramType;
+            this.counter = counter;
+        }
+
+        public ContainsGenesFilter(String str, MVC.View.Tables.ColumnProperty<T> patternProperty,
+                                   Function<E, List<String>> preprocessFunction, Class<E> paramType) {
+            this(str, patternProperty, preprocessFunction, paramType, 1);
         }
 
         public boolean include(T obj) {
 
             Object result = propertyFunction.apply(obj);
             if (result != null && paramType.isAssignableFrom(result.getClass())) {
-                String str = preprocessFunction.apply((E)result);
-                return isContained(str);
+                List<String> str = preprocessFunction.apply((E)result);
+                int containedCount = 0;
+                for (String s : str) {
+                    if (isContained(s)){
+                        containedCount += 1;
+                    }
+
+                    if (containedCount >= counter){
+                        return true;
+                    }
+                }
             }
 
             return false;
