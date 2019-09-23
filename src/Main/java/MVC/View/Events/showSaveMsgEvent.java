@@ -1,10 +1,10 @@
 package MVC.View.Events;
 
-public class DontShowSaveMsgEvent implements Event {
+public class showSaveMsgEvent implements Event {
 
     private boolean showSaveMsg;
 
-    public DontShowSaveMsgEvent(boolean showSaveMsg) {
+    public showSaveMsgEvent(boolean showSaveMsg) {
         this.showSaveMsg = showSaveMsg;
     }
 

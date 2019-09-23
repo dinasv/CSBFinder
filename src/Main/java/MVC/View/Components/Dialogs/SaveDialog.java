@@ -1,9 +1,5 @@
 package MVC.View.Components.Dialogs;
 
-import MVC.View.Events.DontShowSaveMsgEvent;
-
-import MVC.View.Listeners.Listener;
-
 import javax.swing.*;
 import java.awt.*;
 
@@ -22,8 +18,6 @@ public class SaveDialog {
     private JPanel panel;
     private JCheckBox checkbox;
 
-    private Listener<DontShowSaveMsgEvent> showSaveMsgListener;
-
     public SaveDialog(Component parentComponent){
 
         this.parentComponent = parentComponent;
@@ -37,11 +31,11 @@ public class SaveDialog {
         panel.add(text);
         panel.add(checkbox);
 
-        checkbox.addActionListener(e ->
-                showSaveMsgListener.eventOccurred(new DontShowSaveMsgEvent(!checkbox.isSelected())));
     }
 
     public int showDialog(){
+
+        checkbox.setSelected(false);
 
         int value = JOptionPane.showOptionDialog(parentComponent,
                 panel,
@@ -56,8 +50,8 @@ public class SaveDialog {
 
     }
 
-    public void setDontShowMsgListener(Listener<DontShowSaveMsgEvent> listener){
-        showSaveMsgListener = listener;
+    public boolean showSaveMsg(){
+        return !checkbox.isSelected();
     }
 
 

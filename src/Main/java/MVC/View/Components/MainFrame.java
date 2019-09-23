@@ -72,6 +72,7 @@ public class MainFrame extends JFrame {
     private ExportDialog exportDialog;
     private SaveDialog saveDialog;
     private SaveAsDialog saveAsDialog;
+    private SettingsDialog settingsDialog;
 
     private FamiliesFilter familiesFilter;
 
@@ -84,6 +85,7 @@ public class MainFrame extends JFrame {
     private Listener<FileEvent> loadCogInfoListener;
     private Listener<FileEvent> saveListener;
     private Listener<OpenDialogEvent> saveAsListener;
+    private Listener<showSaveMsgEvent> showSaveMsglistener;
 
     private ProgramProperties properties;
     private GeneColors colorsUsed;
@@ -151,6 +153,7 @@ public class MainFrame extends JFrame {
         exportDialog = new ExportDialog(fc, this);
         saveDialog = new SaveDialog(this);
         saveAsDialog = new SaveAsDialog(fc, this, SESSION_FILE_EXTENSION);
+        settingsDialog = new SettingsDialog(this);
 
         toolbar = new Toolbar();
         statusBar = new StatusBar();
@@ -204,6 +207,7 @@ public class MainFrame extends JFrame {
         setZoomOutListener();
         setZoomInListener();
         setShowSaveMsgListener();
+        setSettingsListener();
     }
 
     private void displayFamilyTable(List<Family> familyList) {
@@ -318,11 +322,9 @@ public class MainFrame extends JFrame {
     }
 
     private void setShowSaveMsgListener(){
-        Listener<DontShowSaveMsgEvent> listener = event -> {
+        showSaveMsglistener = event -> {
             properties.setShowSaveMsg(event.isShowSaveMsg());
         };
-
-        saveDialog.setDontShowMsgListener(listener);
     }
 
 
@@ -466,6 +468,7 @@ public class MainFrame extends JFrame {
                 int value;
                 if (properties.showSaveMsg()) {
                     value = saveDialog.showDialog();
+                    showSaveMsglistener.eventOccurred(new showSaveMsgEvent(saveDialog.showSaveMsg()));
                 }else{
                     value = JOptionPane.YES_OPTION; //save
                 }
@@ -534,6 +537,17 @@ public class MainFrame extends JFrame {
         };
 
         menuBar.setSaveAsListener(saveAsListener);
+    }
+
+    private void setSettingsListener(){
+        Listener<OpenDialogEvent> listener = e -> {
+            int value = settingsDialog.showDialog(properties.showSaveMsg());
+            if (value == JOptionPane.OK_OPTION){
+                properties.setShowSaveMsg(settingsDialog.showSaveMsg());
+            }
+        };
+
+        menuBar.setSettingsListener(listener);
     }
 
 

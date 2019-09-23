@@ -26,6 +26,7 @@ public class Menu implements ActionListener {
     private static final String EXPORT_TXT = "*.txt";
     private static final String EXPORT_XLS = "*.xlsx";
     private static final String OPEN = "Open...";
+    private static final String SETTINGS = "Settings";
     private static final String[] LOAD_EXTENSIONS = {"fasta", "txt"};
 
     private String sessionFileExtension;
@@ -37,6 +38,7 @@ public class Menu implements ActionListener {
     private Listener<OpenExportDialogEvent> exportListener;
     private Listener<OpenDialogEvent> saveListener;
     private Listener<OpenDialogEvent> saveAsListener;
+    private Listener<OpenDialogEvent> settingsListener;
 
     private JMenuBar mainMenu;
     private JMenu menu;
@@ -51,6 +53,7 @@ public class Menu implements ActionListener {
     private JMenuItem exportItemTxt;
     private JMenuItem exportItemXsl;
     private JMenuItem openItem;
+    private JMenuItem settingsItem;
 
     private JFileChooser fileChooser;
 
@@ -75,6 +78,7 @@ public class Menu implements ActionListener {
         saveAsItem.addActionListener(this);
         exportItemTxt.addActionListener(this);
         exportItemXsl.addActionListener(this);
+        settingsItem.addActionListener(this);
     }
 
     private void createFileMenu(){
@@ -126,6 +130,11 @@ public class Menu implements ActionListener {
 
         menu.add(saveItem);
         menu.add(saveAsItem);
+
+        menu.addSeparator();
+
+        settingsItem = new JMenuItem(SETTINGS);
+        menu.add(settingsItem);
 
         menu.addSeparator();
 
@@ -191,14 +200,15 @@ public class Menu implements ActionListener {
                 break;
 
             case EXPORT_TXT:
-
                 exportListener.eventOccurred(new OpenExportDialogEvent(OutputType.TXT));
-
                 break;
+
             case EXPORT_XLS:
-
                 exportListener.eventOccurred(new OpenExportDialogEvent(OutputType.XLSX));
+                break;
 
+            case SETTINGS:
+                settingsListener.eventOccurred(new OpenDialogEvent());
                 break;
         }
     }
@@ -250,6 +260,10 @@ public class Menu implements ActionListener {
 
     public void setSaveAsListener(Listener<OpenDialogEvent> listener) {
         this.saveAsListener = listener;
+    }
+
+    public void setSettingsListener(Listener<OpenDialogEvent> listener) {
+        this.settingsListener = listener;
     }
 
 
