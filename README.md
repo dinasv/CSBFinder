@@ -72,7 +72,7 @@ installation folder.
 
 ### <a name='ui'>Running CSBFinder via User Interface</a>
 Just double click on the CSBFinder executable file in the installation folder, or (if you checked these options 
-during installation) from the start menu / Desktop.
+during installation) from the Start Menu / Desktop.
 
 > Note: If you are going to use a very large input dataset you might need to change the maximal memory that can be
 used by CSBFinder. Go to the installation folder and edit the file "CSBFinder.vmoptions" using a Text Editor. Change

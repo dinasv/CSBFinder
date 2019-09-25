@@ -61,6 +61,7 @@ public class MiddlePanel extends JPanel {
         viewInstancesPanel.revalidate();
         viewInstancesPanel.repaint();
 
+        taxaPanel.clearText();
         displayTaxa();
     }
 
@@ -70,6 +71,7 @@ public class MiddlePanel extends JPanel {
         viewInstancesPanel.revalidate();
         viewInstancesPanel.repaint();
         taxaPanel.clear();
+        taxaPanel.setText("Click on a CSB in order to view its taxonomic distribution.");
     }
 
     public void clearPanel(){

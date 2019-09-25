@@ -4,6 +4,7 @@ import Model.Genomes.Taxon;
 
 import javax.swing.*;
 
+import javax.swing.border.EmptyBorder;
 import javax.swing.tree.*;
 import java.awt.*;
 import java.util.*;
@@ -16,12 +17,14 @@ public class TaxaPanel extends JPanel{
     private JTree tree;
     private DefaultTreeModel model;
 
+    private JLabel text;
+
     private DefaultMutableTreeNode topNode;
     private Map<String, Taxon> genomeToTaxa;
 
     public TaxaPanel(){
 
-        super(new GridLayout(1,0));
+        super(new BorderLayout());
 
         genomeToTaxa = new HashMap<>();
 
@@ -41,7 +44,11 @@ public class TaxaPanel extends JPanel{
 
         JScrollPane treeView = new JScrollPane(tree);
 
-        add(treeView);
+        text = new JLabel();
+        text.setBorder(new EmptyBorder(0,10,0,0));//top,left,bottom,right
+
+        add(treeView, BorderLayout.CENTER);
+        add(text, BorderLayout.PAGE_START);
     }
 
 
@@ -123,6 +130,14 @@ public class TaxaPanel extends JPanel{
 
         insertInto(genomeName, taxon, taxaLevel+1, nextNode);
 
+    }
+
+    public void setText(String text){
+        this.text.setText(text);
+    }
+
+    public void clearText(){
+        this.text.setText("");
     }
 
     public void clear(){
