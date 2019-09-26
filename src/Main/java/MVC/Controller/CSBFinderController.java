@@ -2,7 +2,7 @@ package MVC.Controller;
 
 import MVC.ProgramProperties;
 import MVC.View.Graphics.GeneColors;
-import MVC.View.Listeners.CSBFinderDoneListener;
+import MVC.View.Listeners.UpdateFamiliesListener;
 import MVC.View.Requests.CSBFinderRequest;
 import Model.ClusterBy;
 import Model.ClusterDenominator;
@@ -18,12 +18,9 @@ import com.beust.jcommander.ParameterException;
 import java.io.*;
 import java.util.List;
 import java.util.Map;
-import java.util.Properties;
 import java.util.Set;
 
 public class CSBFinderController {
-
-
 
     private ProgramProperties properties;
 
@@ -59,7 +56,7 @@ public class CSBFinderController {
         }
     }
 
-    public void setCSBFinderDoneListener(CSBFinderDoneListener listener){
+    public void setCSBFinderDoneListener(UpdateFamiliesListener listener){
         model.setCSBFinderDoneListener(listener);
     }
 

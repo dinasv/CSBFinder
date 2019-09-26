@@ -164,14 +164,14 @@ public class Controller {
 
             printToScreen(String.format("Extracting CSBs from %d input sequences.", gi.getNumberOfGenomes()));
 
-            List<Family> families = workflow.run(params);
+            workflow.run(params);
 
             printToScreen(String.format("%d CSBs found.", workflow.getPatternsCount()));
 
             printToScreen("Writing to files");
 
             //writer = writeExportFiles(families, cogInfoExists, gi, cogInfo);
-            writer = WriteUtils.writeExportFiles(families, gi, cogInfo, params, arguments);
+            writer = WriteUtils.writeExportFiles(workflow.getFamilies(), gi, cogInfo, params, arguments);
 
             MemoryUtils.measure();
 

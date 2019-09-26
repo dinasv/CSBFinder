@@ -38,11 +38,13 @@ public class CompareAlgorithmsTest {
         workflow.setPatternsFromFile(patternsFromFile);
 
         workflow.setAlgorithm(AlgorithmType.SUFFIX_TREE.algorithm);
-        List<Family> familiesAlg1 = workflow.run(params);
+        workflow.run(params);
+        List<Family> familiesAlg1 = workflow.getFamilies();
 
         //gi.initAlphabet();
         workflow.setAlgorithm(AlgorithmType.MATCH_POINTS.algorithm);
-        List<Family> familiesAlg2 = workflow.run(params);
+        workflow.run(params);
+        List<Family> familiesAlg2 = workflow.getFamilies();
 
         Assert.assertEquals(familiesAlg1, familiesAlg2);
 

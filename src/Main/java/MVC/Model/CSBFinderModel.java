@@ -1,8 +1,8 @@
 package MVC.Model;
 
-import MVC.View.Events.CSBFinderDoneEvent;
+import MVC.View.Events.UpdateFamiliesEvent;
 import MVC.View.Graphics.GeneColors;
-import MVC.View.Listeners.CSBFinderDoneListener;
+import MVC.View.Listeners.UpdateFamiliesListener;
 import MVC.View.Requests.CSBFinderRequest;
 import Model.Genomes.*;
 import Model.OrthologyGroups.COG;
@@ -18,15 +18,13 @@ import com.beust.jcommander.ParameterException;
 import java.io.File;
 import java.io.IOException;
 import java.util.*;
-import java.util.stream.Collectors;
 
 public class CSBFinderModel {
 
-    private CSBFinderDoneListener csbFinderDoneListener;
+    private UpdateFamiliesListener updateFamiliesListener;
 
     private Parameters params;
     private CSBFinderWorkflow workflow;
-    private List<Family> families;
 
     private GenomesInfo gi;
     private CogInfo cogInfo;
@@ -41,7 +39,6 @@ public class CSBFinderModel {
 
         params = new Parameters();
         workflow = null;
-        families = new ArrayList<>();
 
         gi = new GenomesInfo();
         cogInfo = new CogInfo();
@@ -80,7 +77,6 @@ public class CSBFinderModel {
 
         String msg = "";
         gi = new GenomesInfo();
-        families = new ArrayList<>();
         workflow = null;
 
         String[] args = Parsers.parseSessionFileFirstLine(path);
@@ -90,14 +86,14 @@ public class CSBFinderModel {
             throw new IOException(String.format("The first line in the file %s should contain valid arguments", path));
         }
 
+        List<Family> families = new ArrayList<>();
         Parsers.parseSessionFile(families, path, gi, colors);
 
         workflow = new CSBFinderWorkflow(gi);
         workflow.setParameters(params);
-        workflow.setPatterns(families.stream().map(Family::getPatterns).flatMap(List::stream)
-                .collect(Collectors.toList()));
+        workflow.setFamilies(families);
 
-        csbFinderDoneListener.CSBFinderDoneOccurred(new CSBFinderDoneEvent(families));
+        updateFamiliesListener.UpdateFamiliesOccurred(new UpdateFamiliesEvent(families));
         msg = "Loaded session file.";
 
     }
@@ -147,8 +143,6 @@ public class CSBFinderModel {
             throw new IllegalStateException("CSBFinder workflow was not created yet.");
         }
 
-        families = new ArrayList<>();
-
         long startTime = System.nanoTime();
 
         List<Pattern> patternsFromFile;
@@ -163,11 +157,11 @@ public class CSBFinderModel {
 
         System.out.println("Extracting CSBs from " + gi.getNumberOfGenomes() + " input sequences.");
 
-        families = workflow.run(params);
+        workflow.run(params);
 
         System.out.println("Took " + (System.nanoTime() - startTime) / Math.pow(10, 9) + " seconds");
 
-        csbFinderDoneListener.CSBFinderDoneOccurred(new CSBFinderDoneEvent(families));
+        updateFamiliesListener.UpdateFamiliesOccurred(new UpdateFamiliesEvent(workflow.getFamilies()));
 
     }
 
@@ -175,8 +169,8 @@ public class CSBFinderModel {
             throws ParameterException{
 
         try{
-            families = workflow.clusterToFamilies(threshold, clusterBy, clusterDenominator);
-            csbFinderDoneListener.CSBFinderDoneOccurred(new CSBFinderDoneEvent(families));
+            workflow.clusterToFamilies(threshold, clusterBy, clusterDenominator);
+            updateFamiliesListener.UpdateFamiliesOccurred(new UpdateFamiliesEvent(workflow.getFamilies()));
         }catch (Exception e){
             throw new ParameterException("Something went wrong");
         }
@@ -186,8 +180,7 @@ public class CSBFinderModel {
     public void computeScores(double threshold) throws ParameterException{
         try{
             workflow.computeScores(threshold);
-            families.forEach(Family::sortPatternsAndSetScore);
-            csbFinderDoneListener.CSBFinderDoneOccurred(new CSBFinderDoneEvent(families));
+            updateFamiliesListener.UpdateFamiliesOccurred(new UpdateFamiliesEvent(workflow.getFamilies()));
         }catch (Exception e){
             throw new ParameterException("Something went wrong");
         }
@@ -220,14 +213,17 @@ public class CSBFinderModel {
     }
 
     public void calculateMainFunctionalCategory(){
-        if (cogInfo.cogInfoExists() && families != null){
-            families.forEach(family -> family.getPatterns()
+        if (cogInfo.cogInfoExists() && workflow.getFamilies() != null){
+            workflow.getFamilies().forEach(family -> family.getPatterns()
                     .forEach(pattern -> pattern.calculateMainFunctionalCategory(cogInfo)));
         }
     }
 
     public void saveSession(List<Family> families, File currentSession, GeneColors colors){
         Writer writer = WriteUtils.saveSessionFile(families, gi,  cogInfo, params, arguments, colors, currentSession);
+        //this.families = families;
+        workflow.setFamilies(families);
+        //updateFamiliesListener.UpdateFamiliesOccurred(new UpdateFamiliesEvent(families));
     }
 
 
@@ -257,12 +253,8 @@ public class CSBFinderModel {
         return patterns;
     }
 
-    public List<Family> getFamilies() {
-        return families;
-    }
-
-    public void setCSBFinderDoneListener(CSBFinderDoneListener csbFinderDoneListener) {
-        this.csbFinderDoneListener = csbFinderDoneListener;
+    public void setCSBFinderDoneListener(UpdateFamiliesListener updateFamiliesListener) {
+        this.updateFamiliesListener = updateFamiliesListener;
     }
 
     public List<COG> getCogsInfo(Gene[] genes) {

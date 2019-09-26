@@ -11,6 +11,7 @@ import Model.Patterns.PatternScore;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 /**
  */
@@ -25,6 +26,7 @@ public class CSBFinderWorkflow {
     private int patternsCount;
 
     private List<Pattern> patterns;
+    private List<Family> families;
 
     public CSBFinderWorkflow(GenomesInfo gi){
         Objects.requireNonNull(gi);
@@ -58,9 +60,9 @@ public class CSBFinderWorkflow {
         this.params = parameters;
     }
 
-    public List<Family> run(Parameters params){
+    public void run(Parameters params){
         if (algorithm == null || params == null){
-            return new ArrayList<>();
+            families = new ArrayList<>();
         }
 
         this.params = params;
@@ -74,27 +76,26 @@ public class CSBFinderWorkflow {
 
         patterns = algorithm.getPatterns();
 
-        List<Family> families = processPatterns();
+        processPatterns();
 
-        return families;
     }
 
-    private List<Family> processPatterns(){
+    private void processPatterns(){
 
         patternsCount = patterns.size();
         computeScores(patterns, params.delta);
 
-        List<Family> families = new ArrayList<>();
+        families = new ArrayList<>();
         if (params.skipClusterStep){
             families.add(new Family(0, gi, patterns));
         }else {
-            families = clusterToFamilies(params.threshold, params.clusterBy, params.clusterDenominator);
+            clusterToFamilies(params.threshold, params.clusterBy, params.clusterDenominator);
         }
-        return families;
     }
 
     public void computeScores(double threshold){
         computeScores(patterns, threshold);
+        families.forEach(Family::sortPatternsAndSetScore);
     }
 
     private void computeScores(List<Pattern> patterns, double threshold){
@@ -117,15 +118,21 @@ public class CSBFinderWorkflow {
         }
     }
 
-    public void setPatterns(List<Pattern> patterns){
-        this.patterns = patterns;
+    public void setFamilies(List<Family> families){
+        this.families = families;
+        patterns = families.stream().map(Family::getPatterns).flatMap(List::stream)
+                .collect(Collectors.toList());
     }
 
-    public List<Family> clusterToFamilies(double threshold, ClusterBy clusterBy, ClusterDenominator clusterDenominator){
-        return FamilyClustering.Cluster(patterns, threshold, clusterBy, clusterDenominator, gi);
+    public void clusterToFamilies(double threshold, ClusterBy clusterBy, ClusterDenominator clusterDenominator){
+        families = FamilyClustering.Cluster(patterns, threshold, clusterBy, clusterDenominator, gi);
     }
 
     public int getPatternsCount() {
         return patternsCount;
+    }
+
+    public List<Family> getFamilies(){
+        return families;
     }
 }

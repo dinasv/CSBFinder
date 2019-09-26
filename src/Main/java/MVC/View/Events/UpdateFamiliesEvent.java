@@ -4,11 +4,11 @@ import Model.PostProcess.Family;
 
 import java.util.List;
 
-public class CSBFinderDoneEvent {
+public class UpdateFamiliesEvent {
 
     private List<Family> familyList;
 
-    public CSBFinderDoneEvent(List<Family> familyList) {
+    public UpdateFamiliesEvent(List<Family> familyList) {
         this.familyList = familyList;
     }
 

@@ -31,6 +31,7 @@ public class SummaryPanel extends JSplitPane {
         setResizeWeight(0.7);
     }
 
+    /*
     public void setFilteredFamilies(List<Family> filteredFamilies){
 
         resultsPanel.setFilteredFamilies(filteredFamilies);
@@ -38,7 +39,7 @@ public class SummaryPanel extends JSplitPane {
         if (filteredFamilies.size() == 0){
             csbSummaryPanel.clearPanel();
         }
-    }
+    }*/
 
     public void setFilterTableListener(Listener<OpenDialogEvent> filterTableListener) {
         resultsPanel.setFilterTableListener(filterTableListener);
@@ -46,6 +47,14 @@ public class SummaryPanel extends JSplitPane {
 
     public void setFamilyData(List<Family> familyList) {
         resultsPanel.setFamilyData(familyList);
+        //resultsPanel.selectFamiliesFirstRow();
+
+        if (familyList.size() == 0){
+            csbSummaryPanel.clearPanel();
+        }
+    }
+
+    public void selectFirstRow(){
         resultsPanel.selectFamiliesFirstRow();
     }
 

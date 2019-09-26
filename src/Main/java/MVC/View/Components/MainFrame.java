@@ -217,6 +217,7 @@ public class MainFrame extends JFrame {
             controller.calculateMainFunctionalCategory();
 
             summaryPanel.setFamilyData(familyList);
+            summaryPanel.selectFirstRow();
             familiesFilter.setFamilies(familyList);
 
             statusBar.updateStatus(familyList);
@@ -336,7 +337,7 @@ public class MainFrame extends JFrame {
             setFilters(request);
 
             List<Family> filteredFamilies = familiesFilter.getFilteredFamilies();
-            summaryPanel.setFilteredFamilies(filteredFamilies);
+            summaryPanel.setFamilyData(filteredFamilies);
             statusBar.updateStatus(filteredFamilies);
 
             tableRowClickFromHistory();
@@ -492,6 +493,7 @@ public class MainFrame extends JFrame {
 
             controller.saveSession(familiesFilter.getFilteredFamilies(), e.getFile(), colorsUsed);
             setCurrentSessionFile(e.getFile());
+            familiesFilter.setFamilies(familiesFilter.getFilteredFamilies());
 
             return null;
         };

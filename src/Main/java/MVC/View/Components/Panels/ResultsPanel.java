@@ -79,6 +79,7 @@ public class ResultsPanel extends JPanel {
     }
 
     public void setFamilyData(List<Family> familyList) {
+        clearPanel();
         familiesPanel.setData(familyList);
     }
 
