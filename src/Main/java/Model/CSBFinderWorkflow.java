@@ -86,21 +86,20 @@ public class CSBFinderWorkflow {
 
         patterns = algorithm.getPatterns();
 
-        if (patternsFromFile.size() > 0){
-            families.add(new Family(0, gi, patterns));
-        }else {
-            processPatterns();
-        }
+        processPatterns();
 
     }
 
     private void processPatterns(){
 
         patternsCount = patterns.size();
-        computeScores(patterns, params.delta);
+
+        if (patternsFromFile.size() == 0){
+            computeScores(patterns, params.delta);
+        }
 
         families = new ArrayList<>();
-        if (params.skipClusterStep){
+        if (params.skipClusterStep || patternsFromFile.size() > 0){
             families.add(new Family(0, gi, patterns));
         }else {
             clusterToFamilies(params.threshold, params.clusterBy, params.clusterDenominator);
