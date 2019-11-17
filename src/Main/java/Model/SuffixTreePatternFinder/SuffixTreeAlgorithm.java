@@ -6,6 +6,7 @@ import Model.MemoryUtils;
 import Model.Parameters;
 import Model.Patterns.Instance;
 import Model.Patterns.Pattern;
+import Model.Patterns.PatternsUtils;
 import Model.SuffixTreePatternFinder.SuffixTrees.*;
 
 import java.util.*;
@@ -118,7 +119,7 @@ public class SuffixTreeAlgorithm implements Algorithm {
 
     private void setPatternTreeRoot() {
         if (patternsFromFile.size() > 0) {
-            List<Pattern> legalPatterns = getLegalPatterns();
+            List<Pattern> legalPatterns = PatternsUtils.getLegalPatterns(patternsFromFile, gi);
             PatternsTree patternsTree = new PatternsTree(legalPatterns, gi, nonDirectons);
             Trie patternTrie = patternsTree.getTrie();
             patternTreeRoot = patternTrie.getRoot();
@@ -126,16 +127,6 @@ public class SuffixTreeAlgorithm implements Algorithm {
             patternTreeRoot = new PatternNode(TreeType.VIRTUAL);
             patternTreeRoot.setKey(Integer.toString(++lastPatternKey));
         }
-    }
-
-    private List<Pattern> getLegalPatterns(){
-        List<Pattern> legalPatterns = new ArrayList<>();
-        for (Pattern pattern : patternsFromFile) {
-            if (Arrays.stream(pattern.getPatternGenes()).allMatch(gene -> gi.getLetter(gene) != -1)){
-                legalPatterns.add(pattern);
-            }
-        }
-        return legalPatterns;
     }
 
 
@@ -180,17 +171,13 @@ public class SuffixTreeAlgorithm implements Algorithm {
 
             Pattern pattern = entry.getValue();
 
-            if (pattern.toString().equals("COG0747,COG0601,COG1173,COG0444,COG1124")) {
-                System.out.println();
-            }
-
             if (!parameters.keepAllPatterns) {
                 String suffixStr = getSuffix(pattern);
-                addSubPatternToRemoveList(suffixStr, pattern, patternsToRemove);
+                PatternsUtils.addSubPatternToRemoveList(patterns, suffixStr, pattern, patternsToRemove);
             }
 
             if (nonDirectons) {
-                removeReverseCompliments(pattern, patternsToRemove);
+                PatternsUtils.removeReverseCompliments(patterns, pattern, patternsToRemove);
             }
         }
         patterns.keySet().removeAll(patternsToRemove);
@@ -199,35 +186,9 @@ public class SuffixTreeAlgorithm implements Algorithm {
     private String getSuffix(Pattern pattern) {
 
         Gene[] suffix = Arrays.copyOfRange(pattern.getPatternGenes(), 1, pattern.getLength());
-        //suffix.remove(0);
 
         return Pattern.toString(suffix);
     }
-
-    private void addSubPatternToRemoveList(String subPatternStr, Pattern pattern, HashSet<String> patternsToRemove) {
-        Pattern subPattern = patterns.get(subPatternStr);
-
-        if (subPattern != null) {
-            int patternCount = pattern.getInstancesPerGenomeCount();
-            int suffixCount = subPattern.getInstancesPerGenomeCount();
-            if (suffixCount == patternCount) {
-                patternsToRemove.add(subPatternStr);
-            }
-        }
-    }
-
-    private void removeReverseCompliments(Pattern pattern, HashSet<String> patternsToRemove) {
-
-        Gene[] reversePatternGenes = pattern.getReverseComplimentPattern();
-        String reversedPatternStr = Pattern.toString(reversePatternGenes);
-        Pattern reversedPattern = patterns.get(reversedPatternStr);
-
-        String patternStr = pattern.toString();
-        if (reversedPattern != null && !patternsToRemove.contains(patternStr)) {
-            patternsToRemove.add(reversedPatternStr);
-        }
-    }
-
 
     /**
      * Adds a character to str

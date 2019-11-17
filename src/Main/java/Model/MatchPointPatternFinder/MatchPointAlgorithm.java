@@ -4,6 +4,7 @@ import Model.Algorithm;
 import Model.Genomes.*;
 import Model.Parameters;
 import Model.Patterns.Pattern;
+import Model.Patterns.PatternsUtils;
 
 import java.util.*;
 import java.util.concurrent.*;
@@ -135,7 +136,8 @@ public class MatchPointAlgorithm implements Algorithm {
         List<Callable<Object>> tasks = new ArrayList<>();
 
         if (patternsFromFile.size() > 0){
-            for (Pattern pattern : patternsFromFile){
+            List<Pattern> legalPatterns = PatternsUtils.getLegalPatterns(patternsFromFile, genomesInfo);
+            for (Pattern pattern : legalPatterns){
 
                 List<Gene> genes = Arrays.asList(pattern.getPatternGenes());
 
@@ -197,15 +199,15 @@ public class MatchPointAlgorithm implements Algorithm {
 
             if (!parameters.keepAllPatterns) {
                 String suffixStr = getSuffix(pattern);
-                addSubPatternToRemoveList(suffixStr, pattern, patternsToRemove);
+                PatternsUtils.addSubPatternToRemoveList(patterns, suffixStr, pattern, patternsToRemove);
 
                 String prefixStr = getPrefix(pattern);
-                addSubPatternToRemoveList(prefixStr, pattern, patternsToRemove);
+                PatternsUtils.addSubPatternToRemoveList(patterns, prefixStr, pattern, patternsToRemove);
 
             }
 
             if (parameters.nonDirectons) {
-                addReverseComplimentsToRemoveList(pattern, patternsToRemove);
+                PatternsUtils.removeReverseCompliments(patterns, pattern, patternsToRemove);
             }
         }
 
@@ -226,31 +228,6 @@ public class MatchPointAlgorithm implements Algorithm {
 
         return Pattern.toString(prefix);
     }
-
-    private void addSubPatternToRemoveList(String subPatternStr, Pattern pattern, HashSet<String> patternsToRemove){
-        Pattern subPattern = patterns.get(subPatternStr);
-
-        if (subPattern != null) {
-            int patternCount = pattern.getInstancesPerGenomeCount();
-            int subPatternCount = subPattern.getInstancesPerGenomeCount();
-            if (subPatternCount == patternCount) {
-                patternsToRemove.add(subPatternStr);
-            }
-        }
-    }
-
-    private void addReverseComplimentsToRemoveList(Pattern pattern, HashSet<String> patternsToRemove) {
-
-        Gene[] reversePatternGenes = pattern.getReverseComplimentPattern();
-        String reversedPatternStr = Pattern.toString(reversePatternGenes);
-        Pattern reversedPattern = patterns.get(reversedPatternStr);
-
-        String patternStr = pattern.toString();
-        if (reversedPattern != null && !patternsToRemove.contains(patternStr)) {
-            patternsToRemove.add(reversedPatternStr);
-        }
-    }
-
 
     @Override
     public List<Pattern> getPatterns() {
