@@ -86,7 +86,11 @@ public class CSBFinderWorkflow {
 
         patterns = algorithm.getPatterns();
 
-        processPatterns();
+        if (patternsFromFile.size() > 0){
+            families.add(new Family(0, gi, patterns));
+        }else {
+            processPatterns();
+        }
 
     }
 

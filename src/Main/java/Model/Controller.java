@@ -22,7 +22,7 @@ public class Controller {
     private MyLogger logger;
 
     private Writer writer;
-    CogInfo cogInfo;
+    private CogInfo cogInfo;
 
     private String arguments;
     private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
