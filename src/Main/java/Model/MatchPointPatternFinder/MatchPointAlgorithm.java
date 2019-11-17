@@ -24,8 +24,12 @@ public class MatchPointAlgorithm implements Algorithm {
     private ConcurrentMap<String, Pattern> patterns;
 
     private List<Pattern> patternsFromFile;
+    private List<Pattern> refGenomesAsPatterns;
 
     private ExecutorService executor;
+
+    private SegmentationType segmentationType;
+    private ExtractPatternsFrom extractPatternsFrom;
 
     public MatchPointAlgorithm() {
         matchLists = new HashMap<>();
@@ -33,8 +37,11 @@ public class MatchPointAlgorithm implements Algorithm {
         genomicSegments = new ArrayList<>();
         patterns = new ConcurrentHashMap<>();
         patternsFromFile = new ArrayList<>();
+        refGenomesAsPatterns = new ArrayList<>();
 
         executor = Executors.newFixedThreadPool(1);
+
+        extractPatternsFrom = ExtractPatternsFrom.ALL_GENOMES;
     }
 
     public void setNumOfThreads(int numOfThreads){
@@ -101,7 +108,9 @@ public class MatchPointAlgorithm implements Algorithm {
 
     @Override
     public void setParameters(Parameters params) {
+
         parameters = params;
+        segmentationType = params.nonDirectons ? SegmentationType.NON_DIRECTONS : SegmentationType.DIRECTONS;
     }
 
     @Override
@@ -113,6 +122,20 @@ public class MatchPointAlgorithm implements Algorithm {
     @Override
     public void setPatternsFromFile(List<Pattern> patternsFromFile) {
         this.patternsFromFile = patternsFromFile;
+
+        if (patternsFromFile.size() > 0) {
+            extractPatternsFrom = ExtractPatternsFrom.FILE;
+        }
+    }
+
+    @Override
+    public void setRefGenomesAsPatterns(List<Pattern> refGenomesPatterns){
+
+        refGenomesAsPatterns = refGenomesPatterns;
+
+        if (extractPatternsFrom != ExtractPatternsFrom.FILE) {
+            extractPatternsFrom = ExtractPatternsFrom.REF_GENOMES;
+        }
     }
 
     private void initialize() {
@@ -123,6 +146,7 @@ public class MatchPointAlgorithm implements Algorithm {
         }
 
         patterns = new ConcurrentHashMap<>();
+
     }
 
     @Override
@@ -135,23 +159,30 @@ public class MatchPointAlgorithm implements Algorithm {
 
         List<Callable<Object>> tasks = new ArrayList<>();
 
-        if (patternsFromFile.size() > 0){
+        if (extractPatternsFrom == ExtractPatternsFrom.FILE){
             List<Pattern> legalPatterns = PatternsUtils.getLegalPatterns(patternsFromFile, genomesInfo);
             for (Pattern pattern : legalPatterns){
+
+                tasks.add(new FindPatternFromFileThread(pattern, genomesInfo, parameters.quorum2, parameters.maxInsertion, patterns, matchLists));
+
+            }
+        } else if (extractPatternsFrom == ExtractPatternsFrom.REF_GENOMES) {
+
+            for (Pattern pattern : refGenomesAsPatterns){
 
                 List<Gene> genes = Arrays.asList(pattern.getPatternGenes());
 
                 Replicon replicon = new Replicon();
                 replicon.addAllGenes(genes);
 
-                if(parameters.nonDirectons) {
+                if(segmentationType == SegmentationType.NON_DIRECTONS) {
 
-                    tasks.add(new FindPatternsThread(genes, genomesInfo, parameters.quorum2, parameters.maxPatternLength,
+                    tasks.add(new FindPatternsFromGenesThread(genes, genomesInfo, parameters.quorum2, parameters.maxPatternLength,
                             parameters.minPatternLength, parameters.maxInsertion, patterns, matchLists));
 
                     replicon.reverseCompliment();
 
-                    tasks.add(new FindPatternsThread(replicon.getGenes(), genomesInfo, parameters.quorum2, parameters.maxPatternLength,
+                    tasks.add(new FindPatternsFromGenesThread(replicon.getGenes(), genomesInfo, parameters.quorum2, parameters.maxPatternLength,
                             parameters.minPatternLength, parameters.maxInsertion, patterns, matchLists));
 
                 }else{
@@ -159,29 +190,33 @@ public class MatchPointAlgorithm implements Algorithm {
                     List<Directon> directons = replicon.splitRepliconToDirectons(Alphabet.UNK_CHAR);
 
                     for (Directon directon : directons) {
-                        tasks.add(new FindPatternsThread(directon.getGenes(), genomesInfo, parameters.quorum2,
+                        tasks.add(new FindPatternsFromGenesThread(directon.getGenes(), genomesInfo, parameters.quorum2,
                                 parameters.maxPatternLength,
                                 parameters.minPatternLength, parameters.maxInsertion, patterns, matchLists));
                     }
                 }
 
             }
-        } else {
+        }else{
             for (GenomicSegment genomicSegment : genomicSegments) {
 
                 List<Gene> genes = genomicSegment.getGenes();
-                tasks.add(new FindPatternsThread(genes, genomesInfo, parameters.quorum2, parameters.maxPatternLength,
+                tasks.add(new FindPatternsFromGenesThread(genes, genomesInfo, parameters.quorum2, parameters.maxPatternLength,
                         parameters.minPatternLength, parameters.maxInsertion, patterns, matchLists));
             }
         }
+
         try {
             List<Future<Object>> answers = executor.invokeAll(tasks);
             executor.shutdown();
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-        setPatternIds();
-        removeRedundantPatterns();
+
+        if (extractPatternsFrom != ExtractPatternsFrom.FILE) {
+            setPatternIds();
+            removeRedundantPatterns();
+        }
     }
 
     private void setPatternIds(){
@@ -242,6 +277,17 @@ public class MatchPointAlgorithm implements Algorithm {
     @Override
     public Parameters getParameters() {
         return parameters;
+    }
+
+    private enum SegmentationType{
+        DIRECTONS,
+        NON_DIRECTONS
+    }
+
+    private enum ExtractPatternsFrom{
+        FILE,
+        REF_GENOMES,
+        ALL_GENOMES
     }
 
 }

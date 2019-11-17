@@ -93,6 +93,13 @@ public class SuffixTreeAlgorithm implements Algorithm {
         this.patternsFromFile = patternsFromFile;
     }
 
+    @Override
+    public void setRefGenomesAsPatterns(List<Pattern> refGenomesPatterns) {
+        if (this.patternsFromFile.size() == 0) {
+            this.patternsFromFile = refGenomesPatterns;
+        }
+    }
+
     public Parameters getParameters() {
         return parameters;
     }

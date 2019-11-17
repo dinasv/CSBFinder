@@ -104,7 +104,6 @@ public class Controller {
     /**
      * Executes CSBFinder and prints colinear synteny blocks
      *
-     * @return
      */
 
     private void pipeline(){
@@ -147,20 +146,22 @@ public class Controller {
             printToScreen("Executing workflow");
 
             CSBFinderWorkflow workflow = new CSBFinderWorkflow(gi);
-            Algorithm algorithm = params.algorithmType.algorithm;
+            Algorithm algorithm = params.algorithmType.getAlgorithm();
             workflow.setAlgorithm(algorithm);
 
             //read patterns from a file if a file is given
             List<Pattern> patternsFromFile = new ArrayList<>();
+            List<Pattern> refGenomesAsPatterns = new ArrayList<>();
             try {
                 patternsFromFile = readPatternsFromFile();
                 if (patternsFromFile.size() == 0 ){
-                    patternsFromFile = readPatternsReferenceGenomesFile(gi);
+                    refGenomesAsPatterns = readPatternsReferenceGenomesFile(gi);
                 }
             }catch (Exception e){
                 System.out.println(e.getMessage());
             }
             workflow.setPatternsFromFile(patternsFromFile);
+            workflow.setRefGenomesAsPatterns(refGenomesAsPatterns);
 
             printToScreen(String.format("Extracting CSBs from %d input sequences.", gi.getNumberOfGenomes()));
 

@@ -7,12 +7,14 @@ import Model.SuffixTreePatternFinder.SuffixTreeAlgorithm;
  */
 public enum AlgorithmType {
 
-    SUFFIX_TREE(new SuffixTreeAlgorithm()),
-    MATCH_POINTS(new MatchPointAlgorithm());
+    SUFFIX_TREE,
+    MATCH_POINTS;
 
-    public final Algorithm algorithm;
-
-    AlgorithmType(Algorithm algorithm){
-        this.algorithm = algorithm;
+    public Algorithm getAlgorithm(){
+        if (this == SUFFIX_TREE){
+            return new SuffixTreeAlgorithm();
+        }else{
+            return new MatchPointAlgorithm();
+        }
     }
 }

@@ -20,7 +20,7 @@ public class MatchPointAlgorithmTest {
 
     private void initAlgorithm(Algorithm algorithm, Parameters params, List<Pattern> patternsFromFile, GenomesInfo gi){
         algorithm.setParameters(params);
-        algorithm.setPatternsFromFile(patternsFromFile);
+        algorithm.setRefGenomesAsPatterns(patternsFromFile);
         algorithm.setGenomesInfo(gi);
         algorithm.setNumOfThreads(1);
     }
@@ -49,7 +49,7 @@ public class MatchPointAlgorithmTest {
 
     private List<Pattern> runAlgorithm(String genomesFile, Parameters params) throws Exception{
 
-        Algorithm algorithm = AlgorithmType.MATCH_POINTS.algorithm;
+        Algorithm algorithm = AlgorithmType.MATCH_POINTS.getAlgorithm();
         GenomesInfo gi = Parsers.parseGenomesFile(genomesFile);
         List<Pattern> patternsFromFile = Parsers.parseReferenceGenomesFile(gi, REF_GENOMES_FILE_PATH);
 
@@ -74,6 +74,7 @@ public class MatchPointAlgorithmTest {
         Assert.assertEquals(expectedPatterns, patterns);
 
     }
+
 
     @Test
     public void testRefGenomesReverseComplimentPattern() throws Exception {

@@ -11,32 +11,28 @@ import java.util.Objects;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ConcurrentMap;
 
-/**
- */
-public class FindPatternsThread implements Callable<Object> {
+public abstract class FindPatternsThread implements Callable<Object> {
 
-    private List<Gene> genes;
-    private GenomesInfo genomesInfo;
-    private int quorum;
-    private int maxPatternLength;
-    private int minPatternLength;
-    private int maxInsertion;
+    protected GenomesInfo genomesInfo;
+    protected int quorum;
+    protected int maxPatternLength;
+    protected int minPatternLength;
+    protected int maxInsertion;
 
     /**
      * Only get operations
      */
-    private Map<Integer, Map<Integer, List<MatchPoint>>> matchLists;
+    protected Map<Integer, Map<Integer, List<MatchPoint>>> matchLists;
 
     /**
      * Shared by all threads, the patterns are added dynamically
      */
-    private ConcurrentMap<String, Pattern> patterns;
+    protected ConcurrentMap<String, Pattern> patterns;
 
-    public FindPatternsThread(List<Gene> genes, GenomesInfo genomesInfo, int quorum, int maxPatternLength,
-                              int minPatternLength, int maxInsertion, ConcurrentMap<String, Pattern> patterns, Map<Integer,
-            Map<Integer, List<MatchPoint>>> matchLists) {
+    public FindPatternsThread(GenomesInfo genomesInfo, int quorum, int maxPatternLength,
+                                       int minPatternLength, int maxInsertion, ConcurrentMap<String, Pattern> patterns, Map<Integer,
+                                        Map<Integer, List<MatchPoint>>> matchLists) {
 
-        this.genes = genes;
         this.genomesInfo = genomesInfo;
         this.quorum = quorum;
         this.maxPatternLength = maxPatternLength;
@@ -47,26 +43,45 @@ public class FindPatternsThread implements Callable<Object> {
 
     }
 
+    abstract void extractPatterns();
+    abstract void addPattern(Pattern pattern);
+
+    /*
     private void extractPatterns() {
 
         WordArray wordArray = genomesInfo.createWordArray(genes);
 
         //go over all possible start indices of a pattern
         for (int patternStart = 0; patternStart < wordArray.getLength(); patternStart++) {
+            extractPattern(genes, patternStart, wordArray);
 
-            List<Gene> patternGenes = genes.subList(patternStart, patternStart + 1);
-            Pattern pattern = new Pattern("-1", patternGenes);
-
-            int letter = wordArray.getLetter(patternStart);
-            if (letter == Alphabet.UNK_CHAR_INDEX) {//There can't be an unknown char in a pattern
-                continue;
-            }
-
-            initializePattern(letter, pattern);
-
-            //extend pattern to length > 1, one character at a time
-            extendPattern(pattern, patternStart, wordArray, genes);
         }
+    }
+
+    private void addPattern(Pattern pattern){
+        if (pattern.getInstancesPerGenomeCount() >= quorum
+                && pattern.getLength() >= minPatternLength) {
+
+            patterns.put(pattern.toString(), pattern);
+
+        }
+    }
+
+    */
+
+    protected void extractPattern(List<Gene> genes, int patternStart, WordArray wordArray){
+        List<Gene> patternGenes = genes.subList(patternStart, patternStart + 1);
+        Pattern pattern = new Pattern("-1", patternGenes);
+
+        int letter = wordArray.getLetter(patternStart);
+        if (letter == Alphabet.UNK_CHAR_INDEX) {//There can't be an unknown char in a pattern
+            return;
+        }
+
+        initializePattern(letter, pattern);
+
+        //extend pattern to length > 1, one character at a time
+        extendPattern(pattern, patternStart, wordArray, genes);
     }
 
     private void extendPattern(Pattern pattern, int patternStart, WordArray wordArray, List<Gene> genes) {
@@ -89,6 +104,7 @@ public class FindPatternsThread implements Callable<Object> {
             }
 
             extendPattern(letter, pattern, extendedPattern);
+            addPattern(extendedPattern);
 
             pattern = extendedPattern;
             //pruning
@@ -168,17 +184,12 @@ public class FindPatternsThread implements Callable<Object> {
             }
         }
 
-
-        if (extendedPattern.getInstancesPerGenomeCount() >= quorum
-                && extendedPattern.getLength() >= minPatternLength) {
-
-            patterns.put(extendedPatternStr, extendedPattern);
-
-        }
     }
 
+
+
     private InstanceLocation getNextInstanceWithDiffValues(Iterator<InstanceLocation> instanceIterator,
-                                               int genomeId, int repliconId, int genomicSegmentId){
+                                                           int genomeId, int repliconId, int genomicSegmentId){
         InstanceLocation currInstance = null;
         while (instanceIterator.hasNext()) {
             currInstance = instanceIterator.next();

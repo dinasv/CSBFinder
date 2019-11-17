@@ -152,7 +152,7 @@ public class CSBFinderModel {
 
         workflow.setPatternsFromFile(patternsFromFile);
 
-        Algorithm algorithm = params.algorithmType.algorithm;
+        Algorithm algorithm = params.algorithmType.getAlgorithm();
         workflow.setAlgorithm(algorithm);
 
         System.out.println("Extracting CSBs from " + gi.getNumberOfGenomes() + " input sequences.");

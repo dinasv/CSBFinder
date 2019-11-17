@@ -20,6 +20,7 @@ public class CSBFinderWorkflow {
     private Algorithm algorithm;
 
     private List<Pattern> patternsFromFile;
+    private List<Pattern> refGenomesAsPatterns;
 
     private Parameters params;
     private GenomesInfo gi;
@@ -39,6 +40,7 @@ public class CSBFinderWorkflow {
         this.algorithm = null;
 
         patternsFromFile = new ArrayList<>();
+        refGenomesAsPatterns = new ArrayList<>();
         patterns = new ArrayList<>();
     }
 
@@ -50,6 +52,10 @@ public class CSBFinderWorkflow {
     public void setPatternsFromFile(List<Pattern> patternsFromFile){
 
         this.patternsFromFile = patternsFromFile;
+    }
+
+    public void setRefGenomesAsPatterns(List<Pattern> refGenomesPatterns){
+        refGenomesAsPatterns = refGenomesPatterns;
     }
 
     public void setAlgorithm(Algorithm algorithm){
@@ -65,12 +71,13 @@ public class CSBFinderWorkflow {
         if (algorithm == null || params == null){
             families = new ArrayList<>();
             params = new Parameters();
-            algorithm = params.algorithmType.algorithm;
+            algorithm = params.algorithmType.getAlgorithm();
         }
 
         this.params = params;
         algorithm.setParameters(params);
         algorithm.setPatternsFromFile(patternsFromFile);
+        algorithm.setRefGenomesAsPatterns(refGenomesAsPatterns);
 
         int procCount = params.procCount == 0 ? Runtime.getRuntime().availableProcessors() : params.procCount;
         algorithm.setNumOfThreads(procCount);

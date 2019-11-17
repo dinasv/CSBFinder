@@ -10,6 +10,7 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  */
@@ -22,9 +23,12 @@ public class CompareAlgorithmsTest {
     private final String GENOMES_FILE_PATH5 = this.getClass().getResource("/genomes7.fasta").getPath();
     private final String GENOMES_FILE_PATH6 = this.getClass().getResource("/genomes8.fasta").getPath();
     private final String REF_GENOMES_FILE_PATH = this.getClass().getResource("/ref_genomes.txt").getPath();
+    private final String PATTERNS_FILE_PATH = this.getClass().getResource("/patterns3.fasta").getPath();
+    private final String PATTERNS_FILE_PATH2 = this.getClass().getResource("/patterns4.fasta").getPath();
     private final String PLASMID_GENOMES_FILE_PATH = this.getClass().getResource("/plasmid_genomes.fasta").getPath();
     private final String PLASMID_GENOMES_SMALL_FILE_PATH = this.getClass().getResource("/plasmid_genomes_small.txt").getPath();
     private final String PLASMID_GENOMES_SMALL_FILE_PATH2 = this.getClass().getResource("/plasmid_genomes_small2.txt").getPath();
+
 
     @Test
     public void testRefGenomesEqualOutput() throws Exception {
@@ -35,20 +39,48 @@ public class CompareAlgorithmsTest {
         CSBFinderWorkflow workflow = new CSBFinderWorkflow(gi);
 
         List<Pattern> patternsFromFile = Parsers.parseReferenceGenomesFile(gi, REF_GENOMES_FILE_PATH);
-        workflow.setPatternsFromFile(patternsFromFile);
+        workflow.setRefGenomesAsPatterns(patternsFromFile);
 
-        workflow.setAlgorithm(AlgorithmType.SUFFIX_TREE.algorithm);
+        workflow.setAlgorithm(AlgorithmType.SUFFIX_TREE.getAlgorithm());
         workflow.run(params);
         List<Family> familiesAlg1 = workflow.getFamilies();
 
-        //gi.initAlphabet();
-        workflow.setAlgorithm(AlgorithmType.MATCH_POINTS.algorithm);
+        workflow.setAlgorithm(AlgorithmType.MATCH_POINTS.getAlgorithm());
         workflow.run(params);
         List<Family> familiesAlg2 = workflow.getFamilies();
 
         Assert.assertEquals(familiesAlg1, familiesAlg2);
 
     }
+
+
+    @Test
+    public void testPatternsFromFileEqualOutput() throws Exception {
+        Parameters params = new Parameters();
+        params.maxInsertion = 1;
+
+        GenomesInfo gi = Parsers.parseGenomesFile(GENOMES_FILE_PATH);
+        CSBFinderWorkflow workflow = new CSBFinderWorkflow(gi);
+
+        List<Pattern> patternsFromFile = Parsers.parsePatternsFile(PATTERNS_FILE_PATH);
+        workflow.setPatternsFromFile(patternsFromFile);
+
+        workflow.setAlgorithm(AlgorithmType.SUFFIX_TREE.getAlgorithm());
+        workflow.run(params);
+        List<Family> familiesAlg1 = workflow.getFamilies();
+        List<Pattern> patternsAlg1 = familiesAlg1.stream().map(Family::getPatterns)
+                .flatMap(List::stream).collect(Collectors.toList());
+
+        workflow.setAlgorithm(AlgorithmType.MATCH_POINTS.getAlgorithm());
+        workflow.run(params);
+        List<Family> familiesAlg2 = workflow.getFamilies();
+        List<Pattern> patternsAlg2 = familiesAlg2.stream().map(Family::getPatterns)
+                .flatMap(List::stream).collect(Collectors.toList());
+
+        comparePatterns(patternsAlg1, patternsAlg2);
+
+    }
+
 
     @Test
     public void testDirectonsEqualOutput() throws Exception {
@@ -62,9 +94,9 @@ public class CompareAlgorithmsTest {
                 PLASMID_GENOMES_SMALL_FILE_PATH, PLASMID_GENOMES_SMALL_FILE_PATH2};
 
         for (String file : files) {
-            List<Pattern> patternsAlg1 = runAlgorithm(AlgorithmType.SUFFIX_TREE.algorithm, file, params);
+            List<Pattern> patternsAlg1 = runAlgorithm(AlgorithmType.SUFFIX_TREE.getAlgorithm(), file, params);
 
-            List<Pattern> patternsAlg2 = runAlgorithm(AlgorithmType.MATCH_POINTS.algorithm, file, params);
+            List<Pattern> patternsAlg2 = runAlgorithm(AlgorithmType.MATCH_POINTS.getAlgorithm(), file, params);
 
             comparePatterns(patternsAlg1, patternsAlg2);
         }
@@ -78,9 +110,9 @@ public class CompareAlgorithmsTest {
         params.nonDirectons = true;
         params.maxInsertion = 1;
 
-        List<Pattern> patternsAlg1 = runAlgorithm(AlgorithmType.SUFFIX_TREE.algorithm, GENOMES_FILE_PATH3, params);
+        List<Pattern> patternsAlg1 = runAlgorithm(AlgorithmType.SUFFIX_TREE.getAlgorithm(), GENOMES_FILE_PATH3, params);
 
-        List<Pattern> patternsAlg2 = runAlgorithm(AlgorithmType.MATCH_POINTS.algorithm, GENOMES_FILE_PATH3, params);
+        List<Pattern> patternsAlg2 = runAlgorithm(AlgorithmType.MATCH_POINTS.getAlgorithm(), GENOMES_FILE_PATH3, params);
 
         comparePatterns(patternsAlg1, patternsAlg2);
 
@@ -93,13 +125,36 @@ public class CompareAlgorithmsTest {
         params.keepAllPatterns = true;
         params.maxInsertion = 2;
 
-        List<Pattern> patternsAlg1 = runAlgorithm(AlgorithmType.SUFFIX_TREE.algorithm, PLASMID_GENOMES_FILE_PATH, params);
+        List<Pattern> patternsAlg1 = runAlgorithm(AlgorithmType.SUFFIX_TREE.getAlgorithm(), PLASMID_GENOMES_FILE_PATH,
+                params);
 
-        List<Pattern> patternsAlg2 = runAlgorithm(AlgorithmType.MATCH_POINTS.algorithm, PLASMID_GENOMES_FILE_PATH, params);
+        List<Pattern> patternsAlg2 = runAlgorithm(AlgorithmType.MATCH_POINTS.getAlgorithm(), PLASMID_GENOMES_FILE_PATH,
+                params);
 
         comparePatterns(patternsAlg1, patternsAlg2);
 
     }
+
+    @Test
+    public void testRealDatasetPatternsFromFileEqualOutput() throws Exception {
+        Parameters params = new Parameters();
+        params.quorum2 = 39;
+        params.keepAllPatterns = true;
+        params.maxInsertion = 2;
+
+        List<Pattern> patternsFromFile = Parsers.parsePatternsFile(PATTERNS_FILE_PATH2);
+
+        List<Pattern> patternsAlg1 = runAlgorithmWithPatterns(AlgorithmType.SUFFIX_TREE.getAlgorithm(), PLASMID_GENOMES_FILE_PATH,
+                params, patternsFromFile);
+
+        List<Pattern> patternsAlg2 = runAlgorithmWithPatterns(AlgorithmType.MATCH_POINTS.getAlgorithm(), PLASMID_GENOMES_FILE_PATH,
+                params, patternsFromFile);
+
+        Assert.assertEquals(patternsFromFile.size(), patternsAlg1.size());
+        comparePatterns(patternsAlg1, patternsAlg2);
+
+    }
+
 
     private void comparePatterns(List<Pattern> patternsAlg1, List<Pattern> patternsAlg2){
         Assert.assertEquals(patternsAlg1.size(), patternsAlg2.size());
@@ -113,6 +168,7 @@ public class CompareAlgorithmsTest {
         }
     }
 
+
     private List<Pattern> runAlgorithm(Algorithm algorithm, String genomesFile, Parameters params) throws Exception{
 
         GenomesInfo gi = Parsers.parseGenomesFile(genomesFile);
@@ -124,4 +180,19 @@ public class CompareAlgorithmsTest {
 
         return algorithm.getPatterns();
     }
+
+    private List<Pattern> runAlgorithmWithPatterns(Algorithm algorithm, String genomesFile, Parameters params,
+                                                   List<Pattern> patternsFromFile) throws Exception {
+
+        GenomesInfo gi = Parsers.parseGenomesFile(genomesFile);
+
+        algorithm.setPatternsFromFile(patternsFromFile);
+        algorithm.setParameters(params);
+        algorithm.setGenomesInfo(gi);
+        algorithm.setNumOfThreads(1);
+        algorithm.findPatterns();
+
+        return algorithm.getPatterns();
+    }
+
 }
