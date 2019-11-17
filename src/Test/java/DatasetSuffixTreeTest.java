@@ -58,7 +58,7 @@ public class DatasetSuffixTreeTest {
                 Map<Integer, List<InstanceLocation>> instances = gst.search(WORD_ARRAY1);
 
                 Assert.assertEquals(1, instances.size());
-                Assert.assertEquals(true, instances.containsKey(WORD_LOC.getSecond().getGenomeId()));
+                Assert.assertTrue(instances.containsKey(WORD_LOC.getSecond().getGenomeId()));
 
                 InstanceLocation loc = instances.get(WORD_LOC.getSecond().getGenomeId()).get(0);
                 Assert.assertEquals(startIndex, loc.getActualStartIndex());

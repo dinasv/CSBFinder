@@ -157,7 +157,8 @@ public class MatchPointAlgorithm implements Algorithm {
                     List<Directon> directons = replicon.splitRepliconToDirectons(Alphabet.UNK_CHAR);
 
                     for (Directon directon : directons) {
-                        tasks.add(new FindPatternsThread(directon.getGenes(), genomesInfo, parameters.quorum2, parameters.maxPatternLength,
+                        tasks.add(new FindPatternsThread(directon.getGenes(), genomesInfo, parameters.quorum2,
+                                parameters.maxPatternLength,
                                 parameters.minPatternLength, parameters.maxInsertion, patterns, matchLists));
                     }
                 }

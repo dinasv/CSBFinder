@@ -118,13 +118,24 @@ public class SuffixTreeAlgorithm implements Algorithm {
 
     private void setPatternTreeRoot() {
         if (patternsFromFile.size() > 0) {
-            PatternsTree patternsTree = new PatternsTree(patternsFromFile, gi, nonDirectons);
+            List<Pattern> legalPatterns = getLegalPatterns();
+            PatternsTree patternsTree = new PatternsTree(legalPatterns, gi, nonDirectons);
             Trie patternTrie = patternsTree.getTrie();
             patternTreeRoot = patternTrie.getRoot();
         } else {//all patterns will be extracted from the data tree
             patternTreeRoot = new PatternNode(TreeType.VIRTUAL);
             patternTreeRoot.setKey(Integer.toString(++lastPatternKey));
         }
+    }
+
+    private List<Pattern> getLegalPatterns(){
+        List<Pattern> legalPatterns = new ArrayList<>();
+        for (Pattern pattern : patternsFromFile) {
+            if (Arrays.stream(pattern.getPatternGenes()).allMatch(gene -> gi.getLetter(gene) != -1)){
+                legalPatterns.add(pattern);
+            }
+        }
+        return legalPatterns;
     }
 
 
@@ -228,7 +239,6 @@ public class SuffixTreeAlgorithm implements Algorithm {
     private Gene[] appendChar(Gene[] str, int ch) {
         Gene cog = gi.getLetter(ch);
         Gene[] extendedString = Arrays.copyOf(str, str.length + 1);
-        //extendedString.addAll(str);
         extendedString[extendedString.length - 1] = cog;
 
         return extendedString;
@@ -393,10 +403,7 @@ public class SuffixTreeAlgorithm implements Algorithm {
                               PatternNode pattern_node, List<Instance> Instances, int pattern_length) {
 
         Gene[] extendedPattern = appendChar(pattern, alpha);
-        if (extendedPattern[0].getCogId().equals("COG0005")&& extendedPattern.length == 2
-                && extendedPattern[1].getCogId().equals("COG0006")){
-            System.out.println();
-        }
+
         int extendedPatternLength = pattern_length + 1;
 
         int exactInstancesCount = 0;

@@ -48,6 +48,7 @@ public class CSBFinderWorkflow {
     }
 
     public void setPatternsFromFile(List<Pattern> patternsFromFile){
+
         this.patternsFromFile = patternsFromFile;
     }
 
@@ -63,6 +64,8 @@ public class CSBFinderWorkflow {
     public void run(Parameters params){
         if (algorithm == null || params == null){
             families = new ArrayList<>();
+            params = new Parameters();
+            algorithm = params.algorithmType.algorithm;
         }
 
         this.params = params;
