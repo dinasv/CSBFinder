@@ -118,7 +118,7 @@ public class Controller {
             printToScreen("Parsing input genomes file");
             gi = Parsers.parseGenomesFile(genomesFilePath);
 
-        }catch (IOException e){
+        }catch (Exception e){
             printToScreen("Input genome file is not valid. " + e.getMessage());
             return;
         }

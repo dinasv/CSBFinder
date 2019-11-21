@@ -22,7 +22,7 @@ public class Parsers {
     private final static String PATTERN_DELIMITER = ",";
     private final static String[] INSTANCE_HEADER = {"[Family ID]", "[Length]", "[Score]", "[Count]", "[Genes]", "[Family FAMILY_ID]"};
     private final static String INSTANCE_HEADER_DELIMITER = "\t";
-    private final static String[] GENOME_HEADER = {"[Genome name]", "[Replicon FAMILY_ID]"};
+    private final static String[] GENOME_HEADER = {"[Genome name]", "[Replicon ID]"};
     private final static String GENOME_HEADER_DELIMITER = "\\|";
     private final static String[] GENE_LINE = {"[Gene Orthology Group ID]", "[Strand]"};
     private final static String GENE_LINE_DELIMITER = "\t";
