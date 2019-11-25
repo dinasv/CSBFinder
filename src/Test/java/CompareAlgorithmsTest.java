@@ -87,7 +87,8 @@ public class CompareAlgorithmsTest {
         Parameters params = new Parameters();
         params.quorum2 = 2;
         params.maxInsertion = 1;
-        params.maxPatternLength = 2;
+        //params.maxPatternLength = 2;
+        //params.minPatternLength = 3;
         //params.keepAllPatterns = true;
 
         String[] files = {GENOMES_FILE_PATH2, GENOMES_FILE_PATH4, GENOMES_FILE_PATH5, GENOMES_FILE_PATH6,
@@ -99,6 +100,7 @@ public class CompareAlgorithmsTest {
             List<Pattern> patternsAlg2 = runAlgorithm(AlgorithmType.MATCH_POINTS.getAlgorithm(), file, params);
 
             comparePatterns(patternsAlg1, patternsAlg2);
+
         }
 
     }

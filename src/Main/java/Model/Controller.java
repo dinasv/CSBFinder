@@ -28,7 +28,7 @@ public class Controller {
     private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
 
     public Controller(String[] args){
-        JCommander jcommander = null;
+        JCommander jcommander;
         try {
             params = new Parameters();
 
@@ -195,6 +195,10 @@ public class Controller {
         Date date = new Date();
 
         System.out.println(DATE_FORMAT.format(date) + ": " + msg);
+    }
+
+    public int getPrintedCSBs(){
+        return writer.getCountPrintedPatterns();
     }
 }
 

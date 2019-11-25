@@ -24,6 +24,8 @@ public class Writer {
 
     private String catalogInstancesPath;
 
+    private String directoryPath;
+
     private boolean debug;
 
     private static final DecimalFormat DF = new DecimalFormat("#.####");
@@ -34,7 +36,8 @@ public class Writer {
 
         this(debug, patternsWriter);
 
-        catalogInstancesPath = outputPath + instancesFileName + ".fasta";
+        directoryPath = outputPath;
+        catalogInstancesPath = directoryPath + instancesFileName + ".fasta";
     }
 
     public Writer(boolean debug,
@@ -93,13 +96,19 @@ public class Writer {
         if (instancesFile != null) {
             instancesFile.close();
             if (debug){
-                File file = new File(catalogInstancesPath);
-                if(file.delete()){
-                    System.out.println(catalogInstancesPath + " deleted");
-                }else{
-                    System.out.println(catalogInstancesPath + " not deleted");
-                }
+                deleteFile(catalogInstancesPath);
+                deleteFile(patternsWriter.getPath());
+                deleteFile(directoryPath);
             }
+        }
+    }
+
+    private void deleteFile(String path){
+        File file = new File(path);
+        if(file.delete()){
+            System.out.println(path + " deleted");
+        }else{
+            System.out.println(path + " not deleted");
         }
     }
 

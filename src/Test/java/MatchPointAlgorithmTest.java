@@ -39,7 +39,7 @@ public class MatchPointAlgorithmTest {
         return params;
     }
 
-    private Parameters initParamsSetLenggth(){
+    private Parameters initParamsSetLength(){
         Parameters params = initParamsNonDirectons();
         params.minPatternLength = 2;
         params.maxPatternLength = 2;
@@ -113,7 +113,7 @@ public class MatchPointAlgorithmTest {
 
     @Test
     public void testMinMaxLengthPatterns() throws Exception {
-        List<Pattern> patterns = runAlgorithm(GENOMES_FILE_PATH2, initParamsSetLenggth());
+        List<Pattern> patterns = runAlgorithm(GENOMES_FILE_PATH2, initParamsSetLength());
 
         List<Pattern> expectedPatterns = new ArrayList<>();
         Gene[] expectedGenes = {new Gene("COG0001", Strand.FORWARD),

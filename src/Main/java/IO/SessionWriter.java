@@ -26,6 +26,8 @@ public class SessionWriter implements PatternsWriter {
 
     private int countPrintedPatterns;
 
+    private String path;
+
     private static final DecimalFormat DF = new DecimalFormat("#.####");
 
     public SessionWriter(String path, GenomesInfo genomesInfo){
@@ -36,7 +38,7 @@ public class SessionWriter implements PatternsWriter {
 
         this.genomesInfo = genomesInfo;
 
-        //String catalogPath = path + "_" + OutputType.SESSION.toString().toLowerCase() + ".txt";
+        this.path = path;
         file = Writer.createOutputPrintWriter(path);
     }
 
@@ -102,5 +104,10 @@ public class SessionWriter implements PatternsWriter {
     @Override
     public int getCountPrintedPatterns() {
         return countPrintedPatterns;
+    }
+
+    @Override
+    public String getPath() {
+        return path;
     }
 }

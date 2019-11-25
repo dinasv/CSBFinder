@@ -193,4 +193,9 @@ public class ExcelWriter implements PatternsWriter{
     public int getCountPrintedPatterns(){
         return countPrintedPatterns;
     }
+
+    @Override
+    public String getPath() {
+        return path;
+    }
 }

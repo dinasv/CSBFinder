@@ -20,6 +20,8 @@ public class TextWriter implements PatternsWriter{
 
     private int countPrintedPatterns;
 
+    private String path;
+
     private static final DecimalFormat DF = new DecimalFormat("#.####");
 
     public TextWriter(boolean cogInfoExists, boolean includeFamilies, String path){
@@ -32,6 +34,7 @@ public class TextWriter implements PatternsWriter{
         this.includeFamilies = includeFamilies;
 
         String catalogPath = path + ".txt";
+        this.path = catalogPath;
         catalogFile = Writer.createOutputPrintWriter(catalogPath);
 
     }
@@ -76,6 +79,11 @@ public class TextWriter implements PatternsWriter{
 
     public int getCountPrintedPatterns(){
         return countPrintedPatterns;
+    }
+
+    @Override
+    public String getPath() {
+        return path;
     }
 
 }

@@ -133,7 +133,7 @@ public class MatchPointAlgorithm implements Algorithm {
 
         refGenomesAsPatterns = refGenomesPatterns;
 
-        if (extractPatternsFrom != ExtractPatternsFrom.FILE) {
+        if (refGenomesPatterns.size() >0 && extractPatternsFrom != ExtractPatternsFrom.FILE) {
             extractPatternsFrom = ExtractPatternsFrom.REF_GENOMES;
         }
     }

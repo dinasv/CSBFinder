@@ -16,4 +16,6 @@ public interface PatternsWriter {
     void closeFile();
 
     int getCountPrintedPatterns();
+
+    String getPath();
 }
