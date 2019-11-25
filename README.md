@@ -32,9 +32,13 @@ content similarity.
 A detailed description of the workflow and the algorithm can be found in the paper: 
 
 ### Citation
-Dina Svetlitsky, Tal Dagan, Vered Chalifa-Caspi, Michal Ziv-Ukelson; 
-CSBFinder: discovery of colinear syntenic blocks across thousands of prokaryotic genomes, Bioinformatics, 2018,
-bty861, [https://doi.org/10.1093/bioinformatics/bty861](https://doi.org/10.1093/bioinformatics/bty861)
+
+If you used our tool as part of your research, please cite us:
+
+Dina Svetlitsky, Tal Dagan, Vered Chalifa-Caspi, Michal Ziv-Ukelson, 
+CSBFinder: discovery of colinear syntenic blocks across thousands of prokaryotic genomes, Bioinformatics, 
+Volume 35, Issue 10, 15 May 2019, Pages 1634–1643,
+ [https://doi.org/10.1093/bioinformatics/bty861](https://doi.org/10.1093/bioinformatics/bty861)
 
 ### Workflow Description
 The workflow of CSBFinder is given in the figure below.    
