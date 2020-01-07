@@ -18,7 +18,7 @@ public class TableButtonsPanel extends JPanel{
 
         filterBtn = new JButton(filterIcon);
         filterBtn.setBorder(BorderFactory.createEmptyBorder());
-        filterBtn.setToolTipText("Filter Table");
+        filterBtn.setToolTipText("Filter");
         add(filterBtn);
 
         filterBtn.addActionListener(e -> filterTableListener.eventOccurred(new OpenDialogEvent()));

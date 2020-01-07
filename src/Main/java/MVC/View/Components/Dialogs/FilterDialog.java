@@ -55,27 +55,26 @@ public class FilterDialog extends JDialog{
     private JRadioButton oneStrandTypesBtn;
     private JPanel patternStrandPanel;
 
-    private final JLabel PATTERN_ID_LABEL = new JLabel("CSB IDs:");
+    private final String PATTERN_ID_LABEL = "CSB IDs:";
     private JTextField patternIds;
 
-    private final JLabel FAMILY_ID_LABEL = new JLabel("Family IDs:");
+    private final String FAMILY_ID_LABEL = "Family IDs:";
     private JTextField familyIds;
 
-    private final JLabel PATTERN_GENES_LABEL = new JLabel("CSB with gene IDs:");
+    private final String PATTERN_GENES_LABEL = "CSB with gene IDs:";
     private JTextField patternGenes;
     private JComboBox<BooleanOperator> genesComboBox;
 
-    private final JLabel MAIN_FUNCTIONAL_CATEGORY_LABEL = new JLabel("CSB main functional category:");
+    private final String MAIN_FUNCTIONAL_CATEGORY_LABEL = "CSB main functional category:";
     private JTextField mainFunctionalCategory;
     private JComboBox<FunctionalCategoryOption> functionalCategoryComboBox;
 
-    private final JLabel PATTERN_GENES_CATEGORY_LABEL = new JLabel("Keep CSBs that contain functional description:");
+    private final String PATTERN_GENES_CATEGORY_LABEL = "Keep CSBs with genes described as:";
     private JTextField genesCategory;
     private JComboBox<BooleanOperator> genesCategoryComboBox;
 
-    private final JLabel PATTERN_GENES_CATEGORY_EXCLUDE_LABEL = new JLabel("Exclude CSBs that contain functional description:");
+    private final String PATTERN_GENES_CATEGORY_EXCLUDE_LABEL = "Exclude CSBs with genes described as:";
     private JTextField genesCategoryExclude;
-    //private JComboBox<BooleanOperator> genesCategoryExcludeComboBox;
 
     private GridBagConstraints gc;
 
@@ -90,7 +89,7 @@ public class FilterDialog extends JDialog{
 
     public FilterDialog(){
 
-        setTitle("Filter Table");
+        setTitle("Filter");
 
         request = new FilterRequest();
 
@@ -196,16 +195,11 @@ public class FilterDialog extends JDialog{
                         genesCategoryComboBox.getItemAt(genesCategoryComboBox.getSelectedIndex())));
 
         addTextFieldListener(genesCategoryExclude, request::setGenesCategoryExclude);
-        /*
-        genesCategoryExclude.addActionListener(e ->
-                request.setGenesCategoryExcludeOperator(
-                        genesCategoryExcludeComboBox.getItemAt(genesCategoryExcludeComboBox.getSelectedIndex())));
-        */
+
         addTextFieldListener(mainFunctionalCategory, request::setMainFunctionalCategory);
         functionalCategoryComboBox.addActionListener(e ->
                 request.setFunctionalCategoryOption(functionalCategoryComboBox.getItemAt(
                         functionalCategoryComboBox.getSelectedIndex())));
-
 
 
     }
@@ -332,35 +326,52 @@ public class FilterDialog extends JDialog{
         addIntervalComponentToGC(y++, SCORE_LABEL, minScore, maxScore, insetLabel, insetField);
         addIntervalComponentToGC(y++, COUNT_LABEL, minCount, maxCount, insetLabel, insetField);
 
-        addComponentToGC(0, y, 1, 0.2, insetLabel, 1, PATTERN_ID_LABEL, LINE_START);
+        ImageIcon icon = MVC.View.Graphics.Icon.QUESTION_MARK.getIcon();
+        String desc = "Enter one or more values, separated by a comma";
+
+        addComponentToGC(0, y, 1, 0.2, insetLabel, 1,
+                initLabel(icon, PATTERN_ID_LABEL, desc), LINE_START);
         patternIds.setColumns(TEXT_FIELD_SIZE);
         addComponentToGC(1, y++, 1, 0.2, insetField, 1, patternIds, LINE_START);
 
-        addComponentToGC(0, y, 1, 0.2, insetLabel, 1, PATTERN_GENES_LABEL, LINE_START);
+        addComponentToGC(0, y, 1, 0.2, insetLabel, 1,
+                initLabel(icon, PATTERN_GENES_LABEL, desc), LINE_START);
         patternGenes.setColumns(TEXT_FIELD_SIZE);
         addComponentToGC(1, y, 1, 0.2, insetField, 1, patternGenes, LINE_START);
         addComponentToGC(2, y++, 1, 0.2, insetField, 2, genesComboBox, LINE_START);
 
-        addComponentToGC(0, y, 1, 0.2, insetLabel, 1, MAIN_FUNCTIONAL_CATEGORY_LABEL, LINE_START);
+        addComponentToGC(0, y, 1, 0.2, insetLabel, 1,
+                initLabel(icon, MAIN_FUNCTIONAL_CATEGORY_LABEL, desc), LINE_START);
         mainFunctionalCategory.setColumns(TEXT_FIELD_SIZE);
         addComponentToGC(1, y, 1, 0.2, insetField, 1, mainFunctionalCategory, LINE_START);
         addComponentToGC(2, y++, 1, 0.2, insetField, 2, functionalCategoryComboBox, LINE_START);
 
-        addComponentToGC(0, y, 1, 0.2, insetLabel, 1, PATTERN_GENES_CATEGORY_LABEL, LINE_START);
+        addComponentToGC(0, y, 1, 0.2, insetLabel, 1,
+                initLabel(icon, PATTERN_GENES_CATEGORY_LABEL, desc), LINE_START);
         genesCategory.setColumns(TEXT_FIELD_SIZE);
         addComponentToGC(1, y, 1, 0.2, insetField, 1, genesCategory, LINE_START);
         addComponentToGC(2, y++, 1, 0.2, insetField, 2, genesCategoryComboBox, LINE_START);
 
-        addComponentToGC(0, y, 1, 0.2, insetLabel, 1, PATTERN_GENES_CATEGORY_EXCLUDE_LABEL, LINE_START);
+        addComponentToGC(0, y, 1, 0.2, insetLabel, 1,
+                initLabel(icon, PATTERN_GENES_CATEGORY_EXCLUDE_LABEL, desc), LINE_START);
         genesCategoryExclude.setColumns(TEXT_FIELD_SIZE);
         addComponentToGC(1, y++, 1, 0.2, insetField, 1, genesCategoryExclude, LINE_START);
         //addComponentToGC(2, y++, 1, 0.2, insetField, 2, genesCategoryExcludeComboBox, LINE_START);
 
-        addComponentToGC(0, y, 1, 0.2, insetLabel, 1, FAMILY_ID_LABEL, LINE_START);
+        addComponentToGC(0, y, 1, 0.2, insetLabel, 1,
+                initLabel(icon, FAMILY_ID_LABEL, desc), LINE_START);
         familyIds.setColumns(TEXT_FIELD_SIZE);
         addComponentToGC(1, y++, 1, 0.2, insetField, 1, familyIds, LINE_START);
 
 
+    }
+
+    private JLabel initLabel(ImageIcon icon, String labelName, String desc){
+        JLabel label = new JLabel(labelName, icon, JLabel.LEFT);
+        label.setHorizontalTextPosition(SwingConstants.LEFT);
+        label.setToolTipText(desc);
+        ToolTipManager.sharedInstance().setDismissDelay(Integer.MAX_VALUE);
+        return label;
     }
 
     private void addIntervalComponentToGC(int y, JLabel label, JSpinner minSpinner, JSpinner maxSpinner,

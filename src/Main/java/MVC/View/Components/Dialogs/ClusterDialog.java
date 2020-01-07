@@ -123,8 +123,8 @@ public class ClusterDialog extends JDialog {
 
     }
 
-    private JLabel initLabel(ImageIcon icon, String label_name, String desc){
-        JLabel label = new JLabel(label_name + ": ", icon, JLabel.LEFT);
+    private JLabel initLabel(ImageIcon icon, String labelName, String desc){
+        JLabel label = new JLabel(labelName + ": ", icon, JLabel.LEFT);
         label.setHorizontalTextPosition(SwingConstants.LEFT);
         label.setToolTipText(desc);
         ToolTipManager.sharedInstance().setDismissDelay(Integer.MAX_VALUE);
