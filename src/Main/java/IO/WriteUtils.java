@@ -38,15 +38,15 @@ public class WriteUtils {
 
         String outputPath = createOutputPath(params.outputDir);
 
-        //String parameters = "_ins" + params.maxInsertion + "_q" + params.quorum2;
         String catalogFileName = params.exportFileName;
         String instancesFileName = catalogFileName + "_instances";
 
         String catalogPath = outputPath + catalogFileName;
 
         if (params.outputFileType == OutputType.SESSION){
+            String sessionFilePath = catalogPath + "." + OutputType.SESSION.extension;
             return saveSessionFile(families, genomesInfo, cogInfo, params, arguments, new GeneColors(),
-                    new File(catalogPath));
+                    new File(sessionFilePath));
         }
 
         //TODO: add as input parameter

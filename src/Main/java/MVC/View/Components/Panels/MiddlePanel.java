@@ -75,6 +75,7 @@ public class MiddlePanel extends JPanel {
     }
 
     public void clearPanel(){
+        taxaPanel.clear();
         viewInstancesPanel.clearPanel();
         viewInstancesPanel.revalidate();
         viewInstancesPanel.repaint();

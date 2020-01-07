@@ -11,14 +11,6 @@ public class Runnable {
         if (args.length > 0){
             Controller controller = new Controller(args);
         }else {
-            /*
-            try {
-                UIManager.setLookAndFeel(
-                        UIManager.getSystemLookAndFeelClassName());
-            } catch (ClassNotFoundException | InstantiationException | IllegalAccessException
-                    | UnsupportedLookAndFeelException e) {
-                e.printStackTrace();
-            }*/
 
             SwingUtilities.invokeLater(() -> {
                 CSBFinderController controller = new CSBFinderController();

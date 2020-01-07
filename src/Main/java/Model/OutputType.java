@@ -4,7 +4,13 @@ package Model;
  * Defines the type of the printed output files
  */
 public enum OutputType {
-    TXT,
-    XLSX,
-    SESSION
+    TXT("txt"),
+    XLSX("xlsx"),
+    SESSION("csb");
+
+    public final String extension;
+
+    OutputType(String extension){
+        this.extension = extension;
+    }
 }

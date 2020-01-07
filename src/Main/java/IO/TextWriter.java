@@ -1,6 +1,7 @@
 package IO;
 
 import Model.OrthologyGroups.CogInfo;
+import Model.OutputType;
 import Model.Patterns.Pattern;
 import Model.PostProcess.Family;
 
@@ -33,7 +34,7 @@ public class TextWriter implements PatternsWriter{
         this.cogInfoExists = cogInfoExists;
         this.includeFamilies = includeFamilies;
 
-        String catalogPath = path + ".txt";
+        String catalogPath = path + "." + OutputType.TXT.extension;
         this.path = catalogPath;
         catalogFile = Writer.createOutputPrintWriter(catalogPath);
 

@@ -3,6 +3,7 @@ package IO;
 import Model.OrthologyGroups.CogInfo;
 import Model.OrthologyGroups.COG;
 import Model.Genomes.Gene;
+import Model.OutputType;
 import Model.Patterns.Pattern;
 import Model.PostProcess.Family;
 import org.apache.poi.ss.usermodel.Row;
@@ -43,7 +44,7 @@ public class ExcelWriter implements PatternsWriter{
 
         this.cogInfoExists = cogInfoExists;
         this.includeFamilies = includeFamilies;
-        this.path = path + ".xlsx";
+        this.path = path + "." + OutputType.XLSX.extension;
 
         countPrintedPatterns = 0;
         countPrintedFilteredPatterns = 0;
