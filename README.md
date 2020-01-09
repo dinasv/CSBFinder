@@ -10,8 +10,10 @@
     -   [Input genomes file](#input_dataset)
     -   [Gene orthology group information file](#cog_info)
     -   [Patterns file](#in_patterns)
+    -   [Taxonomy file](#in_taxa)
 -   [Output files](#output)
 -   [Sample input files](#sample)
+-   [User interface features](#ui_features)
 -   [License](#license)
 -   [Author](#author)
 -   [Credit](#credit)
@@ -299,7 +301,7 @@ gene orthology group identifiers, you can use the file _cog_info.txt_ provided i
 installation folder (also can be downloaded from [here](https://github.com/dinasv/CSBFinder/tree/master/input)).
 
 The functional description of gene orthology groups will appear in the legend (User Interface) 
-or in the output catalog file (when clicking on the "Save" button in the User Interface, or when 
+or in the output catalog file (when choosing "Export" in the User Interface, or when 
 executing via Command Line).
 
 You can also use a custom file of your own. See instructions below.
@@ -347,12 +349,38 @@ COG3736,COG3504,COG2948
 > If you are running without segmentation to directons, you should add a strand to each homology group ID
 e.g. COG3736+,COG3504+,COG2948-,COG0630+
 
+### <a name='in_taxa'>Input file containing Taxonomy information </a>
+If this file is provided, taxonomic distribution of each CSB will be displayed in the user interface.
+
+- This is an optional input text file
+- User Interface: Load this file by choosing `File->Import->Taxonomy File`
+
+This file should use the following format:
+```
+HEADER
+genome-name(as provided in input genomes file),kingdom,phylum,class,genus,species
+genome-name(as provided in input genomes file),kingdom,phylum,class,genus,species
+...
+```
+
+> Missing data should be marked by "-"
+
+#### Example
+```
+genome,kingdom,phylum,class,genus,species
+Acaryochloris_marina_MBIC11017_uid58167,Bacteria,Cyanobacteria,-,Acaryochloris,Acaryochloris_marina
+Acetobacter_pasteurianus_IFO_3283_01_uid59279,Bacteria,Proteobacteria,Alphaproteobacteria,Acetobacter,Acetobacter_pasteurianus
+....
+```
+
+
+
 <a name='output'>Output files</a>
 --------------
-After clicking on the "Save" button in the User Interface, or after execution via Command Line: two output files will 
+After clicking on the "Export" menu option in the User Interface, or after execution via Command Line: two output files will 
 be written to the specified directory
 
-- **File 1: A Catalog of CSBs**: An excel file containing the discovered CSBs named "[export file name].xlsx"   
+- **File 1: A Catalog of CSBs**: An excel file (or txt file) containing the discovered CSBs named "[export file name].xlsx"   
     This file contains three sheets: 
     1. Catalog    
         - Each line describes a single CSB
@@ -404,7 +432,7 @@ Sample input files are located in the input directory of the installation folder
 You can also download the following zip file:
 > [Sample_input_files.zip](https://github.com/dinasv/CSBFinder/raw/master/input/Sample_input_files.zip)
 
-The above zip file contains three files, located inside a folder named 'input':
+The above zip file contains four files, located inside a folder named 'input':
 - plasmid_genomes.fasta   
     _Plasmid dataset_ - 471 prokaryotic genomes with at least one plasmid, chromosomes were removed.
 - chromosomal_genomes.fasta    
@@ -412,6 +440,8 @@ The above zip file contains three files, located inside a folder named 'input':
     > Important: this is a huge dataset. See instructions below, how to run CSBFinder with a large dataset
 - cog_info.txt   
     Functional information of gene orthology groups
+- taxa_csbfinder.txt   
+    Taxonomy information for the user interface
 
 ### Execution of CSBFinder on the Chromosomal Dataset of 1,485 prokaryotic genomes
   
@@ -497,6 +527,20 @@ java -jar CSBFinder-[version]-jar-with-dependencies.jar -in input/plasmid_genome
 The output files will be now located in the output directory
 > On a laptop computer with Intel Model i7 processor and 8GB RAM, this execution should take a few seconds
 
+<a name='ui_features'>User interface features</a>   
+--------------------------------------
+- Save - saving a session file (*.csb extension). This will save the current session, all filtered-out CSBs will be lost.
+- Double-clicking on a CSB gene, aligns all other CSBs/instances according to this gene
+- Re-clustering to families after filtration
+- Re-computing CSB scores with different paramaters
+
+##### Properties files
+1. config.properties:   
+Include paths to Session file, Taxonomy file, and Orthology info file. 
+These files will be loaded automatically when launching the program
+
+2. CSBFinder.vmoptions:   
+Increase the memory (RAM) used by the program, by changing MEM in -Xmx[MEM] (e.g., -Xmx6g)
 
 
 <a name='license'>License</a>
