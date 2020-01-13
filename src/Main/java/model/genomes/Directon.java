@@ -25,7 +25,6 @@ public class Directon extends GenomicSegment {
         if (i != size()-1) {
             genes = new ArrayList<Gene>(genes.subList(0, i + 1));
         }
-        //return genes;
     }
 
     private void removeXFromStart(String UNK_CHAR){
@@ -40,18 +39,6 @@ public class Directon extends GenomicSegment {
 
     public void setStrand(Strand strand) {
         super.setStrand(strand);
-    }
-
-    public void reverseGenes(){
-        if (genes.size() > 0 && getStrand() == Strand.REVERSE) {
-            Collections.reverse(genes);
-        }
-    }
-
-    public String[] getGenesIDs(){
-        return genes.stream().map(gene_obj -> gene_obj.getCogId())
-                .collect(Collectors.toList())
-                .toArray(new String[genes.size()]);
     }
 
     public void addGene(Gene gene){
