@@ -1,11 +1,11 @@
-import Model.Algorithm;
-import Model.AlgorithmType;
-import Model.CSBFinderWorkflow;
-import Model.Genomes.GenomesInfo;
-import Model.Parameters;
-import Model.Patterns.Pattern;
-import Model.PostProcess.Family;
-import IO.Parsers;
+import model.Algorithm;
+import model.AlgorithmType;
+import model.CSBFinderWorkflow;
+import model.genomes.GenomesInfo;
+import model.Parameters;
+import model.patterns.Pattern;
+import model.postprocess.Family;
+import io.Parsers;
 import org.junit.Assert;
 import org.junit.Test;
 

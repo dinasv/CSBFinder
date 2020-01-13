@@ -14,7 +14,7 @@
                 <configuration>
                     <archive>
                         <manifest>
-                            <mainClass>MVC.Runnable</mainClass>
+                            <mainClass>mvc.Runnable</mainClass>
                         </manifest>
                     </archive>
                     <descriptorRefs>

@@ -488,12 +488,12 @@ java -Xmx6g -jar CSBFinder.jar -in input/chromosomal_genomes.fasta -q 50 -ins 1 
 ##### Output
 The output files will be now located in the output directory
 
-> On a laptop computer with Intel Model i7 processor and 8GB RAM, this execution should take less than 5 minutes
+> On a laptop computer with Intel model i7 processor and 8GB RAM, this execution should take less than 5 minutes
 
 ### Execution of CSBFinder on the Plasmid Dataset of 471 prokaryotic genomes
 
 #### User Interface 
-Upload the dataset by clicking on the "Load Input Model.Genomes" button.
+Upload the dataset by clicking on the "Load Input model.genomes" button.
 
 ##### Input Parameters
 Click on the "Run" button, and a progressBar will open.
@@ -525,7 +525,7 @@ java -jar CSBFinder-[version]-jar-with-dependencies.jar -in input/plasmid_genome
 
 ##### Output
 The output files will be now located in the output directory
-> On a laptop computer with Intel Model i7 processor and 8GB RAM, this execution should take a few seconds
+> On a laptop computer with Intel model i7 processor and 8GB RAM, this execution should take a few seconds
 
 <a name='ui_features'>User interface features</a>   
 --------------------------------------
@@ -535,6 +535,7 @@ The output files will be now located in the output directory
 - Re-computing CSB scores with different paramaters
 
 ##### Properties files
+The following files are present in the installation directory
 1. config.properties:   
 Include paths to Session file, Taxonomy file, and Orthology info file. 
 These files will be loaded automatically when launching the program

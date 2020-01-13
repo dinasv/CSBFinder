@@ -1,8 +1,6 @@
-import IO.Parsers;
-import Model.Genomes.Gene;
-import Model.Genomes.GenomesInfo;
-import Model.Genomes.Strand;
-import Model.Patterns.PatternScore;
+import io.Parsers;
+import model.genomes.GenomesInfo;
+import model.patterns.PatternScore;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -10,8 +8,6 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  */

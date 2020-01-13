@@ -1,7 +1,7 @@
-import Model.Genomes.Strand;
-import Model.Genomes.WordArray;
-import Model.Patterns.InstanceLocation;
-import Model.SuffixTreePatternFinder.SuffixTrees.GeneralizedSuffixTree;
+import model.genomes.Strand;
+import model.genomes.WordArray;
+import model.patterns.InstanceLocation;
+import model.suffixtreebased.suffixtrees.GeneralizedSuffixTree;
 import org.junit.Assert;
 import org.junit.Test;
 

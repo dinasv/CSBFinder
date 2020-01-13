@@ -1,4 +1,4 @@
-import Model.Controller;
+import model.Controller;
 import org.junit.Assert;
 import org.junit.Test;
 

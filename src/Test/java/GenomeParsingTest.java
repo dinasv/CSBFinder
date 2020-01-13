@@ -1,5 +1,5 @@
-import IO.Parsers;
-import Model.Genomes.GenomesInfo;
+import io.Parsers;
+import model.genomes.GenomesInfo;
 import org.junit.Assert;
 import org.junit.Test;
 
