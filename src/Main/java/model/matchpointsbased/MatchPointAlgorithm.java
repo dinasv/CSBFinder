@@ -160,50 +160,11 @@ public class MatchPointAlgorithm implements Algorithm {
         List<Callable<Object>> tasks = new ArrayList<>();
 
         if (extractPatternsFrom == ExtractPatternsFrom.FILE){
-            List<Pattern> legalPatterns = PatternsUtils.getLegalPatterns(patternsFromFile, genomesInfo);
-            for (Pattern pattern : legalPatterns){
-
-                tasks.add(new FindPatternFromFileThread(pattern, genomesInfo, parameters.quorum2, parameters.maxInsertion, patterns, matchLists));
-
-            }
+            extractPatternsFromFile(tasks);
         } else if (extractPatternsFrom == ExtractPatternsFrom.REF_GENOMES) {
-
-            for (Pattern pattern : refGenomesAsPatterns){
-
-                List<Gene> genes = Arrays.asList(pattern.getPatternGenes());
-
-                Replicon replicon = new Replicon();
-                replicon.addAllGenes(genes);
-
-                if(segmentationType == SegmentationType.NON_DIRECTONS) {
-
-                    tasks.add(new FindPatternsFromGenesThread(genes, genomesInfo, parameters.quorum2, parameters.maxPatternLength,
-                            parameters.minPatternLength, parameters.maxInsertion, patterns, matchLists));
-
-                    replicon.reverseCompliment();
-
-                    tasks.add(new FindPatternsFromGenesThread(replicon.getGenes(), genomesInfo, parameters.quorum2, parameters.maxPatternLength,
-                            parameters.minPatternLength, parameters.maxInsertion, patterns, matchLists));
-
-                }else{
-
-                    List<Directon> directons = replicon.splitRepliconToDirectons(Alphabet.UNK_CHAR);
-
-                    for (Directon directon : directons) {
-                        tasks.add(new FindPatternsFromGenesThread(directon.getGenes(), genomesInfo, parameters.quorum2,
-                                parameters.maxPatternLength,
-                                parameters.minPatternLength, parameters.maxInsertion, patterns, matchLists));
-                    }
-                }
-
-            }
+            extractPatternsFromRefGenomes(tasks);
         }else{
-            for (GenomicSegment genomicSegment : genomicSegments) {
-
-                List<Gene> genes = genomicSegment.getGenes();
-                tasks.add(new FindPatternsFromGenesThread(genes, genomesInfo, parameters.quorum2, parameters.maxPatternLength,
-                        parameters.minPatternLength, parameters.maxInsertion, patterns, matchLists));
-            }
+            extractPatternsFromAllGenomes(tasks);
         }
 
         try {
@@ -216,6 +177,56 @@ public class MatchPointAlgorithm implements Algorithm {
         if (extractPatternsFrom != ExtractPatternsFrom.FILE) {
             setPatternIds();
             removeRedundantPatterns();
+        }
+    }
+
+    private void extractPatternsFromAllGenomes(List<Callable<Object>> tasks) {
+        for (GenomicSegment genomicSegment : genomicSegments) {
+
+            List<Gene> genes = genomicSegment.getGenes();
+            tasks.add(new FindPatternsFromGenesThread(genes, genomesInfo, parameters.quorum2, parameters.maxPatternLength,
+                    parameters.minPatternLength, parameters.maxInsertion, patterns, matchLists));
+        }
+    }
+
+    private void extractPatternsFromRefGenomes(List<Callable<Object>> tasks) {
+        for (Pattern pattern : refGenomesAsPatterns){
+
+            List<Gene> genes = Arrays.asList(pattern.getPatternGenes());
+
+            Replicon replicon = new Replicon();
+            replicon.addAllGenes(genes);
+
+            if(segmentationType == SegmentationType.NON_DIRECTONS) {
+
+                tasks.add(new FindPatternsFromGenesThread(genes, genomesInfo, parameters.quorum2, parameters.maxPatternLength,
+                        parameters.minPatternLength, parameters.maxInsertion, patterns, matchLists));
+
+                replicon.reverseCompliment();
+
+                tasks.add(new FindPatternsFromGenesThread(replicon.getGenes(), genomesInfo, parameters.quorum2, parameters.maxPatternLength,
+                        parameters.minPatternLength, parameters.maxInsertion, patterns, matchLists));
+
+            }else{
+
+                List<Directon> directons = replicon.splitRepliconToDirectons(Alphabet.UNK_CHAR);
+
+                for (Directon directon : directons) {
+                    tasks.add(new FindPatternsFromGenesThread(directon.getGenes(), genomesInfo, parameters.quorum2,
+                            parameters.maxPatternLength,
+                            parameters.minPatternLength, parameters.maxInsertion, patterns, matchLists));
+                }
+            }
+
+        }
+    }
+
+    private void extractPatternsFromFile(List<Callable<Object>> tasks){
+        List<Pattern> legalPatterns = PatternsUtils.getLegalPatterns(patternsFromFile, genomesInfo);
+        for (Pattern pattern : legalPatterns){
+
+            tasks.add(new FindPatternFromFileThread(pattern, genomesInfo, parameters.quorum2, parameters.maxInsertion, patterns, matchLists));
+
         }
     }
 
