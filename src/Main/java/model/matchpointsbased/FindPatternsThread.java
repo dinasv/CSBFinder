@@ -46,28 +46,6 @@ public abstract class FindPatternsThread implements Callable<Object> {
     abstract void extractPatterns();
     abstract void addPattern(Pattern pattern);
 
-    /*
-    private void extractPatterns() {
-
-        WordArray wordArray = genomesInfo.createWordArray(genes);
-
-        //go over all possible start indices of a pattern
-        for (int patternStart = 0; patternStart < wordArray.getLength(); patternStart++) {
-            extractPattern(genes, patternStart, wordArray);
-
-        }
-    }
-
-    private void addPattern(Pattern pattern){
-        if (pattern.getInstancesPerGenomeCount() >= quorum
-                && pattern.getLength() >= minPatternLength) {
-
-            patterns.put(pattern.toString(), pattern);
-
-        }
-    }
-
-    */
 
     protected void extractPattern(List<Gene> genes, int patternStart, WordArray wordArray){
         List<Gene> patternGenes = genes.subList(patternStart, patternStart + 1);
@@ -145,8 +123,6 @@ public abstract class FindPatternsThread implements Callable<Object> {
     }
 
     private void extendPattern(int letter, Pattern pattern, Pattern extendedPattern) {
-
-        String extendedPatternStr = extendedPattern.toString();
 
         Map<Integer, List<MatchPoint>> genomeRepliconToMatchList = matchLists.get(letter);
         if (genomeRepliconToMatchList == null) {

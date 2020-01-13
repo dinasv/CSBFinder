@@ -8,6 +8,7 @@ import model.patterns.PatternsUtils;
 
 import java.util.*;
 import java.util.concurrent.*;
+import java.util.stream.Stream;
 
 /**
  */
@@ -57,25 +58,33 @@ public class MatchPointAlgorithm implements Algorithm {
         for (Genome genome : genomesInfo.getGenomes()) {
 
             for (Replicon replicon : genome.getReplicons()) {
-                if (nonDirectons) {//putWithSuffix replicon and its reverseCompliment
+                if (nonDirectons) {
 
-                    Replicon reversedReplicon = new Replicon(replicon);
-                    reversedReplicon.reverseCompliment();
+                    createMatchListsNonDirectons(genome, replicon);
 
-                    createMatchLists(reversedReplicon, genome.getId());
-                    createMatchLists(replicon, genome.getId());
+                } else {
 
-                } else {//split replicon to directons
-
-                    List<Directon> directons = replicon.splitRepliconToDirectons(Alphabet.UNK_CHAR);
-
-                    for (Directon directon : directons) {
-                        createMatchLists(directon, genome.getId());
-                    }
+                    createMatchListsDirectons(genome, replicon);
 
                 }
             }
         }
+    }
+
+    private void createMatchListsDirectons(Genome genome, Replicon replicon) {
+        List<Directon> directons = replicon.splitRepliconToDirectons(Alphabet.UNK_CHAR);
+
+        for (Directon directon : directons) {
+            createMatchLists(directon, genome.getId());
+        }
+    }
+
+    private void createMatchListsNonDirectons(Genome genome, Replicon replicon) {
+        Replicon reversedReplicon = new Replicon(replicon);
+        reversedReplicon.reverseCompliment();
+
+        createMatchLists(reversedReplicon, genome.getId());
+        createMatchLists(replicon, genome.getId());
     }
 
     private void createMatchLists(GenomicSegment genomicSegment, int currGenomeId) {
@@ -102,9 +111,6 @@ public class MatchPointAlgorithm implements Algorithm {
         }
     }
 
-    public static String genomeRepliconToHashString(int genomeId, int repliconId, int genomicSegmentId){
-        return String.format("%d_%d_%d", genomeId, repliconId, genomicSegmentId);
-    }
 
     @Override
     public void setParameters(Parameters params) {

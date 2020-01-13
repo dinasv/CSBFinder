@@ -116,7 +116,7 @@ public class GenomesInfo {
         return genomesByName.get(name).getId();
     }
 
-    public void addReplicon(Replicon replicon){
+    public void addRepliconInfo(Replicon replicon){
 
         countReplicons++;
 

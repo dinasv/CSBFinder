@@ -544,7 +544,7 @@ public class Parsers {
                     genome.addReplicon(replicon);
 
                     genomesInfo.addGenome(genome);
-                    genomesInfo.addReplicon(replicon);
+                    genomesInfo.addRepliconInfo(replicon);
 
                 }
 
@@ -569,7 +569,7 @@ public class Parsers {
         genome.addReplicon(replicon);
 
         genomesInfo.addGenome(genome);
-        genomesInfo.addReplicon(replicon);
+        genomesInfo.addRepliconInfo(replicon);
 
         return lineNumber;
     }

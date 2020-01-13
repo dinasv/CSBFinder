@@ -59,7 +59,7 @@ public class Replicon extends GenomicSegment {
 
         int geneIndex = 0;
         for (Gene gene : getGenes()) {
-            //end directon if it is the last gene in the replicon, or if next gene is on different numericValue
+            //end directon if it is the last gene in the replicon, or if next gene is on different strand
             boolean endDirecton = (geneIndex == size()-1) ||
                     !(gene.getStrand().equals(getGenes().get(geneIndex+1).getStrand()));
             if (directon.size() == 0) {
