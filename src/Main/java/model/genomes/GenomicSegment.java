@@ -14,8 +14,6 @@ public interface GenomicSegment {
 
     void addAllGenes(List<Gene> genes);
 
-    void addAllGenes(Gene[] genes);
-
     Strand getStrand();
 
     void setStrand(Strand strand);

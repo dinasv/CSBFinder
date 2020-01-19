@@ -168,10 +168,6 @@ public class Replicon implements GenomicSegment {
         this.genes.addAll(genes);
     }
 
-    public void addAllGenes(Gene[] genes){
-        addAllGenes(Arrays.asList(genes));
-    }
-
     @Override
     public Strand getStrand() {
         return strand;

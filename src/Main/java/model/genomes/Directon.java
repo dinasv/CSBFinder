@@ -106,11 +106,6 @@ public class Directon implements GenomicSegment {
     }
 
     @Override
-    public void addAllGenes(Gene[] genes) {
-        addAllGenes(Arrays.asList(genes));
-    }
-
-    @Override
     public Strand getStrand() {
         return strand;
     }
