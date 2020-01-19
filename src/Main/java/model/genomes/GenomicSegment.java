@@ -6,96 +6,30 @@ import java.util.List;
 
 /**
  */
-public abstract class GenomicSegment {
+public interface GenomicSegment {
 
-    private int id;
-    private int repliconId;
-    private int genomeId;
+    int size();
 
-    protected List<Gene> genes;
-    private Strand strand;
-    private int startIndex;
+    void addGene(Gene gene);
 
-    public GenomicSegment(){
-        genes = new ArrayList<>();
-        strand = Strand.INVALID;
-        startIndex = 0;
-        repliconId = -1;
-        genomeId = -1;
-        id = -1;
-    }
+    void addAllGenes(List<Gene> genes);
 
-    public GenomicSegment(int id, int repliconId, int genomeId){
-        this();
-        this.repliconId = repliconId;
-        this.genomeId = genomeId;
-        this.id = id;
-    }
+    void addAllGenes(Gene[] genes);
 
-    public GenomicSegment(Strand strand){
-        this();
-        this.strand = strand;
-    }
+    Strand getStrand();
 
-    public GenomicSegment(int id, Strand strand, int repliconId, int genomeId){
-        this(id, repliconId, genomeId);
-        this.strand = strand;
-    }
+    void setStrand(Strand strand);
 
-    public GenomicSegment(GenomicSegment other){
-        this(other.id, other.strand, other.repliconId, other.genomeId);
-        genes.addAll(other.genes);
-    }
+    int getStartIndex();
 
-    public int size(){
-        return genes.size();
-    }
+    void setStartIndex(int startIndex);
 
-    public void addGene(Gene gene){
-        genes.add(gene);
-    }
+    List<Gene> getGenes();
 
-    public void addAllGenes(List<Gene> genes){
-        this.genes.addAll(genes);
-    }
+    int getRepliconId();
 
-    public void addAllGenes(Gene[] genes){
-        addAllGenes(Arrays.asList(genes));
-    }
+    int getGenomeId();
 
-    public Strand getStrand() {
-        return strand;
-    }
+    int getId();
 
-    public void setStrand(Strand strand) {
-        this.strand = strand;
-    }
-
-    public int getStartIndex() {
-        return startIndex;
-    }
-
-    public void setStartIndex(int start_index) {
-        this.startIndex = start_index;
-    }
-
-    public List<Gene> getGenes(){
-        return genes;
-    }
-
-    public int getRepliconId() {
-        return repliconId;
-    }
-
-    public int getGenomeId() {
-        return genomeId;
-    }
-
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
 }

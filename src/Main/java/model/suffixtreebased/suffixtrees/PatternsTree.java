@@ -35,10 +35,7 @@ public class PatternsTree {
                 if (nonDirectons) {
                     putWordInTree(patternGenes);
 
-                    Replicon replicon = new Replicon();
-                    replicon.addAllGenes(patternGenes);
-                    replicon.reverseCompliment();
-                    putWordInTree(replicon.getGenes());
+                    putWordInTree(Replicon.reverseComplementGenes(patternGenes));
                 } else {
                     Replicon replicon = new Replicon();
                     replicon.addAllGenes(patternGenes);

@@ -4,6 +4,7 @@ import model.genomes.Gene;
 import model.genomes.GenomesInfo;
 import model.genomes.Strand;
 import model.Parameters;
+import model.patterns.InstanceLocation;
 import model.patterns.Pattern;
 import io.Parsers;
 import org.junit.Assert;
@@ -89,6 +90,20 @@ public class MatchPointAlgorithmTest {
         expectedPatterns.add(new Pattern(expectedGenes));
 
         Assert.assertEquals(expectedPatterns, patterns);
+
+    }
+
+    @Test
+    public void testInstanceLocations() throws Exception {
+
+        List<Pattern> patterns = runAlgorithm(GENOMES_FILE_PATH2, initParamsNonDirectons());
+
+        for (Pattern pattern : patterns){
+            for (InstanceLocation loc :pattern.getPatternLocations().getSortedLocations()){
+                Assert.assertEquals(1, loc.getActualStartIndex());
+                Assert.assertEquals(4, loc.getActualEndIndex());
+            }
+        }
 
     }
 

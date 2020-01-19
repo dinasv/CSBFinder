@@ -554,8 +554,8 @@ public class Parsers {
                 repliconName = title[1];
 
                 genome = getNewOrExistingGenome(genomesInfo, currGenomeName);
-                replicon = new Replicon(Strand.FORWARD, genomesInfo.getNumberOfReplicons(), repliconName,
-                        genome.getId());
+                replicon = new Replicon(repliconName, genomesInfo.getNumberOfReplicons(),
+                        genome.getId(), Strand.FORWARD);
 
             } else {
                 Gene gene = parseGeneLine(rawLine, lineNumber, filePath);

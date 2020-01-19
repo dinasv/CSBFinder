@@ -52,13 +52,11 @@ public class DatasetTree {
      */
     private void updateDataTree(Replicon replicon, int currGenomeIndex, boolean nonDirectons){
 
-        if (nonDirectons) {//putWithSuffix replicon and its reverseCompliment
+        if (nonDirectons) {//putWithSuffix replicon and its reverseComplement
 
             putWordInDataTree(replicon, currGenomeIndex);
 
-            //reverseCompliment replicon
-            replicon = new Replicon(replicon);
-            replicon.reverseCompliment();
+            replicon = replicon.reverseComplement();
             putWordInDataTree(replicon, currGenomeIndex);
 
         }else{//split replicon to directons

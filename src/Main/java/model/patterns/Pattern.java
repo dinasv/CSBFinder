@@ -165,7 +165,7 @@ public class Pattern {
     }
 
     /**
-     * Returns the reverseCompliment compliment of a pattern. e.g. [COG1+, COG2-] -> [COG2+, COG1-]
+     * Returns the reverseComplement compliment of a pattern. e.g. [COG1+, COG2-] -> [COG2+, COG1-]
      * @param pattern
      * @return
      */

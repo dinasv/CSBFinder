@@ -8,7 +8,6 @@ import model.patterns.PatternsUtils;
 
 import java.util.*;
 import java.util.concurrent.*;
-import java.util.stream.Stream;
 
 /**
  */
@@ -80,8 +79,7 @@ public class MatchPointAlgorithm implements Algorithm {
     }
 
     private void createMatchListsNonDirectons(Genome genome, Replicon replicon) {
-        Replicon reversedReplicon = new Replicon(replicon);
-        reversedReplicon.reverseCompliment();
+        Replicon reversedReplicon = replicon.reverseComplement();
 
         createMatchLists(reversedReplicon, genome.getId());
         createMatchLists(replicon, genome.getId());
@@ -208,7 +206,7 @@ public class MatchPointAlgorithm implements Algorithm {
                 tasks.add(new FindPatternsFromGenesThread(genes, genomesInfo, parameters.quorum2, parameters.maxPatternLength,
                         parameters.minPatternLength, parameters.maxInsertion, patterns, matchLists));
 
-                replicon.reverseCompliment();
+                replicon = replicon.reverseComplement();
 
                 tasks.add(new FindPatternsFromGenesThread(replicon.getGenes(), genomesInfo, parameters.quorum2, parameters.maxPatternLength,
                         parameters.minPatternLength, parameters.maxInsertion, patterns, matchLists));
