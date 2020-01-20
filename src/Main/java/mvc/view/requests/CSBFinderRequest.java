@@ -24,6 +24,7 @@ public class CSBFinderRequest implements Request{
     private ClusterBy clusterType = ClusterBy.SCORE;
     private ClusterDenominator clusterDenominator = ClusterDenominator.MIN_SET;
     private AlgorithmType algorithmType = AlgorithmType.SUFFIX_TREE;
+    private boolean circularGenomes = false;
 
     public ClusterDenominator getClusterDenominator() {
         return clusterDenominator;
@@ -191,7 +192,14 @@ public class CSBFinderRequest implements Request{
             argList.add("-non-directons");
         }
 
+        if (circularGenomes){
+            argList.add("-c");
+        }
+
         return argList.toArray(new String[0]);
     }
 
+    public void setCircularGenomes(boolean circularGenomes) {
+        this.circularGenomes = circularGenomes;
+    }
 }
