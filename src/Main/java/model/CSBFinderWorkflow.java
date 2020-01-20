@@ -77,7 +77,7 @@ public class CSBFinderWorkflow {
         this.params = params;
         algorithm.setParameters(params);
         algorithm.setPatternsFromFile(patternsFromFile);
-        algorithm.setRefGenomesAsPatterns(refGenomesAsPatterns);
+        //algorithm.setRefGenomesAsPatterns(refGenomesAsPatterns);
 
         int procCount = params.procCount == 0 ? Runtime.getRuntime().availableProcessors() : params.procCount;
         algorithm.setNumOfThreads(procCount);

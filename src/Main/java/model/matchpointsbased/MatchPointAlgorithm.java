@@ -132,6 +132,7 @@ public class MatchPointAlgorithm implements Algorithm {
         }
     }
 
+    /*
     @Override
     public void setRefGenomesAsPatterns(List<Pattern> refGenomesPatterns){
 
@@ -140,7 +141,7 @@ public class MatchPointAlgorithm implements Algorithm {
         if (refGenomesPatterns.size() >0 && extractPatternsFrom != ExtractPatternsFrom.FILE) {
             extractPatternsFrom = ExtractPatternsFrom.REF_GENOMES;
         }
-    }
+    }*/
 
     private void initialize() {
 
@@ -165,8 +166,6 @@ public class MatchPointAlgorithm implements Algorithm {
 
         if (extractPatternsFrom == ExtractPatternsFrom.FILE){
             extractPatternsFromFile(tasks);
-        } else if (extractPatternsFrom == ExtractPatternsFrom.REF_GENOMES) {
-            extractPatternsFromRefGenomes(tasks);
         }else{
             extractPatternsFromAllGenomes(tasks);
         }
@@ -201,15 +200,17 @@ public class MatchPointAlgorithm implements Algorithm {
             Replicon replicon = new Replicon();
             replicon.addAllGenes(genes);
 
+            int maxPatternLength = Math.min(replicon.size(), parameters.maxPatternLength);
+
             if(segmentationType == SegmentationType.NON_DIRECTONS) {
 
-                tasks.add(new FindPatternsFromGenesThread(genes, genomesInfo, parameters.quorum2, parameters.maxPatternLength,
+                tasks.add(new FindPatternsFromGenesThread(genes, genomesInfo, parameters.quorum2, maxPatternLength,
                         parameters.minPatternLength, parameters.maxInsertion, patterns, matchLists));
 
                 replicon = replicon.reverseComplement();
 
-                tasks.add(new FindPatternsFromGenesThread(replicon.getGenes(), genomesInfo, parameters.quorum2, parameters.maxPatternLength,
-                        parameters.minPatternLength, parameters.maxInsertion, patterns, matchLists));
+                tasks.add(new FindPatternsFromGenesThread(replicon.getGenes(), genomesInfo, parameters.quorum2,
+                        maxPatternLength, parameters.minPatternLength, parameters.maxInsertion, patterns, matchLists));
 
             }else{
 
@@ -217,7 +218,7 @@ public class MatchPointAlgorithm implements Algorithm {
 
                 for (Directon directon : directons) {
                     tasks.add(new FindPatternsFromGenesThread(directon.getGenes(), genomesInfo, parameters.quorum2,
-                            parameters.maxPatternLength,
+                            maxPatternLength,
                             parameters.minPatternLength, parameters.maxInsertion, patterns, matchLists));
                 }
             }
@@ -301,7 +302,7 @@ public class MatchPointAlgorithm implements Algorithm {
 
     private enum ExtractPatternsFrom{
         FILE,
-        REF_GENOMES,
+        //REF_GENOMES,
         ALL_GENOMES
     }
 

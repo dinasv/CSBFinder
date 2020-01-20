@@ -54,8 +54,9 @@ public class Parsers {
                 Genome genome = genomesInfo.getGenome(genomeName);
                 if (genome != null){
                     for (Replicon replicon: genome.getReplicons()){
-                        Gene[] repliconGenes = new Gene[replicon.getGenes().size()];
-                        Pattern pattern = new Pattern(replicon.getGenes().toArray(repliconGenes));
+                        List<Gene> genes = replicon.getGenes();
+                        Gene[] repliconGenes = new Gene[genes.size()];
+                        Pattern pattern = new Pattern(genes.toArray(repliconGenes));
                         patterns.add(pattern);
                     }
                 }
@@ -230,7 +231,7 @@ public class Parsers {
 
 
     public static void parseSessionFile(List<Family> families, String filePath, GenomesInfo genomesInfo,
-                                        GeneColors colors)
+                                        GeneColors colors, boolean circular)
             throws IOException, IllegalArgumentException {
 
         if (filePath == null) {
@@ -250,7 +251,7 @@ public class Parsers {
             while (rawLine != null) {
                 if (rawLine.startsWith(GENOMES_START)) {
 
-                    lineNumber = readGenomes(br, genomesInfo, filePath, GENOMES_END, lineNumber);
+                    lineNumber = readGenomes(br, genomesInfo, filePath, GENOMES_END, lineNumber, circular);
                 } else if (rawLine.startsWith(INSTANCES_START)) {
                     readInstances(br, genomesInfo, filePath, INSTANCES_END, lineNumber, families);
                 } else if (rawLine.startsWith(COLORS_START)) {
@@ -273,7 +274,7 @@ public class Parsers {
      * @param filePath path to input file with input sequences
      * @return all information obtained from the file, stored in GenomesInfo
      */
-    public static GenomesInfo parseGenomesFile(String filePath)
+    public static GenomesInfo parseGenomesFile(String filePath, boolean circular)
             throws IOException, IllegalArgumentException {
 
         if (filePath == null) {
@@ -284,7 +285,7 @@ public class Parsers {
 
         try (BufferedReader br = new BufferedReader(new FileReader(filePath))) {
 
-            readGenomes(br, genomesInfo, filePath, null);
+            readGenomes(br, genomesInfo, filePath, null, circular);
 
         } catch (FileNotFoundException e) {
             throw new FileNotFoundException("File " + filePath + " was not found.");
@@ -346,10 +347,6 @@ public class Parsers {
         }
 
         return genomeToTaxon;
-    }
-
-    private static void readTaxaFile(BufferedReader br){
-
     }
 
     private static void readInstances(BufferedReader br, GenomesInfo genomesInfo, String filePath, String end,
@@ -517,14 +514,15 @@ public class Parsers {
         return result;
     }
 
-    private static void readGenomes(BufferedReader br, GenomesInfo genomesInfo, String filePath, String end)
+    private static void readGenomes(BufferedReader br, GenomesInfo genomesInfo, String filePath, String end,
+                                    boolean circular)
             throws IOException {
-        readGenomes(br, genomesInfo, filePath, end, 0);
+        readGenomes(br, genomesInfo, filePath, end, 0, circular);
     }
 
 
     private static int readGenomes(BufferedReader br, GenomesInfo genomesInfo, String filePath, String end,
-                                   int lineNumber)
+                                   int lineNumber, boolean circular)
             throws IOException {
 
         String repliconName;
@@ -555,7 +553,7 @@ public class Parsers {
 
                 genome = getNewOrExistingGenome(genomesInfo, currGenomeName);
                 replicon = new Replicon(repliconName, genomesInfo.getNumberOfReplicons(),
-                        genome.getId(), Strand.FORWARD);
+                        genome.getId(), Strand.FORWARD, circular);
 
             } else {
                 Gene gene = parseGeneLine(rawLine, lineNumber, filePath);

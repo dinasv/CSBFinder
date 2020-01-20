@@ -115,7 +115,7 @@ public class Controller {
 
         try {
             printToScreen("Parsing input genomes file");
-            gi = Parsers.parseGenomesFile(genomesFilePath);
+            gi = Parsers.parseGenomesFile(genomesFilePath, params.circular);
 
         }catch (Exception e){
             printToScreen("Input genome file is not valid. " + e.getMessage());
@@ -153,9 +153,10 @@ public class Controller {
             List<Pattern> refGenomesAsPatterns = new ArrayList<>();
             try {
                 patternsFromFile = readPatternsFromFile();
+                /*
                 if (patternsFromFile.size() == 0 ){
                     refGenomesAsPatterns = readPatternsReferenceGenomesFile(gi);
-                }
+                }*/
             }catch (Exception e){
                 System.out.println(e.getMessage());
             }

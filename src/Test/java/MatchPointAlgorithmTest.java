@@ -17,13 +17,22 @@ import java.util.*;
 public class MatchPointAlgorithmTest {
     private final String GENOMES_FILE_PATH1 = this.getClass().getResource("/genomes2.fasta").getPath();
     private final String GENOMES_FILE_PATH2 = this.getClass().getResource("/genomes3.fasta").getPath();
+    private final String GENOMES_FILE_PATH3 = this.getClass().getResource("/genomes9.fasta").getPath();
+    private final String GENOMES_FILE_PATH4 = this.getClass().getResource("/genomes11.fasta").getPath();
+    private final String GENOMES_FILE_PATH5 = this.getClass().getResource("/genomes12.fasta").getPath();
     private final String REF_GENOMES_FILE_PATH = this.getClass().getResource("/ref_genomes.txt").getPath();
 
-    private void initAlgorithm(Algorithm algorithm, Parameters params, List<Pattern> patternsFromFile, GenomesInfo gi){
+    private void initAlgorithm(Algorithm algorithm, Parameters params, GenomesInfo gi){
         algorithm.setParameters(params);
-        algorithm.setRefGenomesAsPatterns(patternsFromFile);
+        //algorithm.setRefGenomesAsPatterns(patternsFromFile);
         algorithm.setGenomesInfo(gi);
         algorithm.setNumOfThreads(1);
+    }
+
+    private Parameters initParamsDirectons(){
+        Parameters params = new Parameters();
+        params.quorum2 = 2;
+        return params;
     }
 
     private Parameters initParamsNonDirectons(){
@@ -51,10 +60,10 @@ public class MatchPointAlgorithmTest {
     private List<Pattern> runAlgorithm(String genomesFile, Parameters params) throws Exception{
 
         Algorithm algorithm = AlgorithmType.MATCH_POINTS.getAlgorithm();
-        GenomesInfo gi = Parsers.parseGenomesFile(genomesFile);
-        List<Pattern> patternsFromFile = Parsers.parseReferenceGenomesFile(gi, REF_GENOMES_FILE_PATH);
+        GenomesInfo gi = Parsers.parseGenomesFile(genomesFile, params.circular);
+        //List<Pattern> patternsFromFile = Parsers.parseReferenceGenomesFile(gi, REF_GENOMES_FILE_PATH);
 
-        initAlgorithm(algorithm, params, patternsFromFile, gi);
+        initAlgorithm(algorithm, params, gi);
 
         algorithm.findPatterns();
 
@@ -141,6 +150,88 @@ public class MatchPointAlgorithmTest {
         Assert.assertEquals(patterns.size(), expectedPatterns.size());
         for (Pattern pattern : expectedPatterns) {
             Assert.assertTrue(patterns.contains(pattern));
+        }
+    }
+
+    @Test
+    public void testCircularGenome() throws Exception {
+        Parameters params = initParamsNonDirectons();
+        params.circular = true;
+        List<Pattern> patterns = runAlgorithm(GENOMES_FILE_PATH3, params);
+
+        List<Pattern> expectedPatterns = new ArrayList<>();
+        Gene[] expectedGenes = {
+                new Gene("COG0001", Strand.FORWARD),
+                new Gene("COG0002", Strand.FORWARD),
+                new Gene("COG0003", Strand.FORWARD)};
+        expectedPatterns.add(new Pattern(expectedGenes));
+
+        Map<Integer, Integer> expectedGenomeToStartIndex = new HashMap<>();
+        expectedGenomeToStartIndex.put(0, 2);
+        expectedGenomeToStartIndex.put(1, 0);
+
+        Assert.assertEquals(expectedPatterns, patterns);
+        for (Pattern pattern : patterns){
+            List<InstanceLocation> locations = pattern.getPatternLocations().getSortedLocations();
+            for (InstanceLocation location : locations){
+                int expectedStartIndex = expectedGenomeToStartIndex.get(location.getGenomeId());
+                Assert.assertEquals(expectedStartIndex, location.getActualStartIndex());
+            }
+        }
+    }
+
+    @Test
+    public void testCircularGenomeInsertions() throws Exception {
+        Parameters params = initParamsNonDirectons();
+        params.circular = true;
+        params.maxInsertion = 1;
+        List<Pattern> patterns = runAlgorithm(GENOMES_FILE_PATH5, params);
+
+        List<Pattern> expectedPatterns = new ArrayList<>();
+        Gene[] expectedGenes = {
+                new Gene("COG0001", Strand.FORWARD),
+                new Gene("COG0002", Strand.FORWARD),
+                new Gene("COG0004", Strand.FORWARD)};
+        expectedPatterns.add(new Pattern(expectedGenes));
+
+        Map<Integer, Integer> expectedGenomeToStartIndex = new HashMap<>();
+        expectedGenomeToStartIndex.put(0, 2);
+        expectedGenomeToStartIndex.put(1, 0);
+
+        Assert.assertEquals(expectedPatterns, patterns);
+        for (Pattern pattern : patterns){
+            List<InstanceLocation> locations = pattern.getPatternLocations().getSortedLocations();
+            for (InstanceLocation location : locations){
+                int expectedStartIndex = expectedGenomeToStartIndex.get(location.getGenomeId());
+                Assert.assertEquals(expectedStartIndex, location.getActualStartIndex());
+            }
+        }
+    }
+
+    @Test
+    public void testCircularGenomeDirectons() throws Exception {
+        Parameters params = initParamsDirectons();
+        params.circular = true;
+        List<Pattern> patterns = runAlgorithm(GENOMES_FILE_PATH4, params);
+
+        List<Pattern> expectedPatterns = new ArrayList<>();
+        Gene[] expectedGenes = {
+                new Gene("COG0001", Strand.INVALID),
+                new Gene("COG0002", Strand.INVALID),
+                new Gene("COG0003", Strand.INVALID)};
+        expectedPatterns.add(new Pattern(expectedGenes));
+
+        Map<Integer, Integer> expectedGenomeToStartIndex = new HashMap<>();
+        expectedGenomeToStartIndex.put(0, 2);
+        expectedGenomeToStartIndex.put(1, 0);
+
+        Assert.assertEquals(expectedPatterns, patterns);
+        for (Pattern pattern : patterns){
+            List<InstanceLocation> locations = pattern.getPatternLocations().getSortedLocations();
+            for (InstanceLocation location : locations){
+                int expectedStartIndex = expectedGenomeToStartIndex.get(location.getGenomeId());
+                Assert.assertEquals(expectedStartIndex, location.getActualStartIndex());
+            }
         }
     }
 

@@ -72,7 +72,8 @@ public class InstanceNode extends SuffixNode {
     private void addIndexToSuffix(InstanceNode node, int genomeId, InstanceLocation instanceLocation){
         InstanceNode iter = node.getSuffix();
         if (iter != null) {
-            while (iter.getSuffix() != null) {
+            while (iter.getSuffix() != null &&
+                    instanceLocation.getRelativeStartIndex() < instanceLocation.getGenomicLength()-1) {
 
                 instanceLocation = new InstanceLocation(instanceLocation);
                 instanceLocation.incrementRelativeStartIndex();

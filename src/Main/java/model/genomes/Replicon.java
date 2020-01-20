@@ -1,10 +1,8 @@
 package model.genomes;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  */
@@ -19,26 +17,29 @@ public class Replicon implements GenomicSegment {
     private Strand strand;
     private int startIndex;
 
+    private boolean circular;
+    private static final int GENES_FROM_START = 50;
+
     public Replicon(){
-        this("", -1, -1, Strand.INVALID);
+        this("", -1, -1, Strand.INVALID, false);
     }
 
-    public Replicon(String name, int repliconId, int genomeId, Strand strand){
-        this(name, repliconId, genomeId, strand, new ArrayList<>());
+    public Replicon(String name, int repliconId, int genomeId, Strand strand, boolean circular){
+        this(name, repliconId, genomeId, strand, new ArrayList<>(), circular);
     }
 
-    public Replicon(String name, int repliconId, int genomeId, Strand strand, List<Gene> genes){
+    public Replicon(String name, int repliconId, int genomeId, Strand strand, List<Gene> genes, boolean circular){
         this.name = name;
         this.repliconId = repliconId;
         this.genomeId = genomeId;
         this.strand = strand;
-
         this.genes = genes;
+        this.circular = circular;
         startIndex = 0;
     }
 
     public Replicon(Replicon other){
-        this(other.name, other.repliconId, other.genomeId, other.strand);
+        this(other.name, other.repliconId, other.genomeId, other.strand, other.circular);
 
         genes.addAll(other.genes);
     }
@@ -58,7 +59,7 @@ public class Replicon implements GenomicSegment {
         Strand reversedStrand = reverseStrand(strand);
         List<Gene> reverseComplementGenes = reverseComplementGenes(genes);
 
-        return new Replicon(name, repliconId, genomeId, reversedStrand, reverseComplementGenes);
+        return new Replicon(name, repliconId, genomeId, reversedStrand, reverseComplementGenes, circular);
     }
 
     public static List<Gene> reverseComplementGenes(List<Gene> genes){
@@ -78,14 +79,19 @@ public class Replicon implements GenomicSegment {
         List<Directon> directons = new ArrayList<>();
 
         int directonId = 1;
-        Directon directon = new Directon(directonId++, getRepliconId(), getGenomeId());
+        Directon directon = new Directon(directonId++, this, getGenomeId());
 
         int geneIndex = 0;
-        for (Gene gene : getGenes()) {
+        List<Gene> genes = getGenes();
+        for (Gene gene : genes) {
             //end directon if it is the last gene in the replicon, or if next gene is on different strand
-            boolean endDirecton = (geneIndex == size()-1) ||
-                    !(gene.getStrand().equals(getGenes().get(geneIndex+1).getStrand()));
-            if (directon.size() == 0) {
+            boolean endDirecton = (geneIndex == genes.size()-1) ||
+                    !(gene.getStrand().equals(genes.get(geneIndex+1).getStrand()));
+            if (directon.getGenes().size() == 0) {
+                //returned to start of replicon in circular replicon, don't create new directon
+                if (geneIndex >= this.size()){
+                    break;
+                }
                 if (!gene.getCogId().equals(UNK_CHAR) && !endDirecton) {
                     directon.setStrand(gene.getStrand());
                     directon.addGene(new Gene(gene.getCogId(), Strand.INVALID));
@@ -97,16 +103,16 @@ public class Replicon implements GenomicSegment {
 
                     if (directon.size() > 1) {
 
-                        directon.setStartIndex(geneIndex-directon.size()+1);
+                        directon.setStartIndex(geneIndex-directon.getGenes().size()+1);
 
                         directon.removeUnkChars(UNK_CHAR);
-                        if (directon.size() > 1) {
+                        if (directon.getGenes().size() > 1) {
 
                             directons.add(directon);
                         }
                     }
 
-                    directon = new Directon(directonId++, getRepliconId(), getGenomeId());
+                    directon = new Directon(directonId++, this, getGenomeId());
                 }
             }
             geneIndex ++;
@@ -135,6 +141,12 @@ public class Replicon implements GenomicSegment {
 
     @Override
     public List<Gene> getGenes() {
+        if (circular) {
+            List<Gene> firstGenes = genes.subList(0, Math.min(GENES_FROM_START, genes.size()-1));
+            return Stream.of(genes, firstGenes)
+                    .flatMap(Collection::stream)
+                    .collect(Collectors.toList());
+        }
         return genes;
     }
 

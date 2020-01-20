@@ -270,7 +270,7 @@ public class InstancesPanel extends JPanel {
         int instanceEndIndex = instance.getActualEndIndex();
 
         int leftStartIndex = Math.max(0, instanceStartIndex - numOfNeighbors);
-        int rightEndIndex = Math.min(instanceEndIndex + numOfNeighbors, replicon.size());
+        int rightEndIndex = Math.min(instanceEndIndex + numOfNeighbors, replicon.getGenes().size());
 
         List<GeneShape> leftNeighbors = getGeneShapesList(getGenes(replicon, leftStartIndex, instanceStartIndex));
         List<GeneShape> instanceShapesList = getGeneShapesList(getGenes(replicon, instanceStartIndex, instanceEndIndex));
@@ -278,8 +278,8 @@ public class InstancesPanel extends JPanel {
 
         Label instanceNameLabel = new Label(repliconName, geneLabelFont, getGraphics());
 
-        Label instanceStartIndexLabel = new Label(Integer.toString(leftStartIndex), geneLabelFont, getGraphics());
-        Label instanceEndIndexLabel = new Label(Integer.toString(rightEndIndex-1), geneLabelFont, getGraphics());
+        Label instanceStartIndexLabel = new Label(Integer.toString(leftStartIndex%replicon.size()), geneLabelFont, getGraphics());
+        Label instanceEndIndexLabel = new Label(Integer.toString((rightEndIndex-1)%replicon.size()), geneLabelFont, getGraphics());
 
         return new GenesInstance(instanceShapesList, leftNeighbors, rightNeighbors, x, y, instanceNameLabel,
                 instanceStartIndexLabel, instanceEndIndexLabel);

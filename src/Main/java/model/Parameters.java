@@ -112,6 +112,9 @@ public class Parameters {
             "available processes", order = 19)
     public int procCount = 1;
 
+    @Parameter(names={"--circular", "-c"}, description = "Input genomes are circular", order = 20)
+    public boolean circular = false;
+
     @Parameter(names={"--mismatch", "-err"}, description = "Maximal number of mismatches allowed", hidden = true)
     public int maxError = 0;
     @Parameter(names={"--deletion", "-del"}, description = "Maximal number of deletions allowed", hidden = true)

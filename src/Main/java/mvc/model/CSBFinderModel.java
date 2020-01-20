@@ -64,7 +64,7 @@ public class CSBFinderModel {
     public void loadInputGenomesFile(String path) throws IOException {
 
         try {
-            gi = Parsers.parseGenomesFile(path);
+            gi = Parsers.parseGenomesFile(path, params.circular);
             inputGenomesPath = path;
             workflow = new CSBFinderWorkflow(gi);
         }catch(Exception e){
@@ -87,7 +87,7 @@ public class CSBFinderModel {
         }
 
         List<Family> families = new ArrayList<>();
-        Parsers.parseSessionFile(families, path, gi, colors);
+        Parsers.parseSessionFile(families, path, gi, colors, params.circular);
 
         workflow = new CSBFinderWorkflow(gi);
         workflow.setParameters(params);

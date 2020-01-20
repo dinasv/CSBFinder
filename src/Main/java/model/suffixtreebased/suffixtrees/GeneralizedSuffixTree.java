@@ -173,7 +173,6 @@ public class GeneralizedSuffixTree  implements Serializable{
             WordArray rest = new WordArray(substring.getWordArray(), i, substring.getEndIndex());
             WordArray text_copy = new WordArray(text.getWordArray(), text.getStartIndex(), text.getEndIndex());
 
-
             Pair<InstanceNode, WordArray> active = update(s, text_copy, rest);
             // line 8: make sure the active pair is canonical
             active = canonize(active.getFirst(), active.getSecond());

@@ -99,7 +99,7 @@ public class ScoreTest {
     @Test
     public void testNumOfGenomesCorrection() throws IOException {
 
-        GenomesInfo gi = Parsers.parseGenomesFile(GENOMES_FILE_PATH);
+        GenomesInfo gi = Parsers.parseGenomesFile(GENOMES_FILE_PATH, false);
         gi.computeDistancesBetweenGenomesAllVsAll();
 
         // all genomes are independent
@@ -124,7 +124,7 @@ public class ScoreTest {
     @Test
     public void testNumOfInstancesCorrection() throws IOException {
 
-        GenomesInfo gi = Parsers.parseGenomesFile(GENOMES_FILE_PATH);
+        GenomesInfo gi = Parsers.parseGenomesFile(GENOMES_FILE_PATH, false);
         gi.computeDistancesBetweenGenomesAllVsAll();
 
         double dist = gi.getGenomesDistance(0, 1);

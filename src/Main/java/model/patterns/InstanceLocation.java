@@ -72,6 +72,9 @@ public class InstanceLocation{
         if (strand == Strand.REVERSE){
             startIndex = genomicSegmentStartIndex + genomicSegmentLength - (relativeStartIndex + instanceLength);
         }
+        if (startIndex < 0){
+            startIndex = genomicSegmentLength + startIndex;
+        }
         return startIndex;
     }
 
@@ -113,6 +116,10 @@ public class InstanceLocation{
 
     public int getGenomicSegmentId() {
         return genomicSegmentId;
+    }
+
+    public int getGenomicLength() {
+        return genomicSegmentLength;
     }
 
 }

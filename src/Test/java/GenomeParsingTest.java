@@ -9,7 +9,7 @@ public class GenomeParsingTest {
     @Test
     public void testRefGenomesEqualOutput() throws Exception {
 
-        GenomesInfo gi = Parsers.parseGenomesFile(GENOMES_FILE_PATH);
+        GenomesInfo gi = Parsers.parseGenomesFile(GENOMES_FILE_PATH, false);
         gi.computeDistancesBetweenGenomesAllVsAll();
 
         double DELTA = 0.001;

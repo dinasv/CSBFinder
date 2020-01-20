@@ -15,7 +15,7 @@ public interface Algorithm {
 
     void setPatternsFromFile(List<Pattern> patternsFromFile);
 
-    void setRefGenomesAsPatterns(List<Pattern> refGenomesPatterns);
+    //void setRefGenomesAsPatterns(List<Pattern> refGenomesPatterns);
 
     void findPatterns();
 

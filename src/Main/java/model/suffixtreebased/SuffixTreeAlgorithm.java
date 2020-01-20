@@ -93,12 +93,13 @@ public class SuffixTreeAlgorithm implements Algorithm {
         this.patternsFromFile = patternsFromFile;
     }
 
+    /*
     @Override
     public void setRefGenomesAsPatterns(List<Pattern> refGenomesPatterns) {
         if (this.patternsFromFile.size() == 0) {
             this.patternsFromFile = refGenomesPatterns;
         }
-    }
+    }*/
 
     public Parameters getParameters() {
         return parameters;
@@ -515,7 +516,7 @@ public class SuffixTreeAlgorithm implements Algorithm {
 
             //If we reached the end of the label by incrementing edgeIndex, get next nodeInstance
             if (nextEdgeIndex == label.getLength() - 1) {
-                nextNodeInstance = (InstanceNode) instanceEdge.getDest();
+                nextNodeInstance = instanceEdge.getDest();
                 nextEdgeInstance = null;
                 nextEdgeIndex = -1;
             }

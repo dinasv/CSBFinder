@@ -25,7 +25,7 @@ public class PatternsOptionTest {
 
     private List<Pattern> runWorkflow(String genomesFile, List<Pattern> patternsFromFile, Parameters params) throws Exception{
 
-        GenomesInfo gi = Parsers.parseGenomesFile(genomesFile);
+        GenomesInfo gi = Parsers.parseGenomesFile(genomesFile, false);
 
         CSBFinderWorkflow workflow = new CSBFinderWorkflow(gi);
 

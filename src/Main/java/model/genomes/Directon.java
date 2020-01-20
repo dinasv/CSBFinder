@@ -1,31 +1,28 @@
 package model.genomes;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  */
 public class Directon implements GenomicSegment {
 
     private int id;
-    private int repliconId;
+    private Replicon replicon;
     private int genomeId;
 
     protected List<Gene> genes;
     private Strand strand;
-    private int startIndex;
+    private int startIndexInReplicon;
 
-    public Directon(int id, int repliconId, int genomeId){
+    public Directon(int id, Replicon replicon, int genomeId){
         this.id = id;
-        this.repliconId = repliconId;
+        this.replicon = replicon;
         this.genomeId = genomeId;
 
         genes = new ArrayList<>();
         strand = Strand.INVALID;
-        startIndex = 0;
+        startIndexInReplicon = 0;
     }
 
     public void removeUnkChars(String UNK_CHAR){
@@ -59,12 +56,12 @@ public class Directon implements GenomicSegment {
 
     @Override
     public int getStartIndex() {
-        return startIndex;
+        return startIndexInReplicon;
     }
 
     @Override
     public void setStartIndex(int startIndex) {
-        this.startIndex = startIndex;
+        this.startIndexInReplicon = startIndex;
     }
 
     @Override
@@ -74,7 +71,7 @@ public class Directon implements GenomicSegment {
 
     @Override
     public int getRepliconId() {
-        return repliconId;
+        return replicon.getRepliconId();
     }
 
     @Override
@@ -89,7 +86,7 @@ public class Directon implements GenomicSegment {
 
     @Override
     public int size() {
-        return genes.size();
+        return Math.min(genes.size(), replicon.size() - startIndexInReplicon);
     }
 
     public void addGene(Gene gene){

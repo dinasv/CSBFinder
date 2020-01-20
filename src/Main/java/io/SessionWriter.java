@@ -47,9 +47,13 @@ public class SessionWriter implements PatternsWriter {
         file.write("<genomes>\n");
 
         for (Genome genome: genomesMap.values()){
-            for(Replicon replicon: genome.getReplicons()){
+            for (Replicon replicon: genome.getReplicons()){
                 file.write(String.format(">%s|%s%n", genome.getName(), replicon.getName()));
-                for (Gene gene: replicon.getGenes()){
+
+                //if circular replicon, the last n genes are identical to the first n genes
+                Iterator<Gene> repliconGenes = replicon.getGenes().iterator();
+                for (int i = 0; i < replicon.size() && repliconGenes.hasNext(); i++) {
+                    Gene gene = repliconGenes.next();
                     file.write(String.format("%s\t%s%n", gene.getCogId(), gene.getStrand()));
                 }
             }

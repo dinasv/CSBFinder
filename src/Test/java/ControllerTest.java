@@ -7,7 +7,7 @@ public class ControllerTest {
     private final String PLASMID_GENOMES_FILE_PATH = this.getClass().getResource("/plasmid_genomes.fasta").getPath();
 
     @Test
-    public void testController() throws Exception {
+    public void testControllerPrintedCSBs() {
         String[] args = {"-in", PLASMID_GENOMES_FILE_PATH,
                 "-q", "30",
                 "-alg", "match_points",
