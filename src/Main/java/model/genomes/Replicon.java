@@ -13,7 +13,8 @@ public class Replicon implements GenomicSegment {
     private int repliconId;
     private int genomeId;
 
-    protected List<Gene> genes;
+    private List<Gene> genes;
+    private List<Gene> cachedCircularGenes;
     private Strand strand;
     private int startIndex;
 
@@ -36,6 +37,8 @@ public class Replicon implements GenomicSegment {
         this.genes = genes;
         this.circular = circular;
         startIndex = 0;
+
+        cachedCircularGenes = null;
     }
 
     public Replicon(Replicon other){
@@ -142,12 +145,19 @@ public class Replicon implements GenomicSegment {
     @Override
     public List<Gene> getGenes() {
         if (circular) {
-            List<Gene> firstGenes = genes.subList(0, Math.min(GENES_FROM_START, genes.size()-1));
-            return Stream.of(genes, firstGenes)
-                    .flatMap(Collection::stream)
-                    .collect(Collectors.toList());
+            return getCircularGenes();
         }
         return genes;
+    }
+
+    private List<Gene> getCircularGenes(){
+        if (cachedCircularGenes != null){
+            return cachedCircularGenes;
+        }
+        List<Gene> firstGenes = genes.subList(0, Math.min(GENES_FROM_START, genes.size()-1));
+        return Stream.of(genes, firstGenes)
+                .flatMap(Collection::stream)
+                .collect(Collectors.toList());
     }
 
     @Override
@@ -173,11 +183,13 @@ public class Replicon implements GenomicSegment {
     @Override
     public void addGene(Gene gene) {
         genes.add(gene);
+        cachedCircularGenes = null;
     }
 
     @Override
     public void addAllGenes(List<Gene> genes) {
         this.genes.addAll(genes);
+        cachedCircularGenes = null;
     }
 
     @Override
