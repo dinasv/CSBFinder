@@ -109,17 +109,11 @@ public class CSBSummaryPanel extends JPanel {
                         //sb.append(cog.getCogID());
                         highlightInfos.add(new HighlightInfo(startIndex, doc.getLength(), colorsUsed.getColor(cog.getCogId())));
 
-                        StringBuilder sb = new StringBuilder();
-                        sb.append(" ");
-                        sb.append(String.join("/", cog.getFunctionalCategories()));
-                        sb.append(" | ");
-                        sb.append(cog.getCogDesc());
-                        sb.append(" | ");
-                        sb.append(cog.getGeneName());
+                        String functionalCategories = String.join("/", cog.getFunctionalCategories());
+                        String text = String.format(" %s | %s | %s \n", functionalCategories, cog.getCogDesc(),
+                                cog.getGeneName());
 
-                        sb.append(NEWLINE);
-
-                        doc.insertString(doc.getLength(), sb.toString(), textStyle);
+                        doc.insertString(doc.getLength(), text, textStyle);
 
                     }
                 }

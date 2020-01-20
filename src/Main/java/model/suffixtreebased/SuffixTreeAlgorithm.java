@@ -1,7 +1,6 @@
 package model.suffixtreebased;
 
 import model.Algorithm;
-import model.genomes.WordArray;
 import model.MemoryUtils;
 import model.Parameters;
 import model.patterns.Instance;
@@ -490,10 +489,10 @@ public class SuffixTreeAlgorithm implements Algorithm {
                 nextNodeInstance = nodeInstance;
                 //Exists an instanceEdge starting with ch, addGene it to instances
                 if (nextEdgeInstance != null) {
-                    exactInstanceCount = ((InstanceNode) nextEdgeInstance.getDest()).getCountInstancePerGenome();
+                    exactInstanceCount = nextEdgeInstance.getDest().getCountInstancePerGenome();
                     //The label contains only 1 char, go to next nodeInstance
                     if (nextEdgeInstance.getLabel().getLength() == 1) {
-                        nextNodeInstance = (InstanceNode) nextEdgeInstance.getDest();
+                        nextNodeInstance = nextEdgeInstance.getDest();
                         nextEdgeInstance = null;
                         nextEdgeIndex = -1;
                     }

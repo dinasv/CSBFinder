@@ -102,9 +102,6 @@ public class ExcelWriter implements PatternsWriter{
 
     /**
      * Prints a pattern with the highest score in its family to a different sheet
-     * @param pattern
-     * @param gi
-     * @param familyId
      */
     public void printTopScoringPattern(Pattern pattern, int familyId, CogInfo cogInfo){
         if (pattern != null) {

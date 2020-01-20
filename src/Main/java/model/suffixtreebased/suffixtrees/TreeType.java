@@ -7,5 +7,5 @@ package model.suffixtreebased.suffixtrees;
  */
 public enum TreeType {
     VIRTUAL,
-    STATIC;
+    STATIC
 }

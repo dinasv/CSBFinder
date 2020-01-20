@@ -35,16 +35,14 @@ public class InputParametersDialog extends JDialog {
     private JLabel clusterDenominatorLabel;
     private JLabel quorumLabel;
     private JLabel numOfInsertionsLabel;
-    //private JLabel quorumWithoutInsertionsLabel;
     private JLabel minPatternLengthLabel;
     private JLabel maxPatternLengthLabel;
     private JLabel patternFilePathLabel;
-    //private JLabel bcountLabel;
     private JLabel familyClusterThresholdLabel;
     private JLabel genomesThresholdLabel;
     private JLabel segmentToDirectonsLabel;
     private JLabel algorithmLabel;
-    //private JLabel thresholdLabel;
+    private JLabel circularLabel;
 
     private JList<ClusterBy> clusterTypeField;
     private JList<ClusterDenominator> clusterDenominatorField;
@@ -53,18 +51,16 @@ public class InputParametersDialog extends JDialog {
     private JSpinner quorum;
     private JSlider quorumSlider;
     private JSpinner numOfInsertions;
-    //private JSpinner quorumWithoutInsertions;
-    //private JSlider quorumWithoutInsertionsSlider;
     private JSpinner minPatternLength;
     private JSpinner maxPatternLengthComponent;
     private JTextField patternFilePath;
-    //private JCheckBox bcount;
     private JSpinner familyClusterThresholdSpinner;
     private JSlider familyClusterThresholdSlider;
     private JCheckBox segmentToDirectons;
     private JButton loadPatternBtn;
     private JSpinner genomesDistSpinner;
     private JSlider genomesDistSlider;
+    private JCheckBox circularGenomes;
 
     private JButton run;
     private RunListener<CSBFinderRequest> runListener;
@@ -118,18 +114,17 @@ public class InputParametersDialog extends JDialog {
     private void initRequest(CSBFinderRequest request) {
         request.setNumberOfInsertions((int) numOfInsertions.getValue());
         request.setQuorum((int) quorum.getValue());
-        //request.setQuorumWithoutInsertions((int) quorumWithoutInsertions.getValue());
         request.setMinimalCSBLength((int) minPatternLength.getValue());
         request.setMaximumCSBLength((int) maxPatternLengthComponent.getValue());
         String patternPath = patternFilePath.getText();
         request.setCsbPatternFilePath("optional".equals(patternPath) || "".equals(patternPath) ? null : patternFilePath.getText());
-        //request.setMultCount(bcount.isSelected());
         request.setFamilyClusterThreshold((double)familyClusterThresholdSpinner.getValue());
         request.setGenomesDistanceThreshold((double)genomesDistSpinner.getValue());
         request.setClusterType(clusterTypeField.getSelectedValue());
         request.setAlgorithm(algorithmField.getSelectedValue());
         request.setNonDirectons(!segmentToDirectons.isSelected());
         request.setClusterDenominator(clusterDenominatorField.getSelectedValue());
+        request.setCircularGenomes(circularGenomes.isSelected());
 
     }
 
@@ -155,6 +150,7 @@ public class InputParametersDialog extends JDialog {
         patternFilePath = new JTextField();
 
         segmentToDirectons = new JCheckBox();
+        circularGenomes = new JCheckBox();
 
         familyClusterThresholdSpinner = new JSpinner();
         familyClusterThresholdSlider = new JSlider();
@@ -212,10 +208,6 @@ public class InputParametersDialog extends JDialog {
         desc = "Maximal number of insertions allowed in a CSB instance.";
         numOfInsertionsLabel = initLabel(icon, labelName, desc);
 
-        labelName = "Quorum without insertions";
-        desc = "Minimal number of input sequences that must contain a CSB instance with no insertions.";
-        //quorumWithoutInsertionsLabel = initLabel(icon, labelName, desc);
-
         labelName = "CSB Min Length";
         desc = "Minimal length (number of genes) of a CSB.";
         minPatternLengthLabel = initLabel(icon, labelName, desc);
@@ -228,11 +220,6 @@ public class InputParametersDialog extends JDialog {
         desc = "If this option is used, CSBs are no longer extracted from the input sequences. " +
                 "It specifies specific CSB patterns which the user is interested to find in the input sequences.";
         patternFilePathLabel = initLabel(icon, labelName, desc);
-
-        labelName = "Count One Instance Per Sequence";
-        desc = "If checked, CSB count indicates the number of input sequences with an instance, " +
-                "rather than the total number of instances.";
-        //bcountLabel = initLabel(icon, labelName, desc);
 
         labelName = "Family Clustering Threshold";
         desc = "Threshold used in the process of clustering CSBs to families.";
@@ -259,6 +246,10 @@ public class InputParametersDialog extends JDialog {
         labelName = "Segment genomes to directons";
         desc = "If checked, genomes will be segmented to directons - consecutive genes on the same strand.";
         segmentToDirectonsLabel = initLabel(icon, labelName, desc);
+
+        labelName = "Circular genomes";
+        desc = "If checked, all input genomes will be treated as circular genomes.";
+        circularLabel = initLabel(icon, labelName, desc);
 
     }
 
@@ -300,6 +291,8 @@ public class InputParametersDialog extends JDialog {
 
         //directon segmantation
         segmentToDirectons.setSelected(true);
+
+        circularGenomes.setSelected(false);
     }
 
     private void setSpinnerSliderDoubleModel(JSlider slider, JSpinner spinner, double defaultVal){
@@ -375,11 +368,9 @@ public class InputParametersDialog extends JDialog {
         addComponentToGC(0, y, 1, 0.1, insetLabel, segmentToDirectonsLabel, LINE_START);
         addComponentToGC(1, y++, 1, 0.1, insetField, segmentToDirectons, LINE_START);
 
-        /*
-        addComponentToGC(0, y, 1, 0.2, insetLabel, quorumWithoutInsertionsLabel, LINE_START);
-        addComponentToGC(2, y, 1, 0.2, insetField, quorumWithoutInsertions, LINE_START);
-        addComponentToGC(1, y++, 1, 0.2, insetField, quorumWithoutInsertionsSlider, LINE_START);
-        */
+        addComponentToGC(0, y, 1, 0.1, insetLabel, circularLabel, LINE_START);
+        addComponentToGC(1, y++, 1, 0.1, insetField, circularGenomes, LINE_START);
+
         addComponentToGC(0, y, 1, 0.1, insetLabel, minPatternLengthLabel, LINE_START);
         addComponentToGC(1, y++, 1, 0.1, insetField, minPatternLength, LINE_START);
 
