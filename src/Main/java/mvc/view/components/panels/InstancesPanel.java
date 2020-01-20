@@ -270,7 +270,13 @@ public class InstancesPanel extends JPanel {
         int instanceEndIndex = instance.getActualEndIndex();
 
         int leftStartIndex = Math.max(0, instanceStartIndex - numOfNeighbors);
-        int rightEndIndex = Math.min(instanceEndIndex + numOfNeighbors, replicon.getGenes().size());
+        int rightEndIndex = Math.min(instanceEndIndex + numOfNeighbors, replicon.size());
+
+        //circular instance
+        if (instanceEndIndex > replicon.size()){
+            leftStartIndex +=  instanceEndIndex - replicon.size();
+            rightEndIndex = instanceEndIndex;
+        }
 
         List<GeneShape> leftNeighbors = getGeneShapesList(getGenes(replicon, leftStartIndex, instanceStartIndex));
         List<GeneShape> instanceShapesList = getGeneShapesList(getGenes(replicon, instanceStartIndex, instanceEndIndex));
@@ -286,6 +292,11 @@ public class InstancesPanel extends JPanel {
     }
 
     private Gene[] getGenes(Replicon replicon, int startIndex, int endIndex){
+
+        if (startIndex >= endIndex){
+            return new Gene[0];
+        }
+
         List<Gene> instanceList = new ArrayList<>();
 
         List<Gene> repliconGenes = replicon.getGenes();
