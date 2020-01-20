@@ -35,22 +35,22 @@ public class MatchPointAlgorithmTest {
         return params;
     }
 
-    private Parameters initParamsNonDirectons(){
+    private Parameters initParamsCrossStrand(){
         Parameters params = new Parameters();
-        params.nonDirectons = true;
+        params.crossStrand = true;
         params.quorum2 = 2;
         return params;
     }
 
     private Parameters initParamsKeepAll(){
-        Parameters params = initParamsNonDirectons();
+        Parameters params = initParamsCrossStrand();
         params.keepAllPatterns = true;
 
         return params;
     }
 
     private Parameters initParamsSetLength(){
-        Parameters params = initParamsNonDirectons();
+        Parameters params = initParamsCrossStrand();
         params.minPatternLength = 2;
         params.maxPatternLength = 2;
 
@@ -73,7 +73,7 @@ public class MatchPointAlgorithmTest {
     @Test
     public void testRefGenomesPatternsDuplicateGenes() throws Exception {
 
-        List<Pattern> patterns = runAlgorithm(GENOMES_FILE_PATH1, initParamsNonDirectons());
+        List<Pattern> patterns = runAlgorithm(GENOMES_FILE_PATH1, initParamsCrossStrand());
 
         List<Pattern> expectedPatterns = new ArrayList<>();
         Gene[] expectedGenes = {new Gene("COG0001", Strand.FORWARD),
@@ -89,7 +89,7 @@ public class MatchPointAlgorithmTest {
     @Test
     public void testRefGenomesReverseComplimentPattern() throws Exception {
 
-        List<Pattern> patterns = runAlgorithm(GENOMES_FILE_PATH2, initParamsNonDirectons());
+        List<Pattern> patterns = runAlgorithm(GENOMES_FILE_PATH2, initParamsCrossStrand());
 
         List<Pattern> expectedPatterns = new ArrayList<>();
         Gene[] expectedGenes = {new Gene("COG0001", Strand.FORWARD),
@@ -105,7 +105,7 @@ public class MatchPointAlgorithmTest {
     @Test
     public void testInstanceLocations() throws Exception {
 
-        List<Pattern> patterns = runAlgorithm(GENOMES_FILE_PATH2, initParamsNonDirectons());
+        List<Pattern> patterns = runAlgorithm(GENOMES_FILE_PATH2, initParamsCrossStrand());
 
         for (Pattern pattern : patterns){
             for (InstanceLocation loc :pattern.getPatternLocations().getSortedLocations()){
@@ -155,7 +155,7 @@ public class MatchPointAlgorithmTest {
 
     @Test
     public void testCircularGenome() throws Exception {
-        Parameters params = initParamsNonDirectons();
+        Parameters params = initParamsCrossStrand();
         params.circular = true;
         List<Pattern> patterns = runAlgorithm(GENOMES_FILE_PATH3, params);
 
@@ -182,7 +182,7 @@ public class MatchPointAlgorithmTest {
 
     @Test
     public void testCircularGenomeInsertions() throws Exception {
-        Parameters params = initParamsNonDirectons();
+        Parameters params = initParamsCrossStrand();
         params.circular = true;
         params.maxInsertion = 1;
         List<Pattern> patterns = runAlgorithm(GENOMES_FILE_PATH5, params);

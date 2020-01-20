@@ -21,9 +21,9 @@ public class SuffixTreeAlgorithmTest {
     private final String GENOMES_FILE_PATH2 = this.getClass().getResource("/genomes11.fasta").getPath();
     private final String GENOMES_FILE_PATH3 = this.getClass().getResource("/genomes12.fasta").getPath();
 
-    private Parameters initParamsNonDirectons(){
+    private Parameters initParamsCrossStrand(){
         Parameters params = new Parameters();
-        params.nonDirectons = true;
+        params.crossStrand = true;
         params.quorum2 = 2;
         return params;
     }
@@ -54,7 +54,7 @@ public class SuffixTreeAlgorithmTest {
 
     @Test
     public void testCircularGenome() throws Exception {
-        Parameters params = initParamsNonDirectons();
+        Parameters params = initParamsCrossStrand();
         params.circular = true;
         List<Pattern> patterns = runAlgorithm(GENOMES_FILE_PATH1, params);
 
@@ -108,7 +108,7 @@ public class SuffixTreeAlgorithmTest {
 
     @Test
     public void testCircularGenomeInsertions() throws Exception {
-        Parameters params = initParamsNonDirectons();
+        Parameters params = initParamsCrossStrand();
         params.circular = true;
         params.maxInsertion = 1;
         List<Pattern> patterns = runAlgorithm(GENOMES_FILE_PATH3, params);

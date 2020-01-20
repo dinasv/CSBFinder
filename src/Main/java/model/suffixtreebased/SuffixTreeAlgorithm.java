@@ -43,7 +43,7 @@ public class SuffixTreeAlgorithm implements Algorithm {
 
     private int lastPatternKey;
 
-    private boolean nonDirectons;
+    private boolean crossStrand;
 
     private boolean debug;
 
@@ -74,7 +74,7 @@ public class SuffixTreeAlgorithm implements Algorithm {
         this.maxInsertion = params.maxInsertion;
         q1 = params.quorum1;
         q2 = params.quorum2;
-        this.nonDirectons = params.nonDirectons;
+        this.crossStrand = params.crossStrand;
         this.minPatternLength = params.minPatternLength;
         this.maxPatternLength = params.maxPatternLength;
         this.multCount = params.multCount;
@@ -127,7 +127,7 @@ public class SuffixTreeAlgorithm implements Algorithm {
     private void setPatternTreeRoot() {
         if (patternsFromFile.size() > 0) {
             List<Pattern> legalPatterns = PatternsUtils.getLegalPatterns(patternsFromFile, gi);
-            PatternsTree patternsTree = new PatternsTree(legalPatterns, gi, nonDirectons);
+            PatternsTree patternsTree = new PatternsTree(legalPatterns, gi, crossStrand);
             Trie patternTrie = patternsTree.getTrie();
             patternTreeRoot = patternTrie.getRoot();
         } else {//all patterns will be extracted from the data tree
@@ -144,7 +144,7 @@ public class SuffixTreeAlgorithm implements Algorithm {
 
         initialize();
 
-        datasetTree.buildTree(parameters.nonDirectons);
+        datasetTree.buildTree(parameters.crossStrand);
         GeneralizedSuffixTree datasetSuffixTree = datasetTree.getSuffixTree();
         datasetSuffixTree.computeCount();
         totalCharsInData = datasetSuffixTree.getRoot().getCountMultipleInstancesPerGenome();
@@ -183,7 +183,7 @@ public class SuffixTreeAlgorithm implements Algorithm {
                 PatternsUtils.addSubPatternToRemoveList(patterns, suffixStr, pattern, patternsToRemove);
             }
 
-            if (nonDirectons) {
+            if (crossStrand) {
                 PatternsUtils.removeReverseCompliments(patterns, pattern, patternsToRemove);
             }
         }

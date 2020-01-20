@@ -12,12 +12,12 @@ public class PatternsTree {
 
     Trie patternsTree;
     GenomesInfo genomesInfo;
-    boolean nonDirectons;
+    boolean crossStrand;
 
-    public PatternsTree(List<Pattern> patterns, GenomesInfo gi, boolean nonDirectons){
+    public PatternsTree(List<Pattern> patterns, GenomesInfo gi, boolean crossStrand){
         patternsTree = new Trie(TreeType.STATIC);
         this.genomesInfo = gi;
-        this.nonDirectons = nonDirectons;
+        this.crossStrand = crossStrand;
         buildPatternsTree(patterns);
     }
 
@@ -32,7 +32,7 @@ public class PatternsTree {
             if (pattern.getPatternId() != null){
                 putWordInTree(patternGenes, pattern.getPatternId());
             }else {
-                if (nonDirectons) {
+                if (crossStrand) {
                     putWordInTree(patternGenes);
 
                     putWordInTree(Replicon.reverseComplementGenes(patternGenes));

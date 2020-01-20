@@ -41,19 +41,19 @@ public class Parameters {
     public int quorum2 = 1;
 
     @Parameter(names={"-qexact"}, description = "Instance quorum without insertions"
-                , validateWith = Parameters.PositiveInteger.class, order = 3, hidden = true)
+                , validateWith = PositiveInteger.class, order = 3, hidden = true)
     public int quorum1 = 1;
 
     @Parameter(names={"-ins"}, description = "Maximal number of insertions allowed"
-            ,validateWith = Parameters.PositiveInteger.class, order = 2)
+            ,validateWith = PositiveInteger.class, order = 2)
     public int maxInsertion = 0;
 
     @Parameter(names={"-lmin"}, description = "Minimal length of a CSB"
-            , validateWith = Parameters.PositiveInteger2.class, order = 4)
+            , validateWith = PositiveInteger2.class, order = 4)
     public int minPatternLength = 2;
 
     @Parameter(names={"-lmax"}, description = "Maximal length of a CSB"
-            , validateWith = Parameters.PositiveInteger2.class, order = 5)
+            , validateWith = PositiveInteger2.class, order = 5)
     public int maxPatternLength = Integer.MAX_VALUE;
 
     @Parameter(names={"-mult-count"}, description = "Count multiple instances per input string, not just one",
@@ -69,9 +69,9 @@ public class Parameters {
     @Parameter(names={"-cog-info"}, description = "Gene families info file relative or absolute path", order = 8)
     public String cogInfoFilePath = null;
 
-    @Parameter(names={"-non-directons"}, description = "If this option is provided, the input genomes are not " +
-            "segmented to directons", order = 9)
-    public boolean nonDirectons = false;
+    @Parameter(names={"--cross-strand", "-cs"}, description = "If this option is provided, extract cross-strand CSBs",
+            order = 9)
+    public boolean crossStrand = false;
 
     @Parameter(names={"-out"}, description = "Output file type", order = 10)
     public OutputType outputFileType = OutputType.XLSX;

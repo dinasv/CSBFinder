@@ -12,14 +12,14 @@ public class DatasetTree {
 
     private GeneralizedSuffixTree datasetTree;
     private GenomesInfo genomesInfo;
-    public boolean nonDirectons;
+    public boolean crossStrand;
 
     public DatasetTree(GenomesInfo gi) {
         datasetTree = null;
 
         genomesInfo = gi;
 
-        nonDirectons = false;
+        crossStrand = false;
 
     }
 
@@ -55,9 +55,9 @@ public class DatasetTree {
      * @param currGenomeIndex
      * @return
      */
-    private void updateDataTree(Replicon replicon, int currGenomeIndex, boolean nonDirectons) {
+    private void updateDataTree(Replicon replicon, int currGenomeIndex, boolean crossStrand) {
 
-        if (nonDirectons) {//putWithSuffix replicon and its reverseComplement
+        if (crossStrand) {//putWithSuffix replicon and its reverseComplement
 
             putWordInDataTree(replicon, currGenomeIndex);
 
@@ -75,18 +75,18 @@ public class DatasetTree {
         }
     }
 
-    public void buildTree(boolean nonDirectons) {
-        if (datasetTree != null && this.nonDirectons == nonDirectons) {
+    public void buildTree(boolean crossStrand) {
+        if (datasetTree != null && this.crossStrand == crossStrand) {
             return;
         }
         datasetTree = new GeneralizedSuffixTree();
-        this.nonDirectons = nonDirectons;
+        this.crossStrand = crossStrand;
 
         for (Genome genome : genomesInfo.getGenomes()) {
 
             int genomeId = genome.getId();
             for (Replicon replicon : genome.getReplicons()) {
-                updateDataTree(replicon, genomeId, nonDirectons);
+                updateDataTree(replicon, genomeId, crossStrand);
             }
         }
     }

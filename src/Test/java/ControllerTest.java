@@ -11,7 +11,7 @@ public class ControllerTest {
         String[] args = {"-in", PLASMID_GENOMES_FILE_PATH,
                 "-q", "30",
                 "-alg", "match_points",
-                "-non-directons",
+                "--cross-strand",
                 "-debug"};
         int numOfCsbs = 56;
 

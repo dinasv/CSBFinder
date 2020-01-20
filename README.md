@@ -167,8 +167,8 @@ Optional:
       A name of a file, located in a directory named 'input', in the same directory as CSBFinder.jar.   
       This file should contain functional description of orthology groups.    
       See [Input files formats](#cog_info) for more details.        
-- **-non-directons**
-      If this option is provided, the input genomes are not segmented to directons.
+- **--cross-strand**, **-cs**
+      If this option is provided, cross-strand CSBs will be extracted.
 - **-out** OUTPUT_FILE_TYPE    
       Output file type   
       Default: XLSX   
@@ -346,7 +346,7 @@ COG3736,COG3504,COG2948
 ....
 ```
 
-> If you are running without segmentation to directons, you should add a strand to each homology group ID
+> If you are running in "cross-strand" mode, you should add a strand (+/-) to each homology group ID
 e.g. COG3736+,COG3504+,COG2948-,COG0630+
 
 ### <a name='in_taxa'>Input file containing Taxonomy information </a>

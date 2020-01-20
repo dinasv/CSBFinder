@@ -48,7 +48,7 @@ public class MatchPointAlgorithm implements Algorithm {
         executor = Executors.newFixedThreadPool(numOfThreads);
     }
 
-    private void createMatchLists(boolean nonDirectons) {
+    private void createMatchLists(boolean crossStrand) {
 
         if (genomesInfo == null) {
             return;
@@ -57,9 +57,9 @@ public class MatchPointAlgorithm implements Algorithm {
         for (Genome genome : genomesInfo.getGenomes()) {
 
             for (Replicon replicon : genome.getReplicons()) {
-                if (nonDirectons) {
+                if (crossStrand) {
 
-                    createMatchListsNonDirectons(genome, replicon);
+                    createMatchListsCrossStrand(genome, replicon);
 
                 } else {
 
@@ -78,7 +78,7 @@ public class MatchPointAlgorithm implements Algorithm {
         }
     }
 
-    private void createMatchListsNonDirectons(Genome genome, Replicon replicon) {
+    private void createMatchListsCrossStrand(Genome genome, Replicon replicon) {
         Replicon reversedReplicon = replicon.reverseComplement();
 
         createMatchLists(reversedReplicon, genome.getId());
@@ -114,7 +114,7 @@ public class MatchPointAlgorithm implements Algorithm {
     public void setParameters(Parameters params) {
 
         parameters = params;
-        segmentationType = params.nonDirectons ? SegmentationType.NON_DIRECTONS : SegmentationType.DIRECTONS;
+        segmentationType = params.crossStrand ? SegmentationType.CROSS_STRAND : SegmentationType.DIRECTONS;
     }
 
     @Override
@@ -147,7 +147,7 @@ public class MatchPointAlgorithm implements Algorithm {
 
         if (matchLists.size() == 0) {
             genomicSegments = new ArrayList<>();
-            createMatchLists(parameters.nonDirectons);
+            createMatchLists(parameters.crossStrand);
         }
 
         patterns = new ConcurrentHashMap<>();
@@ -202,7 +202,7 @@ public class MatchPointAlgorithm implements Algorithm {
 
             int maxPatternLength = Math.min(replicon.size(), parameters.maxPatternLength);
 
-            if(segmentationType == SegmentationType.NON_DIRECTONS) {
+            if(segmentationType == SegmentationType.CROSS_STRAND) {
 
                 tasks.add(new FindPatternsFromGenesThread(genes, genomesInfo, parameters.quorum2, maxPatternLength,
                         parameters.minPatternLength, parameters.maxInsertion, patterns, matchLists));
@@ -257,7 +257,7 @@ public class MatchPointAlgorithm implements Algorithm {
 
             }
 
-            if (parameters.nonDirectons) {
+            if (parameters.crossStrand) {
                 PatternsUtils.removeReverseCompliments(patterns, pattern, patternsToRemove);
             }
         }
@@ -297,7 +297,7 @@ public class MatchPointAlgorithm implements Algorithm {
 
     private enum SegmentationType{
         DIRECTONS,
-        NON_DIRECTONS
+        CROSS_STRAND
     }
 
     private enum ExtractPatternsFrom{

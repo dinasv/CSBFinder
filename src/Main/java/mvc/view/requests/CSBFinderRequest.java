@@ -18,7 +18,7 @@ public class CSBFinderRequest implements Request{
     private String csbPatternFilePath = null;
     private String geneInfoFilePath = null;
     private boolean multCount = true;
-    private boolean nonDirectons = false;
+    private boolean crossStrand = false;
     private double familyClusterThreshold = 0.8;
     private double genomesDistanceThreshold = 1;
     private ClusterBy clusterType = ClusterBy.SCORE;
@@ -98,12 +98,12 @@ public class CSBFinderRequest implements Request{
         this.multCount = multCount;
     }
 
-    public boolean isNonDirectons() {
-        return nonDirectons;
+    public boolean isCrossStrand() {
+        return crossStrand;
     }
 
-    public void setNonDirectons(boolean nonDirectons) {
-        this.nonDirectons = nonDirectons;
+    public void setCrossStrand(boolean crossStrand) {
+        this.crossStrand = crossStrand;
     }
 
     public double getFamilyClusterThreshold() {
@@ -188,8 +188,8 @@ public class CSBFinderRequest implements Request{
         argList.add("-delta");
         argList.add(String.valueOf(genomesDistanceThreshold));
 
-        if (nonDirectons) {
-            argList.add("-non-directons");
+        if (crossStrand) {
+            argList.add("--cross-strand");
         }
 
         if (circularGenomes){

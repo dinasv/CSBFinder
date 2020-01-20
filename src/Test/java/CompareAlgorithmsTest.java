@@ -107,10 +107,10 @@ public class CompareAlgorithmsTest {
     }
 
     @Test
-    public void testNonDirectonsEqualOutput() throws Exception {
+    public void testCrossStrandEqualOutput() throws Exception {
         Parameters params = new Parameters();
         params.quorum2 = 2;
-        params.nonDirectons = true;
+        params.crossStrand = true;
         params.maxInsertion = 1;
 
         List<Pattern> patternsAlg1 = runAlgorithm(AlgorithmType.SUFFIX_TREE.getAlgorithm(), GENOMES_FILE_PATH3, params);
