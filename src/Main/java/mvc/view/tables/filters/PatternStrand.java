@@ -4,15 +4,15 @@ package mvc.view.tables.filters;
  */
 public enum PatternStrand {
 
-    MULTI_STRAND(true, "Multi-strand"),
+    CROSS_STRAND(true, "Cross-strand"),
     SINGLE_STRAND(false, "Single strand (directon)"),
     ALL(true, "All");
 
-    public final boolean isMultiStrand;
+    public final boolean isCrossStrand;
     public final String description;
 
-    PatternStrand(boolean isMultiStrand, String description){
-        this.isMultiStrand = isMultiStrand;
+    PatternStrand(boolean isCrossStrand, String description){
+        this.isCrossStrand = isCrossStrand;
         this.description = description;
     }
 }

@@ -51,7 +51,7 @@ public class FilterDialog extends JDialog{
     private final JLabel STRAND_LABEL = new JLabel("CSB strand:");
     private ButtonGroup strandBtns;
     private JRadioButton allStrandTypesBtn;
-    private JRadioButton multiStrandTypesBtn;
+    private JRadioButton crossStrandTypesBtn;
     private JRadioButton oneStrandTypesBtn;
     private JPanel patternStrandPanel;
 
@@ -147,20 +147,20 @@ public class FilterDialog extends JDialog{
         allStrandTypesBtn = new JRadioButton(PatternStrand.ALL.description);
         allStrandTypesBtn.setActionCommand(PatternStrand.ALL.toString());
 
-        multiStrandTypesBtn = new JRadioButton(PatternStrand.MULTI_STRAND.description);
-        multiStrandTypesBtn.setActionCommand(PatternStrand.MULTI_STRAND.toString());
+        crossStrandTypesBtn = new JRadioButton(PatternStrand.CROSS_STRAND.description);
+        crossStrandTypesBtn.setActionCommand(PatternStrand.CROSS_STRAND.toString());
 
         oneStrandTypesBtn = new JRadioButton(PatternStrand.SINGLE_STRAND.description);
         oneStrandTypesBtn.setActionCommand(PatternStrand.SINGLE_STRAND.toString());
 
         strandBtns.add(allStrandTypesBtn);
-        strandBtns.add(multiStrandTypesBtn);
+        strandBtns.add(crossStrandTypesBtn);
         strandBtns.add(oneStrandTypesBtn);
 
         //Put the radio buttons in a column in a panel.
         patternStrandPanel = new JPanel(new FlowLayout());
         patternStrandPanel.add(allStrandTypesBtn);
-        patternStrandPanel.add(multiStrandTypesBtn);
+        patternStrandPanel.add(crossStrandTypesBtn);
         patternStrandPanel.add(oneStrandTypesBtn);
 
     }
@@ -168,7 +168,7 @@ public class FilterDialog extends JDialog{
     private void addChangeListeners(){
 
         addBtnListener(allStrandTypesBtn);
-        addBtnListener(multiStrandTypesBtn);
+        addBtnListener(crossStrandTypesBtn);
         addBtnListener(oneStrandTypesBtn);
 
         minPatternLength.addChangeListener(e -> request.setMinCSBLength((int)minPatternLength.getValue()));

@@ -279,7 +279,7 @@ public class FamiliesFilter {
             this.patternStrand = patternStrand;
         }
 
-        private boolean isMultiStrand(Gene[] genes) {
+        private boolean isCrossStrand(Gene[] genes) {
 
             return Arrays.stream(genes).map(Gene::getStrand).distinct().count() > 1;
 
@@ -288,7 +288,7 @@ public class FamiliesFilter {
         @Override
         public boolean include(Pattern pattern) {
             return patternStrand == PatternStrand.ALL ||
-                    isMultiStrand(pattern.getPatternGenes()) == patternStrand.isMultiStrand;
+                    isCrossStrand(pattern.getPatternGenes()) == patternStrand.isCrossStrand;
         }
     }
 

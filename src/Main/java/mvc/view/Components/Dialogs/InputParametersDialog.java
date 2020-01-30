@@ -40,7 +40,7 @@ public class InputParametersDialog extends JDialog {
     private JLabel patternFilePathLabel;
     private JLabel familyClusterThresholdLabel;
     private JLabel genomesThresholdLabel;
-    private JLabel segmentToDirectonsLabel;
+    private JLabel crossStrandLabel;
     private JLabel algorithmLabel;
     private JLabel circularLabel;
 
@@ -56,7 +56,7 @@ public class InputParametersDialog extends JDialog {
     private JTextField patternFilePath;
     private JSpinner familyClusterThresholdSpinner;
     private JSlider familyClusterThresholdSlider;
-    private JCheckBox segmentToDirectons;
+    private JCheckBox crossStrand;
     private JButton loadPatternBtn;
     private JSpinner genomesDistSpinner;
     private JSlider genomesDistSlider;
@@ -122,7 +122,7 @@ public class InputParametersDialog extends JDialog {
         request.setGenomesDistanceThreshold((double)genomesDistSpinner.getValue());
         request.setClusterType(clusterTypeField.getSelectedValue());
         request.setAlgorithm(algorithmField.getSelectedValue());
-        request.setNonDirectons(!segmentToDirectons.isSelected());
+        request.setCrossStrand(crossStrand.isSelected());
         request.setClusterDenominator(clusterDenominatorField.getSelectedValue());
         request.setCircularGenomes(circularGenomes.isSelected());
 
@@ -149,7 +149,7 @@ public class InputParametersDialog extends JDialog {
 
         patternFilePath = new JTextField();
 
-        segmentToDirectons = new JCheckBox();
+        crossStrand = new JCheckBox();
         circularGenomes = new JCheckBox();
 
         familyClusterThresholdSpinner = new JSpinner();
@@ -243,9 +243,9 @@ public class InputParametersDialog extends JDialog {
         desc = "The algorithm used for finding CSBs.";
         algorithmLabel = initLabel(icon, labelName, desc);
 
-        labelName = "Segment genomes to directons";
-        desc = "If checked, genomes will be segmented to directons - consecutive genes on the same strand.";
-        segmentToDirectonsLabel = initLabel(icon, labelName, desc);
+        labelName = "Cross-strand CSBs";
+        desc = "If checked, cross-strand CSBs will be extracted.";
+        crossStrandLabel = initLabel(icon, labelName, desc);
 
         labelName = "Circular genomes";
         desc = "If checked, all input genomes will be treated as circular genomes.";
@@ -289,8 +289,7 @@ public class InputParametersDialog extends JDialog {
 
         initEnumList(algorithmField, Arrays.asList(AlgorithmType.values()));
 
-        //directon segmantation
-        segmentToDirectons.setSelected(true);
+        crossStrand.setSelected(false);
 
         circularGenomes.setSelected(false);
     }
@@ -365,8 +364,8 @@ public class InputParametersDialog extends JDialog {
         title.setFont(new Font(title.getFont().getName(), Font.BOLD, 20));
         addComponentToGC(0, y++, 1, 0.6, insetLabel, title, LINE_START);
 
-        addComponentToGC(0, y, 1, 0.1, insetLabel, segmentToDirectonsLabel, LINE_START);
-        addComponentToGC(1, y++, 1, 0.1, insetField, segmentToDirectons, LINE_START);
+        addComponentToGC(0, y, 1, 0.1, insetLabel, crossStrandLabel, LINE_START);
+        addComponentToGC(1, y++, 1, 0.1, insetField, crossStrand, LINE_START);
 
         addComponentToGC(0, y, 1, 0.1, insetLabel, circularLabel, LINE_START);
         addComponentToGC(1, y++, 1, 0.1, insetField, circularGenomes, LINE_START);
