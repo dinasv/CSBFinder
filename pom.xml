@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.geneblocks</groupId>
-    <artifactId>CSBFinder</artifactId>
+    <artifactId>CSBFinder-S</artifactId>
     <version>0.6.1</version>
     <build>
         <plugins>
