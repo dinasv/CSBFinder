@@ -97,7 +97,7 @@ Volume 35, Issue 10, 15 May 2019, Pages 1634–1643,
 <a name='running'>Running CSBFinder-S</a>
 --------
 ### <a name='download'>Download</a>
-- Download the [latest release](https://github.com/dinasv/CSBFinder/releases) of CSBFinder installer.
+- Download the [latest release](https://github.com/dinasv/CSBFinder/releases) of CSBFinder-S installer.
 - The available options are Windows 64 or 32 bit, Unix and MacOS
 
 > CSBFinder-S has a user interface, but can be executed via the command line by executing the JAR file in the 
@@ -136,6 +136,10 @@ on the parameters specified.
 3. **Importing gene orthology group information**:  
 Load it by choosing `File->Import->Orthology Information file`. This information will be displayed on the lower right 
  panel.
+ 
+4. **Importing taxonomic information**:  
+ Load it by choosing `File->Import->Taxonomy File`. This information will be displayed in the `Taxa View` tab in the 
+ upper panel 
 
 ### <a name='cmd'>Running CSBFinder-S via Command Line </a>
 
@@ -479,7 +483,8 @@ The above zip file contains four files, located inside a folder named 'input':
 
 - Click on the "Run" button, and a window will open.
 
-- Set the parameters (e.g. Quorum 10, Insertions Allowed 1).
+- Set the parameters (e.g. Quorum 10, Insertions Allowed 1). If you are interested in cross-strand CSBs, check the 
+corresponding check-box. The algorithm for CSB extraction can also be selected.
 
 - Clicking on the "Run" button will start the computation of CSBs, this may take a few minutes.
  When the process is done, the results will be shown.
@@ -521,7 +526,8 @@ is recommended (sets the maximal JAVA heap size to 6GB).
 
 - Click on the "Run" button, and a window will open.
 
-- Set the parameters (e.g. Quorum 50, Insertions Allowed 1).
+- Set the parameters (e.g. Quorum 50, Insertions Allowed 1). If you are interested in cross-strand CSBs, check the 
+  corresponding check-box. The algorithm for CSB extraction can also be selected.
 
 - Clicking on the "Run" button will start the computation of CSBs, this may take a few minutes.
  When the process is done, the results will be shown.
