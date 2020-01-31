@@ -31,16 +31,6 @@ CSBFinder incorporates efficient algorithms that identify CSBs in large genomic 
 The discovered CSBs are ranked according to a probabilistic score and clustered to families according to their gene 
 content similarity.
 
-A detailed description of the workflow and the Suffix-Tree based algorithm can be found in the paper: 
-### Citation
-If you used our tool as part of your research, please cite us:
-
-Dina Svetlitsky, Tal Dagan, Vered Chalifa-Caspi, Michal Ziv-Ukelson, 
-CSBFinder: discovery of colinear syntenic blocks across thousands of prokaryotic genomes, Bioinformatics, 
-Volume 35, Issue 10, 15 May 2019, Pages 1634–1643,
- [https://doi.org/10.1093/bioinformatics/bty861](https://doi.org/10.1093/bioinformatics/bty861)
-
-
 ### March 27, 2019 update
 
 CSBFinder-S is released for the discovery of cross-strand multi-operon CSBs
@@ -62,6 +52,7 @@ CSBs confined to specific functional semantic categories.
 
 - A taxonomic viewer of the genomes that contain instances of each CSB.
 
+- Many other improvement in the user interface
 
 ### Workflow Description
 The workflow of CSBFinder is given in the figure below.    
@@ -82,6 +73,17 @@ genomes, where each instance may vary from the CSB pattern by at most **_k_** ge
 determined by the score of its highest scoring CSB.
 
 ![CSBFinder workflow](https://github.com/dinasv/CSBFinder/blob/master/images/workflow.png "Workflow")
+
+
+### Citation
+The following paper contains details regarding the previous version of CSBFinder that targeted the extraction of 
+CSBs that correspond to operons. It contains details of the Suffix-Tree based algorithm for CSB extraction. 
+
+If you used the tool as part of your research, please cite us:
+Dina Svetlitsky, Tal Dagan, Vered Chalifa-Caspi, Michal Ziv-Ukelson, 
+CSBFinder: discovery of colinear syntenic blocks across thousands of prokaryotic genomes, Bioinformatics, 
+Volume 35, Issue 10, 15 May 2019, Pages 1634–1643,
+ [https://doi.org/10.1093/bioinformatics/bty861](https://doi.org/10.1093/bioinformatics/bty861)
 
 <a name='prerequisites'>Prerequisites</a>
 --------
