@@ -477,27 +477,23 @@ Go to the installation folder and edit the file "CSBFinder.vmoptions" using a Te
 the Java option `-Xmx500m` to `-Xmx[maximal heap size]` depending of the available RAM. Changing to at least `-Xmx6g` 
 is recommended (sets the maximal JAVA heap size to 6GB).
 
-Now execute CSBfinder and choose `File->Import->Genomes File`, it may take a few minutes to load the selected file.
+- Now execute CSBfinder and choose `File->Import->Genomes File`, it may take a few minutes to load the selected file.
 
-##### Input Parameters
-Click on the "Run" button, and a progressBar will open.
+- Click on the "Run" button, and a window will open.
 
-The screenshot below shows a typical parameter setting.
-- The quorum parameter is set to 50 (i.e., each CSB must have instances in at least 50 input genomes).  
-- The number of allowed insertions in a CSB instance is one.  
+- Set the parameters (e.g. Quorum 50, Insertions Allowed 1).
 
-![CSBFinder chromosomal dataset parames screenshot](https://github.com/dinasv/CSBFinder/blob/master/images/screenshot_chromosmoal_dataset_params.PNG "CSBFinder Chromosomal dataset parameters screenshot")
-
-Clicking on the "Run" button will start the computation of CSBs, this may take a few minutes.
+- Clicking on the "Run" button will start the computation of CSBs, this may take a few minutes.
  When the process is done, the results will be shown.
 
 ##### Output
-Click on the "Save" button an  choose the required output format. The resulting files will be saved in the output 
-directory, in the same matchPoint as CSBFinder.jar
+You can export the resulting CSBs as a TXT or XLSX file.
+You can also save the results in a session file, that can be opened using the user interface.
 
 #### Command Line
+In the installation directory, you will find a *.jar file, e.g., CSBFinder-S-0.6.1-jar-with-dependencies.jar
 ``` 
-java -Xmx6g -jar CSBFinder.jar -in input/chromosomal_genomes.fasta -q 50 -ins 1 -e Chromosomes 
+java -Xmx6g -jar CSBFinder-[version]-jar-with-dependencies.jar -in input/chromosomal_genomes.fasta -q 50 -ins 1 -e Chromosomes 
 -cog-info input/cog_info.txt
 ```
 ##### Input parameters
@@ -513,26 +509,22 @@ The output files will be now located in the output directory
 
 > On a laptop computer with Intel model i7 processor and 8GB RAM, this execution should take less than 5 minutes
 
-### Execution of CSBFinder on the Plasmid Dataset of 471 prokaryotic genomes
+### Execution of CSBFinder on the Plasmid Dataset of 471 microbial genomes
 
 #### User Interface 
 Upload the dataset by clicking on the "Load Input model.genomes" button.
 
 ##### Input Parameters
-Click on the "Run" button, and a progressBar will open.
+- Click on the "Run" button, and a window will open.
 
-The screenshot below shows a typical parameter setting.
-- The quorum parameter is set to 10 (i.e., each CSB must have instances in at least 50 input genomes).  
-- The number of allowed insertions in a CSB instance is one.  
+- Set the parameters (e.g. Quorum 10, Insertions Allowed 1).
 
-![CSBFinder plasmid dataset parames screenshot](https://github.com/dinasv/CSBFinder/blob/master/images/screenshot_plasmid_dataset_params.png "CSBFinder Plasmid dataset parameters screenshot")
-
-Clicking on the "Run" button will launch the computation of CSBs, this may take a few minutes.
+- Clicking on the "Run" button will start the computation of CSBs, this may take a few minutes.
  When the process is done, the results will be shown.
 
 ##### Output
-Click on the "Save" button an  choose the required output format. The resulting files will be saved in the output 
-directory, in the same matchPoint as CSBFinder.jar
+You can export the resulting CSBs as a TXT or XLSX file.
+You can also save the results in a session file, that can be opened using the user interface.
 
 #### Command Line
 ``` 
