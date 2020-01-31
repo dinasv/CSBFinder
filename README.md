@@ -27,14 +27,12 @@ that can also be executed via command line.
 CSBFinder implements a novel methodology for the discovery and ranking of 
 colinear syntenic blocks (**CSBs**) - groups of genes that are consistently located close to each other, 
 in the same order, across a wide range of taxa.
-CSBFinder incorporates an efficient algorithm that identifies CSBs in large genomic datasets. 
+CSBFinder incorporates efficient algorithms that identify CSBs in large genomic datasets. 
 The discovered CSBs are ranked according to a probabilistic score and clustered to families according to their gene 
 content similarity.
 
-A detailed description of the workflow and the algorithm can be found in the paper: 
-
+A detailed description of the workflow and the Suffix-Tree based algorithm can be found in the paper: 
 ### Citation
-
 If you used our tool as part of your research, please cite us:
 
 Dina Svetlitsky, Tal Dagan, Vered Chalifa-Caspi, Michal Ziv-Ukelson, 
@@ -42,12 +40,35 @@ CSBFinder: discovery of colinear syntenic blocks across thousands of prokaryotic
 Volume 35, Issue 10, 15 May 2019, Pages 1634–1643,
  [https://doi.org/10.1093/bioinformatics/bty861](https://doi.org/10.1093/bioinformatics/bty861)
 
+
+### March 27, 2019 update
+
+CSBFinder-S is released for the discovery of cross-strand multi-operon CSBs
+
+- In this version, the user can decide whether to segment the input genomes into directons (consecutive genes on the same 
+strand) 
+
+- A novel exact algorithm that uses match-point arithmetic is implemented. 
+The time and space complexities of the algorithm are insensitive to the number of insertions and maximal CSB length. 
+The new algorithm is faster than the algorithm given in published in (Svetlitsky et. al., 2018) for larger values of 
+insertions. Additional advantages of the algorithm are its simplicity of implementation, and the fact that it is easily 
+parallelizable, yielding further scalability.
+
+CSBFinder-S provides several novel mechanisms to help the user sort, filter, and interpret the discovered CSBs. 
+- A ranking score that takes into account the genomic distances between the genomes in which the corresponding CSBs 
+appear. 
+- The user can constrain the structural features of the desired CSBs (length, abundance, etc.), as well as to extract 
+CSBs confined to specific functional semantic categories. 
+
+- A taxonomic viewer of the genomes that contain instances of each CSB.
+
+
 ### Workflow Description
 The workflow of CSBFinder is given in the figure below.    
 
-**(A)** The input to the workflow is a dataset of input genomes, where each genome is a sequence of gene orthology group
-identifiers (genes belonging to the same orthology group have identical IDs).   
-
+**(A)** The input to the workflow is a dataset of input genomes, where each genome is modeled as a sequence of gene 
+identifiers; A gene identifier indicates the corresponding gene orthology group as well as the strand (+/-) in which 
+the gene is encoded. 
 Additional input consists of user-specified parameters **_k_** (number of allowed insertions) and and **_q_** 
 (the quorum parameter). In our formulation, a CSB is a pattern that
 appears as a substring of at least one of the input genomes, and has instances in at least **_q_** of the input

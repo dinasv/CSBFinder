@@ -16,7 +16,7 @@ import java.awt.event.KeyEvent;
  */
 public class Menu implements ActionListener {
 
-    private static final String LOAD_GENOMES = "genomes File";
+    private static final String LOAD_GENOMES = "Genomes File";
 
     private static final String LOAD_COG_INFO = "Orthology Information File";
     private static final String LOAD_TAXA = "Taxonomy File";
@@ -160,11 +160,14 @@ public class Menu implements ActionListener {
 
     public void enableExportBtn() {
         exportItemTxt.setEnabled(true);
+        exportItemXsl.setEnabled(true);
     }
 
     public void disableExportBtn() {
         exportItemTxt.setEnabled(false);
+        exportItemXsl.setEnabled(false);
     }
+
 
     @Override
     public void actionPerformed(ActionEvent e) {

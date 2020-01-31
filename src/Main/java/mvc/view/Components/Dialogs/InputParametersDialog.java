@@ -208,29 +208,29 @@ public class InputParametersDialog extends JDialog {
         desc = "Maximal number of insertions allowed in a CSB instance.";
         numOfInsertionsLabel = initLabel(icon, labelName, desc);
 
-        labelName = "CSB Min Length";
+        labelName = "Minimal CSB length";
         desc = "Minimal length (number of genes) of a CSB.";
         minPatternLengthLabel = initLabel(icon, labelName, desc);
 
-        labelName = "CSB Max Length";
+        labelName = "Maximal CSB length";
         desc = "Maximal length (number of gene) of a CSB.";
         maxPatternLengthLabel = initLabel(icon, labelName, desc);
 
-        labelName = "CSB patterns File";
+        labelName = "CSB patterns file";
         desc = "If this option is used, CSBs are no longer extracted from the input sequences. " +
                 "It specifies specific CSB patterns which the user is interested to find in the input sequences.";
         patternFilePathLabel = initLabel(icon, labelName, desc);
 
-        labelName = "Family Clustering Threshold";
+        labelName = "Clustering threshold";
         desc = "Threshold used in the process of clustering CSBs to families.";
         familyClusterThresholdLabel = initLabel(icon, labelName, desc);
 
-        labelName = "genomes Distance Threshold";
+        labelName = "Genome distance threshold";
         desc = "In the computation of CSB score, two genomes with distance larger than this threshold are considered " +
                 "to be from the same phylogenetic group.";
         genomesThresholdLabel = initLabel(icon, labelName, desc);
 
-        labelName = "Cluster CSBs By";
+        labelName = "Sort CSBs by";
         desc = "In the greedy CSB clustering to families, CSBs are sorted based on 'score' or 'length'.";
         clusterTypeLabel = initLabel(icon, labelName, desc);
 
