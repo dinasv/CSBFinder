@@ -12,7 +12,7 @@
     -   [Patterns file](#in_patterns)
     -   [Taxonomy file](#in_taxa)
 -   [Output files](#output)
--   [Sample input files](#sample)
+-   [Example of running CSBFinder-S](#sample)
 -   [User interface features](#ui_features)
 -   [License](#license)
 -   [Author](#author)
@@ -456,7 +456,7 @@ be written to the specified directory
     Rhizobium_leguminosarum_bv__trifolii_WSM2304_uid58997	NC_011368|[829,831]	NC_011368|[832,834]
     Agrobacterium_vitis_S4_uid58249	NC_011981|[171,173]
     ```
-<a name='sample'>Sample input files</a>   
+<a name='sample'>Example of running CSBFinder-S</a>   
 --------------------------------------
 Sample input files are located in the input directory of the installation folder.
 You can also download the following zip file:
