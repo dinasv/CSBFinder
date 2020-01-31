@@ -33,7 +33,7 @@ content similarity.
 
 ### March 27, 2019 update
 
-**CSBFinder-S** is released for the discovery of cross-strand multi-operon CSBs
+**CSBFinder-S** for the discovery of cross-strand multi-operon CSBs is released
 
 - In this version, the user can decide whether to segment the input genomes into directons (consecutive genes on the same 
 strand) 
