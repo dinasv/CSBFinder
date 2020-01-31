@@ -82,6 +82,7 @@ The options to use the Suffix-Tree based algorithm, and the extraction of direct
 new CSBFinder-S.
 
 If you used the tool as part of your research, please cite us:
+
 Dina Svetlitsky, Tal Dagan, Vered Chalifa-Caspi, Michal Ziv-Ukelson, 
 CSBFinder: discovery of colinear syntenic blocks across thousands of prokaryotic genomes, Bioinformatics, 
 Volume 35, Issue 10, 15 May 2019, Pages 1634–1643,
