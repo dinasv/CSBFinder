@@ -129,6 +129,8 @@ public class MainFrame extends JFrame {
 
         toolbar.disablRankeBtn();
         toolbar.disableClusterBtn();
+        toolbar.disabZoomInBtn();
+        toolbar.disabZoomOutBtn();
 
         menuBar.disableSaveAsBtn();
         menuBar.disableExportBtn();
