@@ -31,7 +31,7 @@ public class Toolbar extends JPanel{
     private JComboBox selectNumOfNeighbors;
     private JLabel selectNumOfNeighborsLabel = new JLabel("Neighbors:");
     private JCheckBox showOnlyTables;
-    private JLabel showOnlyTablesLabel = new JLabel("tables only:");
+    private JLabel showOnlyTablesLabel = new JLabel("Tables only:");
 
     private Listener<OpenDialogEvent> selectParamsListener;
     private Listener<OpenDialogEvent> clusterListener;
