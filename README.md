@@ -2,7 +2,7 @@
 
 -   [Overview](#overview)
 -   [Prerequisites](#prerequisites)
--   [Running CSBFinder](#running)
+-   [Running CSBFinder-S](#running)
     - [Download](#download)
     - [User Interface](#ui)
     - [Command Line](#cmd)
@@ -55,7 +55,7 @@ CSBs confined to specific functional semantic categories.
 - Many other improvement in the user interface
 
 ### Workflow Description
-The workflow of CSBFinder is given in the figure below.    
+The workflow of CSBFinder-S is given in the figure below.    
 
 **(A)** The input to the workflow is a dataset of input genomes, where each genome is modeled as a sequence of gene 
 identifiers; A gene identifier indicates the corresponding gene orthology group as well as the strand (+/-) in which 
@@ -78,6 +78,8 @@ determined by the score of its highest scoring CSB.
 ### Citation
 The following paper contains details regarding the previous version of CSBFinder that targeted the extraction of 
 CSBs that correspond to operons. It contains details of the Suffix-Tree based algorithm for CSB extraction. 
+The options to use the Suffix-Tree based algorithm, and the extraction of directon CSBs, are still available in the 
+new CSBFinder-S.
 
 If you used the tool as part of your research, please cite us:
 Dina Svetlitsky, Tal Dagan, Vered Chalifa-Caspi, Michal Ziv-Ukelson, 
@@ -91,21 +93,21 @@ Volume 35, Issue 10, 15 May 2019, Pages 1634–1643,
 [Java Runtime Environment (JRE)](http://www.oracle.com/technetwork/java/javase/downloads/index.html)
 8 or higher.
 
-<a name='running'>Running CSBFinder</a>
+<a name='running'>Running CSBFinder-S</a>
 --------
 ### <a name='download'>Download</a>
 - Download the [latest release](https://github.com/dinasv/CSBFinder/releases) of CSBFinder installer.
 - The available options are Windows 64 or 32 bit, Unix and MacOS
 
-> CSBFinder has a user interface, but can be executed via the command line by executing the JAR file in the 
+> CSBFinder-S has a user interface, but can be executed via the command line by executing the JAR file in the 
 installation folder. 
 
-### <a name='ui'>Running CSBFinder via User Interface</a>
-Just double click on the CSBFinder executable file in the installation folder, or (if you checked these options 
+### <a name='ui'>Running CSBFinder-S via User Interface</a>
+Just double click on the CSBFinder-S executable file in the installation folder, or (if you checked these options 
 during installation) from the Start Menu / Desktop.
 
 > Note: If you are going to use a very large input dataset you might need to change the maximal memory that can be
-used by CSBFinder. Go to the installation folder and edit the file "CSBFinder.vmoptions" using a Text Editor. Change
+used by CSBFinder-S. Go to the installation folder and edit the file "CSBFinder-S.vmoptions" using a Text Editor. Change
 the Java option `-Xmx500m` to `-Xmx[maximal heap size]` depending of the available RAM.
  For example `-Xmx6g` sets the maximal JAVA heap size to 6GB.
 
@@ -128,27 +130,27 @@ on the parameters specified.
     4. After the process is done, the lower panel will contain all the discovered CSBs. 
 
 2. **Importing a saved session file**:  
-    If you have ran CSBFinder and saved a session file, you can load it by choosing `File->Import->Session File`
+    If you have ran CSBFinder-S and saved a session file, you can load it by choosing `File->Import->Session File`
   
 3. **Importing gene orthology group information**:  
 Load it by choosing `File->Import->Orthology Information file`. This information will be displayed on the lower right 
  panel.
 
-### <a name='cmd'>Running CSBFinder via Command Line </a>
+### <a name='cmd'>Running CSBFinder-S via Command Line </a>
 
-> CSBFinder can be executed via the command line by executing the JAR file in the installation folder. 
+> CSBFinder-S can be executed via the command line by executing the JAR file in the installation folder. 
 
 - In the terminal (linux) or cmd (windows) type:
     ``` 
-    java -jar CSBFinder-[version]-jar-with-dependencies.jar [options]
+    java -jar CSBFinder-S-[version]-jar-with-dependencies.jar [options]
     ```
     > Note: If your input dataset is very large, add the argument -Xmx6g (6g might be enough, but you can specify a 
     higher number, depending on your RAM size).
     For example:
     ``` 
-    java -Xmx6g -jar CSBFinder-[version]-jar-with-dependencies.jar [options]
+    java -Xmx6g -jar CSBFinder-S-[version]-jar-with-dependencies.jar [options]
     ```
-    > Note: When running CSBFinder without command line arguments, the user interface will be launched.
+    > Note: When running CSBFinder-S without command line arguments, the user interface will be launched.
     
 
 > [Sample input files](#sample) are provided below
@@ -182,12 +184,12 @@ Optional:
       EXPORT_FILE_NAME will be the prefix of the names of the *.xlsx/*.txt output files.   
       Default: dataset1
 - **--patterns** PATTERNS_FILE_NAME, **-p** PATTERNS_FILE_NAME    
-      A name of a file, located in a directory named 'input', in the same directory as CSBFinder.jar.   
+      A name of a file, located in a directory named 'input', in the same directory as the jar file.   
       If this option is used, CSBs are no longer extracted from the input sequences.    
       The file should contain specific CSB patterns that the user is interested to find in the input sequences.      
       See [Input files formats](#in_patterns) for more details.    
 - **-cog-info** COG_INFO_FILE_NAME     
-      A name of a file, located in a directory named 'input', in the same directory as CSBFinder.jar.   
+      A name of a file, located in a directory named 'input', in the same directory as the jar file.   
       This file should contain functional description of orthology groups.    
       See [Input files formats](#cog_info) for more details.        
 - **--cross-strand**, **-cs**
@@ -460,61 +462,20 @@ The above zip file contains four files, located inside a folder named 'input':
     _Plasmid dataset_ - 471 prokaryotic genomes with at least one plasmid, chromosomes were removed.
 - chromosomal_genomes.fasta    
     _Chromosomal dataset_ - 1,485 prokaryotic genomes with at least one chromosome, plasmids were removed.
-    > Important: this is a huge dataset. See instructions below, how to run CSBFinder with a large dataset
+    > Important: this is a huge dataset. See instructions below, how to run CSBFinder-S with a large dataset
 - cog_info.txt   
     Functional information of gene orthology groups
 - taxa_csbfinder.txt   
     Taxonomy information for the user interface
 
-### Execution of CSBFinder on the Chromosomal Dataset of 1,485 prokaryotic genomes
-  
-#### User Interface
-
-The file _chromosomal_genomes.fasta_ contains ~1,500 genomes, hence CSBFinder needs more heap memory.
-When uploading a large dataset.
-
-Go to the installation folder and edit the file "CSBFinder.vmoptions" using a Text Editor. Change
-the Java option `-Xmx500m` to `-Xmx[maximal heap size]` depending of the available RAM. Changing to at least `-Xmx6g` 
-is recommended (sets the maximal JAVA heap size to 6GB).
-
-- Now execute CSBfinder and choose `File->Import->Genomes File`, it may take a few minutes to load the selected file.
-
-- Click on the "Run" button, and a window will open.
-
-- Set the parameters (e.g. Quorum 50, Insertions Allowed 1).
-
-- Clicking on the "Run" button will start the computation of CSBs, this may take a few minutes.
- When the process is done, the results will be shown.
-
-##### Output
-You can export the resulting CSBs as a TXT or XLSX file.
-You can also save the results in a session file, that can be opened using the user interface.
-
-#### Command Line
-In the installation directory, you will find a *.jar file, e.g., CSBFinder-S-0.6.1-jar-with-dependencies.jar
-``` 
-java -Xmx6g -jar CSBFinder-[version]-jar-with-dependencies.jar -in input/chromosomal_genomes.fasta -q 50 -ins 1 -e Chromosomes 
--cog-info input/cog_info.txt
-```
-##### Input parameters
-- This line will execute CSBFinder.jar with maximal heap size (memory) of 6GB.   
-- The input genomes files is _chromosomal_genomes.fasta_ located in the input directory.  
-- The quorum parameter is set to 50 (i.e., each CSB must have instances in at least 50 input genomes).  
-- The number of allowed insertions in a CSB instance is one.  
-- The export file name is _"Chromosomes"_
-- The gene orthology input file is _cog_info.txt_ located in the input directory
-
-##### Output
-The output files will be now located in the output directory
-
-> On a laptop computer with Intel model i7 processor and 8GB RAM, this execution should take less than 5 minutes
-
-### Execution of CSBFinder on the Plasmid Dataset of 471 microbial genomes
+### Execution of CSBFinder-S on the Plasmid Dataset of 471 microbial genomes
 
 #### User Interface 
-Upload the dataset by clicking on the "Load Input model.genomes" button.
 
-##### Input Parameters
+- Execute CSBfinder-S and choose `File->Import->Genomes File`
+
+- You can also import `cog_info.txt` and `taxa_csbfinder.txt` for additional displayed information
+
 - Click on the "Run" button, and a window will open.
 
 - Set the parameters (e.g. Quorum 10, Insertions Allowed 1).
@@ -542,6 +503,52 @@ java -jar CSBFinder-[version]-jar-with-dependencies.jar -in input/plasmid_genome
 The output files will be now located in the output directory
 > On a laptop computer with Intel model i7 processor and 8GB RAM, this execution should take a few seconds
 
+### Execution of CSBFinder-S on the Chromosomal Dataset of 1,485 prokaryotic genomes
+  
+#### User Interface
+
+The file _chromosomal_genomes.fasta_ contains ~1,500 genomes, hence CSBFinder-S needs more heap memory.
+When uploading a large dataset.
+
+Go to the installation folder and edit the file "CSBFinder-S.vmoptions" using a Text Editor. Change
+the Java option `-Xmx500m` to `-Xmx[maximal heap size]` depending of the available RAM. Changing to at least `-Xmx6g` 
+is recommended (sets the maximal JAVA heap size to 6GB).
+
+- Now execute CSBfinder-S and choose `File->Import->Genomes File`, it may take a few minutes to load the selected file.
+
+- You can also import `cog_info.txt` and `taxa_csbfinder.txt` for additional displayed information
+
+- Click on the "Run" button, and a window will open.
+
+- Set the parameters (e.g. Quorum 50, Insertions Allowed 1).
+
+- Clicking on the "Run" button will start the computation of CSBs, this may take a few minutes.
+ When the process is done, the results will be shown.
+
+##### Output
+You can export the resulting CSBs as a TXT or XLSX file.
+You can also save the results in a session file, that can be opened using the user interface.
+
+#### Command Line
+In the installation directory, you will find a *.jar file, e.g., CSBFinder-S-0.6.1-jar-with-dependencies.jar
+``` 
+java -Xmx6g -jar CSBFinder-S-[version]-jar-with-dependencies.jar -in input/chromosomal_genomes.fasta -q 50 -ins 1 -e Chromosomes 
+-cog-info input/cog_info.txt
+```
+##### Input parameters
+- This line will execute the jar file with maximal heap size (memory) of 6GB.   
+- The input genomes files is _chromosomal_genomes.fasta_ located in the input directory.  
+- The quorum parameter is set to 50 (i.e., each CSB must have instances in at least 50 input genomes).  
+- The number of allowed insertions in a CSB instance is one.  
+- The export file name is _"Chromosomes"_
+- The gene orthology input file is _cog_info.txt_ located in the input directory
+
+##### Output
+The output files will be now located in the output directory
+
+> On a laptop computer with Intel model i7 processor and 8GB RAM, this execution should take less than 5 minutes
+
+
 <a name='ui_features'>User interface features</a>   
 --------------------------------------
 - Save - saving a session file (*.csb extension). This will save the current session, all filtered-out CSBs will be lost.
@@ -555,7 +562,7 @@ The following files are present in the installation directory
 Include paths to Session file, Taxonomy file, and Orthology info file. 
 These files will be loaded automatically when launching the program
 
-2. CSBFinder.vmoptions:   
+2. CSBFinder-S.vmoptions:   
 Increase the memory (RAM) used by the program, by changing MEM in -Xmx[MEM] (e.g., -Xmx6g)
 
 
@@ -585,5 +592,5 @@ Thanks to Alexander Lerman for help with the initial user interface
   <a href="https://www.flaticon.com/authors/icon-works" title="Icon Works">Icon Works</a>
   from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a>, licensed by <a href="http://creativecommons.org/licenses/by/3.0/" title="Creative Commons BY 3.0" target="_blank">CC 3.0 BY</a>
 
-CSBFinder uses install4j - a multi-platform installer builder   
+CSBFinder-S uses install4j - a multi-platform installer builder   
 [![install4j](https://www.ej-technologies.com/images/product_banners/install4j_medium.png "install4j")](https://www.ej-technologies.com/products/install4j/overview.html)
