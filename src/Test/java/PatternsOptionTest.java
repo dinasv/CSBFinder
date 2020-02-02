@@ -109,4 +109,31 @@ public class PatternsOptionTest {
         Assert.assertEquals(2, pattern.getInstancesPerGenomeCount());
 
     }
+
+    @Test
+    public void testCircularST() throws Exception {
+        List<Pattern> patternsFromFile = Parsers.parsePatternsFile(PATTERNS_FILE_PATH3);
+        Parameters parameters = new Parameters();
+        parameters.algorithmType = AlgorithmType.SUFFIX_TREE;
+        parameters.circular = true;
+        parameters.maxInsertion = 1;
+
+        List<Pattern> patterns = runWorkflow(GENOMES_FILE_PATH1, patternsFromFile, parameters);
+
+        Gene[] expectedGenes = {new Gene("COG0003", Strand.INVALID),
+                new Gene("COG0004", Strand.INVALID),
+                new Gene("COG0001", Strand.INVALID)};
+
+        Pattern expectedPattern = new Pattern(expectedGenes);
+        expectedPattern.setPatternId(patternsFromFile.get(0).getPatternId());
+
+        Assert.assertEquals(1, patterns.size());
+
+        Pattern pattern = patterns.get(0);
+
+        Assert.assertEquals(expectedPattern, pattern);
+        Assert.assertEquals(expectedPattern.getPatternId(), pattern.getPatternId());
+        Assert.assertEquals(2, pattern.getInstancesPerGenomeCount());
+
+    }
 }
