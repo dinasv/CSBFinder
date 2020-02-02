@@ -1,4 +1,4 @@
-# CSBFinder
+# CSBFinder-S
 
 -   [Overview](#overview)
 -   [Prerequisites](#prerequisites)
@@ -21,46 +21,52 @@
 
 <a name='overview'>Overview</a>
 --------
-CSBFinder is a standalone Desktop java application with a graphical user interface, 
+CSBFinder-S is a standalone Desktop java application with a graphical user interface, 
 that can also be executed via command line.
 
-CSBFinder implements a novel methodology for the discovery and ranking of 
+CSBFinder-S implements a novel methodology for the discovery and ranking of 
 colinear syntenic blocks (**CSBs**) - groups of genes that are consistently located close to each other, 
 in the same order, across a wide range of taxa.
-CSBFinder incorporates efficient algorithms that identify CSBs in large genomic datasets. 
+CSBFinder-S incorporates efficient algorithms that identify CSBs in large genomic datasets. 
 The discovered CSBs are ranked according to a probabilistic score and clustered to families according to their gene 
 content similarity.
+
+The overall toolkit includes two components, implementing two distinct algorithms and released in separate versions. 
+The first, denoted CSBFinder (published in (Svetlitsky et. al., 2018), cited below), incorporated a suffix-tree based 
+algorithm, and was optimized to seek single-operon CSBs. 
+The second version, CSBFinder-S (recently submitted), generalizes the tool to cross-strand, multi operon CSBs and 
+incorporates a match-point arithmetic based algorithm to efficiently support the generalizations. 
 
 ### March 27, 2019 update
 
 **CSBFinder-S** for the discovery of cross-strand multi-operon CSBs is released
 
-- In this version, the user can decide whether to segment the input genomes into directons (consecutive genes on the same 
+- In this version, the user can decide whether or not to segment the input genomes into directons (consecutive genes on the same 
 strand) 
 
-- A novel exact algorithm that uses match-point arithmetic is implemented. 
+- A novel exact algorithm that uses match-point arithmetic is proposed and implemented. 
 The time and space complexities of the algorithm are insensitive to the number of insertions and maximal CSB length. 
-The new algorithm is faster than the algorithm given in published in (Svetlitsky et. al., 2018) for larger values of 
-insertions. Additional advantages of the algorithm are its simplicity of implementation, and the fact that it is easily 
+The new algorithm is faster than the algorithm given in (Svetlitsky et. al., 2018) for larger values of 
+insertions allowed. Additional advantages of the new algorithm are its simplicity of implementation, and the fact that it is easily 
 parallelizable, yielding further scalability.
 
 CSBFinder-S provides several novel mechanisms to help the user sort, filter, and interpret the discovered CSBs. 
-- A ranking score that takes into account the genomic distances between the genomes in which the corresponding CSBs 
+- A ranking score that considers the genomic distances between the genomes in which the corresponding CSBs 
 appear. 
 - The user can constrain the structural features of the desired CSBs (length, abundance, etc.), as well as to extract 
 CSBs confined to specific functional semantic categories. 
 
 - A taxonomic viewer of the genomes that contain instances of each CSB.
 
-- Many other improvement in the user interface
+- Many other improvements have been incorporated in the user interface
 
 ### Workflow Description
 The workflow of CSBFinder-S is given in the figure below.    
 
 **(A)** The input to the workflow is a dataset of input genomes, where each genome is modeled as a sequence of gene 
-identifiers; A gene identifier indicates the corresponding gene orthology group as well as the strand (+/-) in which 
+identifiers: A gene identifier indicates the corresponding gene orthology group as well as the strand (+/-) in which 
 the gene is encoded. 
-Additional input consists of user-specified parameters **_k_** (number of allowed insertions) and and **_q_** 
+Additional input consists of user-specified parameters **_k_** (number of allowed insertions) and **_q_** 
 (the quorum parameter). In our formulation, a CSB is a pattern that
 appears as a substring of at least one of the input genomes, and has instances in at least **_q_** of the input
 genomes, where each instance may vary from the CSB pattern by at most **_k_** gene insertions. 
@@ -76,10 +82,10 @@ determined by the score of its highest scoring CSB.
 
 
 ### Citation
-The following paper contains details regarding the previous version of CSBFinder that targeted the extraction of 
+The following paper contains details regarding the first version of CSBFinder-S, denoted CSBFinder, that targeted the extraction of 
 CSBs that correspond to operons. It contains details of the Suffix-Tree based algorithm for CSB extraction. 
 The options to use the Suffix-Tree based algorithm, and the extraction of directon CSBs, are still available in the 
-new CSBFinder-S.
+new CSBFinder-S tool.
 
 If you used the tool as part of your research, please cite us:
 
@@ -304,9 +310,9 @@ COG0600	+
 ```
 
 
-#### Assigning genes to orthologous group identifiers
+#### Assigning genes to orthology group identifiers
 
-You can annotate genes by any orthologous group identifiers. The IDs can be numbers or symbols, the only restriction 
+You can annotate genes by any orthology group identifiers. The IDs can be numbers or symbols, the only restriction 
 is that each orthology group will have a unique ID.
 
 ##### Examples
@@ -420,7 +426,7 @@ be written to the specified directory
             - Instance count: number of input sequences with an instance
             - CSB: a sequence of genes
             - Main_Category: if functional category was provided in the -cog-info file, this column contains the functional category of                             the majority of CSB gene families
-            - Family_ID: CSBs with similar gene content will belong to the same family, indicated by a postive integer
+            - Family_ID: CSBs with similar gene content will belong to the same family, indicated by a positive integer
     2. Filtered CSBs
         - This sheet contains only the top scoring CSB from each family
     3. CSBs description
