@@ -94,6 +94,10 @@ public class CSBFinderWorkflow {
 
         patternsCount = patterns.size();
 
+        if (patterns.size() == 0){
+            return;
+        }
+
         if (patternsFromFile.size() == 0){
             computeScores(patterns, params.delta);
         }
