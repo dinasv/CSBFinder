@@ -465,8 +465,8 @@ be written to the specified directory
 <a name='sample'>Example of running CSBFinder-S</a>   
 --------------------------------------
 Sample input files are located in the input directory of the installation folder.
-You can also download the following zip file:
-> [Sample_input_files.zip](https://github.com/dinasv/CSBFinder/raw/master/input/Sample_input_files.zip)
+You can also download by clicking on this link:
+> [Sample_input_files.zip](https://github.com/dinasv/CSBFinder/blob/master/input/input.zip?raw=true)
 
 The above zip file contains four files, located inside a folder named 'input':
 - plasmid_genomes.fasta   
