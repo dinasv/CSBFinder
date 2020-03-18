@@ -1,6 +1,7 @@
 package model.patterns;
 
 import model.genomes.GenomesInfo;
+import org.apache.commons.math3.exception.MathArithmeticException;
 import org.apache.commons.math3.special.Beta;
 import org.apache.commons.math3.analysis.function.Expm1;
 
@@ -9,6 +10,7 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import static org.apache.commons.math3.util.CombinatoricsUtils.binomialCoefficient;
+import static org.apache.commons.math3.util.CombinatoricsUtils.binomialCoefficientLog;
 
 
 /**
@@ -196,16 +198,22 @@ public class PatternScore {
         if (pValues[patternLength] != 0){
             result = pValues[patternLength];
         }else {
-            long binomial = binomialCoefficient(patternLength+maxInsertions-2, patternLength-2);
-            int instanceStartIndexes = n - patternLength + 1;
-            double numerator = Math.log(binomial) + Math.log(instanceStartIndexes - maxInsertions);
 
-            int denominator = instanceStartIndexes;
-            double logMaxInsertions = maxInsertions > 0 ? maxInsertions : 1;
-            result = logMaxInsertions + numerator - logSum(denominator, n);
+            try {
+                double binomialLog = binomialCoefficientLog(patternLength + maxInsertions - 2, patternLength - 2);
+                int instanceStartIndexes = n - patternLength + 1;
+                double numerator = binomialLog + Math.log(instanceStartIndexes - maxInsertions);
 
-            if (binomial <= 0 || instanceStartIndexes <= 0 || instanceStartIndexes - maxInsertions <= 0){
-                result = 0;
+                int denominator = instanceStartIndexes;
+                double logMaxInsertions = maxInsertions > 0 ? maxInsertions : 1;
+                result = logMaxInsertions + numerator - logSum(denominator, n);
+
+                if (binomialLog <= 0 || instanceStartIndexes <= 0 || instanceStartIndexes - maxInsertions <= 0){
+                    result = 0;
+                }
+            }catch (MathArithmeticException e){
+                System.out.println(String.format("Arithmetic exception for pattern of length %d, score set to 0",
+                        patternLength));
             }
 
             pValues[patternLength] = result;
