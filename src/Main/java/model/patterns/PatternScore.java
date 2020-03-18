@@ -208,7 +208,7 @@ public class PatternScore {
                 double logMaxInsertions = maxInsertions > 0 ? maxInsertions : 1;
                 result = logMaxInsertions + numerator - logSum(denominator, n);
 
-                if (binomialLog <= 0 || instanceStartIndexes <= 0 || instanceStartIndexes - maxInsertions <= 0){
+                if (instanceStartIndexes <= 0 || instanceStartIndexes - maxInsertions <= 0){
                     result = 0;
                 }
             }catch (MathArithmeticException e){
