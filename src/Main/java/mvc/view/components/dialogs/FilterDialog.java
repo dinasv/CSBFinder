@@ -1,5 +1,6 @@
 package mvc.view.components.dialogs;
 
+import mvc.view.components.fields.IntervalField;
 import mvc.view.events.RunEvent;
 import mvc.view.listeners.RunListener;
 import mvc.view.tables.filters.PatternStrand;
@@ -33,20 +34,9 @@ public class FilterDialog extends JDialog{
     private final static String FUNCTIONAL_CATEGORY_DEF = "";
     private final static int TEXT_FIELD_COLS = 13;
 
-    private int maxPatternLen = MAX_PATTERN_LENGTH_DEF;
-    private int maxCountVal = MAX_COUNT_DEF;
-
-    private final JLabel PATTERN_LENGTH_LABEL = new JLabel("CSB length between:");
-    private JSpinner minPatternLength;
-    private JSpinner maxPatternLength;
-
-    private final JLabel SCORE_LABEL = new JLabel("Score between:");
-    private JSpinner minScore;
-    private JSpinner maxScore;
-
-    private final JLabel COUNT_LABEL = new JLabel("Instance count between:");
-    private JSpinner minCount;
-    private JSpinner maxCount;
+    private IntervalField patternLengthField;
+    private IntervalField scoreField;
+    private IntervalField countField;
 
     private final JLabel STRAND_LABEL = new JLabel("CSB strand:");
     private ButtonGroup strandBtns;
@@ -118,26 +108,8 @@ public class FilterDialog extends JDialog{
         setLayout(new BorderLayout());
         add(fields, BorderLayout.PAGE_START);
         add(buttons, BorderLayout.LINE_END);
+
         pack();
-    }
-
-    private void setSpinnerWidth(JSpinner spinner, int width){
-        JFormattedTextField textField = getTextField(spinner);
-        if (textField != null ) {
-            textField.setColumns(width);
-        }
-    }
-
-    private JFormattedTextField getTextField(JSpinner spinner) {
-        JComponent editor = spinner.getEditor();
-        if (editor instanceof JSpinner.DefaultEditor) {
-            return ((JSpinner.DefaultEditor)editor).getTextField();
-        } else {
-            System.err.println("Unexpected editor type: "
-                    + spinner.getEditor().getClass()
-                    + " isn't a descendant of DefaultEditor");
-            return null;
-        }
     }
 
 
@@ -171,14 +143,14 @@ public class FilterDialog extends JDialog{
         addBtnListener(crossStrandTypesBtn);
         addBtnListener(oneStrandTypesBtn);
 
-        minPatternLength.addChangeListener(e -> request.setMinCSBLength((int)minPatternLength.getValue()));
-        maxPatternLength.addChangeListener(e -> request.setMaxCSBLength((int)maxPatternLength.getValue()));
+        patternLengthField.addMinChangeListener(e -> request.setMinCSBLength(patternLengthField.getFromValue()));
+        patternLengthField.addMaxChangeListener(e -> request.setMaxCSBLength(patternLengthField.getToValue()));
 
-        minScore.addChangeListener(e -> request.setMinScore((int)minScore.getValue()));
-        maxScore.addChangeListener(e -> request.setMaxScore((int)maxScore.getValue()));
+        scoreField.addMinChangeListener(e -> request.setMinScore(scoreField.getFromValue()));
+        scoreField.addMaxChangeListener(e -> request.setMaxScore(scoreField.getToValue()));
 
-        minCount.addChangeListener(e -> request.setMinInstanceCount((int)minCount.getValue()));
-        maxCount.addChangeListener(e -> request.setMaxInstanceCount((int)maxCount.getValue()));
+        countField.addMinChangeListener(e -> request.setMinInstanceCount(countField.getFromValue()));
+        countField.addMaxChangeListener(e -> request.setMaxInstanceCount(countField.getToValue()));
 
         addTextFieldListener(patternIds, request::setPatternIds);
 
@@ -240,14 +212,14 @@ public class FilterDialog extends JDialog{
 
         initStrandBtns();
 
-        minPatternLength = new JSpinner();
-        maxPatternLength = new JSpinner();
+        String label = "CSB length between:";
+        patternLengthField = new IntervalField(TEXT_FIELD_COLS, label, MIN_PATTERN_LENGTH_DEF, MAX_PATTERN_LENGTH_DEF);
 
-        minScore = new JSpinner();
-        maxScore = new JSpinner();
+        label = "Score between:";
+        scoreField = new IntervalField(TEXT_FIELD_COLS, label, MIN_SCORE_DEF, MAX_SCORE_DEF);
 
-        minCount = new JSpinner();
-        maxCount = new JSpinner();
+        label = "Instance count between:";
+        countField = new IntervalField(TEXT_FIELD_COLS, label, MIN_COUNT_DEF, MAX_COUNT_DEF);
 
         patternIds = new JTextField();
 
@@ -267,20 +239,15 @@ public class FilterDialog extends JDialog{
 
         genesCategoryExclude = new JTextField();
 
-        //genesCategoryExcludeComboBox = new JComboBox<>(BooleanOperator.values());
-
     }
 
     private void initFields(){
 
+        patternLengthField.initFields();
+        scoreField.initFields();
+        countField.initFields();
+
         allStrandTypesBtn.setSelected(true);
-
-        setPatternLengthModels();
-
-        minScore.setModel(new SpinnerNumberModel(MIN_SCORE_DEF, MIN_SCORE_DEF, MAX_SCORE_DEF, 1));
-        maxScore.setModel(new SpinnerNumberModel(MAX_SCORE_DEF, MIN_SCORE_DEF, MAX_SCORE_DEF, 1));
-
-        setCountModel();
 
         patternIds.setText(PATTERN_IDS_DEF);
         familyIds.setText(FAMILY_IDS_DEF);
@@ -290,28 +257,8 @@ public class FilterDialog extends JDialog{
         genesCategoryExclude.setText(FUNCTIONAL_CATEGORY_DEF);
 
         genesCategoryComboBox.setSelectedIndex(0);
-        //genesCategoryExcludeComboBox.setSelectedIndex(0);
         genesComboBox.setSelectedIndex(0);
         functionalCategoryComboBox.setSelectedIndex(0);
-    }
-
-    private void setCountModel(){
-        minCount.setModel(new SpinnerNumberModel(MIN_COUNT_DEF, MIN_COUNT_DEF, maxCountVal, 1));
-        maxCount.setModel(new SpinnerNumberModel(maxCountVal, MIN_COUNT_DEF, maxCountVal, 1));
-
-        setSpinnerWidth(minCount, TEXT_FIELD_COLS);
-        setSpinnerWidth(maxCount, TEXT_FIELD_COLS);
-
-    }
-
-    private void setPatternLengthModels(){
-
-        minPatternLength.setModel(new SpinnerNumberModel(MIN_PATTERN_LENGTH_DEF, MIN_PATTERN_LENGTH_DEF, maxPatternLen, 1));
-        maxPatternLength.setModel(new SpinnerNumberModel(maxPatternLen, MIN_PATTERN_LENGTH_DEF, maxPatternLen, 1));
-
-        setSpinnerWidth(minPatternLength, TEXT_FIELD_COLS);
-        setSpinnerWidth(maxPatternLength, TEXT_FIELD_COLS);
-
     }
 
     private void addComponentsToGC(){
@@ -322,9 +269,9 @@ public class FilterDialog extends JDialog{
         addComponentToGC(0, y, 1, 0.2, insetLabel, 1,  STRAND_LABEL, LINE_START);
         addComponentToGC(1, y++, 1, 0.6, insetField,3, patternStrandPanel, LINE_START);
 
-        addIntervalComponentToGC(y++, PATTERN_LENGTH_LABEL, minPatternLength, maxPatternLength, insetLabel, insetField);
-        addIntervalComponentToGC(y++, SCORE_LABEL, minScore, maxScore, insetLabel, insetField);
-        addIntervalComponentToGC(y++, COUNT_LABEL, minCount, maxCount, insetLabel, insetField);
+        patternLengthField.addFieldToGC(fields, gc, y++);
+        scoreField.addFieldToGC(fields, gc, y++);
+        countField.addFieldToGC(fields, gc, y++);
 
         ImageIcon icon = mvc.view.graphics.Icon.QUESTION_MARK.getIcon();
         String desc = "Enter one or more values, separated by a comma";
@@ -374,15 +321,6 @@ public class FilterDialog extends JDialog{
         return label;
     }
 
-    private void addIntervalComponentToGC(int y, JLabel label, JSpinner minSpinner, JSpinner maxSpinner,
-                                          Insets insetLabel, Insets insetField){
-
-        addComponentToGC(0, y, 1, 0.2, insetLabel, 1, label, LINE_START);
-        addComponentToGC(1, y, 1, 0.2, insetField, 1, minSpinner, LINE_START);
-        addComponentToGC(2, y, 1, 0.2, insetField, 1, new JLabel("and"), CENTER);
-        addComponentToGC(3, y, 1, 0.2, insetField, 1, maxSpinner, LINE_START);
-    }
-
     private void addComponentToGC(int x, int y, double weightx, double weighty, Insets insets, int gridWidth, Component c, int anchor) {
         gc.gridx = x;
         gc.gridy = y;
@@ -396,11 +334,8 @@ public class FilterDialog extends JDialog{
 
     public void setGenomeData(int numberOfGenomes, int maxGenomeSize) {
         if (numberOfGenomes > 0) {
-            maxPatternLen = maxGenomeSize;
-            maxCountVal = numberOfGenomes;
-
-            setPatternLengthModels();
-            setCountModel();
+            patternLengthField.setToMaxDefault(maxGenomeSize);
+            countField.setToMaxDefault(numberOfGenomes);
         }
     }
 

@@ -68,6 +68,14 @@ public class FamiliesFilter {
         }
     }
 
+    public void setFamilyMinSize(int val) {
+        familyFilters.add(new NumberFilter<>(val, NumberComparison.LARGER_EQ, FamilyProperty.MEMBERS));
+    }
+
+    public void setFamilyMaxSize(int val) {
+        familyFilters.add(new NumberFilter<>(val, NumberComparison.LESS_EQ, FamilyProperty.MEMBERS));
+    }
+
     public void setPatternIds(String patternIds) {
 
         if (patternIds == null || patternIds.length() == 0){
