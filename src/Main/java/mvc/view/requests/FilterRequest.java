@@ -26,6 +26,9 @@ public class FilterRequest implements Request{
     private BooleanOperator genesCategoryOperator;
     //private BooleanOperator genesCategoryExcludeOperator;
 
+    private Integer minFamilyMembers;
+    private Integer maxFamilyMembers;
+
     private String mainFunctionalCategory;
     private FunctionalCategoryOption functionalCategoryOption;
 
@@ -49,6 +52,8 @@ public class FilterRequest implements Request{
         functionalCategoryOption = FunctionalCategoryOption.INCLUDE;
         genesCategory = null;
         genesCategoryOperator = BooleanOperator.AND;
+        minFamilyMembers = null;
+        maxFamilyMembers = null;
     }
 
     public void setMinCSBLength(int minCSBLength) {
@@ -59,12 +64,28 @@ public class FilterRequest implements Request{
         this.maxCSBLength = maxCSBLength;
     }
 
+    public void setMinFamilyMembers(int val) {
+        this.minFamilyMembers = val;
+    }
+
+    public void setMaxFamilyMembers(int val) {
+        this.maxFamilyMembers = val;
+    }
+
     public Optional<Integer> getMinCSBLength() {
         return Optional.ofNullable(minCSBLength);
     }
 
     public Optional<Integer> getMaxCSBLength() {
         return Optional.ofNullable(maxCSBLength);
+    }
+
+    public Optional<Integer> getMinFamilyMembers() {
+        return Optional.ofNullable(minFamilyMembers);
+    }
+
+    public Optional<Integer> getMaxFamilyMembers() {
+        return Optional.ofNullable(maxFamilyMembers);
     }
 
     public Optional<Integer> getMinScore() {
@@ -171,15 +192,6 @@ public class FilterRequest implements Request{
     public void setGenesCategoryOperator(BooleanOperator genesCategoryOperator) {
         this.genesCategoryOperator = genesCategoryOperator;
     }
-
-    /*
-    public void setGenesCategoryExcludeOperator(BooleanOperator genesCategoryOperator) {
-        this.genesCategoryOperator = genesCategoryOperator;
-    }
-
-    public BooleanOperator getGenesCategoryExcludeOperator() {
-        return genesCategoryExcludeOperator;
-    }*/
 
     public Optional<String> getGenesCategoryExclude() {
         return Optional.ofNullable(genesCategoryExclude);

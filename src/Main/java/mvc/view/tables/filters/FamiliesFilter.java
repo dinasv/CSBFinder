@@ -68,11 +68,11 @@ public class FamiliesFilter {
         }
     }
 
-    public void setFamilyMinSize(int val) {
+    public void setMinFamilyMembers(int val) {
         familyFilters.add(new NumberFilter<>(val, NumberComparison.LARGER_EQ, FamilyProperty.MEMBERS));
     }
 
-    public void setFamilyMaxSize(int val) {
+    public void setMaxFamilyMembers(int val) {
         familyFilters.add(new NumberFilter<>(val, NumberComparison.LESS_EQ, FamilyProperty.MEMBERS));
     }
 

@@ -292,6 +292,8 @@ public class MainFrame extends JFrame {
         filterRequest.getPatternGenes().ifPresent(val -> familiesFilter.setGenes(val, filterRequest.getGenesOperator()));
         filterRequest.getMainFunctionalCategory().ifPresent(val -> familiesFilter.setFunctionalCategory(val,
                 filterRequest.getFunctionalCategoryOption()));
+        filterRequest.getMinFamilyMembers().ifPresent(val -> familiesFilter.setMinFamilyMembers(val));
+        filterRequest.getMaxFamilyMembers().ifPresent(val -> familiesFilter.setMaxFamilyMembers(val));
 
         Function<Gene[], List<String>> genesToCogsDesc = (Gene[] genes) -> {
             List<COG> cogs = controller.getCogsInfo(genes);

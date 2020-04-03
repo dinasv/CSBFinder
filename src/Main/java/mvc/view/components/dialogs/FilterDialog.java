@@ -37,6 +37,7 @@ public class FilterDialog extends JDialog{
     private IntervalField patternLengthField;
     private IntervalField scoreField;
     private IntervalField countField;
+    private IntervalField membersField;
 
     private final JLabel STRAND_LABEL = new JLabel("CSB strand:");
     private ButtonGroup strandBtns;
@@ -152,6 +153,9 @@ public class FilterDialog extends JDialog{
         countField.addMinChangeListener(e -> request.setMinInstanceCount(countField.getFromValue()));
         countField.addMaxChangeListener(e -> request.setMaxInstanceCount(countField.getToValue()));
 
+        membersField.addMinChangeListener(e -> request.setMinFamilyMembers(membersField.getFromValue()));
+        membersField.addMaxChangeListener(e -> request.setMaxFamilyMembers(membersField.getToValue()));
+
         addTextFieldListener(patternIds, request::setPatternIds);
 
         addTextFieldListener(familyIds, request::setFamilyIds);
@@ -221,6 +225,9 @@ public class FilterDialog extends JDialog{
         label = "Instance count between:";
         countField = new IntervalField(TEXT_FIELD_COLS, label, MIN_COUNT_DEF, MAX_COUNT_DEF);
 
+        label = "Family members between:";
+        membersField = new IntervalField(TEXT_FIELD_COLS, label, MIN_COUNT_DEF, MAX_COUNT_DEF);
+
         patternIds = new JTextField();
 
         familyIds = new JTextField();
@@ -246,6 +253,7 @@ public class FilterDialog extends JDialog{
         patternLengthField.initFields();
         scoreField.initFields();
         countField.initFields();
+        membersField.initFields();
 
         allStrandTypesBtn.setSelected(true);
 
@@ -310,6 +318,7 @@ public class FilterDialog extends JDialog{
         familyIds.setColumns(TEXT_FIELD_SIZE);
         addComponentToGC(1, y++, 1, 0.2, insetField, 1, familyIds, LINE_START);
 
+        membersField.addFieldToGC(fields, gc, y++);
 
     }
 
