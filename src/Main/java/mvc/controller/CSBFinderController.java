@@ -65,7 +65,7 @@ public class CSBFinderController {
         this.model.loadInputGenomesFile(filePath);
     }
 
-    public void loadSessionFile(String filePath) throws IOException {
+    public void loadSessionFile(String filePath) throws Exception {
         this.model.loadSessionFile(filePath);
     }
 

@@ -232,7 +232,7 @@ public class Parsers {
 
     public static void parseSessionFile(List<Family> families, String filePath, GenomesInfo genomesInfo,
                                         GeneColors colors, boolean circular)
-            throws IOException, IllegalArgumentException {
+            throws IOException, IllegalArgumentException, FileNotFoundException, NullPointerException {
 
         if (filePath == null) {
             throw new IllegalArgumentException();
@@ -405,7 +405,7 @@ public class Parsers {
     }
 
     private static void parseInstanceLocations(String rawLine, GenomesInfo genomesInfo, int lineNumber, String filePath,
-                                               Pattern pattern) {
+                                               Pattern pattern) throws IllegalArgumentException, NullPointerException{
 
         String[] locationsLine = rawLine.trim().split("\t");
         if (locationsLine.length < LOCATIONS_LINE.length) {

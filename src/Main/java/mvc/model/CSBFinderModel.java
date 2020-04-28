@@ -73,7 +73,7 @@ public class CSBFinderModel {
         }
     }
 
-    public void loadSessionFile(String path) throws IOException {
+    public void loadSessionFile(String path) throws Exception {
 
         String msg = "";
         gi = new GenomesInfo();

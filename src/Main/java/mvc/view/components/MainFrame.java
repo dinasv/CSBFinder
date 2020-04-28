@@ -696,7 +696,7 @@ public class MainFrame extends JFrame {
             clearPanels();
             try {
                 controller.loadSessionFile(e.getFile().getPath());
-            }catch (IOException exception){
+            }catch (Exception exception){
                 return exception.getMessage();
             }
             return null;
