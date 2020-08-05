@@ -20,6 +20,7 @@ import java.util.stream.Collectors;
 public class PatternsOptionTest {
     private final String GENOMES_FILE_PATH1 = this.getClass().getResource("/genomes.fasta").getPath();
     private final String GENOMES_FILE_PATH2 = this.getClass().getResource("/genomes2.fasta").getPath();
+    private final String GENOMES_FILE_PATH3 = this.getClass().getResource("/genomes13.fasta").getPath();
     private final String PATTERNS_FILE_PATH = this.getClass().getResource("/patterns.fasta").getPath();
     private final String PATTERNS_FILE_PATH2 = this.getClass().getResource("/patterns2.fasta").getPath();
     private final String PATTERNS_FILE_PATH3 = this.getClass().getResource("/patterns5.fasta").getPath();
@@ -80,6 +81,28 @@ public class PatternsOptionTest {
         Assert.assertEquals(expectedPatterns.size(), patterns.size());
         Assert.assertEquals(expectedPatterns, patterns);
         Assert.assertEquals(patternsFromFile.get(0).getPatternId(), patterns.get(0).getPatternId());
+
+    }
+
+    @Test
+    public void testMP2() throws Exception {
+
+        List<Pattern> patternsFromFile = Parsers.parsePatternsFile(PATTERNS_FILE_PATH);
+        Parameters parameters = new Parameters();
+        parameters.algorithmType = AlgorithmType.MATCH_POINTS;
+
+        List<Pattern> patterns = runWorkflow(GENOMES_FILE_PATH3, patternsFromFile, parameters);
+
+        List<Pattern> expectedPatterns = new ArrayList<>();
+
+        Gene[] expectedGenes = {new Gene("COG0001", Strand.INVALID),
+                new Gene("COG0002", Strand.INVALID)};
+
+        expectedPatterns.add(new Pattern(expectedGenes));
+
+        Assert.assertEquals(expectedPatterns.size(), patterns.size());
+        Assert.assertEquals(expectedPatterns, patterns);
+        Assert.assertEquals(2, patterns.get(0).getInstancesPerGenomeCount());
 
     }
 

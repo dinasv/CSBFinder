@@ -46,7 +46,7 @@ public class Directon implements GenomicSegment {
             i++;
         }
         if (i != 0) {
-            genes = new ArrayList<Gene>(genes.subList(2, genes.size()));
+            genes = new ArrayList<Gene>(genes.subList(i, genes.size()));
         }
     }
 
