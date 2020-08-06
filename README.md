@@ -21,6 +21,9 @@
 
 <a name='overview'>Overview</a>
 --------
+
+![Results Example](https://github.com/dinasv/CSBFinder/blob/master/images/screenshot_results_example.png "Results Example")
+
 CSBFinder-S is a standalone Desktop java application with a graphical user interface, 
 that can also be executed via command line.
 
