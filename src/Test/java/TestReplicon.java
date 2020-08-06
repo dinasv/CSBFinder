@@ -2,6 +2,8 @@ import model.genomes.*;
 import org.junit.Assert;
 import org.junit.Test;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class TestReplicon {
@@ -57,6 +59,33 @@ public class TestReplicon {
             Assert.assertEquals(2, directon.size());
         }
 
+    }
+
+    @Test
+    public void testDirectonsRemoveX() {
+
+        Gene[] genes = {
+                new Gene("X", Strand.INVALID),
+                new Gene("A", Strand.INVALID),
+                new Gene("B", Strand.INVALID),
+                new Gene("X", Strand.INVALID),
+                new Gene("X", Strand.INVALID),
+                new Gene("X", Strand.INVALID),
+        };
+
+        Replicon replicon = new Replicon();
+        replicon.addAllGenes(Arrays.asList(genes.clone()));
+        Directon directon = new Directon(0,replicon,0);
+        directon.addAllGenes(Arrays.asList(genes.clone()));
+
+        directon.removeUnkChars(Alphabet.UNK_CHAR);
+
+        List<Gene> expectedGenes = new ArrayList<>();
+        expectedGenes.add(new Gene("A", Strand.INVALID));
+        expectedGenes.add(new Gene("B", Strand.INVALID));
+
+        Assert.assertEquals(2, directon.size());
+        Assert.assertEquals(expectedGenes, directon.getGenes());
     }
 
     @Test
