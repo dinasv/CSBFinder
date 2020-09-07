@@ -69,7 +69,7 @@ public class CSBFinderController {
         this.model.loadSessionFile(filePath);
     }
 
-    public void loadCogInfo(String path) throws IOException {
+    public void loadCogInfo(String path) throws Exception {
         this.model.loadCogInfo(path);
     }
 

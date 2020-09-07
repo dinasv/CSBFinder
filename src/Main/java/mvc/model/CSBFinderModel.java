@@ -187,7 +187,7 @@ public class CSBFinderModel {
     }
 
 
-    public void loadCogInfo(String path) throws IOException {
+    public void loadCogInfo(String path) throws Exception {
         cogInfo = new CogInfo();
 
         Map<String, COG> cogInfoTable = null;

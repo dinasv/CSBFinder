@@ -726,7 +726,7 @@ public class MainFrame extends JFrame {
         Function<FileEvent, String> doInBackgroundFunc = (FileEvent e) -> {
             try {
                 controller.loadCogInfo(e.getFile().getPath());
-            }catch (IOException exception){
+            }catch (Exception exception){
                 return exception.getMessage();
             }
             return null;
