@@ -107,7 +107,7 @@ public class Parsers {
     private static Gene[] parseGenes(String line, int lineNumber, String inputPatternsFilePath) throws IllegalArgumentException {
         String[] patternArr = line.split(PATTERN_DELIMITER);
         Gene[] genes = new Gene[patternArr.length];
-        if (patternArr.length > 1) {
+        if (patternArr.length > 0) {
             int i = 0;
             for (String gene : patternArr) {
                 if (gene.length() > 0) {
