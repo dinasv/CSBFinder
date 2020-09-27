@@ -14,6 +14,7 @@ import java.awt.*;
 import java.util.*;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class GenesViewPanel extends JPanel {
 
@@ -82,6 +83,19 @@ public class GenesViewPanel extends JPanel {
 
     }
 
+    private Stream<Map.Entry<String, List<InstanceLocation>>> getPatternGenomeToInstances(Pattern pattern){
+        return pattern.getPatternLocations().getSortedLocations().stream()
+                .collect(Collectors.groupingBy(location -> genomesInfo.getGenomeName(location.getGenomeId())))
+                .entrySet().stream();
+    }
+
+    private List<String> getGenomeNames(List<Map.Entry<String, List<InstanceLocation>>> genomeToInstances){
+        return genomeToInstances
+                .stream()
+                .map(Map.Entry::getKey)
+                .collect(Collectors.toList());
+    }
+
     public void displayPatterns(List<Pattern> patterns){
 
         int notDisplayedPatterns = 0;
@@ -99,7 +113,12 @@ public class GenesViewPanel extends JPanel {
                                             .map(id -> "CSB " + id)
                                             .collect(Collectors.toList());
 
+        genomeToInstances = patterns.stream()
+                .flatMap(this::getPatternGenomeToInstances)
+                .sorted(Map.Entry.comparingByKey())
+                .collect(Collectors.toList());
 
+        genomeNames = getGenomeNames(genomeToInstances);
 
         instancesPanel.setData(patterns);
         labelsPanel.displayInstancesLabels(patternNames, instancesPanel.getFirstRowHeight(),
@@ -122,17 +141,11 @@ public class GenesViewPanel extends JPanel {
         viewMode = ViewMode.INSTANCES;
         patternInView = pattern;
 
-        genomeToInstances = pattern.getPatternLocations().getSortedLocations().stream()
-                .collect(Collectors.groupingBy(location -> genomesInfo.getGenomeName(location.getGenomeId())))
-                .entrySet().stream()
-                .sorted(Comparator.comparing(Map.Entry::getKey))
+        genomeToInstances = getPatternGenomeToInstances(pattern)
+                .sorted(Map.Entry.comparingByKey())
                 .collect(Collectors.toList());
 
-        genomeNames = new ArrayList<>();
-        genomeNames.addAll(genomeToInstances
-                .stream()
-                .map(Map.Entry::getKey)
-                .collect(Collectors.toList()));
+        genomeNames = getGenomeNames(genomeToInstances);
 
         instancesPanel.setData(pattern, genomeToInstances);
 

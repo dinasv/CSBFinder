@@ -68,10 +68,10 @@ public class MiddlePanel extends JPanel {
     public void displayPatterns(List<Pattern> patterns) {
 
         viewInstancesPanel.displayPatterns(patterns);
+        displayTaxa();
         viewInstancesPanel.revalidate();
         viewInstancesPanel.repaint();
-        taxaPanel.clear();
-        taxaPanel.setText("Click on a CSB in order to view its taxonomic distribution.");
+
     }
 
     public void clearPanel(){
