@@ -32,6 +32,7 @@ public class Parsers {
     private final static String LOCATIONS_LINE_DELIMITER = "\t";
     private final static String TAXA_DELIMITER = ",";
     private final static String[] TAXA_LINE = {"[Genome Name]","[Kingdom]","[Phylum]","[Class]","[Genus]","[Species]"};
+    private final static String CSV_DELIMITER = ",";
 
 
     private final static String GENOMES_START = "<genomes>";
@@ -312,7 +313,7 @@ public class Parsers {
             String header = br.readLine();
 
             String line = br.readLine();
-            int lineNumber = 0;
+            int lineNumber = 1;
 
             while (line != null) {
                 lineNumber++;
@@ -347,6 +348,69 @@ public class Parsers {
         }
 
         return genomeToTaxon;
+    }
+
+    public static String[] parseMetadataFileHeader(String filePath) throws IOException, IllegalArgumentException{
+
+        if (filePath == null) {
+            throw new IllegalArgumentException();
+        }
+
+        String[] columnNames = new String[0];
+
+        try (BufferedReader br = new BufferedReader(new FileReader(filePath))) {
+
+            columnNames = br.readLine().trim().split(CSV_DELIMITER);
+
+        } catch (FileNotFoundException e) {
+            throw new FileNotFoundException("File " + filePath + " was not found.");
+        } catch (IOException e) {
+            throw new IOException("An exception occurred while reading " + filePath);
+        }
+
+        return columnNames;
+    }
+
+    public static Map<String, Object[]> parseMetadataFile(String filePath)
+            throws IOException, IllegalArgumentException {
+
+        if (filePath == null) {
+            throw new IllegalArgumentException();
+        }
+
+        Map<String, Object[]> genomeToMetadata = new HashMap<>();
+
+        try (BufferedReader br = new BufferedReader(new FileReader(filePath))) {
+
+            String[] columnNames = br.readLine().trim().split(CSV_DELIMITER);
+
+            String line = br.readLine();
+            int lineNumber = 1;
+
+            while (line != null) {
+                lineNumber++;
+
+                String[] splitLine = line.trim().split(CSV_DELIMITER, -1);
+
+                if (splitLine.length < columnNames.length) {
+                    throw new IllegalArgumentException(errorMessage(String.join(CSV_DELIMITER, columnNames),
+                            line, lineNumber, filePath));
+                }
+
+                String genomeName = splitLine[0];
+
+                genomeToMetadata.put(genomeName, splitLine);
+
+                line = br.readLine();
+            }
+
+        } catch (FileNotFoundException e) {
+            throw new FileNotFoundException("File " + filePath + " was not found.");
+        } catch (IOException e) {
+            throw new IOException("An exception occurred while reading " + filePath);
+        }
+
+        return genomeToMetadata;
     }
 
     private static void readInstances(BufferedReader br, GenomesInfo genomesInfo, String filePath, String end,

@@ -29,6 +29,8 @@ public class CSBFinderModel {
     private GenomesInfo gi;
     private CogInfo cogInfo;
     private Map<String,Taxon> genomeToTaxa;
+    private Map<String,Object[]> genomeToMetadata;
+    private String[] genomeMetadataColumnNames;
 
     private String arguments;
     private String inputGenomesPath;
@@ -45,6 +47,8 @@ public class CSBFinderModel {
         arguments = "";
         inputGenomesPath = "";
         genomeToTaxa = new HashMap<>();
+        genomeToMetadata = new HashMap<>();
+        genomeMetadataColumnNames = new String[0];
 
         colors = new GeneColors();
     }
@@ -201,13 +205,25 @@ public class CSBFinderModel {
     }
 
 
-    public void loadTaxa(String path) throws IOException {
+    public void loadTaxa(String path) throws IOException, IllegalArgumentException {
 
         genomeToTaxa = new HashMap<>();
 
         if (path != null) {
 
             genomeToTaxa = Parsers.parseTaxaFile(path);
+
+        }
+    }
+
+    public void loadMetadata(String path) throws IOException, IllegalArgumentException {
+
+        genomeToMetadata = new HashMap<>();
+
+        if (path != null) {
+
+            genomeMetadataColumnNames = Parsers.parseMetadataFileHeader(path);
+            genomeToMetadata = Parsers.parseMetadataFile(path);
 
         }
     }
@@ -327,5 +343,12 @@ public class CSBFinderModel {
 
     public Map<String, Taxon> getGenomeToTaxa() {
         return genomeToTaxa;
+    }
+    public Map<String, Object[]> getGenomeToMetadata() {
+        return genomeToMetadata;
+    }
+
+    public String[] getGenomeMetadataColumnNames() {
+        return genomeMetadataColumnNames;
     }
 }

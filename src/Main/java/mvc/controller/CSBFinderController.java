@@ -77,6 +77,9 @@ public class CSBFinderController {
         this.model.loadTaxa(path);
     }
 
+    public void loadMetadata(String path) throws IOException {
+        this.model.loadMetadata(path);
+    }
     public void calculateMainFunctionalCategory(){
         this.model.calculateMainFunctionalCategory();
     }
@@ -137,6 +140,14 @@ public class CSBFinderController {
 
     public Map<String, Taxon> getGenomeToTaxa(){
         return model.getGenomeToTaxa();
+    }
+
+    public Map<String, Object[]> getGenomeToMetadata(){
+        return model.getGenomeToMetadata();
+    }
+
+    public String[] getGenomeMetadataColumnNames(){
+        return model.getGenomeMetadataColumnNames();
     }
 
     public void setGeneColors(GeneColors colors){

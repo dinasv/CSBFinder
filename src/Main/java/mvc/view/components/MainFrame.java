@@ -82,6 +82,7 @@ public class MainFrame extends JFrame {
 
     private Listener<FileEvent> loadSessionListener;
     private Listener<FileEvent> loadTaxaListener;
+    private Listener<FileEvent> loadMetadataListener;
     private Listener<FileEvent> loadCogInfoListener;
     private Listener<FileEvent> saveListener;
     private Listener<OpenDialogEvent> saveAsListener;
@@ -202,6 +203,7 @@ public class MainFrame extends JFrame {
         setImportSessionButtonListener();
         setLoadCogInfoButtonListener();
         setLoadTaxaListener();
+        setLoadMetadataListener();
         setExportButtonListener();
         setSaveDialogListener();
         setSaveListener();
@@ -661,6 +663,9 @@ public class MainFrame extends JFrame {
     public void invokeLoadTaxaListener(String path){
         loadTaxaListener.eventOccurred(new FileEvent(this, new File(path)));
     }
+    public void invokeLoadMetadataListener(String path){
+        loadMetadataListener.eventOccurred(new FileEvent(this, new File(path)));
+    }
 
     /**
      * Load files listeners
@@ -747,7 +752,7 @@ public class MainFrame extends JFrame {
                 controller.loadTaxa(e.getFile().getPath());
                 Map<String, Taxon> genomeToTaxa = controller.getGenomeToTaxa();
                 middlePanel.setGenomeToTaxa(genomeToTaxa);
-            }catch (IOException exception){
+            }catch (Exception exception){
                 return exception.getMessage();
             }
             return null;
@@ -759,6 +764,29 @@ public class MainFrame extends JFrame {
 
         loadTaxaListener = new LoadFileListener(doInBackgroundFunc, doneFunc, MainFrame.this, progressBar);
         menuBar.setLoadTaxaListener(loadTaxaListener);
+    }
+
+    private void setLoadMetadataListener() {
+
+        Function<FileEvent, String> doInBackgroundFunc = (FileEvent e) -> {
+            try {
+                controller.loadMetadata(e.getFile().getPath());
+                Map<String, Object[]> genomeToMetadata = controller.getGenomeToMetadata();
+                String[] genomeMetadataColumnNames = controller.getGenomeMetadataColumnNames();
+                middlePanel.setGenomeMetadata(genomeMetadataColumnNames, genomeToMetadata);
+
+            }catch (Exception exception){
+                return exception.getMessage();
+            }
+            return null;
+        };
+
+        Consumer<FileEvent> doneFunc = (FileEvent e) -> {
+            tableRowClickFromHistory();
+        };
+
+        loadMetadataListener = new LoadFileListener(doInBackgroundFunc, doneFunc, MainFrame.this, progressBar);
+        menuBar.setLoadMetadataListener(loadMetadataListener);
     }
 
 

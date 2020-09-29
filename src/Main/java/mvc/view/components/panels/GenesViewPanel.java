@@ -93,6 +93,7 @@ public class GenesViewPanel extends JPanel {
         return genomeToInstances
                 .stream()
                 .map(Map.Entry::getKey)
+                .distinct()
                 .collect(Collectors.toList());
     }
 

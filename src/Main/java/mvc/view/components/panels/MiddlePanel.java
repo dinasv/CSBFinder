@@ -18,17 +18,20 @@ public class MiddlePanel extends JPanel {
 
     private GenesViewPanel viewInstancesPanel;
     private TaxaPanel taxaPanel;
+    private GenomesMetadataPanel genomesMetadataPanel;
 
 
     public MiddlePanel(GeneColors colorsUsed ) {
 
         viewInstancesPanel = new GenesViewPanel(colorsUsed);
         taxaPanel = new TaxaPanel();
+        genomesMetadataPanel = new GenomesMetadataPanel();
 
         JTabbedPane tabbedPane = new JTabbedPane();
 
         tabbedPane.addTab("Gene view", viewInstancesPanel);
         tabbedPane.addTab("Taxa view",  taxaPanel);
+        tabbedPane.addTab("Genome Metadata",  genomesMetadataPanel);
 
         setLayout(new BorderLayout());
         add(tabbedPane, BorderLayout.CENTER);
@@ -43,9 +46,19 @@ public class MiddlePanel extends JPanel {
         taxaPanel.setGenomeToTaxa(genomeToTaxa);
     }
 
+    public void setGenomeMetadata(String[] columnNames, Map<String, Object[]> genomeToMetadata){
+        genomesMetadataPanel.setGenomeToMetadata(genomeToMetadata);
+        genomesMetadataPanel.setColumnNames(columnNames);
+    }
+
     private void displayTaxa(){
         List<String> genomeNames = viewInstancesPanel.getGenomeNames();
         taxaPanel.displayTaxa(genomeNames);
+    }
+
+    private void displayMetadata(){
+        List<String> genomeNames = viewInstancesPanel.getGenomeNames();
+        genomesMetadataPanel.setTableRows(genomeNames);
     }
 
     public void setNumOfNeighbors(int numOfNeighbors){
@@ -63,15 +76,18 @@ public class MiddlePanel extends JPanel {
 
         taxaPanel.clearText();
         displayTaxa();
+        displayMetadata();
     }
 
     public void displayPatterns(List<Pattern> patterns) {
 
         viewInstancesPanel.displayPatterns(patterns);
-        displayTaxa();
         viewInstancesPanel.revalidate();
         viewInstancesPanel.repaint();
 
+        taxaPanel.clearText();
+        displayTaxa();
+        displayMetadata();
     }
 
     public void clearPanel(){
