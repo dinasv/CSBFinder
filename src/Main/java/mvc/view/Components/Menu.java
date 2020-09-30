@@ -20,6 +20,7 @@ public class Menu implements ActionListener {
 
     private static final String LOAD_COG_INFO = "Orthology Information File";
     private static final String LOAD_TAXA = "Taxonomy File";
+    private static final String LOAD_METADATA = "Genome Metadata File";
     private static final String SAVE_FILES = "Save";
     private static final String SAVE_AS_FILES = "Save As...";
     private static final String EXPORT_FILES = "Export";
@@ -28,6 +29,7 @@ public class Menu implements ActionListener {
     private static final String OPEN = "Open...";
     private static final String SETTINGS = "Settings";
     private static final String[] LOAD_EXTENSIONS = {"fasta", "txt"};
+    private static final String[] CSV_FILE_EXTENSION = {"csv"};
 
     private String sessionFileExtension;
 
@@ -35,6 +37,7 @@ public class Menu implements ActionListener {
     private Listener<FileEvent> importSessionListener;
     private Listener<FileEvent> loadCogInfoListener;
     private Listener<FileEvent> loadTaxaListener;
+    private Listener<FileEvent> loadMetadataListener;
     private Listener<OpenExportDialogEvent> exportListener;
     private Listener<OpenDialogEvent> saveListener;
     private Listener<OpenDialogEvent> saveAsListener;
@@ -47,6 +50,7 @@ public class Menu implements ActionListener {
 
     private JMenuItem importOrthologyInfoMenuItem;
     private JMenuItem importTaxaMenuItem;
+    private JMenuItem importMetadataMenuItem;
     private JMenuItem saveItem;
     private JMenuItem saveAsItem;
     private JMenu submenuExport;
@@ -74,6 +78,7 @@ public class Menu implements ActionListener {
 
         importOrthologyInfoMenuItem.addActionListener(this);
         importTaxaMenuItem.addActionListener(this);
+        importMetadataMenuItem.addActionListener(this);
         openItem.addActionListener(this);
         saveAsItem.addActionListener(this);
         exportItemTxt.addActionListener(this);
@@ -95,10 +100,12 @@ public class Menu implements ActionListener {
 
         importOrthologyInfoMenuItem = new JMenuItem(LOAD_COG_INFO);
         importTaxaMenuItem = new JMenuItem(LOAD_TAXA);
+        importMetadataMenuItem = new JMenuItem(LOAD_METADATA);
 
         submenuImport.add(importGenomesMenuItem);
         submenuImport.add(importOrthologyInfoMenuItem);
         submenuImport.add(importTaxaMenuItem);
+        submenuImport.add(importMetadataMenuItem);
 
         //Save
         saveItem = new JMenuItem(SAVE_FILES);
@@ -195,6 +202,12 @@ public class Menu implements ActionListener {
                 loadEventOccured(e, loadTaxaListener);
 
                 break;
+            case LOAD_METADATA:
+
+                initInputFileChooser(e.getActionCommand(), CSV_FILE_EXTENSION);
+                loadEventOccured(e, loadMetadataListener);
+
+                break;
             case SAVE_FILES:
                 saveListener.eventOccurred(new OpenDialogEvent());
                 break;
@@ -251,6 +264,10 @@ public class Menu implements ActionListener {
 
     public void setLoadTaxaListener(Listener<FileEvent> loadTaxaListener) {
         this.loadTaxaListener = loadTaxaListener;
+    }
+
+    public void setLoadMetadataListener(Listener<FileEvent> loadMetadataListener) {
+        this.loadMetadataListener = loadMetadataListener;
     }
 
     public void setExportListener(Listener<OpenExportDialogEvent> exportListener) {

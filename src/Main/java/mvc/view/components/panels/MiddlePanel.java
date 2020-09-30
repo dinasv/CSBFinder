@@ -92,6 +92,7 @@ public class MiddlePanel extends JPanel {
 
     public void clearPanel(){
         taxaPanel.clear();
+        genomesMetadataPanel.clear();
         viewInstancesPanel.clearPanel();
         viewInstancesPanel.revalidate();
         viewInstancesPanel.repaint();

@@ -48,4 +48,8 @@ public class GenomesMetadataPanel extends JPanel{
 
         model.setColumnIdentifiers(columnNames);
     }
+
+    public void clear(){
+        model.setRowCount(0);
+    }
 }
