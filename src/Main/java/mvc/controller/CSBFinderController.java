@@ -40,6 +40,7 @@ public class CSBFinderController {
     }
 
     private void invokeListeners(){
+
         String path = properties.getSessionPath();
         if (path != null){
             view.invokeLoadSessionListener(path);
@@ -53,6 +54,11 @@ public class CSBFinderController {
         path = properties.getTaxaPath();
         if (path != null){
             view.invokeLoadTaxaListener(path);
+        }
+
+        path = properties.getMetadataPath();
+        if (path != null){
+            view.invokeLoadMetadataListener(path);
         }
     }
 

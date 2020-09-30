@@ -663,6 +663,7 @@ public class MainFrame extends JFrame {
     public void invokeLoadTaxaListener(String path){
         loadTaxaListener.eventOccurred(new FileEvent(this, new File(path)));
     }
+
     public void invokeLoadMetadataListener(String path){
         loadMetadataListener.eventOccurred(new FileEvent(this, new File(path)));
     }

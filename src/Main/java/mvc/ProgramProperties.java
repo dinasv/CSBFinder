@@ -12,6 +12,8 @@ public class ProgramProperties {
     public static final String SESSION_PROPERTY = "session";
     public static final String COG_INFO_PROPERTY = "orthology";
     public static final String TAXA_PROPERTY = "taxonomy";
+    public static final String METADATA_PROPERTY = "metadata";
+
     public static final String SHOW_SAVE_MSG_PROPERTY = "show_save_msg";
 
     private Properties properties;
@@ -58,13 +60,17 @@ public class ProgramProperties {
         return properties.getProperty(TAXA_PROPERTY);
     }
 
+    public String getMetadataPath(){
+        return properties.getProperty(METADATA_PROPERTY);
+    }
+
     public void setShowSaveMsg(boolean value){
         addProperty(SHOW_SAVE_MSG_PROPERTY, Boolean.toString(value));
     }
 
     public boolean showSaveMsg(){
         String val = properties.getProperty(SHOW_SAVE_MSG_PROPERTY, Boolean.toString(true));
-        return Boolean.valueOf(val);
+        return Boolean.parseBoolean(val);
     }
 
 }
