@@ -709,7 +709,6 @@ public class MainFrame extends JFrame {
         };
 
         Consumer<FileEvent> doneFunc = (FileEvent e) -> {
-            setGenomesData();
             setCurrentSessionFile(e.getFile());
             disableSaveBtns();
         };
@@ -866,7 +865,10 @@ public class MainFrame extends JFrame {
     }
 
     private void setCSBFinderDoneListener() {
-        controller.setCSBFinderDoneListener(e -> displayFamilyTable(e.getFamilyList()));
+        controller.setCSBFinderDoneListener(e -> {
+            setGenomesData();
+            displayFamilyTable(e.getFamilyList());
+        });
     }
 
 }
