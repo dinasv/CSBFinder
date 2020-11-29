@@ -521,6 +521,8 @@ The above zip file contains four files, located inside a folder named 'input':
     Functional information of gene orthology groups
 - taxa_csbfinder.txt   
     Taxonomy information for the user interface
+- metadata.csv
+    Sample genome metadata information for the user interface
 
 ### Execution of CSBFinder-S on the Plasmid Dataset of 471 microbial genomes
 
