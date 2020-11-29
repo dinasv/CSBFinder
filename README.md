@@ -35,16 +35,17 @@ The discovered CSBs are ranked according to a probabilistic score and clustered 
 content similarity.
 
 The overall toolkit includes two components, implementing two distinct algorithms and released in separate versions. 
-The first, denoted CSBFinder (published in (Svetlitsky et. al., 2018), cited below), incorporated a suffix-tree based 
+The first, denoted CSBFinder (published in ([Svetlitsky et. al., 2018](https://academic.oup.com/bioinformatics/advance-article/doi/10.1093/bioinformatics/bty861/5132694?guestAccessKey=1f04c37d-2e8f-4031-b802-08e73feff24b)), cited below), incorporated a suffix-tree based 
 algorithm, and was optimized to seek single-operon CSBs. 
-The second version, CSBFinder-S (recently submitted), generalizes the tool to cross-strand, multi operon CSBs and 
+The second version, CSBFinder-S ([Svetlitsky et. al., 2020](https://academic.oup.com/bioinformatics/article/36/Supplement_1/i21/5870523), cited below), 
+generalizes the tool to cross-strand, multi operon CSBs and 
 incorporates a match-point arithmetic based algorithm to efficiently support the generalizations. 
 
 ### March 27, 2019 update
 
 **CSBFinder-S** for the discovery of cross-strand multi-operon CSBs is released
 
-- In this version, the user can decide whether or not to segment the input genomes into directons (consecutive genes on the same 
+- In this version, the user can decide whether to segment the input genomes into directons (consecutive genes on the same 
 strand) 
 
 - A novel exact algorithm that uses match-point arithmetic is proposed and implemented. 
@@ -92,10 +93,19 @@ new CSBFinder-S tool.
 
 If you used the tool as part of your research, please cite us:
 
+When searching for cross-strand colinear syntenic blocks:   
+
+Dina Svetlitsky, Tal Dagan, Michal Ziv-Ukelson, 
+Discovery of multi-operon colinear syntenic blocks in microbial genomes, 
+Bioinformatics, Volume 36, Issue Supplement_1, July 2020, Pages i21–i29, 
+[https://doi.org/10.1093/bioinformatics/btaa503](https://doi.org/10.1093/bioinformatics/btaa503)
+
+When searching for colinear syntenic blocks that are conserved on the same strand:  
+
 Dina Svetlitsky, Tal Dagan, Vered Chalifa-Caspi, Michal Ziv-Ukelson, 
 CSBFinder: discovery of colinear syntenic blocks across thousands of prokaryotic genomes, Bioinformatics, 
 Volume 35, Issue 10, 15 May 2019, Pages 1634–1643,
- [https://doi.org/10.1093/bioinformatics/bty861](https://doi.org/10.1093/bioinformatics/bty861)
+ [https://doi.org/10.1093/bioinformatics/bty861](https://academic.oup.com/bioinformatics/advance-article/doi/10.1093/bioinformatics/bty861/5132694?guestAccessKey=1f04c37d-2e8f-4031-b802-08e73feff24b)
 
 <a name='prerequisites'>Prerequisites</a>
 --------
@@ -142,13 +152,17 @@ on the parameters specified.
 2. **Importing a saved session file**:  
     If you have ran CSBFinder-S and saved a session file, you can load it by choosing `File->Import->Session File`
   
-3. **Importing gene orthology group information**:  
+3. **Importing gene orthology group information** (OPTIONAL):  
 Load it by choosing `File->Import->Orthology Information file`. This information will be displayed on the lower right 
  panel.
  
-4. **Importing taxonomic information**:  
+4. **Importing taxonomic information** (OPTIONAL):  
  Load it by choosing `File->Import->Taxonomy File`. This information will be displayed in the `Taxa View` tab in the 
  upper panel 
+ 
+5. **Importing additional metadata** (OPTIONAL):  
+  Load it by choosing `File->Import->Genome Metadata File`. This information will be displayed in the `Taxa View` tab in the 
+  upper panel 
 
 ### <a name='cmd'>Running CSBFinder-S via Command Line </a>
 
@@ -409,6 +423,32 @@ genome-name(as provided in input genomes file),kingdom,phylum,class,genus,specie
 genome,kingdom,phylum,class,genus,species
 Acaryochloris_marina_MBIC11017_uid58167,Bacteria,Cyanobacteria,-,Acaryochloris,Acaryochloris_marina
 Acetobacter_pasteurianus_IFO_3283_01_uid59279,Bacteria,Proteobacteria,Alphaproteobacteria,Acetobacter,Acetobacter_pasteurianus
+....
+```
+
+### <a name='in_metadata'>Input file containing additional metadata </a>
+If this file is provided, the metadata from each genome, which contains a CSB or a CSB family, will be diplayed.
+
+- This is an optional input csv file
+- User Interface: Load this file by choosing `File->Import->Genome Metadata File`
+
+This file should use the following format:
+```
+genome,col2,col3,...
+genome-name(as provided in input genomes file),col2_data,col3_data,...
+genome-name(as provided in input genomes file),col2_data,col3_data,...
+...
+```
+- The first column must contain the name of the genome, as provided in input genomes file. 
+You can choose your own column names.
+- There is not limitation on the number of columns.
+
+
+#### Example
+```
+genome,isolation_source,gram_stain
+Acaryochloris_marina_MBIC11017_uid58167,soil,negative,...
+Acetobacter_pasteurianus_IFO_3283_01_uid59279,plant,negative,...
 ....
 ```
 
