@@ -11,6 +11,7 @@
     -   [Gene orthology group information file](#cog_info)
     -   [Patterns file](#in_patterns)
     -   [Taxonomy file](#in_taxa)
+    -   [Metadata file](#in_metadata)
 -   [Output files](#output)
 -   [Example of running CSBFinder-S](#sample)
 -   [User interface features](#ui_features)
