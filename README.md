@@ -28,6 +28,8 @@
 CSBFinder-S is a standalone Desktop java application with a graphical user interface, 
 that can also be executed via command line.
 
+**TL:DR** Watch this [video](https://www.youtube.com/watch?v=EG6Aue_Csps) from the ISMB conference to understand what CSBFinder is all about, including some examples on real data.
+
 CSBFinder-S implements a novel methodology for the discovery and ranking of 
 colinear syntenic blocks (**CSBs**) - groups of genes that are consistently located close to each other, 
 in the same order, across a wide range of taxa.
